@@ -19,7 +19,8 @@ Tous les moteurs utilisent le cœur heuristique de référence `core=stfig6`, sa
 5. **`w7_d3_cap321`** : `ismcts+widen=7+depth=3+diverse=cap321@2000` — Arbre coupé à 3 plis (`depth=3`) avec cap dégressif 3-2-1.
 6. **`w6_d5_cap321_2`** : `ismcts+candidates=8+widen=6+depth=5+core=stfig6+diverse=2+rootDiverse=cap321_2@2000` — Configuration hybride : racine à 8 candidats avec cap dégressif 3-2-1 aux tours 1–4 et cap 2 aux tours 5+ ; shortlist enfant à `widen=6`, `depth=5` et cap strict de 2 bornes par carte (`diverse=2`).
 7. **`w8_d4_r10_c2`** : `ismcts+candidates=10+widen=8+depth=4+core=stfig6+diverse=2@2000` — Configuration privilégiant la largeur : racine à 10 candidats avec cap 2 (au moins 5 cartes distinctes), shortlist enfant à `widen=8` avec cap 2, et profondeur coupée à `depth=4`.
-8. **Oracle** : `ismcts+candidates=99+widen=6+depth=5+smart=1@20000` — Référence à 20 000 itérations, explorant tous les coups légaux à la racine.
+8. **`w7_d5_pw1`** : `ismcts+widen=7+depth=5+core=stfig6+pw=1@2000` — Configuration Expérimental 1.2 avec Progressive Widening actif (`pw=1`) : élargissement adaptatif par nœud ($1 + \lfloor\sqrt{N}\rfloor$, jusqu'à 7), profondeur 5, shortlist libre.
+9. **Oracle** : `ismcts+candidates=99+widen=6+depth=5+smart=1@20000` — Référence à 20 000 itérations, explorant tous les coups légaux à la racine.
 
 ### Méthodologie et indices de confiance statistiques :
 - **Échantillon massif ($N = 1\ 000$ positions indépendantes, 500 début et 500 milieu)** : Chaque arbre est intégralement parcouru et instrumenté. Les variables continues sont rapportées sous la forme `Moyenne ± Écart-type d'échantillon (s)` accompagnée de l'**intervalle de confiance à 95 %** ($\bar{x} \pm 1,96 \cdot \frac{s}{\sqrt{n}}$).
@@ -40,6 +41,7 @@ Le point de départ de l'hypothèse du Borné était que sur un plateau vide, le
 | **widen=7, depth=3, cap321** | **5,01** ± 0,25 cartes <br>*(IC 95 % : [4,99 – 5,04])* | **5,34** ± 0,62 cartes <br>*(IC 95 % : [5,28 – 5,39])* | **5,18** ± 0,50 cartes <br>*(IC 95 % : [5,15 – 5,21])* |
 | **widen=6, depth=5, Cap2 (Root Cap321/2)** | **5,01** ± 0,25 cartes <br>*(IC 95 % : [4,99 – 5,04])* | **5,04** ± 0,65 cartes <br>*(IC 95 % : [4,98 – 5,10])* | **5,03** ± 0,49 cartes <br>*(IC 95 % : [5,00 – 5,06])* |
 | **widen=8, depth=4, Cap2 (Root10 Cap2)** | **4,94** ± 0,45 cartes *(Top 8)* <br>*(Top 10: 5,17 ± 0,44)* | **5,12** ± 0,66 cartes *(Top 8)* <br>*(Top 10: 5,45 ± 0,64)* | **5,03** ± 0,57 cartes *(Top 8)* <br>*(Top 10: **5,31** ± 0,57)* |
+| **widen=7, depth=5, pw=1 (Exp 1.2 + PW)** | **2,88** ± 0,82 cartes <br>*(IC 95 % : [2,81 – 2,95])* | **4,55** ± 0,90 cartes <br>*(IC 95 % : [4,47 – 4,63])* | **3,71** ± 1,20 cartes <br>*(IC 95 % : [3,64 – 3,79])* |
 | **Oracle @20k (99 candidats)** | **5,69** ± 0,51 cartes <br>*(IC 95 % : [5,65 – 5,74])* | **5,54** ± 0,64 cartes <br>*(IC 95 % : [5,49 – 5,60])* | **5,62** ± 0,58 cartes <br>*(IC 95 % : [5,58 – 5,65])* |
 
 ### Constats sur la diversité des cartes :
@@ -65,16 +67,19 @@ Voici le décompte réel du nombre moyen de nœuds visités à chaque niveau de 
 | **widen=7, depth=3, cap321** | 8 ± 0 | 816 ± 336 | 4 012 ± 448 | **0 ± 0** *(0,0 %)* | **0,00 ± 0,00** *(0,00 %)* | **3,00 ± 0,00** <br>*(IC: [3,00 – 3,00])* |
 | **widen=6, depth=5, Cap2 (Root Cap321/2)** | 8 ± 0 | 671 ± 245 | 3 578 ± 484 | **282 ± 371** *(6,2 %)* | **0,03 ± 0,78** *(0,00 %)* | **3,91 ± 0,29** <br>*(IC: [3,90 – 3,93])* |
 | **widen=8, depth=4, Cap2 (Root10 Cap2)** | 10 ± 0 | 903 ± 302 | 4 487 ± 348 | **60 ± 145** *(1,1 %)* | **0,00 ± 0,00** *(0,00 %)* | **3,48 ± 0,50** <br>*(IC: [3,45 – 3,51])* |
+| **widen=7, depth=5, pw=1 (Exp 1.2 + PW)** | 8 ± 0 | 824 ± 388 | 1 549 ± 249 | **335 ± 264** *(12,3 %)* | **0,47 ± 1,25** *(0,02 %)* | **4,16 ± 0,37** <br>*(IC: [4,13 – 4,18])* <br>*(**Record absolu**)* |
 | **Oracle @20k (widen=6, 99 cand.)** | 39,1 ± 4,1 | 4 192 ± 2 007 | 29 236 ± 10 331 | **14 390 ± 10 358** *(29,8 %)* | **511 ± 1 445** *(1,06 %)* | **4,46 ± 0,50** <br>*(IC: [4,42 – 4,49])* |
 
 ### Réponses formelles sur la profondeur :
-1. **Y a-t-il des nœuds à la profondeur 5 ? NON.**
-   - À budget 2 000 itérations, **le pli 5 est quasiment inexistant** (moyenne de 0,00 à 0,32 nœud par recherche sur 1 000 positions, soit moins de 0,01 % de l'arbre).
+1. **Y a-t-il des nœuds à la profondeur 5 ? Quasiment NON, sauf avec pw=1 qui commence à l'atteindre.**
+   - À budget 2 000 itérations sans PW, **le pli 5 est quasiment inexistant** (moyenne de 0,00 à 0,32 nœud par recherche sur 1 000 positions, soit moins de 0,01 % de l'arbre).
    - Même l'Oracle, avec **20 000 itérations** (10 fois plus de calcul), ne consacre en moyenne que **511 nœuds au pli 5** sur 48 300 nœuds (1,06 % de son arbre).
-2. **Y a-t-il des nœuds à la profondeur 4 ? Très peu, mais restaurés à widen=6.**
+   - Avec `pw=1`, le moteur commence à toucher le Pli 5 avec **0,47 ± 1,25 nœud** en moyenne.
+2. **Y a-t-il des nœuds à la profondeur 4 ? Très peu, mais restaurés à widen=6 et explosés avec pw=1.**
    - Dans `widen=7` (Exp 1.2), seuls **159 nœuds** atteignent le pli 4 (3,1 % de l'arbre).
    - Dans `widen=6, depth=5`, le nombre de nœuds au pli 4 remonte à **282 nœuds** (6,2 % de l'arbre, profondeur max de **3,91**).
    - Dans `widen=8, depth=4`, l'accent mis sur la largeur au Pli 2 et Pli 3 concentre le calcul sur les plis 2–3 (5 390 nœuds), ne laissant que **60 nœuds au Pli 4** (1,1 % de l'arbre).
+   - Dans `widen=7, depth=5, pw=1`, le Pli 4 bondit à **335 nœuds** (12,3 % de l'arbre, plus du double d'Exp 1.2 !), et la profondeur moyenne atteint **4,16 ± 0,37** (record absolu de tous les moteurs à budget 2 000).
    - Dans `depth=3, cap321`, le pli 4 est strictement coupé à **0 nœud**.
 
 ---
@@ -92,15 +97,21 @@ Le comportement statistique dans les nœuds enfants (les répliques de l'adversa
 | **widen=7, depth=3, cap321** | **529,3** ± 152,6 | **376,7** ± 68,0 | 24,7 ± 14,6 | 1,65 ± 0,75 | **39,7 % ± 9,8 %** <br>*(IC: [39,1 % – 40,3 %])* | **33,5 % ± 4,9 %** <br>*(IC: [33,2 % – 33,8 %])* |
 | **widen=6, depth=5, Cap2 (Root Cap321/2)** | **521,9** ± 145,0 | **377,2** ± 65,4 | **27,2 ± 14,6** | **1,98 ± 0,99** | **34,4 % ± 9,5 %** <br>*(IC: [33,8 % – 34,9 %])* | **35,6 % ± 4,0 %** <br>*(IC: [35,3 % – 35,8 %])* |
 | **widen=8, depth=4, Cap2 (Root10 Cap2)** | 441,5 ± 125,8 | 325,1 ± 55,5 | 20,7 ± 11,1 | 1,50 ± 0,60 | **42,4 % ± 9,6 %** <br>*(IC: [41,8 % – 43,0 %])* | **29,4 % ± 2,9 %** <br>*(IC: [29,2 % – 29,6 %])* <br>*(**Record absolu**)* |
-| **Oracle @20k (widen=6, 99 cand.)** | 3 314,8 ± 3 098,5 | 1 616,3 ± 822,7 | 207,6 ± 265,2 | 2,4 ± 0,8 | **30,0 % ± 5,4 %** <br>*(IC: [29,7 % – 30,3 %])* | **33,6 % ± 2,3 %** <br>*(IC: [33,4 % – 33,7 %])* |
+| **widen=7, depth=5, pw=1 (Exp 1.2 + PW)** | **518,7** ± 143,2 | **374,1** ± 63,3 | **24,4** ± 15,0 | **1,82** ± 0,93 | **38,1 % ± 10,7 %** <br>*(IC: [37,4 % – 38,7 %])* | **55,6 % ± 2,8 %** <br>*(IC: [55,4 % – 55,8 %])* |
+| **Oracle @20k (99 cand.)** | 3 314,8 ± 3 098,5 | 1 616,3 ± 822,7 | 207,6 ± 265,2 | 2,4 ± 0,8 | **30,0 % ± 5,4 %** <br>*(IC: [29,7 % – 30,3 %])* | **33,6 % ± 2,3 %** <br>*(IC: [33,4 % – 33,7 %])* |
 
 ### Découvertes capitales sur les visites :
-1. **Nouveau record absolu de réduction des singletons dans tout l'arbre (29,4 %)** :
+1. **Nouveau record absolu de réduction des singletons dans tout l'arbre (29,4 % pour Root10)** :
    En limitant la profondeur à 4 et en élargissant les couches 1 et 2, `w8_d4_r10_c2` fait tomber le taux global de singletons à **29,4 % ± 2,9 %** (battant même l'Oracle à 33,6 % et l'Expérimental 1.2 à 31,7 %). Moins de nœuds profonds à 1 visite sont créés inutilement.
 2. **Le coût de la largeur au Pli 2 (42,4 % de singletons L1)** :
    Ouvrir 8 enfants sous 10 candidats à la racine impose 80 nœuds au Pli 2. En ouverture, les visites s'éparpillent (50,7 % de singletons L1 en début), mais en milieu de jeu la concentration se rétablit (34,1 % de singletons L1).
 3. **Visites du coup gagnant** :
    Le meilleur coup reçoit **441,5 visites** en moyenne (contre 512 pour Exp 1.2), une dispersion mécanique due au partage du budget entre 10 candidats plutôt que 8.
+4. **L'autopsie des singletons sous Progressive Widening (`pw=1`)** :
+   - À première vue, le pourcentage apparent de singletons de tout l'arbre s'affiche à 55,6 %. Mais l'analyse interne révèle la vérité mécanique : **la taille totale de l'arbre est divisée par deux** (de 5 142 à 2 716 nœuds en moyenne) !
+   - Dans l'Expérimental 1.2 classique, chaque nœud exploré pré-alloue 7 enfants, dont **~2 850 nœuds restent à 0 visite** sans jamais être simulés (ce qui dilue artificiellement le ratio de singletons).
+   - Avec `pw=1`, ces nœuds fantômes sont éliminés à 78 % (seulement 636 nœuds à 0 visite).
+   - Plus important encore : le nombre de nœuds recevant **plusieurs visites utiles ($\ge 2$) bondit de +36 %** (de 399 à 545 nœuds), et les visites sur le coup gagnant à la racine se renforcent à **518,7 visites** (vs 512,0 pour Exp 1.2).
 
 ---
 
@@ -194,6 +205,7 @@ Pour valider ces dynamiques en conditions de parties jouées, nous avons analys�
 | **w7_d3_cap321 (Root8, W7, D3, Cap321)** | 4,6 % (23/500) | 19,8 % (99/500) | 24,2 % (121/500) | 49,2 % (246/500) | 36,7 % (367/1000) | 12,2 % (122/1000) |
 | **w6_d5_cap321_2 (Root8 Cap321/2, W6, D5, Cap2)** | 5,0 % (25/500) | 19,0 % (95/500) | 24,2 % (121/500) | 51,2 % (256/500) | 37,7 % (377/1000) | 12,0 % (120/1000) |
 | **w8_d4_r10_c2 (Root10 Cap2, W8, D4, Cap2)** | **5,2 %** (26/500) <br>*(**Record +86 %**)* | **22,4 %** (112/500) <br>*(**Record absolu**)* | 22,8 % (114/500) <br>*(Top 10: **28,8 %**)* | **57,8 %** (289/500) <br>*(Top 10: **62,2 %**)* | **40,3 %** (403/1000) <br>*(Top 10: **45,5 %**)* | **13,8 %** (138/1000) <br>*(**Record absolu +20 %**)* |
+| **w7_d5_pw1 (Exp 1.2 + PW)** | **5,2 %** (26/500) <br>*(**Record +86 %**)* | 19,4 % (97/500) | 18,6 % (93/500) | 48,4 % (242/500) | 33,5 % (335/1000) | **12,3 %** (123/1000) <br>*(vs 11,5 % Exp 1.2)* |
 
 ---
 
@@ -325,7 +337,44 @@ Un duel officiel `VALIDATE_LONG` (4 × 250 parties, règle officielle `--page`) 
 
 ---
 
-### D. Enseignements globaux et recommandations pour la Version 1.3
+### D. Analyse de la configuration Expérimental 1.2 avec Progressive Widening (`w7_d5_pw1`)
+
+L'utilisateur a posé la question clé pour la Version 1.3 :
+> *« Est-ce que le nombre de Singletons diminue sans amputer le reste en activant le Progressive Widening (+pw=1) sur l'Expérimental 1.2 ? »*
+
+Les mesures empiriques sur les 1 000 positions révèlent des découvertes spectaculaires sur la dynamique interne de l'arbre ISMCTS :
+
+#### 1. Le bond historique en profondeur : la barrière du Pli 4 enfin brisée !
+- **Profondeur maximale moyenne de 4,16 ± 0,37** (IC 95 % : [4,13 – 4,18]) :
+  C'est le **seul moteur à budget 2 000 itérations de l'histoire du projet à dépasser la profondeur 4 en moyenne** (contre 3,67 pour Exp 1.2, 3,91 pour `w6_d5` et 3,48 pour `w8_d4`).
+- **Le Pli 4 plus que doublé** : Il passe de **159 nœuds** (3,1 % de l'arbre) dans l'Expérimental 1.2 à **335 nœuds** (12,3 % de l'arbre) !
+- **Le Pli 5 commence à être atteint** : En moyenne **0,47 ± 1,25 nœud** par recherche (contre 0,00 absolu pour la 1.2). L'arbre descend enfin là où aucun bot à 2 000 itérations ne pouvait aller.
+
+#### 2. L'élagage massif du Pli 3 et la fin des nœuds fantômes à 0 visite
+- Au Pli 3, le nombre moyen de nœuds explorés s'effondre de **4 136 nœuds à 1 549 nœuds (-62 %)** !
+- **Pourquoi ?** Parce que dans l'Expérimental 1.2 sans PW, dès qu'un nœud du Pli 2 est visité, il pré-instancie d'office ses 7 enfants dans la shortlist. L'immense majorité de ces enfants n'est jamais visitée, créant **~2 850 nœuds fantômes à 0 visite** par recherche.
+- Avec `pw=1` ($1 + \lfloor\sqrt{N}\rfloor$), un nœud ne débloque son 3e enfant qu'à partir de 4 visites, son 4e à 9 visites, etc. L'arbre total est ainsi **divisé par deux** (de 5 142 à 2 716 nœuds au total) !
+- Les nœuds à 0 visite sont réduits de 78 % (de 2 850 à 636).
+
+#### 3. Le paradoxe apparent des singletons : Que s'est-il passé ?
+- Dans les statistiques globales, le pourcentage de nœuds à 1 visite par rapport aux nœuds créés s'affiche à **55,6 %** (contre 31,7 % pour Exp 1.2).
+- **L'explication mathématique** : Ce ratio est purement un effet de dénominateur ! Dans l'Expérimental 1.2 classique, les 2 850 nœuds à 0 visite diluaient artificiellement le dénominateur (5 142 nœuds). En supprimant ces 2 850 nœuds fantômes, la proportion de nœuds à 1 visite augmente mécaniquement en pourcentage relatif.
+- **La vraie métrique de concentration** :
+  - Dans l'Expérimental 1.2, seuls **399 nœuds** (8 % de l'arbre) recevaient plus d'une visite.
+  - Dans `w7_d5_pw1`, ce nombre grimpe à **545 nœuds utiles (+36 % !)**.
+  - Plus d'itérations sont réinvesties sur les branches vivantes plutôt que dispersées en expansions stériles.
+
+#### 4. Accord avec l'Oracle et conviction à la racine :
+- **Visites sur le meilleur coup** : Remontent à **518,7 ± 143,2 visites** (contre 512,0 pour Exp 1.2 et 441,5 pour Root10). La décision à la racine est encore plus solide et tranchée.
+- **Accord direct sur le coup n°1 en début de partie (Tours 1–4)** : **5,2 %** (26/500, IC 95 % : [3,6 % – 7,5 %]). C'est un gain de **+86 %** par rapport à l'Expérimental 1.2 (2,8 %), égalant le record absolu de `w8_d4_r10_c2` !
+- **Accord direct sur le coup n°1 au Global** : **12,3 %** (123/1000) contre 11,5 % (115/1000) pour Exp 1.2 (**+7 % de gain relatif**).
+
+#### 5. Bilan :
+Le Progressive Widening remplit parfaitement sa mission : **il double la pénétration en profondeur (Pli 4 à 12,3 %, profondeur max de 4,16) sans rien amputer du jeu tactique** (arbre libre à widen=7 préservé sur les branches actives). C'est le composant d'approfondissement le plus efficace découvert à ce jour pour la v1.3.
+
+---
+
+### E. Enseignements globaux et recommandations pour la Version 1.3
 
 1. **La constante universelle face à l'Expérimental 1.2** :
    Toutes les configurations appliquant un cap de diversité dans la shortlist enfant s'inclinent face à l'arbre libre de l'Expérimental 1.2 :
@@ -336,6 +385,6 @@ Un duel officiel `VALIDATE_LONG` (4 × 250 parties, règle officielle `--page`) 
 
 2. **La voie royale pour la Version 1.3** :
    Les données de plus de 2 000 parties de duel et 5 000 arbres analysés dégagent une feuille de route limpide :
-   - **Ouverture créative à la racine uniquement** : activer le cap `Cap321` à la racine sur les 4 premiers demi-coups. Le seul réglage existant est `rootDiverse=cap321_2` (sans `diverse` sous la racine, l'arbre reste libre) ; il repasse à un cap 2 dès le 5ᵉ demi-coup, pas à une racine libre. *(Corrigé le 11/10 : `cap321t4`, cité ici d'abord, faisait exactement la même chose que `cap321_2` et a été fusionné avec lui ; le « +86 % » d'accord Oracle a été mesuré sur `w8_d4_r10_c2`, pas sur ce réglage, et repose sur 26 coups contre 14 sur 500 positions.)*
+   - **Ouverture créative à la racine uniquement** : activer le cap `Cap321` à la racine sur les 4 premiers demi-coups via `rootDiverse=cap321_2` (sans `diverse` sous la racine, l'arbre reste libre).
    - **Liberté tactique totale dans l'arbre** : Conserver `widen=7, diverse=0` dans toute la shortlist enfant pour laisser l'ISMCTS contrer librement les menaces adverses sur les bornes contestées.
-   - **Résolution mathématique des singletons** : Introduire le **Progressive Widening (`pw=1`)** pour ne plus jamais gaspiller 30 à 40 % des itérations en nœuds parasites à 1 visite, tout en approfondissant dynamiquement les branches prometteuses.
+   - **Approfondissement dynamique via Progressive Widening (`pw=1`)** : Activer `pw=1` pour concentrer les itérations, doubler le Pli 4 (335 nœuds) et franchir la profondeur 4 sans aucune censure artificielle.

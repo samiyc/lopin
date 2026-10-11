@@ -52,6 +52,7 @@ const engines = [
   { key: "w7_d3_cap321", label: "**widen=7, depth=3, cap321**" },
   { key: "w6_d5_cap321_2", label: "**widen=6, depth=5, Cap2 (Root Cap321/2)**" },
   { key: "w8_d4_r10_c2", label: "**widen=8, depth=4, Cap2 (Root10 Cap2)**" },
+  { key: "w7_d5_pw1", label: "**widen=7, depth=5, pw=1 (Exp 1.2 + PW)**" },
   { key: "oracle", label: "**Oracle @20k (widen=6, 99 cand.)**" },
 ];
 
@@ -178,7 +179,7 @@ console.log(`| **Top 7 avec cap 3-2-1** (\`widen=7, diverse=cap321\`) | **${t7Ca
 console.log(`| **Top 8 avec cap 2** (\`widen=8, diverse=2\`, Nouvelle config) | **${t8Cap.e.pct} %** (${t8Cap.e.hits}/500) <br>*(SE=${t8Cap.e.se} %, [${t8Cap.e.ciLow} % – ${t8Cap.e.ciHigh} %])* | **${t8Cap.m.pct} %** (${t8Cap.m.hits}/500) <br>*(SE=${t8Cap.m.se} %, [${t8Cap.m.ciLow} % – ${t8Cap.m.ciHigh} %])* | **${t8Cap.a.pct} %** (${t8Cap.a.hits}/1000) <br>*(SE=${t8Cap.a.se} %, [${t8Cap.a.ciLow} % – ${t8Cap.a.ciHigh} %])* |`);
 
 console.log("\n### ACCORD ORACLE ET TOP 8 DANS LES 1000 POSITIONS DE JEU DUEL\n");
-for (const eng of ["w5_d0", "w5_d2", "w7_d0", "w7_d2", "w7_d3_cap321", "w6_d5_cap321_2", "w8_d4_r10_c2"]) {
+for (const eng of ["w5_d0", "w5_d2", "w7_d0", "w7_d2", "w7_d3_cap321", "w6_d5_cap321_2", "w8_d4_r10_c2", "w7_d5_pw1"]) {
   if (!d.positions[0]?.engines[eng]) continue;
   const earlyHits = d.positions.filter((p) => p.phase === "early" && p.engines[eng]?.agreesWithOracle).length;
   const midHits = d.positions.filter((p) => p.phase === "mid" && p.engines[eng]?.agreesWithOracle).length;

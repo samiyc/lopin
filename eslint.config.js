@@ -28,7 +28,7 @@ const COMMON_RULES = {
 };
 
 export default [
-  { ignores: ["node_modules/**", "coverage/**", ".idea/**", "out/**"] },
+  { ignores: ["node_modules/**", "coverage/**", ".idea/**", "out/**", ".claude/**"] },
 
   js.configs.recommended,
   sonarjs.configs.recommended,
