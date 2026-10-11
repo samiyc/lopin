@@ -180,6 +180,61 @@ un terme ne parle pas, on le change ici d'abord. Les commandes, elles, sont dans
 - **La fin exacte** : quand la pioche est vide et qu'il reste 8 cartes ou moins, il n'y a plus
   rien de caché ; le robot calcule le meilleur coup exactement, sans arbre.
 
+## Le potentiel d'un côté, pas à pas
+
+Le cœur note un coup par ce qu'il fait gagner à la borne jouée, face à ce que l'adversaire y
+construit. Pour ça il lui faut, pour chaque côté, ce qu'il vaudra **une fois fini** : le
+*potentiel*. C'est 45 % du temps du cœur (`npm run features`, 05/10), donc la moitié du temps de
+chaque simulation. Le code : `src/sim/potential.js`, appelé par `moveGain`, `views` (la menace
+adverse) et `borderChances` dans `src/sim/bots.js`.
+
+- **L'échelle** : la valeur d'un côté fini est son **rang** (0 Somme, 1 Suite, 2 Couleur,
+  3 Brelan, 4 Suite couleur dans l'ordre original) **plus sa somme / 31** (31 = une de plus que
+  la plus grande somme, 10 + 10 + 10). 5♥ 7♥ 8♥ = Couleur, somme 20 : 2 + 20/31 = **2,645**.
+  Une meilleure formation bat toujours une meilleure somme.
+- **3 cartes** : la valeur exacte (une table, `evaluator.score3`).
+- **2 cartes** (`pairPotential`) : le meilleur de deux chemins.
+  - finir avec une carte de **la main** : chaque carte essayée (6 au plus) ;
+  - finir avec **la pioche** (`drawPotential`) : la **moyenne** sur toutes les cartes encore
+    invisibles, plus le meilleur **bonus** d'une formation supérieure, pondéré par la chance de
+    tirer une de ses cartes (« outs ») : `1 − (1 − outs/invisibles)^tirages`. Les tirages : la
+    moitié de la pioche pour soi ; pour l'adversaire, sa main entière plus la moitié de la pioche.
+- **1 carte** (`singlePotential`) : le meilleur de la carte seule (elle + deux cartes moyennes)
+  et, pour **chaque carte de la main**, 0,9 × le potentiel de la paire qu'elle ferait (0,9 : une
+  paire pas encore posée vaut un peu moins qu'une paire posée).
+- **0 carte** : une constante (trois cartes moyennes).
+
+**Un exemple** (paquet classique, ordre original, joker sans couleur) : 7♥ seul sur ma borne 4,
+en main 8♥ 7♣ 2♠ 10♦ 5♥ JK, 35 cartes invisibles, 10 tirages.
+
+| Paire essayée | Meilleur avec la main | Potentiel de la paire | × 0,9 | Plafond (A6) |
+| --- | --- | --- | --- | --- |
+| 7♥ 8♥ | 2,645 (Couleur avec 5♥) | 2,886 (6♥ ou 9♥ dans la pioche : Suite couleur) | 2,597 | 4,774 |
+| 7♥ 7♣ | 3,677 (Brelan avec JK) | 3,677 | **3,310** | 3,677 |
+| 7♥ 2♠ | 0,613 (une Somme) | 0,613 | 0,552 | 0,613 |
+| 7♥ 10♦ | 0,871 (une Somme) | 0,871 | 0,784 | 0,871 |
+| 7♥ 5♥ | 2,645 (Couleur avec 8♥) | 2,645 | 2,381 | 4,581 |
+| 7♥ JK | 3,677 (Brelan avec 7♣) | 3,677 | 3,310 | 3,677 |
+
+Le 7♥ seul vaut 0,581 ; son potentiel est **3,310** : le Brelan de 7 qu'il ferait avec le 7♣ et le
+joker. Une carte seule regarde ainsi 6 paires, chacune 5 cartes de la main et, une fois par paire
+et par coup noté (la mémoire des paires), les 35 invisibles : environ 36 évaluations par côté à
+une carte, et un coup en note une quarantaine.
+
+**Où va le temps** (05/10) : `drawPotential` 18,8 %, `singlePotential` 9,7 %, `drawPotentialOf`
+6,8 %, `sidePotential` 4,5 %, `upsideOf` 3,7 %. Déjà fait, à coups identiques : la mémoire des
+paires en tableaux typés (A1), la table des chances (A2), +20,7 % ensemble.
+
+**A6** (11/10) : la colonne « Plafond » est la meilleure valeur qu'une troisième carte, quelle
+qu'elle soit, pourrait donner à la paire (`valuer.best3`, une table par évaluateur). Le potentiel
+d'une paire ne la dépasse jamais. Une fois le Brelan de 7 trouvé (3,310), 7♥ 2♠ (0,9 × 0,613) et
+7♥ 10♦ (0,9 × 0,871) ne peuvent plus faire mieux : on ne les calcule pas. Même résultat au bit
+près (les empreintes ne bougent pas), **+5 %** de simulations par seconde sur la 1.2.
+
+**Plus léger, mais faux** : B1 (`lite`, une carte seule vaut sa carte, sans regarder les paires)
+allait 31 % plus vite sur un fil, 10 % sur 18, et a perdu à temps égal (47,0 %) : les paires que
+la main peut faire sont une grande part du jugement du cœur.
+
 ## Mesurer une version
 
 - **V1.1** : l'Expérimental 1.1 (`ismcts+widen=7+depth=5+core=stfig6@2000`, Tree-7w), sorti le 06/10 :

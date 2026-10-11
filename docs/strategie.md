@@ -2939,3 +2939,16 @@ perdu), RAVE (déjà perdu). Et une analyse d'arbre des tours 21-30, où le 1.1 
 
 **La vitesse** : A6 (`potential.js`) saute, dans un côté à une carte, les paires que la meilleure
 troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et cœur inchangées.
+
+**Les mesures du 11/10 (après-midi)** :
+- **PUCT, tri à 400** contre la 1.2 à 400 (`--screen --page`, environ 400 parties chacun) :
+  `puct=0.5` 47,5 % (42,7 – 52,3), `puct=1` **53,5 %** (49,0 – 58,1), `puct=2` 51,5 % (47,4 – 55,6).
+  Aucun n'est écarté (le haut de chaque fourchette dépasse 50 %) ; `PUCT-1` part en 1k@2k.
+- **ForkThreat, cœur contre cœur** (8 000 parties chacun, `--page`) : poids 0,1 / 0,2 / 0,4 :
+  49,9 / 49,8 / 50,0 % ; poids 1,0 : 47,8 % (46,9 – 48,7). L'idée agit, mais ne rapporte rien :
+  pas de duels longs. Le tree voit déjà les fourchettes qu'il peut atteindre.
+- **Les puzzles « double menace »** : sur 5 665 fins de partie d'auto-jeu, 21 où chaque coup
+  gagnant joue pour une borne de fourchette (#401-421, le Stratège en rate 2). Une borne y compte
+  comme gagnée dès qu'elle est prouvée, revendiquée ou non.
+- **En file** : `VALIDATE_LONG_1..4_Budget4000` (sans règle d'arrêt), puis `_PUCT-1` et `_Ensemble`
+  (règle d'arrêt), lancés de jour sur 18 fils (Sami, 11/10).
