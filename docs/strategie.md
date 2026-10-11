@@ -2946,7 +2946,7 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
   Aucun n'est écarté (le haut de chaque fourchette dépasse 50 %) ; `PUCT-1` part en 1k@2k.
 - **ForkThreat, cœur contre cœur** (8 000 parties chacun, `--page`) : poids 0,1 / 0,2 / 0,4 :
   49,9 / 49,8 / 50,0 % ; poids 1,0 : 47,8 % (46,9 – 48,7). L'idée agit, mais ne rapporte rien :
-  pas de duels longs. Le tree voit déjà les fourchettes qu'il peut atteindre.
+  pas de duels longs. Hypothèse : l'arbre voit déjà les fourchettes qu'il peut atteindre.
 - **Les puzzles « double menace »** : sur 5 665 fins de partie d'auto-jeu, 21 où chaque coup
   gagnant joue pour une borne de fourchette (#401-421, le Stratège en rate 2). Une borne y compte
   comme gagnée dès qu'elle est prouvée, revendiquée ou non.
