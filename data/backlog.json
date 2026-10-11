@@ -1794,8 +1794,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 1 sur 4. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T14:23",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-11-13-59_VALIDATE_LONG_1_PW-ExactEnd12.txt"
     },
     {
       "id": "VALIDATE_LONG_2_PW-ExactEnd12",
@@ -1803,7 +1806,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 2 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -1811,7 +1814,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T14:23",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_PW-ExactEnd12 : 46.4 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_3_PW-ExactEnd12",
@@ -1819,7 +1825,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 3 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -1834,7 +1840,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T14:23",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_PW-ExactEnd12 : 46.4 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_4_PW-ExactEnd12",
@@ -1842,7 +1851,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 4 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -1857,7 +1866,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T14:23",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_PW-ExactEnd12 : 46.4 % réunis, sous 47 %"
     }
   ]
 }

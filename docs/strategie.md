@@ -38,6 +38,7 @@ mesures détaillées sont plus bas, section par section.
 | Budget ×4 au point charnière (7 bornes adverses entamées) | 01/10 | 44,8 % (36,4 – 53,2) | écarté, l'option reste (`+pivot`) | bbc1c7e |
 | 2 réponses, 5 coups ; RAVE | 01/10 | 47,2 % ; 44,4 % | écartés | bbc1c7e |
 | Élargissement progressif sur le 0.9 (6 réponses, 6 coups) | 02/10 | 60,4 % au tri, puis 49,0 % (43,2 – 54,7) au duel long | écarté : le tri était un coup de chance | — |
+| Élargissement progressif sur la 1.2 (`PW-ExactEnd12`, 7 réponses, 5 coups, 2 000 itérations) | 11/10 | 46,4 % (41,2 – 51,6) au 1er duel long, arrêté | écarté : l'arbre est plus propre, pas plus fort ; l'option reste (`+pw`) | b86a59e |
 | Exploration 0,5 sur le 0.9 | 02/10 | 56,9 % au tri, puis 49,0 % (43,5 – 54,5) au duel long | écarté, même leçon | — |
 | Élargissement progressif (4 réponses, 5 coups) ; exploration 1,0 ; 6 ou 12 candidats | 02/10 | 45,8 % ; 52,8 % ; 51,4 % ; 47,9 % | écartés | — |
 | Deux fois plus d'itérations pour le 0.9 (1 600 contre 800) | 02/10 | 52,1 % (42,9 – 61,3) | pas net : pas de workers dans la page pour l'instant | — |
@@ -2891,3 +2892,20 @@ plus » : aucun côté n'y arrive (64 par rang de combinaison, 286 au plus). Les
 (45,6 % des pièges évités, RolloutCrit-Exact12 à 51,4 %) ont donc été obtenus sans elle. Le code
 garde le comportement mesuré (empreinte `core:stfig6crit,greedy 10` → `de547e1ece02970b`, inchangée) ;
 un seuil réel (une Suite couleur ou un Brelan, par exemple) serait une nouvelle idée à mesurer.
+
+## `PW-ExactEnd12` : l'élargissement progressif sur la 1.2 (11/10)
+
+`ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000` : sous la racine, un nœud propose
+1 + ⌊√visites⌋ réponses du cœur, jusqu'à 7. Testé le 02/10 sur le 0.9 à environ 800 itérations
+(49,0 % au duel long) ; repris à 2 000 parce que la largeur y paie (Tree-7w) et que l'analyse d'arbre
+(`w7_d5_pw1`, `docs/analyse-arbre-ismcts.md`) le montrait plus propre : arbre divisé par deux, pli 4
+doublé, profondeur moyenne 4,16.
+- Coût : +1,9 % par itération (`npm run bench` à 400, 1 282 contre 1 306 simulations/s, deux passes
+  chacun), sous 3 % : duel à itérations égales.
+- `VALIDATE_LONG_1_PW-ExactEnd12` (offset 1, 250 parties, 24 min) : **46,4 % (41,2 – 51,6)** ; 49,6 %
+  en commençant, 43,2 % en second. La règle d'arrêt a annulé les duels 2 à 4.
+- Hypothèse, non mesurée : il faut 36 visites pour qu'un nœud offre ses 7 réponses ; beaucoup de
+  nœuds des plis 2-3 en ont 10 à 30, et y perdent 2 ou 3 réponses, là où la largeur avait payé. Le
+  budget gagné va au pli 4, où le meilleur coup du cœur par donne joue déjà à peu près comme la
+  simulation. Un élargissement plus rapide (7 réponses dès 9 visites, par exemple) serait une
+  nouvelle idée à mesurer.
