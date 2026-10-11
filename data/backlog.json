@@ -1877,8 +1877,11 @@
       "estimate": "45 min",
       "limit": 90,
       "why": "Budget4000 : la 1.2 à 4 000 itérations contre la 1.2 à 2 000, une mesure (pas de règle d'arrêt) : ce que le budget rapporte encore, le plafond des astuces à budget égal (feuille de route 1.3, 11/10). Donnes 1 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T18:32",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-11-17-56_VALIDATE_LONG_1_Budget4000.txt"
     },
     {
       "id": "VALIDATE_LONG_2_Budget4000",
@@ -1886,8 +1889,11 @@
       "estimate": "45 min",
       "limit": 90,
       "why": "Budget4000 : la 1.2 à 4 000 itérations contre la 1.2 à 2 000, une mesure (pas de règle d'arrêt) : ce que le budget rapporte encore, le plafond des astuces à budget égal (feuille de route 1.3, 11/10). Donnes 2 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T19:08",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-11-18-32_VALIDATE_LONG_2_Budget4000.txt"
     },
     {
       "id": "VALIDATE_LONG_3_Budget4000",
@@ -1895,8 +1901,11 @@
       "estimate": "45 min",
       "limit": 90,
       "why": "Budget4000 : la 1.2 à 4 000 itérations contre la 1.2 à 2 000, une mesure (pas de règle d'arrêt) : ce que le budget rapporte encore, le plafond des astuces à budget égal (feuille de route 1.3, 11/10). Donnes 3 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T19:42",
+      "minutes": 34,
+      "output": "backlog-runs/2026-10-11-19-08_VALIDATE_LONG_3_Budget4000.txt"
     },
     {
       "id": "VALIDATE_LONG_4_Budget4000",
@@ -1904,8 +1913,11 @@
       "estimate": "45 min",
       "limit": 90,
       "why": "Budget4000 : la 1.2 à 4 000 itérations contre la 1.2 à 2 000, une mesure (pas de règle d'arrêt) : ce que le budget rapporte encore, le plafond des astuces à budget égal (feuille de route 1.3, 11/10). Donnes 4 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T20:17",
+      "minutes": 34,
+      "output": "backlog-runs/2026-10-11-19-42_VALIDATE_LONG_4_Budget4000.txt"
     },
     {
       "id": "VALIDATE_LONG_1_PUCT-1",
@@ -1913,8 +1925,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "PUCT-1 : la 1.2 avec l'avis du cœur dans UCB (puct=1, l'a priori venant du rang du coup), retenu par le tri à 400 du 11/10 ; coût -0,5 % par itération, donc à itérations égales. Donnes 1 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T20:40",
+      "minutes": 23,
+      "output": "backlog-runs/2026-10-11-20-17_VALIDATE_LONG_1_PUCT-1.txt"
     },
     {
       "id": "VALIDATE_LONG_2_PUCT-1",
@@ -1922,7 +1937,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "PUCT-1 : la 1.2 avec l'avis du cœur dans UCB (puct=1, l'a priori venant du rang du coup), retenu par le tri à 400 du 11/10 ; coût -0,5 % par itération, donc à itérations égales. Donnes 2 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -1930,7 +1945,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T21:05",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-11-20-40_VALIDATE_LONG_2_PUCT-1.txt"
     },
     {
       "id": "VALIDATE_LONG_3_PUCT-1",
@@ -1938,7 +1956,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "PUCT-1 : la 1.2 avec l'avis du cœur dans UCB (puct=1, l'a priori venant du rang du coup), retenu par le tri à 400 du 11/10 ; coût -0,5 % par itération, donc à itérations égales. Donnes 3 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -1953,7 +1971,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T21:48",
+      "minutes": 43,
+      "output": "backlog-runs/2026-10-11-21-05_VALIDATE_LONG_3_PUCT-1.txt"
     },
     {
       "id": "VALIDATE_LONG_4_PUCT-1",
@@ -1961,7 +1982,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "PUCT-1 : la 1.2 avec l'avis du cœur dans UCB (puct=1, l'a priori venant du rang du coup), retenu par le tri à 400 du 11/10 ; coût -0,5 % par itération, donc à itérations égales. Donnes 4 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -1976,7 +1997,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T22:16",
+      "minutes": 28,
+      "output": "backlog-runs/2026-10-11-21-48_VALIDATE_LONG_4_PUCT-1.txt"
     },
     {
       "id": "VALIDATE_LONG_1_Ensemble",
@@ -1984,8 +2008,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble : la 1.2 dont les 2 000 itérations se partagent entre deux arbres de graines différentes, visites de la racine additionnées ; coût +1,3 % par itération, donc à itérations égales. Donnes 1 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-11T22:41",
+      "minutes": 25,
+      "output": "backlog-runs/2026-10-11-22-16_VALIDATE_LONG_1_Ensemble.txt"
     },
     {
       "id": "VALIDATE_LONG_2_Ensemble",
