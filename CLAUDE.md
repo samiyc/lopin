@@ -339,6 +339,20 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   hold: the protocol's 1k@2k (`VALIDATE_LONG_1..4_Borne10`, 10/10) gives **45,9 % (43,3 – 48,5)**.
   The 1.2 stays the version to beat. Its replays, duels and Elo lines are kept (hidden by
   `KEPT_VERSIONS`), its hand-typed page is gone; `diverse` stays (every tree goes through `pickCandidates`).
+- **The 1.3 roadmap** (11/10, `docs/strategie.md` « Feuille de route 1.3 »): the tree's shape no
+  longer pays (diversity, `pw`: 45.9-47.0 %); what is left is the root's **choice** and the **noise**
+  of the move played. `+puct=c` (`select` in `ismcts.js`: AlphaZero's exploration term, the prior
+  from the core's rank 1 / (k + 1)) and `+trees=k` (`createEnsemble`: the budget shared between k
+  seeds, root visits added) are off by default — the 1.0 (`152e2a9c9d66170c`) and the 1.2
+  (`"ismcts+widen=7+depth=5+core=stfig6+exact=12@150,greedy" 20` → `1d041613cd7bcd8d`)
+  fingerprints did not move. `Budget4000` measures what doubling the budget is worth.
+- **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
+  that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
+  whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family
+  and `npm run puzzles -- --fork` (`kind: "fork"`, ids from 401, always added) read it.
+- **A6** (`potential.js`, 11/10): `valuer.best3(a, b)`, a table per evaluator of the best value any
+  third card gives a pair, lets `singlePotential` skip pairs that cannot raise its max (with a 1e-9
+  margin for float means): every fingerprint unchanged.
 - **Open hands** (`openHands` in `createGame`, `--open` in `npm run duel`, the « Mains
   découvertes » box of the page): both hands visible, the pile hidden; `determinize` then deals only
   the pile. Written into the log's rules, so the replay shows both hands.

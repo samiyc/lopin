@@ -1,7 +1,6 @@
 import { isJoker, valueOf } from "../core/cards.js";
 import { withEndgame } from "./end-urgency.js";
-import { handOf, withFigureMoves } from "./figure-gains.js";
-import { withCertainties } from "./certainty.js";
+import { handOf, withFigureMoves } from "./figure-gains.js";import { withCertainties } from "./certainty.js";
 import { EXPERIMENT, budgetOf, coreEngines, coreOf, experimentalSettings } from "./experimental.js";
 import { ismctsBot, ismctsSettings } from "./ismcts.js";
 import { PAIR_DISCOUNT, createPairMemo, createValuer, sidePotential, unseenCards } from "./potential.js";
@@ -141,8 +140,7 @@ function ideasContext(state, player, { ideas, gates, weights }, seen) {
     owners: state.borders.map((border) => border.owner),
     turn: state.turn,
     me: player,
-    chances: ["runs", "dump", "neighbors", "bait"].some((idea) => ideas.has(idea)) ? ownedOdds(state, player, borderChances(state, player, seen)) : null,
-  };
+    chances: ["runs", "dump", "neighbors", "bait"].some((idea) => ideas.has(idea)) ? ownedOdds(state, player, borderChances(state, player, seen)) : null,  };
 }
 
 /** Whether the `certain` idea is on: borders already lost are enumerated (`certainty.js`). */

@@ -1,6 +1,21 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buttonsFor, countIn, favoritesOnly, puzzleStatus, statusLine, toggleFavorite, unsolvedOnly } from "../web/app/puzzle-kinds.js";
+import { buttonsFor, countIn, favoritesOnly, hintOf, isFork, isImmediate, kindLabel, namesOf, openingMessage, puzzleStatus, statusLine, toggleFavorite, unsolvedOnly } from "../web/app/puzzle-kinds.js";
+
+describe("the double-threat puzzles (kind fork)", () => {
+  it("play out like an endgame, with their own words", () => {
+    const fork = { kind: "fork", solutions: ["7♥→2"], moves: 9 };
+    assert.ok(isFork(fork));
+    assert.equal(isImmediate(fork), false, "the page plays it against the solver");
+    assert.match(openingMessage(fork), /Double menace/);
+    assert.match(hintOf(fork), /Puissance 4/);
+    assert.equal(namesOf(fork).top, "Adversaire — jeu parfait");
+    assert.match(openingMessage({ solutions: ["7♥→2"], moves: 9 }), /^Trouve le coup gagnant/);
+    assert.equal(kindLabel({ ...fork, turn: 33 }), "double menace, tour 33");
+    assert.equal(kindLabel({ turn: 33 }), "tour 33");
+    assert.equal(kindLabel({ kind: "immediate", cardsLeft: 12 }), "gain immédiat, pioche 12");
+  });
+});
 
 describe("where a puzzle stands", () => {
   it("is playing until it is over, then solved, helped or lost", () => {

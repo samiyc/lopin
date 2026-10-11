@@ -2864,7 +2864,8 @@ Après la sortie de l'Expérimental 1.2, une analyse du comportement en début d
 - Mis en commun par `npm run versus` : **45,9 % sur 1 000 parties (43,3 – 48,5 par paires)**. En
   commençant 45,6 %, en second 46,2 %. La borne haute est sous 50 % : la 1.2 est meilleure.
 - Elo (`npm run elo`, 10/10) : Borné 978 ± 20, Expérimental 1.2 1 005 ± 14. Il bat toujours le
-  Stratège 2.1 (75,5 % sur 200 parties), et reste au line-up comme adversaire.
+  Stratège 2.1 (75,5 % sur 200 parties). Resté au line-up comme adversaire jusqu'au 11/10, où
+  Sami l'a retiré (ses replays et ses lignes d'Elo restent).
 - Les 81,2 % ne se reproduisent pas, et le saut de +31 points ne ressemblait à aucun autre ; le cap à 2
   **à la racine seule** (`widen=7+diverse=2`) faisait déjà 49,0 % sur 1 000 parties. La piste
   « plus étroit, donc plus profond » n'a pas payé à 2 000 itérations.
@@ -2909,3 +2910,32 @@ doublé, profondeur moyenne 4,16.
   budget gagné va au pli 4, où le meilleur coup du cœur par donne joue déjà à peu près comme la
   simulation. Un élargissement plus rapide (7 réponses dès 9 visites, par exemple) serait une
   nouvelle idée à mesurer.
+
+## Feuille de route 1.3 (11/10)
+
+Après la diversité (Borné 45,9 %, cap321_2 46,8 %, w8_d4 47,0 %) et l'élargissement progressif
+(46,4 %), la forme de l'arbre ne paie plus : la 1.2 reste à battre. Ce que disent les mesures :
+- **Le choix à la racine, pas la couverture.** En milieu de partie, quand le coup de l'oracle est
+  dans le top 8, l'arbre ne le joue qu'environ 40 % du temps (1.2 : 101 fois sur 242). Mettre le
+  coup dans les candidats (w8_d4 : 56,5 % dans le top 10) n'a rien rapporté.
+- **Le bruit du coup joué.** À 2 000 itérations, les visites du 1er et du 2e candidat sont dans
+  un rapport de 1,38 (l'oracle : 2,05), et deux graines jouent le même coup 19 fois sur 50.
+- **Le budget paie encore, sans qu'on sache combien pour la 1.2** : le 1.0 gagnait 55,2 % avec
+  2,5 fois plus d'itérations, l'oracle (20 000) bat le 1.0 à 57,4 %. Jamais mesuré sur la 1.1/1.2.
+
+**En file** (Sami, 11/10 : lancée de jour sur 18 fils si le CPU est libre) :
+- `Budget4000` : la 1.2 à 4 000 contre la 1.2 à 2 000, 1 000 parties, sans règle d'arrêt.
+- `PUCT` (`+puct`) : l'a priori du cœur (son rang) dans le bonus d'exploration, à la manière
+  d'AlphaZero. Le chiffre retenu sort d'un tri à 400 itérations (qui écarte, ne promeut pas).
+- `Ensemble` (`+trees=2`) : deux arbres de 1 000 itérations, visites additionnées.
+- `ForkThreat` (`fork.js`, cœurs `stfig6fork1/2/4`) : la double menace, d'abord en cœur contre
+  cœur ; ses duels longs seulement s'il y gagne.
+
+**Ensuite, de la littérature, jamais essayé ici** : des retours à la marge (la part du résultat
+qui compte les bornes d'avance), MO-ISMCTS (l'adversaire choisit selon ce qu'il voit ; la piste C1
+des réponses regroupées), garder l'arbre d'un coup au suivant, les backups implicit minimax
+(Lanctot 2014). Écartés d'emblée : OOS / CFR (trop lents à converger à 2 000), Gumbel (le halving a
+perdu), RAVE (déjà perdu). Et une analyse d'arbre des tours 21-30, où le 1.1 a fait tout son gain.
+
+**La vitesse** : A6 (`potential.js`) saute, dans un côté à une carte, les paires que la meilleure
+troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et cœur inchangées.

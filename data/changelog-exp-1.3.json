@@ -10,7 +10,8 @@
   "vitesse": "La vitesse et le banc",
   "sortie": "La sortie",
   "lecteur": "La page",
-  "outils": "Les outils"
+  "outils": "Les outils",
+  "arbre": "La forme de l'arbre"
  },
  "benches": {
   "cout": "temps d'un coup",
@@ -85,6 +86,58 @@
    "when": "10/10 14:06",
    "note": "Validé selon le protocole : quatre duels longs de 250 parties contre experimental@1.2 à @2000 (VALIDATE_LONG_1 à 4_Borne10 : 45,6 %, 43,6 %, 49,2 %, 45,2 %), mis en commun avec npm run versus : 45,9 % sur 1 000 parties (IC 95 % par paires : 43,3 % – 48,5 %). En commençant : 45,6 % · En second : 46,2 %. Les 81,2 % du 09/10 (500 parties, pas gardées dans duels/) ne tiennent pas : la borne haute reste sous 50 %. Le Borné reste au line-up comme adversaire, mais il ne bat pas la 1.2.",
    "idea": "Application du cap à 2 bornes par carte partout dans l'arbre (à la racine ET sous la racine dans shortlist) combinée à la réduction de widen de 7 à 5. Avec le cap à 2, 5 coups offrent 3 cartes distinctes (plus que les 2 cartes du Top 7 standard) tout en réduisant le branchement de 28 %, permettant à UCB de converger et d'explorer plus en profondeur."
+  },
+  {
+   "id": "w6-d5-cap321-2",
+   "name": "Cap321 au début, cap 2 ensuite (+widen=6+diverse=2+rootDiverse=cap321_2)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 46.8,
+   "lo": 41.7,
+   "hi": 51.9,
+   "verdict": "perd",
+   "when": "10/10 22:45",
+   "note": "VALIDATE_LONG_1_w6_d5_cap321_2 : 46,8 % sur 250 parties contre l'Expérimental 1.2 ; la règle d'arrêt (sous 47 %) a annulé les duels 2 à 4.",
+   "idea": "Tirée de l'analyse d'arbre (docs/analyse-arbre-ismcts.md) : un plafond 3-2-1 bornes par carte sur les 4 premiers demi-coups, puis 2, à la racine ; 6 réponses et un cap 2 sous la racine, pour moins de nœuds visités une seule fois."
+  },
+  {
+   "id": "w8-d4-r10-c2",
+   "name": "10 candidats, 8 réponses, 4 coups, cap 2 (+candidates=10+widen=8+depth=4+diverse=2)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 47,
+   "lo": null,
+   "hi": null,
+   "verdict": "perd",
+   "when": "11/10 00:19",
+   "note": "VALIDATE_LONG_1 et 2_w8_d4_r10_c2 : 50,8 % puis 43,2 %, 47,0 % réunis sur 500 parties ; la règle d'arrêt (deux duels sous 50 %) a annulé les duels 3 et 4.",
+   "idea": "Le réglage qui mettait le coup de l'oracle le plus souvent dans les candidats (56,5 % dans le top 10) et le moins de nœuds à une visite (29,4 %) : la couverture n'a pas fait la force."
+  },
+  {
+   "id": "pw-exactend12",
+   "name": "Élargissement progressif sur la 1.2 (PW-ExactEnd12, +pw=1)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 46.4,
+   "lo": 41.2,
+   "hi": 51.6,
+   "verdict": "perd",
+   "when": "11/10 14:23",
+   "note": "VALIDATE_LONG_1_PW-ExactEnd12 : 46,4 % sur 250 parties (49,6 % en commençant, 43,2 % en second) ; la règle d'arrêt a annulé les duels 2 à 4. Coût +1,9 % par itération, donc à itérations égales.",
+   "idea": "Sous la racine, un nœud propose 1 + √visites réponses (jusqu'à 7) : l'arbre est deux fois plus petit et le pli 4 deux fois plus peuplé, mais les nœuds des plis 2-3 (10 à 30 visites) perdent 2 ou 3 réponses là où la largeur avait payé."
+  },
+  {
+   "id": "borne-retired",
+   "name": "Le Borné quitte le line-up",
+   "family": "sortie",
+   "bench": "duel",
+   "score": 45.9,
+   "lo": 43.3,
+   "hi": 48.5,
+   "verdict": "perd",
+   "when": "11/10",
+   "note": "Retiré de la liste des robots et du menu Versions (Sami, 11/10). Ses replays, ses duels et ses lignes d'Elo restent ; `diverse` reste, tous les arbres passent par pickCandidates.",
+   "idea": "Un adversaire plus faible que l'Expérimental, à 2 000 itérations comme lui, n'apportait rien à la page."
   }
  ],
  "manualJobs": [],
@@ -176,9 +229,34 @@
  },
  "next": [
   {
+   "when": "Maintenant",
+   "title": "Budget4000 : le plafond du budget",
+   "text": "La 1.2 à 4 000 itérations contre la 1.2 à 2 000 (1 000 parties). Le 1.0 gagnait 55,2 % avec 2,5 fois plus d'itérations, l'oracle (20 000) 57,4 % : ce chiffre dit combien une astuce à budget égal peut encore espérer."
+  },
+  {
+   "when": "Maintenant",
+   "title": "PUCT : l'avis du cœur dans UCB",
+   "text": "Aujourd'hui le 1er candidat n'a aucune avance sur le 8e. Avec +puct, le terme d'exploration devient puct × a priori × √disponibilité / (1 + visites), l'a priori venant du rang du coup chez le cœur. Quand le coup de l'oracle est dans le top 8, l'arbre ne le joue qu'environ 40 % du temps en milieu de partie : c'est le choix entre ses propres candidats qui manque."
+  },
+  {
+   "when": "Maintenant",
+   "title": "Ensemble : deux arbres au lieu d'un",
+   "text": "Deux graines d'un même arbre ne jouent le même coup que 19 fois sur 50. +trees=2 partage les 2 000 itérations entre deux arbres et additionne leurs visites à la racine, pour sortir ce bruit du coup joué. Dans la page, les workers le rendraient gratuit."
+  },
+  {
+   "when": "Maintenant",
+   "title": "ForkThreat : la double menace (Puissance 4)",
+   "text": "src/sim/fork.js : une borne qui gagne la partie, ou dont le gain laisserait deux menaces, reçoit un bonus dans le cœur (idée fork, cœurs stfig6fork1/2/4). Les pièges ont une famille fork ; npm run puzzles -- --fork tire des puzzles « double menace » (ids 401+)."
+  },
+  {
    "when": "Ensuite",
-   "title": "Comprendre pourquoi Le Borné ne tient pas",
-   "text": "Validé le 10/10 : 45,9 % sur 1 000 parties contre l'Expérimental 1.2, loin des 81,2 % annoncés sur 500. La 1.2 reste la version à battre. À regarder : le cap à 2 seul (49,0 %) et widen=5 seul, pour savoir lequel des deux coûte."
+   "title": "Des retours à la marge, MO-ISMCTS, la réutilisation de l'arbre",
+   "text": "Trois idées de la littérature jamais essayées ici : compter un peu la marge de bornes dans le résultat d'une simulation (un signal moins bruité), laisser l'adversaire choisir selon ce qu'il voit (MO-ISMCTS, la piste C1 des réponses regroupées), et garder l'arbre d'un coup au suivant. Puis les backups implicit minimax (Lanctot 2014)."
+  },
+  {
+   "when": "Ensuite",
+   "title": "L'arbre des tours 21-30",
+   "text": "L'analyse d'arbre ne couvre que les tours 1-4 et 10-13, alors que tout le gain du 1.1 sur le 1.0 est venu des tours 21-30. À analyser avant de toucher encore à la forme de l'arbre."
   },
   {
    "when": "Ensuite",

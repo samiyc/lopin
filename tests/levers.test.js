@@ -60,8 +60,34 @@ describe("ISMCTS", () => {
     assert.ok(moves.includes(search.best()));
   });
 
+  it("shares the budget between the trees of an ensemble, and adds up their root visits", () => {
+    const state = position(4, 9);
+    const moves = legalMoves(state);
+    const base = strategistBot(createRng(1), EXPERIMENT);
+    const search = createIsmcts(state, base.scoreMoves(state, moves), { policy: rolloutPolicyOf(EXPERIMENT), seed: 7, trees: 3 });
+    for (let i = 0; i < 60; i += 1) search.step();
+    const visits = search.scored().filter((entry) => entry.gain >= 0);
+    assert.equal(search.rollouts(), 60);
+    assert.equal(visits.reduce((sum, entry) => sum + entry.gain, 0), 60, "every iteration of every tree visits one root move");
+    assert.ok(moves.includes(search.best()));
+  });
+
+  it("explores the core's favourite longer with a prior (puct)", () => {
+    const state = position(4, 9);
+    const moves = legalMoves(state);
+    const base = strategistBot(createRng(1), EXPERIMENT);
+    const scored = base.scoreMoves(state, moves);
+    const first = pickCandidates(scored, 8)[0];
+    const visitsOf = (puct) => {
+      const search = createIsmcts(state, scored, { policy: rolloutPolicyOf(EXPERIMENT), seed: 7, puct });
+      for (let i = 0; i < 120; i += 1) search.step();
+      return search.scored().find((entry) => entry.move === first).gain;
+    };
+    assert.ok(visitsOf(4) > visitsOf(0), "a strong prior sends more visits to the core's first move");
+  });
+
   it("plays whole games as an engine, with every way of searching deeper", () => {
-    for (const id of ["ismcts@40", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
+    for (const id of ["ismcts@40", "ismcts+puct=2@40", "ismcts+trees=2@40", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
   });
 
   it("marks the move after the opponent has started all seven borders, once", () => {

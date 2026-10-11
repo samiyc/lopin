@@ -1,6 +1,7 @@
 import { isJoker } from "../core/cards.js";
 import { formatCard } from "../core/notation.js";
 import { STATUS, borderStatus } from "./certainty.js";
+import { forkValue } from "./fork.js";
 import { applyMove } from "./game.js";
 import { cloneState } from "./lookahead.js";
 
@@ -17,6 +18,7 @@ export const FAMILIES = Object.freeze({
   deadBorder: "carte jetée sur une borne déjà perdue",
   completesLoser: "côté complété, et la borne est perdue",
   givesBorder: "une borne de plus devient perdue",
+  fork: "la borne décisive ou de la double menace (Puissance 4) laissée de côté",
   opensBorder: "borne vierge ouverte",
   wrongBorder: "bonne carte, mauvaise borne",
   wrongCard: "bonne borne, mauvaise carte",
@@ -43,6 +45,8 @@ function effectOf(state, move) {
     lostBefore: lostCount(state, player),
     lostAfter: lostCount(next, player),
     borderLostAfter: borderStatus(next, move.border, player) === STATUS.lost,
+    // fork.js: 1 if the border wins the game at once, ½ if winning it leaves a double threat.
+    fork: forkValue(state.borders.map((border) => border.owner), player, state.spec, move.border),
   };
 }
 
@@ -53,6 +57,7 @@ const BOARD_RULES = [
   ["deadBorder", (core) => core.landsOnLost],
   ["completesLoser", (core) => core.sideBefore === 2 && core.borderLostAfter],
   ["givesBorder", (core, win) => core.lostAfter > core.lostBefore && win.lostAfter <= win.lostBefore],
+  ["fork", (core, win) => win.fork > core.fork],
   ["opensBorder", (core, win) => core.sideBefore === 0 && win.sideBefore > 0],
 ];
 

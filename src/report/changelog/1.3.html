@@ -356,6 +356,7 @@ footer { border-top: 1px solid var(--line); padding-block: 18px 30px; color: var
       <h2 id="t-arbre">Comment le robot choisit un coup</h2>
     </div>
     <p>Le robot Expérimental ne calcule pas toute la partie : il essaie 2 000 fois une suite possible, chaque fois dans un monde différent pour les cartes qu'il ne voit pas, et joue le coup qui a tenu le plus souvent. Le cœur note les coups ; l'arbre décide lesquels creuser et retient ce qui gagne. Les mots sont dans <code>docs/glossaire.md</code>.</p>
+    <p>Le schéma est celui du V1 (le 1.0). Depuis : <strong>7 réponses</strong> par étage au lieu de 3 (le 1.1), et la fin calculée exactement jusqu'à 12 cartes (le 1.2). Les essais du 11/10 touchent deux étapes : <strong>PUCT</strong> (<code>+puct</code>) change « La descente », le cœur y donne une avance à ses meilleurs coups ; <strong>Ensemble</strong> (<code>+trees=2</code>) change « Le coup joué », deux arbres additionnent leurs visites.</p>
     <div class="steps tree-steps">
       <div class="step"><b>42 coups possibles</b><span>6 cartes en main × 7 bornes, au plus. Le cœur complet (certitudes comprises) les note et en garde <strong>8</strong>, les candidats. Une seule fois par coup.</span></div>
       <div class="step"><b>Le tirage</b><span>La main adverse et la pioche, invisibles, sont redistribuées au hasard : chaque itération joue dans un monde différent (1,95 million de mains adverses possibles au premier coup).</span></div>

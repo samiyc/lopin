@@ -8,6 +8,19 @@
  */
 export const isImmediate = (current) => current.kind === "immediate";
 
+/**
+ * A "double menace" (`kind: "fork"`, `npm run puzzles -- --fork`, Sami 11/10)
+ * is an endgame like the others, played out against the solver; every winning
+ * move plays for a border that wins the game or would leave two threats.
+ */
+export const isFork = (current) => current.kind === "fork";
+
+/** What the title says of the puzzle: "gain immédiat, pioche 12", "double menace, tour 33" or "tour 33". */
+export function kindLabel(current) {
+  if (isImmediate(current)) return `gain immédiat, pioche ${current.cardsLeft}`;
+  return `${isFork(current) ? "double menace, " : ""}tour ${current.turn}`;
+}
+
 /** Every legal move with its value for the side to move: 1 for a solution, -1 otherwise. */
 export function solutionOf(current, legal, text) {
   const wins = current.solutions.map((solution) => ({ card: solution.split("→")[0], border: Number(solution.split("→")[1]), value: 1 }));
@@ -18,6 +31,7 @@ export function solutionOf(current, legal, text) {
 export function openingMessage(current) {
   const count = current.solutions.length;
   const found = `${count} coup${count > 1 ? "s gagnent" : " gagne"} sur ${current.moves}`;
+  if (isFork(current)) return `Double menace : joue pour la borne qui te laisse deux façons de gagner — l'adversaire ne peut pas parer les deux (${found}).`;
   if (!isImmediate(current)) return `Trouve le coup gagnant : ${found}.`;
   return `Gain immédiat : trouve le coup qui te fait revendiquer la victoire tout de suite, quoi que tienne l'adversaire (${found}).`;
 }
@@ -28,10 +42,11 @@ export function immediateMessage(slip, helped) {
   return "Résolu ! Ce coup prouve assez de bornes, avec les seules cartes de la table, pour les revendiquer et gagner tout de suite.";
 }
 
-export const hintOf = (current) =>
-  isImmediate(current)
-    ? "La main adverse et la pioche restent cachées. Une borne se revendique quand tes 3 cartes battent tout ce que l'adversaire pourrait encore y poser, preuve faite avec les seules cartes de la table."
-    : "Pioche vide : toutes les cartes sont connues. Joue le camp du bas contre un adversaire parfait.";
+export function hintOf(current) {
+  if (isImmediate(current)) return "La main adverse et la pioche restent cachées. Une borne se revendique quand tes 3 cartes battent tout ce que l'adversaire pourrait encore y poser, preuve faite avec les seules cartes de la table.";
+  if (isFork(current)) return "Comme au Puissance 4 : autour de deux bornes gagnées, chacune des bornes voisines fait trois à la suite. Pioche vide, toutes les cartes sont connues, l'adversaire joue parfaitement.";
+  return "Pioche vide : toutes les cartes sont connues. Joue le camp du bas contre un adversaire parfait.";
+}
 
 export const namesOf = (current) => ({ bottom: "Toi (au trait)", top: isImmediate(current) ? "Adversaire — main cachée" : "Adversaire — jeu parfait" });
 

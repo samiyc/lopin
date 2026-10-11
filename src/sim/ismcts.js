@@ -1,12 +1,12 @@
 import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
+import { createEnsemble, explorationBonus } from "./choice.js";
 import { EXACT, exactApplies, exactScores } from "./exact.js";
 import { applyMove, legalMoves } from "./game.js";
 import { createHalving, parseHalving } from "./halving.js";
 import { createReader, inferredHands, pickHand } from "./infer.js";
 import { determinize, playOut } from "./lookahead.js";
-import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
-import { decidedCount } from "./truncate.js";
+import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";import { decidedCount } from "./truncate.js";
 import { moveKey } from "./search.js";
 
 /**
@@ -33,7 +33,7 @@ import { moveKey } from "./search.js";
  *   child's value blends in that shared statistic, weighted √(k / (3n + k)): it
  *   speaks while the child has few visits, and fades as they grow.
  */
-export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, depth: 3, exploration: 0.7, diverse: 0, pw: 0, rave: 0, trunc: 0, oddsOf: null });
+export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, depth: 3, exploration: 0.7, diverse: 0, pw: 0, rave: 0, trunc: 0, oddsOf: null, puct: 0, trees: 1 });
 
 const newNode = () => ({ visits: 0, wins: 0, avail: 0, children: new Map() });
 
@@ -59,8 +59,12 @@ function valueOf(child, shared, rave) {
   return (1 - beta) * own + (beta * shared.wins) / shared.visits;
 }
 
-/** Marks every move of `moves` available, then picks: the first never tried, or the best by UCB1. */
-function select(node, moves, { exploration, amaf, rave }, mover) {
+/**
+ * Marks every move of `moves` available, then picks: the first never tried, or
+ * the best by UCB1 — or, with `puct`, AlphaZero's rule (puct.js), so the core's
+ * favourites are explored first and longer.
+ */
+function select(node, moves, { exploration, amaf, rave, puct }, mover) {
   const children = moves.map((move) => {
     const key = moveKey(move);
     if (!node.children.has(key)) node.children.set(key, newNode());
@@ -68,10 +72,10 @@ function select(node, moves, { exploration, amaf, rave }, mover) {
     child.avail += 1;
     return { move, child, shared: amaf?.get(`${mover}|${key}`) };
   });
-  const fresh = children.find(({ child }) => child.visits === 0);
-  if (fresh) return fresh;
-  const ucb = ({ child, shared }) => valueOf(child, shared, rave) + exploration * Math.sqrt(Math.log(child.avail) / child.visits);
-  return children.reduce((best, entry) => (ucb(entry) > ucb(best) ? entry : best));
+  // A move never tried comes first (+∞), and the first of equal scores wins: the order UCB always had.
+  const bonus = explorationBonus({ exploration, puct }, children.length);
+  const scores = children.map(({ child, shared }, rank) => (child.visits === 0 ? Infinity : valueOf(child, shared, rave) + bonus(child, rank)));
+  return children[scores.indexOf(Math.max(...scores))];
 }
 
 /** How many of the core's moves a node below the root offers: all `widen`, or 1 + √visits with `pw`. */
@@ -143,7 +147,7 @@ const explorationAt = (game, ctx) => (game.current === 0 ? (ctx.firstExploration
 function choiceAt(node, ply, game, ctx) {
   if (ply === 0 && ctx.halving) return rootChoice(node, ctx);
   const moves = ply === 0 ? ctx.rootMoves : shortlist(ctx.judge, game, breadth(node, ctx), ctx.diverse);
-  return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave }, game.current);
+  return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave, puct: ctx.puct }, game.current);
 }
 
 /** The walk down the tree: the path taken, and the moves made on it (`rave`). */
@@ -216,7 +220,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(createRng(deals.int(2 ** 31))),
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf,
+    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -231,6 +235,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
  * shortlist is its `candidates` best. A root move's gain is its visits.
  */
 export function createIsmcts(state, scored, options) {
+  if ((options.trees ?? 1) > 1) return createEnsemble(createIsmcts, state, scored, options);
   const deals = createRng(options.seed);
   const ctx = resolveCtx(state, scored, options, deals);
   const root = newNode();
@@ -311,7 +316,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+pw=1`, `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+pw=1`, `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -322,7 +327,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

@@ -388,3 +388,21 @@ Le Progressive Widening remplit parfaitement sa mission : **il double la pénét
    - **Ouverture créative à la racine uniquement** : activer le cap `Cap321` à la racine sur les 4 premiers demi-coups via `rootDiverse=cap321_2` (sans `diverse` sous la racine, l'arbre reste libre).
    - **Liberté tactique totale dans l'arbre** : Conserver `widen=7, diverse=0` dans toute la shortlist enfant pour laisser l'ISMCTS contrer librement les menaces adverses sur les bornes contestées.
    - **Approfondissement dynamique via Progressive Widening (`pw=1`)** : Activer `pw=1` pour concentrer les itérations, doubler le Pli 4 (335 nœuds) et franchir la profondeur 4 sans aucune censure artificielle.
+
+## 8. Le verdict des duels (11/10)
+
+Les recommandations du § 7 ont été jouées contre l'Expérimental 1.2, à 2 000 itérations, avec la
+règle d'arrêt du protocole (`docs/strategie.md`) :
+
+| Réglage | Duels | Score | Verdict |
+| --- | --- | --- | --- |
+| `w5_d2` (Le Borné) | 4 × 250 | 45,9 % (43,3 – 48,5) | perd ; retiré du line-up le 11/10 |
+| `w6_d5_cap321_2` | 1 × 250, arrêté | 46,8 % (41,7 – 51,9) | perd |
+| `w8_d4_r10_c2` | 2 × 250, arrêté | 47,0 % | perd |
+| `w7_d5_pw1` (`PW-ExactEnd12`) | 1 × 250, arrêté | 46,4 % (41,2 – 51,6) | perd |
+
+Un arbre plus propre (moins de nœuds à une visite, plus de pli 4, plus de coups de l'oracle dans
+les candidats) n'a jamais donné un robot plus fort. Ce qui reste ouvert après ces mesures : le
+**choix** entre les candidats (le coup de l'oracle, présent dans le top 8, n'est joué qu'environ
+40 % du temps en milieu de partie) et le **bruit** du coup joué (top1 / top2 ≈ 1,38). La suite
+(PUCT, Ensemble, Budget4000) est dans `docs/strategie.md`, « Feuille de route 1.3 ».

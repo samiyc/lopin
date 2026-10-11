@@ -38,8 +38,36 @@ function buildValuer({ spec, evaluator }) {
     value,
     /** Two placed cards plus one more, without building an array. */
     value3: (side, card) => toValue(evaluator.score3(side[0], side[1], card)),
+    best3: bestThirdOf(spec, evaluator, toValue),
     empty: (3 * average) / sumScale,
     single: (card) => (cardValue(card) + 2 * average) / sumScale,
+  };
+}
+
+/**
+ * A6 (Sami, 11/10): the best value any third card could give the pair (a, b),
+ * from a table built once per evaluator — whatever its order, joker rule or
+ * figure. A pair's potential never exceeds it: the hand's cards and the
+ * pile's are third cards, and the pile's mean plus its weighted upside stays
+ * under its best (`drawPotentialOf`). `singlePotential` skips a pair that
+ * cannot raise its best, with the same result to the last bit.
+ */
+function bestThirdOf(spec, evaluator, toValue) {
+  const real = realCardCount(spec);
+  const size = real + 1;
+  const thirds = Array.from({ length: real }, (_, card) => card);
+  if (spec.jokers > 0) thirds.push(JOKER);
+  const indexOf = (card) => (isJoker(card) ? real : card);
+  const cardAt = (index) => (index === real ? JOKER : index);
+  const bestWith = (a, b) => Math.max(...thirds.map((c) => toValue(evaluator.score3(a, b, c))));
+  let table = null;
+  const build = () => {
+    table = new Float64Array(size * size);
+    for (let index = 0; index < size * size; index += 1) table[index] = bestWith(cardAt(Math.floor(index / size)), cardAt(index % size));
+  };
+  return (a, b) => {
+    if (!table) build();
+    return table[indexOf(a) * size + indexOf(b)];
   };
 }
 
@@ -212,10 +240,12 @@ function singlePotential(side, context) {
   let best = context.valuer.single(side[0]);
   const discount = context.params?.pairDiscount ?? PAIR_DISCOUNT;
   // The hand minus the card being paired: its index is skipped, not copied out.
-  const { hand } = context;
+  const { hand, valuer } = context;
   PAIR[0] = side[0];
   for (let i = 0; i < hand.length; i += 1) {
-    if (!usable(hand[i], jokerOk)) continue;
+    // A6: a pair whose best third card could not beat `best` leaves the max as it is.
+    // The margin covers a float mean that rounds a hair above its largest term.
+    if (!usable(hand[i], jokerOk) || discount * (valuer.best3(side[0], hand[i]) + 1e-9) <= best) continue;
     PAIR[1] = hand[i];
     best = Math.max(best, discount * pairPotential(PAIR, context, i));
   }

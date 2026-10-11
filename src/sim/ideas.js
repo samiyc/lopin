@@ -1,6 +1,7 @@
 import { colorOf, isJoker, valueOf } from "../core/cards.js";
 import { exposurePenalty, outbidBonus } from "./outbid.js";
 import { baitBonus } from "./bait.js";
+import { forkBonus } from "./fork.js";
 import { JOKER_IDEAS, jokerTrapBonus } from "./joker-ideas.js";
 import { MINED_IDEAS, anyMined, minedBonus } from "./mined.js";
 import { ORACLE_IDEAS, anyOracleIdea, oracleBonus } from "./oracle-ideas.js";
@@ -23,7 +24,7 @@ import { PRINCIPLES, PRINCIPLE_WEIGHTS, activePrinciples, principlesBonus } from
  * - `spread`: never open a value that already sits alone on another border:
  *   two lone 7s want the same cards, and one of them will miss its trips.
  */
-export const IDEAS = Object.freeze(["counter", "middle", "edges", "spread", "weight", "runs", "dump", "whole", "certain", "neighbors", "outbid", "exposure", ...SHAPE_IDEAS, ...MINED_IDEAS, ...JOKER_IDEAS, "bait", ...ORACLE_IDEAS, ...PRINCIPLES]);
+export const IDEAS = Object.freeze(["counter", "middle", "edges", "spread", "weight", "runs", "dump", "whole", "certain", "neighbors", "outbid", "exposure", "fork", ...SHAPE_IDEAS, ...MINED_IDEAS, ...JOKER_IDEAS, "bait", ...ORACLE_IDEAS, ...PRINCIPLES]);
 
 /**
  * What the strategist plays. 1.1: measured against 1.0 over 24 000 games
@@ -45,6 +46,7 @@ export const gatesOf = (ideas) => ({
   // time went to bonus functions that only found out they were off): the sums stay the same.
   jokerTrap: ideas.has("jokerTrap"),
   bait: ideas.has("bait"),
+  fork: ideas.has("fork"),
   // `borderFactors` only when an idea scales the borders: otherwise every factor is 1.
   factors: ideas.has("neighbors") || ideas.has("weight") || ideas.has("runs"),
 });
@@ -177,12 +179,13 @@ export function ideasBonus(context, border, card) {
   return bonus + firstCardBonus(context, border, card);
 }
 
-/** The mined, joker-trap, bait and oracle families, each called only when on — a skipped one adds the 0 it would have returned. */
+/** The mined, joker-trap, bait, fork and oracle families, each called only when on — a skipped one adds the 0 it would have returned. */
 function familiesBonus(context, gates, border, card) {
   const mined = gates.mined ? minedBonus(context, border, card) : 0;
   const trap = gates.jokerTrap ? jokerTrapBonus(context, context.mySides[border], card) : 0;
   const bait = gates.bait ? baitBonus(context, border, card) : 0;
-  return mined + trap + bait + (gates.oracle ? oracleBonus(context, border, card) : 0);
+  const fork = gates.fork ? forkBonus(context, border) : 0;
+  return mined + trap + bait + fork + (gates.oracle ? oracleBonus(context, border, card) : 0);
 }
 
 /** The ideas that only judge the first card on my side of a border. */

@@ -275,6 +275,17 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   dans chaque simulation (environ 8 min par coup), pas pour le vrai coup (`ExactEnd12`).
 - **Pourquoi ça compte** : sous 9 cartes, le robot calcule la fin exactement ; mais le cœur joue
   toutes les fins de partie simulées de l'arbre, et chacun de ses pièges y fausse un résultat.
+- **Une menace** (Sami, 11/10, `src/sim/fork.js`) : une borne non décidée dont le gain donne la
+  partie à son joueur, par 3 bornes adjacentes ou par la majorité (4 sur 7).
+- **La fourchette** (la double menace, comme au Puissance 4) : une borne dont le gain laisserait
+  **deux menaces ou plus** — bornes 3 et 4 gagnées, chacune des bornes 2 et 5 fait trois à la
+  suite, et l'adversaire ne peut pas tenir les deux. `forkValue` vaut 1 pour une menace, ½ pour une
+  borne de fourchette, 0 sinon ; l'idée `fork` du cœur en tire un bonus, pour soi et (aux ¾) pour
+  bloquer l'adversaire. Avec trois bornes à soi, toute autre borne est une menace (la majorité).
+- **La famille `fork`** des pièges : le coup gagnant joue pour une borne de plus grande valeur
+  (menace ou fourchette) que celle du coup du cœur. Les puzzles « double menace »
+  (`kind: "fork"`, `npm run puzzles -- --fork`, ids à partir de 401) n'ont que des coups gagnants
+  de ce genre.
 
 ## L'oracle
 
@@ -307,6 +318,10 @@ version :
 | `EndJoker` | le cœur du 1.2 en essai (`stfig6ej`) : une fois la pioche vide, le joker jugé par ce qu'il gagne de plus que sur sa meilleure autre borne, au lieu de son prix fixe (`src/sim/end-joker.js`). Comparé au V1.1 | `ismcts+widen=7+depth=5+core=stfig6ej@2000` |
 | `ExactEnd12` | le V1.1 qui, pioche vide, calcule exactement son vrai coup jusqu'à 12 cartes en main (au lieu de 8), avec un plafond de positions au-delà duquel l'arbre reprend | `ismcts+widen=7+depth=5+core=stfig6+exact=12@2000` |
 | `PW-ExactEnd12` | l'Expérimental 1.2 avec l'élargissement progressif (`pw=1`) : sous la racine, un nœud propose 1 + ⌊√visites⌋ réponses du cœur, jusqu'à 7, au lieu de 7 d'emblée ; la racine garde ses 8 candidats. Dans l'analyse d'arbre : `w7_d5_pw1`. Coût +1,9 % par itération : duel à itérations égales | `ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000` |
+| `Budget4000` | la 1.2 à 4 000 itérations par coup au lieu de 2 000 : une mesure, pas une version (le plafond de ce que le budget rapporte) | `ismcts+widen=7+depth=5+core=stfig6+exact=12@4000` |
+| `PUCT` | la 1.2 avec l'avis du cœur dans UCB (règle d'AlphaZero) : le bonus d'exploration devient `puct × a priori × √disponibilité / (1 + visites)`, l'a priori d'un coup venant de son rang chez le cœur (1 / (rang + 1), normalisé). Le chiffre est `puct` : `PUCT-1`, `PUCT-2`, `PUCT-4` | `ismcts+…+exact=12+puct=2@2000` |
+| `Ensemble` | la 1.2 dont les 2 000 itérations se partagent entre deux arbres de graines différentes, les visites de la racine additionnées (root parallelization) | `ismcts+…+exact=12+trees=2@2000` |
+| `ForkThreat` | la 1.2 dont le cœur donne un bonus aux bornes qui gagnent la partie ou laisseraient une double menace, pour les deux camps (`fork.js`, cœurs `stfig6fork1/2/4`, le chiffre est le poids × 10) | `ismcts+…+core=stfig6fork2+exact=12@2000` |
 | `CriticalEnd` | le cœur 1.2 d'urgence tactique (`stfig6crit`, `src/sim/end-urgency.js`) : pioche vide, remboursement du cardCost, priorité de complétion et parades des 3 adjacentes | `ismcts+widen=7+depth=5+core=stfig6crit@2000` |
 | `CriticalEnd-Exact12` | le combo cœur tactique `stfig6crit` + solveur exact pioche vide à 12 cartes | `ismcts+widen=7+depth=5+core=stfig6crit+exact=12@2000` |
 | `Diverse1` | à la racine, le meilleur coup de chaque carte distincte d'abord, puis les meilleurs gains (`diverse=1`, `pickCandidates` dans `src/sim/pick.js`) | `ismcts+…+diverse=1@2000` |

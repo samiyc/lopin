@@ -6,7 +6,7 @@ import { $, freshSeed, recall, remember } from "./dom.js";
 import { sortBySuit, syncOrder } from "./hand.js";
 import { copyId, favoriteIds, flipFavorite, renderStatus } from "./puzzle-controls.js";
 import { attemptLine, attemptMove, attemptReveal, beginAttempt, endAttempt, loadAttempts, timeNote } from "./puzzle-tracker.js";
-import { countIn, favoritesOnly, unsolvedOnly, hintOf, immediateMessage, isImmediate, namesOf, openingMessage, puzzleStatus, randomOrder, solutionOf } from "./puzzle-kinds.js";
+import { countIn, favoritesOnly, unsolvedOnly, hintOf, immediateMessage, isImmediate, kindLabel, namesOf, openingMessage, puzzleStatus, randomOrder, solutionOf } from "./puzzle-kinds.js";
 import { SPEC } from "./runner.js";
 import { clearTable, renderTable } from "./table.js";
 import { tableView } from "./view.js";
@@ -81,9 +81,8 @@ export function render() {
     legalBorders: game.selected === null ? new Set() : legalFor(game.selected),
     lastMove: game.lastMove,
   });
-  const kind = isImmediate(current) ? `gain immédiat, pioche ${current.cardsLeft}` : `tour ${current.turn}`;
   $("puzzle-kind").textContent = hintOf(current);
-  $("puzzle-title").textContent = `Puzzle #${current.id} · ${kind} · ${current.moves} coups possibles${attemptLine(current.id)}`;
+  $("puzzle-title").textContent = `Puzzle #${current.id} · ${kindLabel(current)} · ${current.moves} coups possibles${attemptLine(current.id)}`;
   $("puzzle-solved").textContent = `Résolus : ${countIn(puzzle.list, solvedIds())} / ${puzzle.list.length} · favoris : ${countIn(puzzle.list, favoriteIds())}`;
   renderStatus(current, puzzleStatus(game.result));
 }
