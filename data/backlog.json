@@ -2065,7 +2065,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble : la 1.2 dont les 2 000 itérations se partagent entre deux arbres de graines différentes, visites de la racine additionnées ; coût +1,3 % par itération, donc à itérations égales. Donnes 4 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2080,7 +2080,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-11T23:52",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-11-23-29_VALIDATE_LONG_4_Ensemble.txt"
     }
   ]
 }
