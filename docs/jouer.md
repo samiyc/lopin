@@ -43,7 +43,7 @@ Dans l'ordre : Jouer, Observer, Puzzles, Replays, Stats.
 à droite qui commence, les cartes bonus de l'extension (0 à 6), l'option
 « Mains découvertes » et ton prénom. Chaque robot est décrit en une ligne
 chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
-(`/api/elo`) et son score contre le robot du dessous (« 46 % vs Expérimental »,
+(`/api/elo`) et son score contre le robot du dessous (« 76 % vs Stratège »,
 `vsLower` dans `src/config/bots.js`).
 - **Mains découvertes** : les deux mains restent visibles toute la partie, la
   pioche reste cachée. La case est décochée à chaque ouverture du dialogue ; le
@@ -219,7 +219,10 @@ la main adverse, ce sont les cartes vues nulle part.
 | **Stratège** | 2.1 | **Il anticipe.** Il prend ses 4 meilleurs coups selon son cœur, le Stratège 1.2 (plus bas). Pour chacun, il rejoue 16 fois la fin de la partie en distribuant au hasard les cartes qu'il ne voit pas. Il garde le coup qui gagne le plus souvent, en tenant un peu compte de l'avis du cœur. Le 2.0 battait le cœur 1.1 dans 74 % des parties, et le 2.1 bat le 2.0 dans 55 %. |
 | Stratège 1.2 | (cœur du 2.1) | Le Basique, plus les trois habitudes de Sami : garder le joker pour un Brelan, ouvrir au milieu une couleur à la fois, préférer une suite de même couleur à une paire. Plus trois idées tirées des parties en ligne : les trois bornes du milieu seulement pour un départ solide ; jamais la même valeur seule sur deux bornes ; ne jamais séparer deux cartes de même couleur qui se suivent (1.2). C'est lui qui joue les statistiques du rapport : le 2.1 est trop lent pour un million de parties. Le détail : `docs/strategie.md`. |
 | **Expérimental** | 1.2 | **Depuis le 1.2, il résout exactement la fin de partie à la racine dès 12 cartes restantes.** Pioche vide, si la somme de sa main et des cartes restantes est ≤ 12, le solveur exact rétrograde calcule à coup sûr le chemin gagnant (`exact=12`). Il bat le 1.1 dans 52,7 % des parties (fourchette 50,5 – 54,8 %, 1 500 parties) et franchit pour la première fois le cap symbolique des 1 000 Elo (1 003 ± 18). Il conserve la recherche en arbre ISMCTS sur 5 coups d'avance et 7 réponses par niveau (`widen=7`). |
-| **Le Borné** | 1.0 | **L'arbre canalisé : 2 bornes max par carte, certitude en profondeur.** Au lieu d'éparpiller ses simulations sur des bornes redondantes pour la même carte (ce qui saturait le Top 7 du 1.2), Le Borné applique un plafond strict de 2 bornes par carte (`diverse=2`) à tous les niveaux de l'arbre et resserre la largeur à 5 (`widen=5`). Cela libère 28 % de branchement tout en offrant au moins 3 cartes distinctes par niveau. L'idée : qu'UCB1 converge plus vite et explore plus profond. Mesuré selon le protocole le 10/10, il **ne bat pas** l'Expérimental 1.2 : **45,9 %** sur 1 000 parties (43,3 – 48,5), loin des 81,2 % d'un premier essai sur 500. Il bat le Stratège 2.1 dans 75,5 % des parties. Il hérite aussi du solveur exact de fin de partie à 12 cartes. |
+
+Le Borné 1.0 (l'arbre canalisé : 2 bornes au plus par carte, 5 réponses par étage) a quitté la
+liste le 11/10 : **45,9 %** contre l'Expérimental 1.2 sur 1 000 parties (43,3 – 48,5). Ses replays
+se relisent toujours.
 
 **Versions.** Deux chiffres, depuis le 03/10. Un robot ne change de numéro qu'une fois le changement validé
 (duels longs sur plusieurs jeux de donnes) :

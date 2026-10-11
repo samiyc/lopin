@@ -332,13 +332,13 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   the discard read back through `legacy` (`loggedMove`, `drawsAfter`;
   `tests/fixtures/replays/vclub-drew-after-laying.json`). In the page: `discardMove`
   (`figure-input.js`) — a card of the hand discards, the Valet again on its border lays it alone.
-- **Le Borné 1.0** (`borne` in the line-up, 09/10): `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000`.
+- **Le Borné 1.0** (`borne`, 09/10, **retired from the line-up on 11/10**): `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000`.
   `diverse` (`pickCandidates`, `src/sim/pick.js`) caps the moves a card may take among the
   candidates (`2`, or `lead2`: 2 for the best card, 1 for the others), at the root and, since
   80d5951, in every `shortlist` of the tree. Its 81,2 % against the 1.2 (500 games, 09/10) did not
   hold: the protocol's 1k@2k (`VALIDATE_LONG_1..4_Borne10`, 10/10) gives **45,9 % (43,3 – 48,5)**.
-  The 1.2 stays the version to beat; the Borné stays in the line-up as an opponent. `src/report/borne.html`
-  (copied by hand to `out/borne-1.0.html`) types its numbers by hand, against the report rule.
+  The 1.2 stays the version to beat. Its replays, duels and Elo lines are kept (hidden by
+  `KEPT_VERSIONS`), its hand-typed page is gone; `diverse` stays (every tree goes through `pickCandidates`).
 - **Open hands** (`openHands` in `createGame`, `--open` in `npm run duel`, the « Mains
   découvertes » box of the page): both hands visible, the pile hidden; `determinize` then deals only
   the pile. Written into the log's rules, so the replay shows both hands.

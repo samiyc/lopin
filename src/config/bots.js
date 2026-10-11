@@ -42,20 +42,9 @@ export const BOT_LINEUP = Object.freeze({
     // In the page: a worker, the engine's 2 000 iterations a move (10 s at most), pondering during the human's turn (web/app/thinker.js).
     think: Object.freeze({ limitMs: 10000, minMs: 400 }),
   }),
-  borne: Object.freeze({
-    // 1.0 (Canalisé, 09/10): ISMCTS widen=5, profondeur 5, cap 2 bornes par carte partout, exact=12.
-    // 45.9 % (43.3-48.5) contre experimental@1.2 sur 1 000 parties, 4 jeux de donnes (10/10) :
-    // les 81.2 % sur 500 parties du 09/10 n'ont pas tenu. Pas plus fort que la 1.2.
-    engine: "ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000",
-    version: "1.0",
-    label: "Le Borné",
-    description: "L'arbre canalisé",
-    examines: "5 coups d'avance canalisés, 2 bornes max par carte, fin exacte",
-    pace: "2 000 itérations (2 à 4 s), et pendant ton tour",
-    vsLower: "46 % vs Expérimental",
-    think: Object.freeze({ limitMs: 10000, minMs: 400 }),
-  }),
 });
+// Le Borné 1.0 (`borne`, `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000`) left the
+// line-up on 11/10: 45.9 % (43.3-48.5) against the 1.2 over 1 000 games. Its replays still read back.
 
 export const BOT_IDS = Object.freeze(Object.keys(BOT_LINEUP));
 
@@ -76,7 +65,6 @@ export const KEPT_VERSIONS = Object.freeze({
   basique: Object.freeze(["1.0"]),
   stratege: Object.freeze(["2.1", "2.0", "1.1"]),
   experimental: Object.freeze(["1.2", "1.1", "1.0"]),
-  borne: Object.freeze(["1.0"]),
 });
 
 /** "2.1.0" → "2.1": the version a game saved with three numbers stands for. */

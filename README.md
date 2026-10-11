@@ -34,7 +34,7 @@ rejoue la fin de partie avant chaque coup. Voir `docs/analyse-replays.md` et
 npm run play      # puis http://127.0.0.1:4742/
 ```
 
-Dans le navigateur, contre le robot Basique, Stratège, Expérimental ou Le Borné, avec les
+Dans le navigateur, contre le robot Basique, Stratège ou Expérimental, avec les
 règles de la fiche. Deux autres onglets : regarder deux robots s'affronter, et
 relire les parties enregistrées. Chaque partie contre un robot est enregistrée
 automatiquement. Mode d'emploi : `docs/jouer.md`.
