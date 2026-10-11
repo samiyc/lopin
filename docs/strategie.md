@@ -2988,3 +2988,22 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
      et l'accord Oracle de seulement 3-5 %) et 2 800 itérations en fin de manche (T21-30, où tout se
      décide), maintenant la moyenne exacte à 2 000 itérations par coup.
 
+
+### Le verdict de la file du 11/10 (1k@2k, `npm run versus`)
+
+| Version | Duels (offsets 1 à 4) | 1 000 parties | En commençant / en second |
+| --- | --- | --- | --- |
+| `Budget4000` (la 1.2 à 4 000) | 54,4 / 54,4 / 51,6 / 50,8 % | **52,8 % (50,2 – 55,4)** | 52,2 / 53,4 % |
+| `PUCT-1` | 50,4 / 50,0 / 46,0 / 52,8 % | **49,8 % (47,2 – 52,4)** | 50,0 / 49,6 % |
+| `Ensemble` (`trees=2`) | 54,4 / 52,8 / 55,2 / 47,6 % | **52,5 % (49,8 – 55,2)** | 53,0 / 52,0 % |
+
+- **Le budget** : deux fois plus d'itérations ne rapportent que 2,8 points à la 1.2 (le 1.0 en
+  prenait 5,2 pour ×2,5). Le plafond de ce qu'une astuce à budget égal peut espérer est bas.
+- **PUCT** est neutre : l'avis du cœur dans UCB ne change pas la force. Ce n'est pas l'exploration
+  qui manque à la racine. Écarté ; l'option reste (`+puct`).
+- **Ensemble** fait presque autant que deux fois plus d'itérations (52,5 % contre 52,8 %) **au même
+  coût** : le bruit du coup joué coûte autant que la moitié du budget. La borne basse touche 50 %
+  (49,8) : une tendance, pas encore une version. Comme pour Tree-7w et EndJoker, 500 parties de plus
+  sur des donnes neuves (offsets 5 et 6) trancheraient ; `trees=3` et `trees=4` seraient la suite.
+- Le « budget par phase » de la liste ci-dessus a déjà été mesuré le 02/10 (`+late`, `+early` :
+  45,8 et 48,6 %) et le 05/10 (`EarlyBudget` : 49,4 à 50,2 %) : à ne pas refaire sans raison neuve.

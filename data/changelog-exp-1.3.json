@@ -138,6 +138,45 @@
    "when": "11/10",
    "note": "Retiré de la liste des robots et du menu Versions (Sami, 11/10). Ses replays, ses duels et ses lignes d'Elo restent ; `diverse` reste, tous les arbres passent par pickCandidates.",
    "idea": "Un adversaire plus faible que l'Expérimental, à 2 000 itérations comme lui, n'apportait rien à la page."
+  },
+  {
+   "id": "budget4000",
+   "name": "Budget4000 : la 1.2 à 4 000 itérations",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 52.8,
+   "lo": 50.2,
+   "hi": 55.4,
+   "verdict": "gagne",
+   "when": "11/10 20:17",
+   "note": "VALIDATE_LONG_1..4_Budget4000 : 54,4 / 54,4 / 51,6 / 50,8 %, 52,8 % sur 1 000 parties (npm run versus). Une mesure, pas une version : deux fois le temps de calcul.",
+   "idea": "Ce que le budget rapporte encore à la 1.2 : 2,8 points pour deux fois plus d'itérations (le 1.0 en prenait 5,2 pour ×2,5). Le plafond d'une astuce à budget égal est bas."
+  },
+  {
+   "id": "puct-1",
+   "name": "PUCT : l'avis du cœur dans UCB (+puct=1)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 49.8,
+   "lo": 47.2,
+   "hi": 52.4,
+   "verdict": "neutre",
+   "when": "11/10 22:16",
+   "note": "Tri à 400 : puct=0,5 47,5 %, puct=1 53,5 %, puct=2 51,5 %. VALIDATE_LONG_1..4_PUCT-1 : 50,4 / 50,0 / 46,0 / 52,8 %, 49,8 % sur 1 000 parties.",
+   "idea": "Le terme d'exploration d'AlphaZero, l'a priori venant du rang du coup chez le cœur. Neutre : ce n'est pas l'exploration qui manque à la racine."
+  },
+  {
+   "id": "ensemble",
+   "name": "Ensemble : deux arbres de 1 000 itérations (+trees=2)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 52.5,
+   "lo": 49.8,
+   "hi": 55.2,
+   "verdict": "tendance",
+   "when": "11/10 23:29",
+   "note": "VALIDATE_LONG_1..4_Ensemble : 54,4 / 52,8 / 55,2 / 47,6 %, 52,5 % sur 1 000 parties (npm run versus). La borne basse touche 50 % : à confirmer sur les offsets 5 et 6.",
+   "idea": "Deux graines d'un arbre ne jouent le même coup que 19 fois sur 50 : additionner les visites de deux arbres sort ce bruit du coup joué. Au même coût, il fait presque autant que deux fois plus d'itérations (52,8 %)."
   }
  ],
  "manualJobs": [],
@@ -229,19 +268,9 @@
  },
  "next": [
   {
-   "when": "En cours",
-   "title": "Budget4000 : le plafond empirique du budget (53,5 % sur 750 parties)",
-   "text": "La 1.2 à 4 000 itérations contre la 1.2 à 2 000 : les trois premiers duels (750 parties sur 1 000) donnent 54,4 %, 54,4 % et 51,6 %, soit 53,5 % en cumulé. Doubler le temps de calcul ne rapporte que 3,5 points. Preuve empirique que 2 000 itérations suffisent amplement : le levier décisif n'est pas le volume brut de simulations, mais l'intelligence de leur allocation."
-  },
-  {
-   "when": "En file",
-   "title": "PUCT : l'avis du cœur dans UCB (+puct=1)",
-   "text": "Le terme d'exploration UCB reçoit l'a priori du rang du cœur : puct × a priori × √disponibilité / (1 + visites). Au tri à 400 itérations, puct=1 a obtenu 53,5 % [49,0 – 58,1 %]. En file de validation longue (VALIDATE_LONG_1..4_PUCT-1 dans la backlog)."
-  },
-  {
-   "when": "En file",
-   "title": "Ensemble : deux arbres pour filtrer le bruit (+trees=2)",
-   "text": "Deux graines aléatoires ne concordent que 19 fois sur 50 à 2 000 itérations. +trees=2 partage les 2 000 itérations entre deux arbres de 1 000 et somme les visites à la racine pour réduire la variance du coup joué sans coût CPU additionnel. En file dans la backlog."
+   "when": "Maintenant",
+   "title": "Confirmer Ensemble",
+   "text": "52,5 % (49,8 – 55,2) sur 1 000 parties, presque autant que la 1.2 à 4 000 itérations, au même coût. 500 parties de plus sur des donnes neuves (offsets 5 et 6) trancheront ; puis trees=3 et trees=4."
   },
   {
    "when": "À tester",
