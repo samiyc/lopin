@@ -1787,6 +1787,77 @@
       "doneAt": "2026-10-11T00:19",
       "minutes": 0,
       "reason": "VALIDATE_LONG_1_w8_d4_r10_c2 + VALIDATE_LONG_2_w8_d4_r10_c2 : 47.0 % réunis, sous 50 %"
+    },
+    {
+      "id": "VALIDATE_LONG_1_PW-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 1 sur 4. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_2_PW-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 2 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_PW-ExactEnd12"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_PW-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 3 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_PW-ExactEnd12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_PW-ExactEnd12",
+            "VALIDATE_LONG_2_PW-ExactEnd12"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_PW-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Validation longue PW-ExactEnd12 (l'Expérimental 1.2 avec l'élargissement progressif, pw=1 : 1 + √visites réponses par nœud sous la racine, jusqu'à 7) contre l'Expérimental 1.2, donnes 4 sur 4, règle d'arrêt. Analyse d'arbre (w7_d5_pw1, 11/10) : arbre divisé par deux, pli 4 doublé ; coût +1,9 % par itération (npm run bench, 400), donc à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_PW-ExactEnd12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_PW-ExactEnd12",
+            "VALIDATE_LONG_2_PW-ExactEnd12"
+          ],
+          "below": 0.5
+        }
+      ]
     }
   ]
 }
