@@ -1,76 +1,84 @@
 {
  "note": "npm run traps : les fins de partie gagnées où le favori du cœur perd, par famille.",
  "summary": {
-  "built": "2026-10-07T16:16:40.924Z",
-  "core": "stfig6 (simulations du 1.1)",
-  "minutes": 100.5,
-  "positions": 145715,
-  "examined": 82403,
-  "tooDeep": 828,
-  "won": 42074,
-  "traps": 1507,
-  "errorRate": 0.03581784474972667
+  "built": "2026-10-11T19:30:59.129Z",
+  "core": "stfig6",
+  "games": 40574,
+  "minutes": 21.6,
+  "positions": 202736,
+  "examined": 8434,
+  "tooDeep": 164,
+  "won": 4221,
+  "traps": 138,
+  "errorRate": 0.032693674484719264
  },
  "families": [
   {
    "family": "other",
    "label": "ni la carte ni la borne du coup gagnant",
-   "count": 449,
-   "share": 0.2979429329794293,
-   "medianWinRank": 2
+   "count": 38,
+   "share": 0.2753623188405797,
+   "medianWinRank": 3
   },
   {
    "family": "wrongBorder",
    "label": "bonne carte, mauvaise borne",
-   "count": 288,
-   "share": 0.19110816191108163,
+   "count": 22,
+   "share": 0.15942028985507245,
    "medianWinRank": 2
   },
   {
-   "family": "jokerSpent",
-   "label": "joker posé, alors qu'il fallait le garder",
-   "count": 247,
-   "share": 0.1639017916390179,
+   "family": "wrongCard",
+   "label": "bonne borne, mauvaise carte",
+   "count": 22,
+   "share": 0.15942028985507245,
+   "medianWinRank": 2
+  },
+  {
+   "family": "fork",
+   "label": "la borne décisive ou de la double menace (Puissance 4) laissée de côté",
+   "count": 16,
+   "share": 0.11594202898550725,
    "medianWinRank": 2
   },
   {
    "family": "jokerKept",
    "label": "joker gardé, alors qu'il fallait le poser",
-   "count": 226,
-   "share": 0.14996682149966822,
+   "count": 15,
+   "share": 0.10869565217391304,
    "medianWinRank": 3
   },
   {
-   "family": "wrongCard",
-   "label": "bonne borne, mauvaise carte",
-   "count": 165,
-   "share": 0.10948905109489052,
+   "family": "jokerSpent",
+   "label": "joker posé, alors qu'il fallait le garder",
+   "count": 14,
+   "share": 0.10144927536231885,
    "medianWinRank": 2
   },
   {
    "family": "givesBorder",
    "label": "une borne de plus devient perdue",
-   "count": 67,
-   "share": 0.04445919044459191,
+   "count": 8,
+   "share": 0.057971014492753624,
    "medianWinRank": 2
   },
   {
    "family": "completesLoser",
    "label": "côté complété, et la borne est perdue",
-   "count": 64,
-   "share": 0.042468480424684804,
-   "medianWinRank": 2
-  },
-  {
-   "family": "opensBorder",
-   "label": "borne vierge ouverte",
-   "count": 1,
-   "share": 0.0006635700066357001,
-   "medianWinRank": 4
+   "count": 3,
+   "share": 0.021739130434782608,
+   "medianWinRank": 3
   },
   {
    "family": "deadBorder",
    "label": "carte jetée sur une borne déjà perdue",
+   "count": 0,
+   "share": 0,
+   "medianWinRank": null
+  },
+  {
+   "family": "opensBorder",
+   "label": "borne vierge ouverte",
    "count": 0,
    "share": 0,
    "medianWinRank": null

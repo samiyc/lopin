@@ -2952,3 +2952,39 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
   comme gagnée dès qu'elle est prouvée, revendiquée ou non.
 - **En file** : `VALIDATE_LONG_1..4_Budget4000` (sans règle d'arrêt), puis `_PUCT-1` et `_Ensemble`
   (règle d'arrêt), lancés de jour sur 18 fils (Sami, 11/10).
+
+**Leçons des premiers retours Budget4000 et pistes qualitatives (soirée du 11/10)** :
+1. **Le plafond des 2 000 itérations est un mythe : le rendement du volume brut plafonne** :
+   Les duels 1, 2 et 3 de `Budget4000` (750 parties sur 1 000) donnent 54,4 %, 54,4 % et 51,6 %,
+   soit une moyenne cumulée de **53,5 %** pour un temps de calcul doublé. Doubler le budget de
+   2 000 à 4 000 itérations n'apporte que ~3,5 points de victoire. C'est la confirmation que 2 000
+   simulations par coup ne sont pas limitées par leur volume, mais par le bruit et la naïveté des
+   choix sous-jacents.
+2. **Double menace Puissance 4 : passer du bonus de cœur au Terminal Cutoff dans l'arbre** :
+   Le test en cœur contre cœur (`stfig6fork`, 49,9 %) a montré qu'un bonus d'évaluation statique
+   est dilué dans les rollouts Monte-Carlo. La vraie exploitation d'une fourche (2 bornes gagnées
+   encadrées par 2 menaces imparables) consiste à l'injecter dans la simulation : dès qu'une fourche
+   est verrouillée, interrompre le rollout immédiatement avec gain 1,0 (victoire garantie), et
+   forcer le blocage défensif prioritaire si l'adversaire tente d'en créer une.
+3. **Autopsie de Progressive Widening (Root-PW vs Fast-PW)** :
+   `pw=1` a brisé le record de profondeur (4,16 en moyenne, pli 4 doublé à 335 nœuds) mais a perdu
+   en duel (46,4 %) parce que la formule 1 + √visites a étranglé les plis 2-3 à 3-4 enfants faute
+   d'atteindre 36 visites. Deux pistes concrètes pour garder le gain de profondeur sans brider la
+   tactique :
+   - *Root-PW* : n'appliquer le widening progressif qu'à la racine (les 2 000 itérations concentrent
+     le budget sur le Top 4-5) tout en laissant l'arbre enfant libre à `widen=7`.
+   - *Fast-Tree-PW* : élargissement accéléré ($k = \min(7, 2 + \lfloor N/3 \rfloor)$) qui libère les
+     7 réponses dès 15 visites.
+4. **Algorithmes de la littérature inexplorés** :
+   - *MO-ISMCTS* (Multiple-Observer ISMCTS) : regrouper les répliques adverses selon ce que
+     l'adversaire voit réellement plutôt que sur la donne omnisciente de la racine, éliminant la
+     fusion de stratégie et l'illusion d'information.
+   - *Subtree Reuse (Warm-Starting)* : conserver le sous-arbre du coup joué avec un facteur de decay
+     ($\lambda = 0,5$), offrant virtuellement +500 itérations gratuites au coup suivant.
+   - *Value Margin Backpropagation* : propager un score continu tenant compte de l'écart de bornes
+     ($R = \text{win} + 0,15 \times \Delta_{\text{bornes}}$) pour donner un gradient net aux positions
+     serrées.
+   - *Budget dynamique par phase* : allouer 1 200 itérations en ouverture (T1-10, où le jeu est ouvert
+     et l'accord Oracle de seulement 3-5 %) et 2 800 itérations en fin de manche (T21-30, où tout se
+     décide), maintenant la moyenne exacte à 2 000 itérations par coup.
+

@@ -229,34 +229,39 @@
  },
  "next": [
   {
-   "when": "Maintenant",
-   "title": "Budget4000 : le plafond du budget",
-   "text": "La 1.2 à 4 000 itérations contre la 1.2 à 2 000 (1 000 parties). Le 1.0 gagnait 55,2 % avec 2,5 fois plus d'itérations, l'oracle (20 000) 57,4 % : ce chiffre dit combien une astuce à budget égal peut encore espérer."
+   "when": "En cours",
+   "title": "Budget4000 : le plafond empirique du budget (53,5 % sur 750 parties)",
+   "text": "La 1.2 à 4 000 itérations contre la 1.2 à 2 000 : les trois premiers duels (750 parties sur 1 000) donnent 54,4 %, 54,4 % et 51,6 %, soit 53,5 % en cumulé. Doubler le temps de calcul ne rapporte que 3,5 points. Preuve empirique que 2 000 itérations suffisent amplement : le levier décisif n'est pas le volume brut de simulations, mais l'intelligence de leur allocation."
   },
   {
-   "when": "Maintenant",
-   "title": "PUCT : l'avis du cœur dans UCB",
-   "text": "Aujourd'hui le 1er candidat n'a aucune avance sur le 8e. Avec +puct, le terme d'exploration devient puct × a priori × √disponibilité / (1 + visites), l'a priori venant du rang du coup chez le cœur. Quand le coup de l'oracle est dans le top 8, l'arbre ne le joue qu'environ 40 % du temps en milieu de partie : c'est le choix entre ses propres candidats qui manque."
+   "when": "En file",
+   "title": "PUCT : l'avis du cœur dans UCB (+puct=1)",
+   "text": "Le terme d'exploration UCB reçoit l'a priori du rang du cœur : puct × a priori × √disponibilité / (1 + visites). Au tri à 400 itérations, puct=1 a obtenu 53,5 % [49,0 – 58,1 %]. En file de validation longue (VALIDATE_LONG_1..4_PUCT-1 dans la backlog)."
   },
   {
-   "when": "Maintenant",
-   "title": "Ensemble : deux arbres au lieu d'un",
-   "text": "Deux graines d'un même arbre ne jouent le même coup que 19 fois sur 50. +trees=2 partage les 2 000 itérations entre deux arbres et additionne leurs visites à la racine, pour sortir ce bruit du coup joué. Dans la page, les workers le rendraient gratuit."
+   "when": "En file",
+   "title": "Ensemble : deux arbres pour filtrer le bruit (+trees=2)",
+   "text": "Deux graines aléatoires ne concordent que 19 fois sur 50 à 2 000 itérations. +trees=2 partage les 2 000 itérations entre deux arbres de 1 000 et somme les visites à la racine pour réduire la variance du coup joué sans coût CPU additionnel. En file dans la backlog."
   },
   {
-   "when": "Maintenant",
-   "title": "ForkThreat : la double menace (Puissance 4)",
-   "text": "src/sim/fork.js : une borne qui gagne la partie, ou dont le gain laisserait deux menaces, reçoit un bonus dans le cœur (idée fork, cœurs stfig6fork1/2/4). Les pièges ont une famille fork ; npm run puzzles -- --fork tire des puzzles « double menace » (ids 401+)."
+   "when": "À tester",
+   "title": "Pièges Puissance 4 (Double Menace) : du bonus statique au cut-off de simulation",
+   "text": "Le bonus additif sur l'évaluation statique du cœur (stfig6fork, poids 0,1 à 1,0) n'a rien rapporté en duel cœur (49,9 %). La vraie force d'une fourche (2 bornes gagnées encadrées par 2 menaces imparables) doit être exploitée dans l'arbre : détection terminale anticipée (Terminal Fork Cutoff) dans les rollouts renvoyant 1.0 immédiat, et parade défensive obligatoire."
   },
   {
-   "when": "Ensuite",
-   "title": "Des retours à la marge, MO-ISMCTS, la réutilisation de l'arbre",
-   "text": "Trois idées de la littérature jamais essayées ici : compter un peu la marge de bornes dans le résultat d'une simulation (un signal moins bruité), laisser l'adversaire choisir selon ce qu'il voit (MO-ISMCTS, la piste C1 des réponses regroupées), et garder l'arbre d'un coup au suivant. Puis les backups implicit minimax (Lanctot 2014)."
+   "when": "À tester",
+   "title": "Autopsie de l'élargissement progressif : Root-PW et Fast-PW",
+   "text": "pw=1 global a échoué (46,4 %) car 1 + √visites a bridé les plis 2-3 à 3-4 réponses (faute d'atteindre 36 visites). Pour garder la profondeur record (4,16) sans étrangler la réactivité tactique, deux pistes : Root-PW (progressif à la racine seule, shortlist libre à 7) ou Fast-PW (k = min(7, 2 + N/3) qui libère les 7 réponses dès 15 visites)."
   },
   {
-   "when": "Ensuite",
-   "title": "L'arbre des tours 21-30",
-   "text": "L'analyse d'arbre ne couvre que les tours 1-4 et 10-13, alors que tout le gain du 1.1 sur le 1.0 est venu des tours 21-30. À analyser avant de toucher encore à la forme de l'arbre."
+   "when": "Piste Littérature",
+   "title": "Algorithmes de la littérature : MO-ISMCTS, Subtree Reuse et retours à la marge",
+   "text": "Pistes inexplorées contre l'illusion d'information : (1) MO-ISMCTS (regroupement des réponses selon l'ensemble d'information réel adverse), (2) Subtree Reuse (conserver le sous-arbre du coup précédent avec un decay λ=0,5, valant +500 visites virtuelles gratuites), (3) Value Margin Backpropagation (signal composite R = win + 0,15 × delta_bornes), et (4) Implicit Minimax Backups (Lanctot 2014)."
+  },
+  {
+   "when": "Piste Architecture",
+   "title": "Allocation temporelle asymétrique (Budget dynamique)",
+   "text": "Au lieu de 2 000 itérations plates par coup, dépenser 1 200 itérations en ouverture (T1-10, où le plateau est vide et l'accord Oracle de 3-5 %) et 2 800 itérations en fin de manche (T21-30, où tout le gain de la 1.1 s'est fait). Moyenne globale conservée à 2 000 itérations, pour un impact décisif sur les fins de parties tendues."
   },
   {
    "when": "Ensuite",
