@@ -213,7 +213,7 @@ export const CORES = Object.freeze({
   // The 1.2 core under test (Sami, 07/10, the endgame traps): the 1.1's core, the joker priced by its best use elsewhere once the pile is empty (end-joker.js).
   stfig6ej: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 }, endJoker: true },
   // ForkThreat (Sami, 11/10, fork.js): the 1.2's core, plus a bonus on the borders that win the game or would leave a double threat, for either side.
-  ...Object.fromEntries([1, 2, 4].map((tenths) => [`stfig6fork${tenths}`, { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "fork"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, fork: tenths / 10 } }])),
+  ...Object.fromEntries([1, 2, 4, 10].map((tenths) => [`stfig6fork${tenths}`, { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "fork"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, fork: tenths / 10 } }])),
   // The 1.2 tactical urgency core (Sami, 08/10, from the endgame traps): empty pile, priority to completing 2-card borders, urgency checks, no cardCost penalty (end-urgency.js).
   stfig6crit: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 }, endUrgency: true },
   v1nc: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas.filter((idea) => idea !== "connector"), "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },

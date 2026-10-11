@@ -2,7 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { loadGame, readIndex } from "./lib/game-index.js";
 import { runPool, workerCount } from "./lib/pool.js";
-import { forkValue } from "../src/sim/fork.js";
+import { STATUS, borderStatus } from "../src/sim/certainty.js";
+import { isForkBorder } from "../src/sim/fork.js";
 import { stateAt } from "../src/replay/log.js";
 
 /**
@@ -32,8 +33,8 @@ import { stateAt } from "../src/replay/log.js";
  * start after the highest id the file had, so a dropped id is never reused.
  *
  * `--fork` (Sami, 11/10, Connect Four's « fourchette »): only the endgames
- * whose every winning move plays on a border that wins the game or would leave
- * a double threat (src/sim/fork.js); they carry `kind: "fork"` and, with
+ * whose every winning move plays on a border whose win would leave a double
+ * threat (src/sim/fork.js); they carry `kind: "fork"` and, with
  * numbered from 401 at least; `--fork` always adds. Without `--add`, every
  * puzzle of another kind (immediate, fork) is kept as it is.
  */
@@ -51,11 +52,15 @@ const uniqueOnly = args.includes("--unique");
 const keepIds = args.includes("--keep") ? new Set(option("--keep", "").split(",").map(Number)) : null;
 /** Does a found puzzle pass the shaping options? */
 const forkOnly = args.includes("--fork");
-/** Does every winning move of a found puzzle play for a decisive or double-threat border (fork.js)? `--fork` only. */
+/**
+ * Does every winning move of a found puzzle play for a decisive or double-threat border (fork.js)? `--fork` only.
+ * A border counts as won once it is proven (certainty.js), claimed or not: the self-play games settle at the end.
+ */
 function playsTheFork(p, logs) {
   const state = stateAt(logs[p.index], p.turn);
-  const owners = state.borders.map((border) => border.owner);
-  return p.solutions.every((solution) => forkValue(owners, state.current, state.spec, Number(solution.split("→")[1]) - 1) > 0);
+  const provenFor = (index) => [state.current, 1 - state.current].find((player) => borderStatus(state, index, player) === STATUS.won);
+  const owners = state.borders.map((border, index) => border.owner ?? provenFor(index) ?? null);
+  return p.solutions.every((solution) => isForkBorder(owners, state.current, state.spec, Number(solution.split("→")[1]) - 1));
 }
 const wanted = (p) => p.moves >= minMoves && (!coreFailsOnly || p.coreFails) && (!uniqueOnly || p.solutions.length === 1);
 // Under the claim rule the pile runs out after move 30; under the final rule a little later in these games.
