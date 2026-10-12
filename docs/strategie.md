@@ -3040,3 +3040,32 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
   rapportent rien. Le seul gain mesuré du 1.3 reste le budget brut (Budget4000 : 52,8 %), et il
   coûte deux fois le temps. Dans la page, où le robot a jusqu'à 10 s, `@4000` y serait le
   levier le plus simple : à mesurer en temps réel (worker, pondération) avant d'en faire une version.
+
+## Un cœur allégé pour plus d'itérations ? Non (12/10)
+
+**L'idée de Sami** : un cœur de simulation moins cher, pour donner 3 000 à 4 000 itérations à
+l'arbre dans le temps de la 1.2 à 2 000, l'arbre compensant ce que le cœur ne calcule plus
+(`midCore@3000`, `lightCore@4000` contre `fullCore@2000`).
+
+- **Le profil de la 1.2** (`node --cpu-prof`, les 12 positions de milieu de partie du banc, 400
+  itérations, 3 graines) : **les simulations prennent 80,5 %** du temps, les shortlists de l'arbre
+  10 %, le tirage 2,2 %. La notation des coups (`scoreStrategist`) 84,7 %, dont le potentiel 41 %
+  (`drawPotentialOf` 19,8 % à lui seul, `singlePotential` 11,3 %, `pairPotential` 7,6 %) ; les
+  bonus (`strategistAdjust`, `oracleBonus`, `openPair`…) environ 15 %.
+- **Le Basique ne ferait presque rien gagner** dans les simulations : il passe par le même
+  potentiel (`views`, `moveGain`) ; le cœur nu n'allait que 9 à 11 % plus vite (02/10). Le Stratège
+  joue lui-même des fins de partie : bien plus lent.
+- **Le plafond est déjà mesuré** : la 1.2 à 4 000 itérations, cœur complet, ne fait que **52,8 %**
+  (Budget4000, 11/10). C'est le meilleur cas d'un cœur allégé (deux fois plus d'itérations sans
+  rien perdre) ; un cœur moins juste resterait en dessous, ou perdrait comme B1Lite1 (47,0 % à
+  temps égal).
+- **Un cœur bon marché demande son propre réglage** : un premier cœur en O(1) par coup (côté à 2
+  cartes noté par sa meilleure fin, à 1 carte par la carte seule, sans tirage) ouvrait une borne
+  vide plutôt que de compléter un Brelan de 7 : face à un côté adverse vide, sa chance de gagner
+  saturait, faute du potentiel avec tirages qui fait justement le coût du cœur. Le code n'a pas
+  été gardé.
+- **Décision (Sami)** : abandonner « moins cher, plus d'itérations », viser la **qualité** de ce
+  que l'arbre évalue. Puisque doubler le budget ne rapporte que 2,8 points, le diviser par deux
+  ne devrait en coûter qu'à peu près autant : un cœur de simulation plus juste, même deux fois plus
+  lent, est rentable dès qu'il gagne ~3 points — à mesurer à temps égal. Les écarts sont toujours
+  venus de là : `stfig` (1.0), la largeur (1.1), le solveur (1.2).
