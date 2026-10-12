@@ -55,6 +55,9 @@ export function legalInputs(state, order) {
   return legalMoves(state).map((move) => `${order.indexOf(move.card) + 1} ${move.border + 1}`);
 }
 
+/** Is it `me`'s turn in a game still going? */
+const playable = (state, me) => state.current === me && !state.over;
+
 /** The rules in one line, at the head of an agent's game (docs/agents/regles.md has them in full). */
 export const RULES_LINE = "7 bornes ; 3 cartes par joueur et par borne : Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini le premier ; joker sans couleur (n'importe quelle valeur) ; une borne se revendique dès que ton côté complet ne peut plus être battu ; victoire : 3 bornes voisines ou 4 bornes.";
 
@@ -72,7 +75,9 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     hand: order.map((card, index) => ({ n: index + 1, card: formatCard(state.spec, card) })),
     borders: state.borders.map((border, index) => ({ n: index + 1, mine: side(border.sides[me]), theirs: side(border.sides[1 - me]), won: won(border) })),
     seen: Object.fromEntries(suitCounts(state.spec, state, { bottom: me, reveal: false }).map(({ label, seen, total }) => [label, `${seen}/${total}`])),
-    legal: state.current === me && !state.over ? legalInputs(state, order) : [],
+    legal: playable(state, me) ? legalInputs(state, order) : [],
+    // The same moves with the card named (« 8♠ 4 »): what a model should answer, since the hand's numbers move.
+    moves: playable(state, me) ? legalMoves(state).map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`) : [],
     last,
     over: Boolean(state.over),
     winner: state.over ? won({ owner: state.winner }) : null,

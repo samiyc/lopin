@@ -112,7 +112,7 @@ async function saveReplay(session) {
 }
 
 /** `--compact` (the pilot agent, 12/10): the screen as text, the legal moves, and the end — what an agent reads. */
-const COMPACT_KEYS = ["board", "legal", "over", "end", "replay", "error", "rules"];
+const COMPACT_KEYS = ["board", "legal", "moves", "over", "end", "replay", "error", "rules"];
 const compact = (view) => Object.fromEntries(COMPACT_KEYS.filter((key) => view[key] !== undefined && view[key] !== null).map((key) => [key, view[key]]));
 
 function show(session, extra = {}) {
