@@ -73,6 +73,18 @@ async function cli(extra) {
 const pause = (ms) => new Promise((done) => setTimeout(done, ms));
 
 /**
+ * The answer's JSON schema, which Ollama turns into a grammar (Sami, 13/10):
+ * `coup` can only be one of the legal moves, `raison` holds 200 characters at
+ * most. With a bare `"format": "json"`, qwen3.5:9b wrote 2 800 tokens of
+ * reason (45 s a move) and answered outside the list once move in two.
+ */
+const answerSchema = (moves) => ({
+  type: "object",
+  properties: { raison: { type: "string", maxLength: 200 }, coup: { type: "string", enum: moves } },
+  required: ["raison", "coup"],
+});
+
+/**
  * One Ollama request, tried again on a dropped connection (5 times, 5 s
  * apart): restarting the service (to set OLLAMA_NUM_PARALLEL, 12/10) cut a
  * request mid-game and stopped the whole batch.
@@ -94,7 +106,7 @@ async function ask(view, retry) {
   const started = performance.now();
   const warning = retry ? "\n\nAttention : " + retry : "";
   const user = `${positionText(view)}\n\nCoups permis : ${JSON.stringify(view.moves)}${warning}\nTon coup ?`;
-  const body = await chat(JSON.stringify({ model, stream: false, format: "json", ...thinking, options: { temperature: 0.3 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
+  const body = await chat(JSON.stringify({ model, stream: false, format: answerSchema(view.moves), ...thinking, options: { temperature: 0.3, num_predict: 200 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
   let answer = null;
   try {
     answer = JSON.parse(body.message?.content ?? "");
