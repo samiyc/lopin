@@ -5,6 +5,28 @@
  * played (two seeds agree in 19 positions of 50). Both off by default.
  */
 
+/** A player's points: from a winner (1, ½ for a draw, 0), or from `{ share }`, seat 0's odds when a rollout was cut short (truncate.js). */
+export const pointsFor = (winner, player) => {
+  if (winner === null) return 0.5;
+  if (typeof winner === "object") return player === 0 ? winner.share : 1 - winner.share;
+  return winner === player ? 1 : 0;
+};
+
+/**
+ * `margin` (MarginBackup, Sami's 1.3 roadmap, 12/10): an iteration's points
+ * for a player, `(player) => number`. Off, the winner's 1, ½ or 0. On, a
+ * share `margin` of them comes from the borders instead: ½ plus half the
+ * player's lead in borders at the end over the seven — a win by 5 to 2
+ * counts more than one by 4 to 3, a less noisy signal at no cost.
+ */
+export function pointsOf(game, winner, margin) {
+  if (!margin || typeof winner === "object") return (player) => pointsFor(winner, player);
+  const owned = [0, 0];
+  for (const border of game.borders) if (border.owner === 0 || border.owner === 1) owned[border.owner] += 1;
+  const lead = (player) => (owned[player] - owned[1 - player]) / game.borders.length;
+  return (player) => (1 - margin) * pointsFor(winner, player) + margin * (0.5 + lead(player) / 2);
+}
+
 /**
  * UCB's exploration term at a node, for `select` (ismcts.js): UCB1's
  * `exploration × √(ln available / visits)`, or — with `puct` (PUCT) —

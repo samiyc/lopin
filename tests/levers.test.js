@@ -5,6 +5,7 @@ import { ORDERS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
 import { BOTS, engineFor, pickSampled } from "../src/sim/bots.js";
 import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
+import { pointsOf } from "../src/sim/choice.js";
 import { createIsmcts, isPivot, ismctsSettings } from "../src/sim/ismcts.js";
 import { pickCandidates, resolveDiverse, treeDiverseOf } from "../src/sim/pick.js";
 import { EXPERIMENT } from "../src/sim/experimental.js";
@@ -60,6 +61,16 @@ describe("ISMCTS", () => {
     assert.ok(moves.includes(search.best()));
   });
 
+  it("counts a share of the border lead with margin, and nothing else without it", () => {
+    const game = { borders: [0, 0, 0, 0, 0, 1, 1].map((owner) => ({ owner })) };
+    assert.equal(pointsOf(game, 0, 0)(0), 1);
+    assert.equal(pointsOf(game, 0, 0)(1), 0);
+    const points = pointsOf(game, 0, 0.2);
+    assert.ok(Math.abs(points(0) - (0.8 + 0.2 * (0.5 + 3 / 14))) < 1e-12, "5 to 2: a lead of 3 over 7");
+    assert.ok(Math.abs(points(0) + points(1) - 1) < 1e-12, "the two players' points still add up to 1");
+    assert.equal(pointsOf(game, { share: 0.6 }, 0.2)(0), 0.6, "a cut-short rollout keeps its odds");
+  });
+
   it("shares the budget between the trees of an ensemble, and adds up their root visits", () => {
     const state = position(4, 9);
     const moves = legalMoves(state);
@@ -87,7 +98,7 @@ describe("ISMCTS", () => {
   });
 
   it("plays whole games as an engine, with every way of searching deeper", () => {
-    for (const id of ["ismcts@40", "ismcts+puct=2@40", "ismcts+trees=2@40", "ismcts+simCertain=1@30", "ismcts+simCertain=1+simExact=4@30", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
+    for (const id of ["ismcts@40", "ismcts+puct=2@40", "ismcts+trees=2@40", "ismcts+simCertain=1@30", "ismcts+margin=0.15@30", "ismcts+simCertain=1+simExact=4@30", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
   });
 
   it("marks the move after the opponent has started all seven borders, once", () => {

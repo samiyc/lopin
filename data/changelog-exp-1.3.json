@@ -321,6 +321,26 @@
  "next": [
   {
    "when": "Maintenant",
+   "title": "1. Des retours qui comptent la marge (MarginBackup)",
+   "text": "Une simulation rend aujourd'hui gagné, perdu ou nul. Y ajouter une petite part de l'écart de bornes à la fin donne un signal moins bruité au même nombre de simulations, pour un coût nul. Jamais essayé ici ; deux poids, un tri puis le protocole."
+  },
+  {
+   "when": "Maintenant",
+   "title": "2. Ce qui ne tourne qu'une fois par coup",
+   "text": "La classe d'idées de la 1.2 (le solveur à la racine), quasi gratuite en temps : le solveur au-delà de 12 cartes à la racine (avec un plafond de positions), et DistOracle1Root (le cœur réglé sur l'oracle pour choisir les 8 candidats, 51,6 % sur le V1, jamais combiné avec la 1.2)."
+  },
+  {
+   "when": "Maintenant",
+   "title": "3. Où la 1.2 se trompe",
+   "text": "Chercher les erreurs plutôt qu'inventer : npm run oracle -- --disagree sur le cœur de la 1.2, l'analyse d'arbre des tours 21-30 (où le 1.1 a fait son gain, jamais analysés), et les parties que Sami gagne contre la 1.2 depuis qu'elle joue à 2 000 itérations, rejouées et jugées par le solveur."
+  },
+  {
+   "when": "Ensuite",
+   "title": "4. Réutiliser l'arbre d'un coup à l'autre (TreeReuse)",
+   "text": "Après mon coup et la réponse adverse, le sous-arbre existe déjà avec ses visites ; l'ISMCTS le jette. Le garder (les statistiques des coups encore jouables) donnerait des itérations gratuites, précisément ce que le coude de la courbe du budget demande."
+  },
+  {
+   "when": "Maintenant",
    "title": "Le budget dans la page",
    "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version. Le 12/10 : sous 2 000 itérations, le budget coûte cher (−37 % d'itérations, environ −9 points, SimCertain) ; une amélioration doit être quasi gratuite en temps."
   },
@@ -333,11 +353,6 @@
    "when": "À tester",
    "title": "Autopsie de l'élargissement progressif : Root-PW et Fast-PW",
    "text": "pw=1 global a échoué (46,4 %) car 1 + √visites a bridé les plis 2-3 à 3-4 réponses (faute d'atteindre 36 visites). Pour garder la profondeur record (4,16) sans étrangler la réactivité tactique, deux pistes : Root-PW (progressif à la racine seule, shortlist libre à 7) ou Fast-PW (k = min(7, 2 + N/3) qui libère les 7 réponses dès 15 visites)."
-  },
-  {
-   "when": "Piste Littérature",
-   "title": "Algorithmes de la littérature : MO-ISMCTS, Subtree Reuse et retours à la marge",
-   "text": "Pistes inexplorées contre l'illusion d'information : (1) MO-ISMCTS (regroupement des réponses selon l'ensemble d'information réel adverse), (2) Subtree Reuse (conserver le sous-arbre du coup précédent avec un decay λ=0,5, valant +500 visites virtuelles gratuites), (3) Value Margin Backpropagation (signal composite R = win + 0,15 × delta_bornes), et (4) Implicit Minimax Backups (Lanctot 2014)."
   },
   {
    "when": "Piste Architecture",

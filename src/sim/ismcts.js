@@ -1,6 +1,6 @@
 import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
-import { createEnsemble, explorationBonus } from "./choice.js";
+import { createEnsemble, explorationBonus, pointsFor, pointsOf } from "./choice.js";
 import { EXACT, exactApplies, exactScores, playOutExact } from "./exact.js";
 import { applyMove, legalMoves } from "./game.js";
 import { createHalving, parseHalving } from "./halving.js";
@@ -33,16 +33,10 @@ import { moveKey } from "./search.js";
  *   child's value blends in that shared statistic, weighted √(k / (3n + k)): it
  *   speaks while the child has few visits, and fades as they grow.
  */
-export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, depth: 3, exploration: 0.7, diverse: 0, pw: 0, rave: 0, trunc: 0, oddsOf: null, puct: 0, trees: 1, simExact: 0 });
+export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, depth: 3, exploration: 0.7, diverse: 0, pw: 0, rave: 0, trunc: 0, oddsOf: null, puct: 0, trees: 1, simExact: 0, margin: 0 });
 
 const newNode = () => ({ visits: 0, wins: 0, avail: 0, children: new Map() });
 
-/** A player's points: from a winner (1, ½ for a draw, 0), or from `{ share }`, seat 0's odds when a rollout was cut short (truncate.js). */
-const pointsFor = (winner, player) => {
-  if (winner === null) return 0.5;
-  if (typeof winner === "object") return player === 0 ? winner.share : 1 - winner.share;
-  return winner === player ? 1 : 0;
-};
 
 /** The core's `count` best moves where `state` stands, or a pass when there is none. */
 function shortlist(judge, state, count, diverse = 0) {
@@ -201,9 +195,10 @@ function iterate(root, ctx) {
   const game = determinize(ctx.state, ctx.player, ctx.deals, ctx.hands && pickHand(ctx.hands, ctx.deals));
   const { path, played } = descend(root, game, ctx);
   const winner = game.over ? game.winner : rolloutOf(game, ctx, played);
+  const points = pointsOf(game, winner, ctx.margin);
   for (const { child, mover } of path) {
     child.visits += 1;
-    child.wins += pointsFor(winner, mover);
+    child.wins += points(mover);
   }
   if (ctx.amaf) creditShared(ctx.amaf, played, winner);
 }
@@ -221,7 +216,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(createRng(deals.int(2 ** 31))),
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact,
+    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -328,7 +323,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );
