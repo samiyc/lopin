@@ -2084,6 +2084,173 @@
       "doneAt": "2026-10-11T23:52",
       "minutes": 24,
       "output": "backlog-runs/2026-10-11-23-29_VALIDATE_LONG_4_Ensemble.txt"
+    },
+    {
+      "id": "VALIDATE_LONG_5_Ensemble",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 5",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Confirmation d'Ensemble (trees=2 : 52,5 %, 49,8 – 55,2 sur les offsets 1-4, le 11/10) sur deux jeux de donnes neufs, comme Tree-7w et EndJoker. Donnes 5.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_6_Ensemble",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 6",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Confirmation d'Ensemble (trees=2 : 52,5 %, 49,8 – 55,2 sur les offsets 1-4, le 11/10) sur deux jeux de donnes neufs, comme Tree-7w et EndJoker. Donnes 6, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_5_Ensemble"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_1_Ensemble3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 1.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_2_Ensemble3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 2, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble3"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_Ensemble3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 3, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble3"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble3",
+            "VALIDATE_LONG_2_Ensemble3"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_Ensemble3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble3"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble3",
+            "VALIDATE_LONG_2_Ensemble3"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_1_Ensemble4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 1.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_2_Ensemble4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 2, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble4"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_Ensemble4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 3, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble4"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble4",
+            "VALIDATE_LONG_2_Ensemble4"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_Ensemble4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble4"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Ensemble4",
+            "VALIDATE_LONG_2_Ensemble4"
+          ],
+          "below": 0.5
+        }
+      ]
     }
   ]
 }

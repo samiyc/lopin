@@ -3007,3 +3007,20 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
   sur des donnes neuves (offsets 5 et 6) trancheraient ; `trees=3` et `trees=4` seraient la suite.
 - Le « budget par phase » de la liste ci-dessus a déjà été mesuré le 02/10 (`+late`, `+early` :
   45,8 et 48,6 %) et le 05/10 (`EarlyBudget` : 49,4 à 50,2 %) : à ne pas refaire sans raison neuve.
+
+### La file du 12/10 : confirmer Ensemble, puis 3 et 4 arbres
+
+- `VALIDATE_LONG_5_Ensemble` et `_6_` : deux jeux de donnes neufs, la série de confirmation
+  (comme Tree-7w et EndJoker) ; puis `Ensemble3` (`trees=3`) et `Ensemble4` (`trees=4`) sur les
+  offsets 1 à 4, tous avec la règle d'arrêt.
+- **Pourquoi pas `depth=3` pour ces petits arbres** (question de Sami) : la profondeur n'est
+  qu'un plafond. Un arbre s'arrête au premier nœud nouveau et ne crée un pli que si les visites y
+  mènent ; à 2 000 itérations, la 1.2 n'a déjà que 159 nœuds au pli 4 et aucun au pli 5, le 3e
+  étage n'est atteint que 173 fois. À 1 000, 667 ou 500 itérations, `depth=3` et `depth=5` font
+  presque les mêmes arbres, sans rien coûter de plus. Le 01/10, la profondeur 3 contre 4-5 était
+  déjà neutre.
+- **Pourquoi pas `pw`** : il a perdu (46,4 %) en privant les plis 2-3 de leurs 7 réponses (36
+  visites pour les ouvrir toutes). Un petit arbre a encore moins de visites par nœud : il en
+  serait plus étranglé encore.
+- Coût par itération (`npm run bench` à 400, deux passes alternées) : la 1.2 1 440 simulations/s,
+  `trees=3` 1 438 (−0,2 %), `trees=4` 1 430 (−0,7 %) : duels à itérations égales.

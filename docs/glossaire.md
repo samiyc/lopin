@@ -376,6 +376,7 @@ version :
 | `Budget4000` | la 1.2 à 4 000 itérations par coup au lieu de 2 000 : une mesure, pas une version (le plafond de ce que le budget rapporte) | `ismcts+widen=7+depth=5+core=stfig6+exact=12@4000` |
 | `PUCT` | la 1.2 avec l'avis du cœur dans UCB (règle d'AlphaZero) : le bonus d'exploration devient `puct × a priori × √disponibilité / (1 + visites)`, l'a priori d'un coup venant de son rang chez le cœur (1 / (rang + 1), normalisé). Le chiffre est `puct` : `PUCT-1`, `PUCT-2`, `PUCT-4` | `ismcts+…+exact=12+puct=2@2000` |
 | `Ensemble` | la 1.2 dont les 2 000 itérations se partagent entre deux arbres de graines différentes, les visites de la racine additionnées (root parallelization) | `ismcts+…+exact=12+trees=2@2000` |
+| `Ensemble3`, `Ensemble4` | Ensemble avec 3 ou 4 arbres (667 ou 500 itérations chacun, même total) | `ismcts+…+exact=12+trees=3@2000` |
 | `ForkThreat` | la 1.2 dont le cœur donne un bonus aux bornes qui gagnent la partie ou laisseraient une double menace, pour les deux camps (`fork.js`, cœurs `stfig6fork1/2/4`, le chiffre est le poids × 10) | `ismcts+…+core=stfig6fork2+exact=12@2000` |
 | `CriticalEnd` | le cœur 1.2 d'urgence tactique (`stfig6crit`, `src/sim/end-urgency.js`) : pioche vide, remboursement du cardCost, priorité de complétion et parades des 3 adjacentes | `ismcts+widen=7+depth=5+core=stfig6crit@2000` |
 | `CriticalEnd-Exact12` | le combo cœur tactique `stfig6crit` + solveur exact pioche vide à 12 cartes | `ismcts+widen=7+depth=5+core=stfig6crit+exact=12@2000` |
