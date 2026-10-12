@@ -1,7 +1,8 @@
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
 import { appendFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import { RULES_LINE } from "./lib/cli-view.js";
 
 /**
@@ -13,6 +14,9 @@ import { RULES_LINE } from "./lib/cli-view.js";
  * asked again (3 tries), then the first legal move is played and the note says
  * so. Game n starts with the model when n is odd. Timings per move (model,
  * CLI and bot) go to tmp/llm-play.jsonl, to see where the time goes.
+ *
+ * `--parallel N` plays N games at once (the bot's search uses one core each;
+ * Ollama answers several requests at once only with OLLAMA_NUM_PARALLEL set).
  */
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
@@ -22,6 +26,8 @@ const host = option("--host", "http://127.0.0.1:11434");
 const bot = option("--bot", "experimental");
 const seed0 = Number(option("--seed", 50000));
 const out = option("--out", "duels/agents/llama");
+const parallel = Math.max(1, Number(option("--parallel", 1)));
+const run = promisify(execFile);
 const CLI = fileURLToPath(new URL("./cli.js", import.meta.url));
 const TMP = fileURLToPath(new URL("../tmp/llm-play/", import.meta.url));
 const TIMES = fileURLToPath(new URL("../tmp/llm-play.jsonl", import.meta.url));
@@ -35,10 +41,10 @@ const SYSTEM = [
 ].join("\n");
 
 /** One CLI command (step mode, compact JSON): its last line, parsed, and how long it took. */
-function cli(extra) {
+async function cli(extra) {
   const started = performance.now();
-  const text = execFileSync(process.execPath, [CLI, ...extra, "--machine", "--compact", "--out", out, "--model", model], { encoding: "utf8" });
-  return { view: JSON.parse(text.trim().split("\n").at(-1)), ms: performance.now() - started };
+  const { stdout } = await run(process.execPath, [CLI, ...extra, "--machine", "--compact", "--out", out, "--model", model], { encoding: "utf8" });
+  return { view: JSON.parse(stdout.trim().split("\n").at(-1)), ms: performance.now() - started };
 }
 
 /** The model's answer to one position: `{ coup, raison }` (or null), and its time. */
@@ -78,11 +84,11 @@ async function playGame(n) {
   const file = join(TMP, `${name}-${n}.json`);
   const seed = seed0 + n;
   const first = n % 2 === 1 ? "me" : "bot";
-  let { view } = cli(["--new", file, "--name", name, "--bot", bot, "--seed", String(seed), "--first", first]);
+  let { view } = await cli(["--new", file, "--name", name, "--bot", bot, "--seed", String(seed), "--first", first]);
   const stats = { n, seed, first, moves: 0, tries: 0, fallbacks: 0, llmMs: 0, cliMs: 0 };
   while (!view.over) {
     const choice = view.moves.length > 0 ? await chooseMove(view) : { coup: "p", why: "aucun coup possible", tries: 1, llmMs: 0 };
-    const step = cli(["--step", file, choice.coup, "--why", choice.why]);
+    const step = await cli(["--step", file, choice.coup, "--why", choice.why]);
     view = step.view;
     Object.assign(stats, { moves: stats.moves + 1, tries: stats.tries + choice.tries, fallbacks: stats.fallbacks + Number(choice.tries > 3), llmMs: stats.llmMs + choice.llmMs, cliMs: stats.cliMs + step.ms });
     appendFileSync(TIMES, `${JSON.stringify({ game: n, move: stats.moves, tries: choice.tries, llmMs: Math.round(choice.llmMs), cliMs: Math.round(step.ms) })}\n`);
@@ -93,11 +99,22 @@ async function playGame(n) {
 mkdirSync(TMP, { recursive: true });
 mkdirSync(resolve(process.cwd(), out), { recursive: true });
 const results = [];
-for (let n = 1; n <= games; n += 1) {
-  const result = await playGame(n);
-  results.push(result);
-  const perMove = (ms) => (ms / Math.max(1, result.moves) / 1000).toFixed(1);
-  console.log(`Partie ${n} (${result.first === "me" ? "le modèle commence" : "le robot commence"}) : ${result.end} — ${result.moves} coups, ${result.tries} essais, ${result.fallbacks} replis, modèle ${perMove(result.llmMs)} s / coup, console + robot ${perMove(result.cliMs)} s / coup`);
+const started = performance.now();
+let next = 1;
+
+/** One lane of `--parallel`: plays the next game not yet taken until none is left. */
+async function lane() {
+  while (next <= games) {
+    const n = next;
+    next += 1;
+    const result = await playGame(n);
+    results.push(result);
+    const perMove = (ms) => (ms / Math.max(1, result.moves) / 1000).toFixed(1);
+    console.log(`Partie ${n} (${result.first === "me" ? "le modèle commence" : "le robot commence"}) : ${result.end} — ${result.moves} coups, ${result.tries} essais, ${result.fallbacks} replis, modèle ${perMove(result.llmMs)} s / coup, console + robot ${perMove(result.cliMs)} s / coup`);
+  }
 }
+
+await Promise.all(Array.from({ length: Math.min(parallel, games) }, lane));
 const won = results.filter((result) => result.end?.startsWith("Gagné")).length;
-console.log(`\n${won} victoires sur ${results.length} parties ; le détail des temps : tmp/llm-play.jsonl`);
+const minutes = ((performance.now() - started) / 60000).toFixed(1);
+console.log(`\n${won} victoires sur ${results.length} parties en ${minutes} min (${parallel} à la fois) ; le détail des temps : tmp/llm-play.jsonl`);
