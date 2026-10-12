@@ -37,6 +37,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | Commande | Ce qu'elle fait | Écrit |
 | --- | --- | --- |
 | `npm run play` | le serveur local du jeu, http://127.0.0.1:4742/ ; sert aussi les pages de `out/` | `replays/` (les parties jouées) |
+| `npm run cli -- [--bot experimental] [--first me\|bot] [--seed N] [--name sami] [--machine]` | le jeu dans la console (`docs/cli.md`) : « 3 5 » pose la 3e carte de la main sur la borne 5 ; `--machine` une ligne JSON par état ; `--new partie.json` puis `--step partie.json "3 5"` un coup par commande, pour un agent | `replays/` |
 
 ## Vérifier
 

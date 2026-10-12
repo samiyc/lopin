@@ -17,6 +17,7 @@
     "build:quick": "node scripts/build.js --quick",
     "pdf": "node scripts/pdf.js",
     "play": "node scripts/play-server.js",
+    "cli": "node scripts/cli.js",
     "duel": "node scripts/duel.js",
     "replays": "node scripts/replays.js",
     "fingerprint": "node scripts/fingerprint.js",
