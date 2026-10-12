@@ -1,7 +1,7 @@
 # Bornage — les règles pour un agent
 
 Bornage est Schotten Totten joué avec un jeu de cartes ordinaire. Tu joues contre un robot
-(l'Expérimental 1.2) dans la console : tu lis la position (un JSON), tu choisis un coup parmi `coups`.
+(l'Expérimental 1.2) dans la console : tu lis la position (un JSON), tu choisis une carte de `main` et une borne de `bornes_jouables`.
 
 ## Le matériel
 
@@ -54,30 +54,35 @@ faible :
 ## Ce que tu reçois : un JSON par commande
 
 Chaque commande (`--new`, puis `--step`) répond **un objet JSON** avec `--json` : les données
-nommées et groupées, aucun plateau dessiné dans un texte. Voici une vraie réponse, au tour 13 :
+nommées et groupées, aucun plateau dessiné dans un texte. Voici une vraie réponse, au tour 3 (tu as
+posé le 9♥ sur la borne 4, le robot a répondu par un 3♦ sur la même borne) :
 
 ```json
 {
- "tour": 13,
- "pioche": 18,
+ "tour": 3,
+ "pioche": 28,
  "main_robot": 6,
  "bornes_gagnees": {"toi":0,"robot":0},
- "cartes_vues": {"♠":"2/10","♥":"5/10","♣":"5/10","♦":"5/10","JK":"1/2"},
- "dernier_echange": ["Toi : 1♥ → borne 3","Expérimental : 2♦ → borne 4"],
+ "cartes_vues": {"♠":"1/10","♥":"3/10","♣":"1/10","♦":"2/10","JK":"1/2"},
+ "dernier_echange": ["Toi : 9♥ → borne 4","Expérimental : 3♦ → borne 4"],
  "bornes": [
-  {"borne":1,"toi":[],"robot":["8♦"],"statut":"libre"},
+  {"borne":1,"toi":[],"robot":[],"statut":"libre"},
   {"borne":2,"toi":[],"robot":[],"statut":"libre"},
-  {"borne":3,"toi":["2♠","1♥"],"robot":["7♠"],"statut":"libre"},
-  {"borne":4,"toi":["9♥","6♥"],"robot":["3♦","2♦"],"statut":"libre"},
-  {"borne":5,"toi":["4♦"],"robot":[],"statut":"libre"},
-  {"borne":6,"toi":["4♣"],"robot":[],"statut":"libre"},
-  {"borne":7,"toi":[],"robot":["1♣","3♣"],"statut":"libre"}
+  {"borne":3,"toi":[],"robot":[],"statut":"libre"},
+  {"borne":4,"toi":["9♥"],"robot":["3♦"],"statut":"libre"},
+  {"borne":5,"toi":[],"robot":[],"statut":"libre"},
+  {"borne":6,"toi":[],"robot":[],"statut":"libre"},
+  {"borne":7,"toi":[],"robot":[],"statut":"libre"}
  ],
- "main": ["5♥","10♥","2♣","10♣","7♦","JK"],
- "coups": ["5♥ 1","5♥ 2","5♥ 3","5♥ 4","5♥ 5","5♥ 6","5♥ 7","10♥ 1","10♥ 2","10♥ 3","10♥ 4","10♥ 5","10♥ 6","10♥ 7","2♣ 1","2♣ 2","2♣ 3","2♣ 4","2♣ 5","2♣ 6","2♣ 7","10♣ 1","10♣ 2","10♣ 3","10♣ 4","10♣ 5","10♣ 6","10♣ 7","7♦ 1","7♦ 2","7♦ 3","7♦ 4","7♦ 5","7♦ 6","7♦ 7","JK 1","JK 2","JK 3","JK 4","JK 5","JK 6","JK 7"],
+ "main": ["2♠","1♥","6♥","4♣","4♦","JK"],
+ "bornes_jouables": [1,2,3,4,5,6,7],
  "terminee": false
 }
 ```
+
+Pour répondre, une carte de `main` et une borne de `bornes_jouables` : `2♠ 3` pose le 2♠ sur la
+borne 3. Plus loin dans la partie, `bornes_jouables` se réduit (`[1,3,6]` : les autres bornes sont
+gagnées, perdues, ou ton côté y a déjà 3 cartes) ; vide, tu passes avec `p`.
 
 | Champ | Contenu |
 | --- | --- |
@@ -90,15 +95,15 @@ nommées et groupées, aucun plateau dessiné dans un texte. Voici une vraie ré
 | `bornes` | Les 7 bornes, de 1 à 7. `toi` et `robot` : les cartes de chaque côté, **dans l'ordre où elles ont été posées**. |
 | `bornes[].statut` | `libre` : pas revendiquée ; `gagnée` : à toi ; `perdue` : au robot ; `pleine` : les deux côtés ont 3 cartes et personne ne peut encore la revendiquer (plus rien à y poser). |
 | `main` | Tes cartes. |
-| `coups` | **Tous les coups permis**, chacun écrit comme tu dois le rendre : « carte borne ». Vide si tu dois passer (joue alors `p`). |
+| `bornes_jouables` | **Les bornes où tu peux poser une carte** : n'importe quelle carte de `main` va sur n'importe laquelle. Vide : tu dois passer (joue `p`). |
 | `terminee` | `false` tant que la partie continue. |
 | `resultat`, `replay` | Seulement quand `terminee` est `true` : le résultat en une phrase, et le chemin du replay. |
 | `erreur` | Seulement quand ton coup est refusé : la raison. La partie n'a pas avancé, rejoue. |
-| `regles` | Seulement à la toute première réponse : les règles en une ligne. |
+| `regles` | Seulement à la toute première réponse : les règles en une ligne, et un exemple de réponse. |
 
-**Un coup s'écrit « carte borne »**, recopié de `coups` : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"`
-pour un joker). N'utilise pas la position de la carte dans `main` : elle change à chaque pioche.
-`dernier_echange` confirme le coup joué.
+**Un coup s'écrit « carte borne »** : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"` pour un joker). La
+carte est nommée, pas numérotée : sa position dans `main` change à chaque pioche. `dernier_echange`
+confirme le coup joué.
 
 **Ce que tu ne reçois pas** : la main du robot et la pioche (cachées, comme à la table) ; l'historique
 des tours (`bornes` montre ce qui est posé, et `dernier_echange` l'échange qui vient d'avoir lieu — pas plus).

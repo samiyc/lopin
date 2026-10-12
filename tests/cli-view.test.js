@@ -74,10 +74,14 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.deepEqual(view.bornes[1], { borne: 2, toi: [], robot: [], statut: "perdue" });
     assert.deepEqual(view.bornes[2], { borne: 3, toi: [], robot: ["4♦"], statut: "libre" });
     assert.deepEqual(view.main, ["2♠", "3♠", "10♥", "8♣", "7♦", "JK"]);
-    assert.equal(view.coups.length, legalMoves(state).length);
-    assert.ok(view.coups.every((text) => parseInput(text, state, handOrder(state, 0)).move));
+    // No list of every card × border (« 3♠ 1 », « 3♠ 2 »…): the playable borders say the same, and the hand is `main`.
+    assert.equal(view.coups, undefined);
+    assert.deepEqual(view.bornes_jouables, [3, 4, 5, 6, 7], "the two borders already claimed are not playable");
+    assert.equal(legalMoves(state).length, view.main.length * view.bornes_jouables.length, "every card goes on every playable border");
+    assert.deepEqual(jsonView({ ...state, over: true }, 0).bornes_jouables, []);
     assert.equal(view.terminee, false);
     assert.match(view.regles, /3 bornes voisines ou 4 bornes/);
+    assert.match(view.regles, /« 7♠ 5 » pose le 7♠ sur la borne 5/, "a simple example of the answer, in the rules");
     // Real JSON: it reads back as the same object, and no string carries a line break.
     const text = formatJson(view);
     assert.deepEqual(JSON.parse(text), view);

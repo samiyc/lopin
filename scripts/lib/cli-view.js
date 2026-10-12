@@ -66,13 +66,16 @@ const seenOf = (state, me) => Object.fromEntries(suitCounts(state.spec, state, {
  * The legal moves, the card named (« 8♠ 4 »), the only list an agent reads (Sami, 13/10: the hand's numbers, « 1 1 »,
  * told nothing, and they move with each draw).
  */
-const movesOf = (state, me, order = null) => {
-  if (!playable(state, me)) return [];
-  const moves = [...legalMoves(state)];
-  // `--json` lists them in the hand's order, then by border, so « main » and « coups » read the same way.
-  if (order) moves.sort((a, b) => order.indexOf(a.card) - order.indexOf(b.card) || a.border - b.border);
-  return moves.map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`);
-};
+const movesOf = (state, me) => (playable(state, me) ? legalMoves(state).map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`) : []);
+
+/**
+ * The borders a card may go on (Sami, 13/10, in place of the list of every card × border, « 3♠ 1 », « 3♠ 2 »…: the
+ * base game's moves are the whole hand on each of these, so this short list says the same). Empty: pass.
+ */
+const playableBorders = (state, me) => (playable(state, me) ? [...new Set(legalMoves(state).map((move) => move.border + 1))].sort((a, b) => a - b) : []);
+
+/** How a move is written, said in the rules line of `--json`'s first answer. */
+export const ANSWER_LINE = "Un coup : une carte de ta main puis une borne jouable, « 7♠ 5 » pose le 7♠ sur la borne 5 ; sans borne jouable, « p ».";
 
 /** `libre`, `gagnée` (yours), `perdue` (the robot's), or `pleine`: both sides full, nobody could claim it yet. */
 function statusOf(border, me) {
@@ -95,9 +98,9 @@ export function jsonView(state, me, { order = handOrder(state, me), last = [] } 
     dernier_echange: last,
     bornes: state.borders.map((border, index) => ({ borne: index + 1, toi: sideOf(state, border.sides[me]), robot: sideOf(state, border.sides[1 - me]), statut: statusOf(border, me) })),
     main: sideOf(state, order),
-    coups: movesOf(state, me, order),
+    bornes_jouables: playableBorders(state, me),
     terminee: Boolean(state.over),
-    ...(state.turn < 2 ? { regles: RULES_LINE } : {}),
+    ...(state.turn < 2 ? { regles: `${RULES_LINE} ${ANSWER_LINE}` } : {}),
   };
 }
 

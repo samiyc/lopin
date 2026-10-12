@@ -23,16 +23,17 @@ conseils, les pièges). C'est le seul fichier du dépôt que tu lis.
 
 1. Commence la partie (graine **{GRAINE}**, `--first` **{PREMIER}**) :
    `node scripts/cli.js --new tmp/agents/{LOT}/{NOM}-{N}.json --json --name {NOM} --model {MODELE} --seed {GRAINE} --first {PREMIER} --out duels/agents/{LOT}`
-2. Tant que `terminee` est faux : lis `bornes`, `main` et `cartes_vues`, choisis **un coup de
-   `coups`**, écrit « carte borne » (`"4♦ 3"`, `"JK 5"`), avec **une phrase de raison** :
+2. Tant que `terminee` est faux : lis `bornes`, `main` et `cartes_vues`, choisis **une carte de
+   `main` et une borne de `bornes_jouables`**, écrit « carte borne » (`"4♦ 3"`, `"JK 5"`), avec
+   **une phrase de raison** :
    `node scripts/cli.js --step tmp/agents/{LOT}/{NOM}-{N}.json "<carte> <borne>" --json --why "<ta raison>" --out duels/agents/{LOT}`
-   Si `coups` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
+   Si `bornes_jouables` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
    dedans. Vérifie dans `dernier_echange` que le coup joué est bien celui que tu voulais.
 3. La partie finie (`terminee` vrai), note `resultat` et `replay`.
 
 **Ce que chaque commande te répond** : un objet JSON, `tour`, `pioche`, `main_robot`,
 `bornes_gagnees`, `cartes_vues`, `dernier_echange`, `bornes` (7 objets : `toi`, `robot`, `statut`),
-`main`, `coups`, `terminee` (`docs/agents/regles.md` en montre une vraie et explique chaque champ) ;
+`main`, `bornes_jouables`, `terminee` (`docs/agents/regles.md` en montre une vraie et explique chaque champ) ;
 à la fin, `resultat` et `replay` ; si ton coup est refusé, `erreur` dit pourquoi et la partie n'a
 pas avancé.
 
@@ -40,7 +41,8 @@ pas avancé.
 
 - Ne lis **jamais** le fichier de partie (`tmp/agents/...`), ni le code, ni les replays : il
   contient l'ordre de la pioche. Seule la sortie de la commande compte.
-- Ne joue que des coups de `coups`. Si une commande renvoie `erreur`, relis `coups` et rejoue.
+- Ne joue qu'une carte de `main` sur une borne de `bornes_jouables`. Si une commande renvoie
+  `erreur`, relis-les et rejoue.
 - Joue pour gagner, et finis la partie. Si une commande est refusée par l'environnement (et non
   par le jeu), arrête-toi et rends compte du message exact.
 

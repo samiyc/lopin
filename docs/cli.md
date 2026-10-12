@@ -70,7 +70,7 @@ npm run cli -- --json --name sami
 
 La partie se joue comme à l'écran, mais chaque état est un vrai objet JSON (les données nommées et
 groupées, aucun plateau dessiné dans un texte) ; tu tapes le coup `10♥ 1` ou `3 1` comme
-d'habitude. Une clé par ligne, et une ligne par borne :
+d'habitude (la carte, puis une borne de `bornes_jouables`). Une clé par ligne, et une ligne par borne :
 
 ```json
 {
@@ -86,12 +86,12 @@ d'habitude. Une clé par ligne, et une ligne par borne :
   {"borne":4,"toi":["9♥","6♥"],"robot":["3♦","2♦"],"statut":"libre"}
  ],
  "main": ["5♥","10♥","2♣","10♣","7♦","JK"],
- "coups": ["5♥ 1","5♥ 2","10♥ 1","10♥ 2","JK 1","JK 2"],
+ "bornes_jouables": [1,3,4],
  "terminee": false
 }
 ```
 
-(Deux champs d'exemple raccourcis : `bornes` en a 7, `coups` tous les coups permis.)
+(Exemple raccourci : `bornes` en a 7.)
 
 | Champ | Contenu |
 | --- | --- |
@@ -101,7 +101,7 @@ d'habitude. Une clé par ligne, et une ligne par borne :
 | `dernier_echange` | ton dernier coup, la réponse du robot, les revendications : une phrase chacun |
 | `bornes[]` | `borne` (1-7), `toi` et `robot` (les cartes de chaque côté, dans l'ordre de pose), `statut` : `libre`, `gagnée`, `perdue`, `pleine` (les deux côtés à 3 cartes, pas encore revendiquée) |
 | `main` | ta main, triée par couleur |
-| `coups` | tous les coups permis, « carte borne », dans l'ordre de ta main ; vide : joue `p` |
+| `bornes_jouables` | les bornes où une carte peut aller (toute carte de `main` va sur toute borne jouable) ; vide : joue `p`. Pas de liste « carte × borne » : trop répétitive (Sami, 13/10) |
 | `terminee` | `true` à la fin, avec `resultat` (la phrase) et `replay` (le chemin) |
 | `erreur` | un coup refusé : la raison (la partie n'a pas avancé) |
 | `regles` | la première fois seulement : les règles en une ligne |
@@ -160,7 +160,7 @@ partie contient l'ordre de la pioche : un agent ne doit lire que la sortie de la
 
 > Tu joues à Bornage (Schotten Totten) contre l'Expérimental 1.2. Lance
 > `npm run cli -- --new tmp/agent.json --json --name claude`, puis, tant que `terminee` est faux,
-> choisis un coup parmi `coups` (la carte puis la borne, `"7♠ 5"`) et lance
+> choisis une carte de `main` et une borne de `bornes_jouables` (`"7♠ 5"`) et lance
 > `npm run cli -- --step tmp/agent.json "<coup>" --json`.
 > Règles : 7 bornes ; sur chacune, 3 cartes par joueur ; la meilleure combinaison gagne la borne
 > (Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini en
