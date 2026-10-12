@@ -18,6 +18,7 @@
     "pdf": "node scripts/pdf.js",
     "play": "node scripts/play-server.js",
     "cli": "node scripts/cli.js",
+    "agents": "node scripts/agents.js",
     "duel": "node scripts/duel.js",
     "replays": "node scripts/replays.js",
     "fingerprint": "node scripts/fingerprint.js",
