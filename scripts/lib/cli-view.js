@@ -126,7 +126,7 @@ function missedNote(state, me, canClaim) {
   return ` ${which} ${owner}, mais celui qui vient de jouer revendique en premier, et la partie s'arrête à la première victoire.`;
 }
 
-export const HELP = "Joue « carte borne » : « 3 5 » pose la 3e carte de ta main sur la borne 5 (séparateurs : espace, virgule, tiret). t : trier par valeur / par couleur · p : passer (seulement sans coup possible) · ? : aide · q : abandonner.";
+export const HELP = "Joue « carte borne » : « 3 5 » pose la 3e carte de ta main sur la borne 5, « 4♦ 5 » ou « 4d 5 » la nomme (séparateurs : espace, virgule, tiret). t : trier par valeur / par couleur · p : passer (seulement sans coup possible) · ? : aide · q : abandonner.";
 
 const COMMANDS = { t: { sort: true }, "?": { help: true }, aide: { help: true }, q: { quit: true }, quitter: { quit: true } };
 
@@ -140,15 +140,30 @@ export function parseInput(text, state, order) {
   if (Object.hasOwn(COMMANDS, line)) return COMMANDS[line];
   const legal = legalMoves(state);
   if (line === "p" || line === "passer") return legal.length === 0 ? { pass: true } : { error: "Tu as un coup possible : on ne passe que sans coup." };
-  const numbers = twoNumbers(line);
+  const numbers = cardAndBorder(line, state, order);
   if (!numbers) return { error: `Je n'ai pas compris « ${text} ». ${HELP}` };
   return moveFor(numbers, state, order, legal);
 }
 
-/** "3 5", "3,5", "3-5" → [3, 5]; anything else → null. */
-function twoNumbers(line) {
-  const parts = line.split(/[\s,;/.-]+/).filter(Boolean);
-  return parts.length === 2 && parts.every((part) => /^\d+$/.test(part)) ? parts.map(Number) : null;
+/** Suit letters an agent or a keyboard may type for ♠ ♥ ♣ ♦ (and the French ones: pique, cœur, trèfle, carreau). */
+const SUIT_LETTERS = { s: "♠", p: "♠", h: "♥", c: "♣", t: "♣", d: "♦", k: "♦" };
+
+/** The place in `order` of a card written out (« 4♦ », « 4d », « JK »), or 0. */
+function placeOfCard(text, state, order) {
+  const typed = text.toUpperCase() === "JK" ? "JK" : text.replace(/[a-z]$/, (letter) => SUIT_LETTERS[letter] ?? letter);
+  return order.findIndex((card) => formatCard(state.spec, card) === typed) + 1;
+}
+
+/**
+ * "3 5", "3,5", "3-5" → [3, 5]; the card may also be written out, "4♦ 5"
+ * or "4d 5" (Sami's pilot agent, 12/10: the hand's numbers move with each
+ * draw, and « 4 3 » played the 2♦ it meant as the 4♦); anything else → null.
+ */
+function cardAndBorder(line, state, order) {
+  const parts = line.replaceAll(/(\d)-(\d)/g, "$1 $2").split(/[\s,;/]+/).filter(Boolean);
+  if (parts.length !== 2 || !/^\d+$/.test(parts[1])) return null;
+  const place = /^\d+$/.test(parts[0]) ? Number(parts[0]) : placeOfCard(parts[0], state, order);
+  return place > 0 ? [place, Number(parts[1])] : null;
 }
 
 /** The legal move a card place and a border number name, or the reason there is none. */

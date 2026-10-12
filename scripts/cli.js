@@ -92,10 +92,11 @@ function humanTurn(session, move, thinkMs) {
   if (thinkMs !== undefined) entry.thinkMs = thinkMs;
   // `--why`: the player's reason for the move, in their words, for the analysis.
   if (option("--why")) entry.note = option("--why");
-  const won = claims(session, before);
+  // The human's own move first, then the claims right after it (theirs, or the bot's), so a slip shows at once.
+  const mine = [`Toi : ${moveText(session.state, entry)}`, ...claims(session, before)].join(", ");
+  session.last = null;
   botTurns(session);
-  // The claims right after the human's move: theirs, or the bot's (the opponent claims next under the page's rule).
-  if (won.length > 0) session.last = [`Après ton coup : ${won.join(", ")}`, session.last].filter(Boolean).join(" · ");
+  session.last = [mine, session.last].filter(Boolean).join(" · ");
 }
 
 /** The end in words, with the borders the loser could still have claimed (the engine's own proof). */
@@ -110,9 +111,14 @@ async function saveReplay(session) {
   return relative(process.cwd(), path).replaceAll("\\", "/");
 }
 
+/** `--compact` (the pilot agent, 12/10): the screen as text, the legal moves, and the end — what an agent reads. */
+const COMPACT_KEYS = ["board", "legal", "over", "end", "replay", "error", "rules"];
+const compact = (view) => Object.fromEntries(COMPACT_KEYS.filter((key) => view[key] !== undefined && view[key] !== null).map((key) => [key, view[key]]));
+
 function show(session, extra = {}) {
   const order = handOrder(session.state, session.me, session.sort);
-  if (machine) return console.log(JSON.stringify({ ...machineView(session.state, session.me, { order, last: session.last }), ...extra }));
+  const view = { ...machineView(session.state, session.me, { order, last: session.last }), ...extra };
+  if (machine) return console.log(JSON.stringify(args.includes("--compact") ? compact(view) : view));
   console.log(`\n${textView(session.state, session.me, { order, last: session.last })}`);
   if (extra.error) console.log(`! ${extra.error}`);
   if (extra.end) console.log(["", extra.end, extra.replay ? "Replay : " + extra.replay : ""].join("\n").trimEnd());

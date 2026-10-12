@@ -39,6 +39,10 @@ faible :
 - Une borne est **revendiquée** dès que le côté complet d'un joueur ne peut plus être battu,
   quelles que soient les cartes encore hors de la table (la pioche, et les deux mains : ta main
   compte comme si l'adversaire pouvait l'avoir). La console le fait seule, après chaque coup.
+- **Un côté complet n'est donc pas revendiqué tout de suite** tant que l'adversaire peut encore
+  faire mieux avec des cartes hors de la table, même si son côté est vide : ta Suite couleur
+  7-8-9♥ attend tant qu'une Suite couleur plus haute (8-9-10 d'une autre couleur, par exemple)
+  reste possible. Elle tombe dès que les cartes qui la battraient sont posées ailleurs.
 - Après un coup, **celui qui vient de jouer revendique en premier**, puis l'autre.
 - Une borne revendiquée est fermée : plus personne n'y pose de carte.
 
@@ -68,9 +72,12 @@ Main : 1:2♠  2:2♥  3:10♥  4:4♣  5:10♦  6:JK
 
 - **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10. Ce qui
   manque est dans la pioche ou dans la main du robot : c'est ce qui peut encore sortir.
-- Le JSON donne aussi `hand` (numéros 1-6), `borders` (`mine`, `theirs`, `won`), `seen`, et
-  **`legal`** : tous les coups permis, écrits comme il faut les taper (`"3 5"` = ta 3e carte sur la
-  borne 5). Les numéros de la main changent quand une carte arrive : relis `hand` à chaque tour.
+- Avec `--compact`, le JSON ne donne que `board` (l'écran), **`legal`** (tous les coups permis,
+  écrits comme il faut les taper : `"3 5"` = ta 3e carte sur la borne 5), `over`, et à la fin
+  `end` (le résultat) et `replay` (le chemin de la partie enregistrée).
+- **Les numéros de la main changent** quand une carte arrive. Pour ne pas te tromper, **nomme la
+  carte** : `"4♦ 3"` (ou `"4d 3"` : s ♠, h ♥, c ♣, d ♦ ; `"JK 3"` pour un joker). La ligne
+  « Toi : 4♦ → borne 3 » en tête de l'écran confirme le coup joué.
 
 ## Conseils (ce qui fait gagner les robots et Sami)
 
@@ -86,6 +93,16 @@ Main : 1:2♠  2:2♥  3:10♥  4:4♣  5:10♦  6:JK
 - **Complète tôt une borne disputée** : à combinaison et somme égales, le premier complet gagne.
 - **Vise la double menace** (comme au Puissance 4) : avec deux bornes voisines gagnées (3 et 4),
   chacune des bornes autour (2 et 5) donne la victoire ; le robot ne peut pas tenir les deux.
+
+## La fin de pioche
+
+- Une fois la pioche vide, on ne pioche plus : chaque carte posée est une carte de moins en
+  main, et il faut poser à chaque tour tant qu'un coup existe (on ne passe que sans coup).
+- Les dernières cartes doivent aller **quelque part** : garde une place libre (un côté pas plein)
+  pour tes cartes faibles, sur une borne déjà perdue ou sans enjeu, plutôt que d'être forcé de
+  gâcher une borne disputée.
+- Compte ce qui reste : avec la pioche vide, toutes les cartes sont connues sauf la main du robot
+  (ce qui manque dans `Vues`).
 
 ## Pièges à éviter
 

@@ -34,6 +34,10 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     const state = position();
     const order = handOrder(state, 0);
     for (const text of ["5 4", "5,4", "5-4", " 5  4 "]) assert.deepEqual(parseInput(text, state, order).move, { card: order[4], border: 3 }, text);
+    const seven = { card: parseCards(SPEC, ["7♦"])[0], border: 3 };
+    for (const text of ["7♦ 4", "7d 4", "7D,4"]) assert.deepEqual(parseInput(text, state, order).move, seven, text);
+    assert.equal(parseInput("JK 4", state, order).move.card, parseCards(SPEC, ["JK"])[0]);
+    assert.match(parseInput("9♥ 4", state, order).error, /Je n'ai pas compris/, "a card not in the hand");
     assert.match(parseInput("9 4", state, order).error, /Carte 9 : ta main en a 6/);
     assert.match(parseInput("1 8", state, order).error, /Borne 8 : il y en a 7/);
     assert.match(parseInput("1 1", state, order).error, /ne peut pas aller sur la borne 1/);
