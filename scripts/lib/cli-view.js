@@ -85,17 +85,27 @@ function statusOf(border, me) {
 }
 
 /**
- * The position as a real JSON object (Sami, 13/10: no board drawn in a string, the data named and grouped):
- * what `--json` prints and an agent reads. `last` is the list of what just happened, one sentence each.
+ * What just happened, as an object (Sami, 13/10): `toi` and `robot`, each « 9♦ → borne 4 », and `revendications`
+ * (the borders claimed, in words) only when there are some. A side that did not move has no key.
  */
-export function jsonView(state, me, { order = handOrder(state, me), last = [] } = {}) {
+const exchangeOf = (last) => ({
+  ...(last?.toi ? { toi: last.toi } : {}),
+  ...(last?.robot ? { robot: last.robot } : {}),
+  ...(last?.revendications?.length > 0 ? { revendications: last.revendications } : {}),
+});
+
+/**
+ * The position as a real JSON object (Sami, 13/10: no board drawn in a string, the data named and grouped):
+ * what `--json` prints and an agent reads. `last`: `{ toi, robot, revendications }` of the exchange just played.
+ */
+export function jsonView(state, me, { order = handOrder(state, me), last = null } = {}) {
   return {
     tour: state.turn + 1,
     pioche: state.pile.length,
     main_robot: state.hands[1 - me].length,
     bornes_gagnees: { toi: ownedBy(state, me), robot: ownedBy(state, 1 - me) },
     cartes_vues: seenOf(state, me),
-    dernier_echange: last,
+    dernier_echange: exchangeOf(last),
     bornes: state.borders.map((border, index) => ({ borne: index + 1, toi: sideOf(state, border.sides[me]), robot: sideOf(state, border.sides[1 - me]), statut: statusOf(border, me) })),
     main: sideOf(state, order),
     bornes_jouables: playableBorders(state, me),

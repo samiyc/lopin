@@ -64,9 +64,17 @@ function newSession({ botId = "experimental", first = "me", seed = Date.now() % 
 function loadSession(log) {
   const human = log.players.find((player) => player.kind === "human");
   const bot = log.players.find((player) => player.kind === "bot");
-  // `client.last`: the exchange before, kept by `--step` so a refused move still shows what the robot just did.
-  const saved = log.client?.last ?? null;
-  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: typeof saved === "string" ? [saved] : saved };
+  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: savedLast(log.client?.last) };
+}
+
+/**
+ * `client.last`: the exchange before, kept by `--step` so a refused move still shows what the robot just did.
+ * An object `{ text, toi, robot, revendications }`; a list of sentences or a sentence (saves of 13/10) still read.
+ */
+function savedLast(saved) {
+  if (saved === undefined || saved === null) return null;
+  if (typeof saved === "string") return { text: [saved], toi: null, robot: null, revendications: [] };
+  return Array.isArray(saved) ? { text: saved, toi: null, robot: null, revendications: [] } : saved;
 }
 
 const moveText = (state, entry) => (entry.pass ? "passe" : `${entry.move.card} → borne ${entry.move.border}`);
@@ -80,20 +88,27 @@ function claims(session, before) {
 
 const owners = (state) => state.borders.map((border) => border.owner);
 
-/** The bot plays until it is the human's turn or the game is over; `last` (a list of sentences) says what it did. */
+/**
+ * The bot plays until it is the human's turn or the game is over. `last` says what happened: `text` (the sentences
+ * of the board), and for `--json` `toi` / `robot` (the move, « 9♦ → borne 4 ») and `revendications`.
+ */
 function botTurns(session) {
   const { state, me, log, bot } = session;
-  const said = [];
+  const last = { text: [], toi: null, robot: null, revendications: [] };
+  const played = [];
   while (!state.over && state.current !== me) {
     const before = owners(state);
     const entry = playBot(log, state, bot);
-    said.push(`${BOT_LINEUP[bot.id].label} : ${moveText(state, entry)}`, ...claims(session, before));
+    const claimed = claims(session, before);
+    played.push(moveText(state, entry));
+    last.text.push(`${BOT_LINEUP[bot.id].label} : ${played.at(-1)}`, ...claimed);
+    last.revendications.push(...claimed);
   }
-  session.last = said.length > 0 ? said : session.last;
+  if (played.length > 0) session.last = { ...last, robot: played.join(" ; ") };
 }
 
 /** What just happened, on one line for the board and the flat JSON. */
-const lastText = (session) => (session.last && session.last.length > 0 ? session.last.join(" · ") : null);
+const lastText = (session) => (session.last && session.last.text.length > 0 ? session.last.text.join(" · ") : null);
 
 /** The human's move (or pass), then the bot's answer. */
 function humanTurn(session, move, thinkMs) {
@@ -103,10 +118,18 @@ function humanTurn(session, move, thinkMs) {
   // `--why`: the player's reason for the move, in their words, for the analysis.
   if (option("--why")) entry.note = option("--why");
   // The human's own move first, then the claims right after it (theirs, or the bot's), so a slip shows at once.
-  const mine = [`Toi : ${moveText(session.state, entry)}`, ...claims(session, before)].join(", ");
+  const played = moveText(session.state, entry);
+  const claimed = claims(session, before);
+  const mine = [`Toi : ${played}`, ...claimed].join(", ");
   session.last = null;
   botTurns(session);
-  session.last = [mine, ...(session.last ?? [])];
+  session.last = exchangeOf({ mine, played, claimed }, session.last);
+}
+
+/** The human's move and what the bot answered (nothing if the move ended the game), as one `last`. */
+function exchangeOf({ mine, played, claimed }, bot) {
+  const { text = [], robot = null, revendications = [] } = bot ?? {};
+  return { text: [mine, ...text], toi: played, robot, revendications: [...claimed, ...revendications] };
 }
 
 /** The end in words, with the borders the loser could still have claimed (the engine's own proof). */
@@ -134,7 +157,7 @@ const jsonExtras = (extra) => ({ ...(extra.error ? { erreur: extra.error } : {})
 
 function show(session, extra = {}) {
   const order = handOrder(session.state, session.me, session.sort);
-  if (json) return console.log(formatJson({ ...jsonView(session.state, session.me, { order, last: session.last ?? [] }), ...jsonExtras(extra) }));
+  if (json) return console.log(formatJson({ ...jsonView(session.state, session.me, { order, last: session.last }), ...jsonExtras(extra) }));
   showText(session, order, extra);
 }
 

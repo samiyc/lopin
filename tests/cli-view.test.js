@@ -64,7 +64,10 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
 
   it("gives the position as a real JSON object: groups named, no board drawn in a string (Sami, 13/10)", () => {
     const state = position();
-    const view = jsonView(state, 0, { last: ["Toi : 9♠ → borne 1", "Expérimental : 4♦ → borne 3"] });
+    const view = jsonView(state, 0, { last: { toi: "9♠ → borne 1", robot: "4♦ → borne 3", revendications: [] } });
+    assert.deepEqual(view.dernier_echange, { toi: "9♠ → borne 1", robot: "4♦ → borne 3" }, "an object, claims only when there are some");
+    assert.deepEqual(jsonView(state, 0, { last: { toi: "9♠ → borne 1", robot: null, revendications: ["tu revendiques la borne 1"] } }).dernier_echange, { toi: "9♠ → borne 1", revendications: ["tu revendiques la borne 1"] });
+    assert.deepEqual(jsonView(state, 0).dernier_echange, {}, "nothing yet at the start");
     assert.equal(view.tour, 1);
     assert.equal(view.main_robot, 6);
     assert.deepEqual(view.bornes_gagnees, { toi: 1, robot: 1 });

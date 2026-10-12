@@ -64,7 +64,7 @@ posé le 9♥ sur la borne 4, le robot a répondu par un 3♦ sur la même borne
  "main_robot": 6,
  "bornes_gagnees": {"toi":0,"robot":0},
  "cartes_vues": {"♠":"1/10","♥":"3/10","♣":"1/10","♦":"2/10","JK":"1/2"},
- "dernier_echange": ["Toi : 9♥ → borne 4","Expérimental : 3♦ → borne 4"],
+ "dernier_echange": {"toi":"9♥ → borne 4","robot":"3♦ → borne 4"},
  "bornes": [
   {"borne":1,"toi":[],"robot":[],"statut":"libre"},
   {"borne":2,"toi":[],"robot":[],"statut":"libre"},
@@ -91,7 +91,7 @@ gagnées, perdues, ou ton côté y a déjà 3 cartes) ; vide, tu passes avec `p`
 | `main_robot` | Le nombre de cartes dans la main du robot (tu ne vois pas lesquelles). |
 | `bornes_gagnees` | Les bornes déjà revendiquées par toi et par le robot. |
 | `cartes_vues` | Par couleur, les cartes que tu vois (le plateau et ta main) sur le total : `"5/10"`. Ce qui manque est dans la pioche ou dans la main du robot, donc peut encore sortir. |
-| `dernier_echange` | Ce qui vient de se passer, une phrase par événement : ton coup, la réponse du robot, les revendications (« tu revendiques la borne 5 »). Vide au début. |
+| `dernier_echange` | Ce qui vient de se passer : `toi` (ton dernier coup), `robot` (sa réponse), et `revendications` (« tu revendiques la borne 5 », « le robot revendique la borne 4 ») seulement s'il y en a. Vide au début ; sans `robot` si ton coup a fini la partie. |
 | `bornes` | Les 7 bornes, de 1 à 7. `toi` et `robot` : les cartes de chaque côté, **dans l'ordre où elles ont été posées**. |
 | `bornes[].statut` | `libre` : pas revendiquée ; `gagnée` : à toi ; `perdue` : au robot ; `pleine` : les deux côtés ont 3 cartes et personne ne peut encore la revendiquer (plus rien à y poser). |
 | `main` | Tes cartes. |

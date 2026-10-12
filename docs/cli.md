@@ -79,7 +79,7 @@ d'habitude (la carte, puis une borne de `bornes_jouables`). Une clé par ligne, 
  "main_robot": 6,
  "bornes_gagnees": {"toi":0,"robot":0},
  "cartes_vues": {"♠":"2/10","♥":"5/10","♣":"5/10","♦":"5/10","JK":"1/2"},
- "dernier_echange": ["Toi : 1♥ → borne 3","Expérimental : 2♦ → borne 4"],
+ "dernier_echange": {"toi":"1♥ → borne 3","robot":"2♦ → borne 4"},
  "bornes": [
   {"borne":1,"toi":[],"robot":["8♦"],"statut":"libre"},
   {"borne":3,"toi":["2♠","1♥"],"robot":["7♠"],"statut":"libre"},
@@ -98,7 +98,7 @@ d'habitude (la carte, puis une borne de `bornes_jouables`). Une clé par ligne, 
 | `tour`, `pioche`, `main_robot` | le tour, les cartes de la pioche, les cartes du robot en main |
 | `bornes_gagnees` | les bornes revendiquées, par toi et par le robot |
 | `cartes_vues` | par couleur, les cartes que tu vois sur le total |
-| `dernier_echange` | ton dernier coup, la réponse du robot, les revendications : une phrase chacun |
+| `dernier_echange` | un objet : `toi` (ton dernier coup), `robot` (sa réponse), et `revendications` (une phrase chacune, seulement s'il y en a) ; vide au début |
 | `bornes[]` | `borne` (1-7), `toi` et `robot` (les cartes de chaque côté, dans l'ordre de pose), `statut` : `libre`, `gagnée`, `perdue`, `pleine` (les deux côtés à 3 cartes, pas encore revendiquée) |
 | `main` | ta main, triée par couleur |
 | `bornes_jouables` | les bornes où une carte peut aller (toute carte de `main` va sur toute borne jouable) ; vide : joue `p`. Pas de liste « carte × borne » : trop répétitive (Sami, 13/10) |
