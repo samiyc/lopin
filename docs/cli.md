@@ -139,6 +139,27 @@ utile que pour jouer depuis une autre machine.
 - **Ce n'est pas un oracle** : un LLM ne dit pas le bon coup. Il sert à trouver des positions où la
   1.2 se trompe, l'oracle (ou le solveur) juge ensuite.
 
+## Les modèles locaux (Ollama, `npm run llm-play`, 12-13/10)
+
+10 parties chacune contre la 1.2, mêmes graines (80000), 2 à la fois. Les parties sont dans
+`duels/agents/<série>/`. Le coup du modèle est classé par le cœur de la 1.2 (`stfig6`) : « top 1 »
+= le coup que le cœur préfère ; la colonne « hasard » est ce qu'un joueur au hasard obtiendrait.
+
+| Série | Victoires | Bornes par partie | Top 1 du cœur | Top 3 | Top 8 |
+|---|---|---|---|---|---|
+| hasard | — | — | 5 % | 14 % | 34 % |
+| llama3.2, série du 12/10 (sans schéma ni exemples) | 0/10 | — | 7 % | 12 % | 24 % |
+| llama3.2, 12 exemples | 0/10 | 0,30 | 5 % | 12 % | 28 % |
+| qwen3.5:9b, schéma JSON | 0/10 | 0,30 | 5 % | 14 % | 28 % |
+| qwen3.5:9b, 12 exemples | 0/10 | 0,20 | 5 % | 11 % | 27 % |
+
+**Aucun des deux modèles ne trouve de coups** : leur accord avec le cœur est celui du hasard (le
+top 8 est même en dessous). Les exemples (`npm run llm-examples`, `--examples`) changent la forme
+des raisons, pas le jeu : le modèle recopie le gabarit, y compris « Pioche vide : le solveur
+prouve… » avec une pioche pleine, et nomme parfois une autre borne que celle qu'il joue (31 %
+pour llama3.2, 13 % pour qwen3.5). Le schéma JSON de la réponse (`coup` borné à la liste des coups
+permis) a réglé la vitesse (2 s par coup au lieu de 45 s) et les réponses hors liste, pas la force.
+
 ## Suggestions pour la suite
 
 1. **Un tableau des parties d'agent** : les replays nommés `claude-vs-experimental` sont déjà
