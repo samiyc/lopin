@@ -238,9 +238,9 @@
    "score": 51.4,
    "lo": 46.5,
    "hi": 56.3,
-   "verdict": "attente",
+   "verdict": "neutre",
    "when": "12/10",
-   "note": "Tri à 400 contre la 1.2 à 400 (360 parties) : pas écarté, gardé en réserve.",
+   "note": "Tri à 400 contre la 1.2 à 400 (360 parties) : pas écarté, gardé en réserve. Non joué en duels longs : MarginBackup15 a perdu (45,6 %).",
    "idea": "Une part de la note d'une simulation vient de l'écart de bornes : un signal moins bruité, sans coût."
   },
   {
@@ -248,12 +248,12 @@
    "name": "MarginBackup15 : retours à la marge, 15 % (+margin=0.15)",
    "family": "arbre",
    "bench": "duel",
-   "score": 52.8,
-   "lo": 48.4,
-   "hi": 57.2,
-   "verdict": "attente",
+   "score": 45.6,
+   "lo": 40.3,
+   "hi": 50.9,
+   "verdict": "perd",
    "when": "12/10",
-   "note": "Tri à 400 contre la 1.2 à 400 (324 parties) : pas écarté ; 1k@2k en file.",
+   "note": "Tri à 400 : 52,8 % (48,4 – 57,2). VALIDATE_LONG_1_MarginBackup15 : 45,6 % (40,3 – 50,9) sur 250 parties ; la règle d'arrêt a annulé les duels 2 à 4.",
    "idea": "Une victoire 5-2 compte plus qu'une victoire 4-3."
   },
   {
@@ -261,12 +261,12 @@
    "name": "DistOracle1Root sur la 1.2 (+shortlist=dist1)",
    "family": "arbre",
    "bench": "duel",
-   "score": 54.6,
-   "lo": 49.3,
-   "hi": 60,
-   "verdict": "attente",
+   "score": 49.4,
+   "lo": null,
+   "hi": null,
+   "verdict": "neutre",
    "when": "12/10",
-   "note": "Tri à 400 contre la 1.2 à 400 (324 parties) : pas écarté ; 1k@2k en file.",
+   "note": "Tri à 400 : 54,6 % (49,3 – 60,0). VALIDATE_LONG_1 et 2 : 48,4 % puis 50,4 %, environ 49,4 % réunis ; la règle d'arrêt a annulé les duels 3 et 4.",
    "idea": "Le cœur réglé sur l'oracle choisit les 8 candidats de la racine ; une fois par coup, sans coût mesurable."
   },
   {

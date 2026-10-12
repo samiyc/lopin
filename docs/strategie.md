@@ -3126,3 +3126,15 @@ longue joue ailleurs et que le coup de la 1.2 a moins de la moitié de ses visit
   au centre ou ailleurs. Ailleurs, les désaccords sont variés (ouvrir, répondre, compléter).
 - Deux parties, c'est un indice, pas une règle : à refaire quand Sami aura d'autres victoires
   contre la 1.2 (`sami-wins`, le script du 12/10, pourra devenir une commande).
+
+**Le verdict des duels longs (12/10 au soir)** : les deux survivants des tris tombent.
+
+| Version | Duels | Verdict |
+| --- | --- | --- |
+| `MarginBackup15` | offset 1 : **45,6 %** (40,3 – 50,9), arrêté | perd : compter la marge de bornes éloigne l'arbre de ce qui gagne la partie (une victoire 4-3 vaut une victoire 6-1) |
+| `DistOracle1Root-Exact12` | 48,4 % (43,2 – 53,6) puis 50,4 % (45,0 – 55,8), **≈ 49,4 %** réunis, arrêté | neutre : comme sur le V1 (51,6 %), le cœur réglé sur l'oracle ne choisit pas de meilleurs candidats pour la 1.2 |
+
+Des quatre pistes du 12/10, aucune ne bat la 1.2 : la marge perd, `DistOracle1Root` est neutre, le
+solveur à 14 cartes et la réutilisation de l'arbre ont été écartés avant les duels. Le seul gain
+mesuré du 1.3 reste le budget brut (Budget4000 : 52,8 %, deux fois le temps). La piste 3 (où la 1.2
+se trompe) attend des parties : celles de Sami, et celles d'un agent en console (`npm run cli`).
