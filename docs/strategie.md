@@ -3024,3 +3024,19 @@ troisième carte possible ne pourrait pas faire gagner ; empreintes 1.0, 1.2 et 
   serait plus étranglé encore.
 - Coût par itération (`npm run bench` à 400, deux passes alternées) : la 1.2 1 440 simulations/s,
   `trees=3` 1 438 (−0,2 %), `trees=4` 1 430 (−0,7 %) : duels à itérations égales.
+
+**Le verdict de la file du 12/10** :
+
+| Version | Duels | Mise en commun | Verdict |
+| --- | --- | --- | --- |
+| `Ensemble`, confirmation | offset 5 : 47,6 % ; offset 6 : 48,4 % | **51,0 % (48,8 – 53,2)** sur les 1 500 parties des offsets 1 à 6 | neutre : les 52,5 % des offsets 1-4 ne tiennent pas |
+| `Ensemble3` | offset 1 : 42,0 % (36,7 – 47,3), arrêté | — | perd |
+| `Ensemble4` | 48,8 % puis 43,6 %, arrêté | 46,2 % (42,6 – 49,8) sur 500 parties | perd |
+
+- Partager le budget entre plusieurs arbres ne retire pas le bruit du coup joué : chaque arbre perd
+  en profondeur ce que la moyenne gagne en stabilité, et plus il y a d'arbres, plus la perte
+  domine (3 et 4 arbres perdent nettement). Écarté ; l'option reste (`+trees`).
+- Avec PUCT (49,8 %) et Ensemble (51,0 %), les deux leviers de « la racine choisit mal » ne
+  rapportent rien. Le seul gain mesuré du 1.3 reste le budget brut (Budget4000 : 52,8 %), et il
+  coûte deux fois le temps. Dans la page, où le robot a jusqu'à 10 s, `@4000` y serait le
+  levier le plus simple : à mesurer en temps réel (worker, pondération) avant d'en faire une version.

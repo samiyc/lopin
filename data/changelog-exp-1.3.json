@@ -170,13 +170,39 @@
    "name": "Ensemble : deux arbres de 1 000 itérations (+trees=2)",
    "family": "arbre",
    "bench": "duel",
-   "score": 52.5,
-   "lo": 49.8,
-   "hi": 55.2,
-   "verdict": "tendance",
-   "when": "11/10 23:29",
-   "note": "VALIDATE_LONG_1..4_Ensemble : 54,4 / 52,8 / 55,2 / 47,6 %, 52,5 % sur 1 000 parties (npm run versus). La borne basse touche 50 % : à confirmer sur les offsets 5 et 6.",
+   "score": 51,
+   "lo": 48.8,
+   "hi": 53.2,
+   "verdict": "neutre",
+   "when": "12/10 12:40",
+   "note": "Offsets 1-4 : 54,4 / 52,8 / 55,2 / 47,6 %, 52,5 % ; la confirmation sur des donnes neuves (offsets 5 et 6, 12/10) : 47,6 et 48,4 %. Sur les 1 500 parties (npm run versus) : 51,0 % (48,8 – 53,2). Neutre.",
    "idea": "Deux graines d'un arbre ne jouent le même coup que 19 fois sur 50 : additionner les visites de deux arbres sort ce bruit du coup joué. Au même coût, il fait presque autant que deux fois plus d'itérations (52,8 %)."
+  },
+  {
+   "id": "ensemble3",
+   "name": "Ensemble3 : trois arbres de 667 itérations (+trees=3)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 42,
+   "lo": 36.7,
+   "hi": 47.3,
+   "verdict": "perd",
+   "when": "12/10 13:02",
+   "note": "VALIDATE_LONG_1_Ensemble3 : 42,0 % sur 250 parties ; la règle d'arrêt a annulé les duels 2 à 4. Coût -0,2 % par itération.",
+   "idea": "Plus d'arbres, plus petits : chacun perd en profondeur ce que la moyenne gagne en stabilité."
+  },
+  {
+   "id": "ensemble4",
+   "name": "Ensemble4 : quatre arbres de 500 itérations (+trees=4)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 46.2,
+   "lo": 42.6,
+   "hi": 49.8,
+   "verdict": "perd",
+   "when": "12/10 13:46",
+   "note": "VALIDATE_LONG_1 et 2_Ensemble4 : 48,8 puis 43,6 %, 46,2 % sur 500 parties ; la règle d'arrêt a annulé les duels 3 et 4. Coût -0,7 % par itération.",
+   "idea": "Le même partage du budget, en quatre : la borne haute reste sous 50 %."
   }
  ],
  "manualJobs": [],
@@ -269,8 +295,8 @@
  "next": [
   {
    "when": "Maintenant",
-   "title": "Confirmer Ensemble",
-   "text": "52,5 % (49,8 – 55,2) sur 1 000 parties, presque autant que la 1.2 à 4 000 itérations, au même coût. 500 parties de plus sur des donnes neuves (offsets 5 et 6) trancheront ; puis trees=3 et trees=4."
+   "title": "Le budget dans la page",
+   "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version."
   },
   {
    "when": "À tester",
