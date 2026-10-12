@@ -51,33 +51,62 @@ faible :
 - **3 bornes voisines** (par exemple 2-3-4), ou **4 bornes** en tout.
 - La partie s'arrête à la **première** victoire, même si l'autre aurait pu revendiquer aussi.
 
-## Lire la position
+## Ce que tu reçois : une ligne JSON par commande
 
-L'écran (`board` dans le JSON) :
+Chaque commande (`--new`, puis `--step`) répond **une ligne JSON** avec `--machine --compact`. Voici
+une vraie réponse, au tour 13 (la ligne est unique ; les retours à la ligne ne sont là que pour la
+lecture, et `\n` est un saut de ligne dans `board`) :
+
+```json
+{
+ "board": "Tour 13 · pioche 18 · main du robot 6 · bornes : toi 0, robot 0\nToi : 1♥ → borne 3 · Expérimental : 2♦ → borne 4\nVues : ♠ 2/10 · ♥ 5/10 · ♣ 5/10 · ♦ 5/10 · JK 1/2\n\n\n               2♦             3♣\n8♦        7♠   3♦             1♣\n1-   2-   3-   4-   5-   6-   7-\n          2♠   9♥   4♦   4♣\n          1♥   6♥\n\n\nMain : 1:5♥  2:10♥  3:2♣  4:10♣  5:7♦  6:JK",
+ "moves": ["JK 1","JK 2","JK 3","JK 4","JK 5","JK 6","JK 7","10♥ 1","10♥ 2","10♥ 3","10♥ 4","10♥ 5","10♥ 6","10♥ 7","5♥ 1","5♥ 2","5♥ 3","5♥ 4","5♥ 5","5♥ 6","5♥ 7","2♣ 1","2♣ 2","2♣ 3","2♣ 4","2♣ 5","2♣ 6","2♣ 7","7♦ 1","7♦ 2","7♦ 3","7♦ 4","7♦ 5","7♦ 6","7♦ 7","10♣ 1","10♣ 2","10♣ 3","10♣ 4","10♣ 5","10♣ 6","10♣ 7"],
+ "over": false
+}
+```
+
+| Champ | Contenu |
+| --- | --- |
+| `board` | **L'écran, en texte** : tout ce que tu sais de la partie (voir plus bas). |
+| `moves` | **Tous les coups permis**, chacun écrit comme tu dois le rendre : « carte borne ». |
+| `over` | `false` tant que la partie continue. |
+| `end`, `replay` | Seulement quand `over` est `true` : le résultat en une phrase, et le chemin du replay. |
+| `error` | Seulement quand ton coup est refusé : la raison. La partie n'a pas avancé, rejoue. |
+| `rules` | Seulement à la toute première réponse : les règles en une ligne. |
+
+Sans `--compact`, la réponse ajoute les mêmes faits en champs (`turn`, `pile`, `opponentHand`,
+`hand`, `borders`, `seen`, `last`, `winner`) : c'est `board` découpé, pour un programme. Un agent n'en
+a pas besoin.
+
+**Ce que tu ne reçois pas** : la main du robot et la pioche (cachées, comme à la table) ; l'historique
+des tours (l'écran montre ce qui est posé, et l'échange qui vient d'avoir lieu — pas plus).
+
+### Lire `board`
+
+Le même `board`, mis en page, avec ce que chaque ligne veut dire :
 
 ```
-Tour 21 · pioche 10 · main du robot 6 · bornes : toi 1, robot 0
-Après ton coup : tu revendiques la borne 5 · Expérimental : 3♥ → borne 7
-Vues : ♠ 7/10 · ♥ 7/10 · ♣ 4/10 · ♦ 7/10 · JK 1/2
+Tour 13 · pioche 18 · main du robot 6 · bornes : toi 0, robot 0     ← le tour, les cartes de la pioche, les bornes revendiquées
+Toi : 1♥ → borne 3 · Expérimental : 2♦ → borne 4                    ← ton dernier coup, la réponse du robot (et les revendications)
+Vues : ♠ 2/10 · ♥ 5/10 · ♣ 5/10 · ♦ 5/10 · JK 1/2                  ← les cartes que tu as vues, par couleur
 
-5♥        3♦                  3♥        ← la 2e carte du robot sur ses bornes
-4♥   10♠  4♦   8♣   5♠   2♣   3♠        ← sa 1re carte
-1-   2-   3-   4-   5A   6-   7-        ← les bornes : - libre, A à toi, B au robot,
-7♥        6♠        8♦        1♣        ← ta 1re carte (= : pleine, pas encore revendiquée)
-8♥        7♠        7♦        1♦        ← ta 2e carte
-                    9♦        1♠        ← ta 3e carte
 
-Main : 1:2♠  2:2♥  3:10♥  4:4♣  5:10♦  6:JK
+               2♦             3♣       ← la 2e carte du robot sur chaque borne
+8♦        7♠   3♦             1♣       ← sa 1re carte, la plus proche des bornes
+1-   2-   3-   4-   5-   6-   7-       ← les bornes : - libre, A à toi, B au robot, = pleine non revendiquée
+          2♠   9♥   4♦   4♣            ← ta 1re carte
+          1♥   6♥                      ← ta 2e carte (et la 3e dessous, quand il y en a une)
+
+
+Main : 1:5♥  2:10♥  3:2♣  4:10♣  5:7♦  6:JK
 ```
 
 - **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10. Ce qui
   manque est dans la pioche ou dans la main du robot : c'est ce qui peut encore sortir.
-- Avec `--compact`, le JSON ne donne que `board` (l'écran), **`moves`** (tous les coups permis),
-  `over`, et à la fin `end` (le résultat) et `replay` (le chemin de la partie enregistrée).
-- **Un coup s'écrit « carte borne »** : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"` pour un joker),
-  exactement comme dans `moves`. N'utilise pas les numéros de la main (`1:`, `2:` sur l'écran) :
-  ils changent à chaque pioche. La ligne « Toi : 4♦ → borne 3 » en tête de l'écran confirme le
-  coup joué.
+- **Un coup s'écrit « carte borne »**, recopié de `moves` : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"`
+  pour un joker). N'utilise pas les numéros de la main (`1:`, `2:` sur la ligne `Main`) : ils
+  changent à chaque pioche. La ligne « Toi : 4♦ → borne 3 » en tête de l'écran confirme le coup
+  joué ; elle dit aussi qui revendique quoi (« tu revendiques la borne 5 »).
 
 ## Conseils (ce qui fait gagner les robots et Sami)
 

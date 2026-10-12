@@ -30,6 +30,11 @@ pièges). C'est le seul fichier du dépôt que tu lis.
    dedans. Vérifie sur la ligne « Toi : … » que le coup joué est bien celui que tu voulais.
 3. La partie finie (`over` vrai), note `end` et `replay`.
 
+**Ce que chaque commande te répond** : une ligne JSON, `{"board": "<l'écran>", "moves": [...],
+"over": false}` (`docs/agents/regles.md` en montre une vraie). `board` est l'écran en texte, avec
+ta main ; `moves` les coups permis, « carte borne » ; à la fin, `end` (le résultat) et `replay`
+(le fichier) ; si ton coup est refusé, `error` dit pourquoi et la partie n'a pas avancé.
+
 **Règles de l'agent** :
 
 - Ne lis **jamais** le fichier de partie (`tmp/agents/...`), ni le code, ni les replays : il

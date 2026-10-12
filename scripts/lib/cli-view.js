@@ -142,15 +142,20 @@ export function parseInput(text, state, order) {
   if (line === "p" || line === "passer") return legal.length === 0 ? { pass: true } : { error: "Tu as un coup possible : on ne passe que sans coup." };
   const numbers = cardAndBorder(line, state, order);
   if (!numbers) return { error: `Je n'ai pas compris « ${text} ». ${HELP}` };
+  // Well written, but not in the hand (Sami, 13/10: « 9♥ 4 » was answered by the whole help).
+  if (numbers.absent) return { error: `${numbers.absent} n'est pas dans ta main : ${order.map((card) => formatCard(state.spec, card)).join(" ")}.` };
   return moveFor(numbers, state, order, legal);
 }
 
 /** Suit letters an agent or a keyboard may type for ♠ ♥ ♣ ♦ (and the French ones: pique, cœur, trèfle, carreau). */
 const SUIT_LETTERS = { s: "♠", p: "♠", h: "♥", c: "♣", t: "♣", d: "♦", k: "♦" };
 
-/** The place in `order` of a card written out (« 4♦ », « 4d », « JK »), or 0. */
+/** A card as typed (« 4♦ », « 4d », « jk ») in the notation of the game's cards (« 4♦ », « JK »). */
+const writtenCard = (text) => (text.toUpperCase() === "JK" ? "JK" : text.replace(/[a-z]$/, (letter) => SUIT_LETTERS[letter] ?? letter));
+
+/** The place in `order` of a card written out, or 0. */
 function placeOfCard(text, state, order) {
-  const typed = text.toUpperCase() === "JK" ? "JK" : text.replace(/[a-z]$/, (letter) => SUIT_LETTERS[letter] ?? letter);
+  const typed = writtenCard(text);
   return order.findIndex((card) => formatCard(state.spec, card) === typed) + 1;
 }
 
@@ -163,7 +168,9 @@ function cardAndBorder(line, state, order) {
   const parts = line.replaceAll(/(\d)-(\d)/g, "$1 $2").split(/[\s,;/]+/).filter(Boolean);
   if (parts.length !== 2 || !/^\d+$/.test(parts[1])) return null;
   const place = /^\d+$/.test(parts[0]) ? Number(parts[0]) : placeOfCard(parts[0], state, order);
-  return place > 0 ? [place, Number(parts[1])] : null;
+  if (place > 0) return [place, Number(parts[1])];
+  // A card written as a card (« 9♥ », « 9h », « jk ») that the hand does not hold.
+  return /^(10|[1-9])[a-z♠♥♣♦]$|^jk$/i.test(parts[0]) ? { absent: writtenCard(parts[0]) } : null;
 }
 
 /** The legal move a card place and a border number name, or the reason there is none. */

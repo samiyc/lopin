@@ -60,7 +60,8 @@ function newSession({ botId = "experimental", first = "me", seed = Date.now() % 
 function loadSession(log) {
   const human = log.players.find((player) => player.kind === "human");
   const bot = log.players.find((player) => player.kind === "bot");
-  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: null };
+  // `client.last`: the exchange before, kept by `--step` so a refused move still shows what the robot just did.
+  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: log.client?.last ?? null };
 }
 
 const moveText = (state, entry) => (entry.pass ? "passe" : `${entry.move.card} → borne ${entry.move.border}`);
@@ -106,6 +107,7 @@ const endOf = ({ state, me }) => endText(state, me, { canClaim: (index, player) 
 /** Writes the finished game to replays/ (or `--out`), as the page does; returns its path from the working directory. */
 async function saveReplay(session) {
   finishLog(session.log, session.state);
+  if (session.log.client) delete session.log.client.last;
   await mkdir(REPLAYS, { recursive: true });
   // Games started in the same second, by the same players, with the same score share a name (llm-play --parallel,
   // 12/10: 3 replays of 10 were overwritten): the game's seed then tells them apart.
@@ -185,6 +187,12 @@ async function openSession(path) {
   return session;
 }
 
+/** The save file is the replay; while the game goes on it also keeps `last` (`saveReplay` drops it once finished). */
+function writeSave(path, session, finished) {
+  if (!finished && session.log.client) session.log.client.last = session.last;
+  return writeFile(path, JSON.stringify(session.log, null, 1));
+}
+
 async function stepMode() {
   const path = resolve(process.cwd(), option("--new") ?? option("--step"));
   const session = await openSession(path);
@@ -192,7 +200,7 @@ async function stepMode() {
   const read = line === undefined || session.state.over ? {} : apply(session, line);
   // Over: the replay is finished (its result written) before the save file is.
   const replay = session.state.over ? await saveReplay(session) : null;
-  await writeFile(path, JSON.stringify(session.log, null, 1));
+  await writeSave(path, session, replay !== null);
   if (replay) return show(session, { end: endOf(session), replay });
   show(session, read.error ? { error: read.error } : {});
 }
