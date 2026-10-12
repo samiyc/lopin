@@ -2091,8 +2091,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Confirmation d'Ensemble (trees=2 : 52,5 %, 49,8 – 55,2 sur les offsets 1-4, le 11/10) sur deux jeux de donnes neufs, comme Tree-7w et EndJoker. Donnes 5.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-12T12:40",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-12-12-17_VALIDATE_LONG_5_Ensemble.txt"
     },
     {
       "id": "VALIDATE_LONG_6_Ensemble",
@@ -2100,7 +2103,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Confirmation d'Ensemble (trees=2 : 52,5 %, 49,8 – 55,2 sur les offsets 1-4, le 11/10) sur deux jeux de donnes neufs, comme Tree-7w et EndJoker. Donnes 6, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2108,7 +2111,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T13:02",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-12-12-40_VALIDATE_LONG_6_Ensemble.txt"
     },
     {
       "id": "VALIDATE_LONG_1_Ensemble3",
@@ -2116,8 +2122,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 1.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-12T13:24",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-12-13-02_VALIDATE_LONG_1_Ensemble3.txt"
     },
     {
       "id": "VALIDATE_LONG_2_Ensemble3",
@@ -2125,7 +2134,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 2, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2133,7 +2142,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T13:24",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_Ensemble3 : 42.0 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_3_Ensemble3",
@@ -2141,7 +2153,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 3, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2156,7 +2168,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T13:24",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_Ensemble3 : 42.0 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_4_Ensemble3",
@@ -2164,7 +2179,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble3 : la 1.2 dont les 2 000 itérations se partagent entre trois arbres (667 chacun), visites de la racine additionnées. Donnes 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2179,7 +2194,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T13:24",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_Ensemble3 : 42.0 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_1_Ensemble4",
@@ -2187,8 +2205,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 1.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-12T13:46",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-12-13-24_VALIDATE_LONG_1_Ensemble4.txt"
     },
     {
       "id": "VALIDATE_LONG_2_Ensemble4",
@@ -2196,7 +2217,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 2, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2204,7 +2225,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T14:08",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-12-13-46_VALIDATE_LONG_2_Ensemble4.txt"
     },
     {
       "id": "VALIDATE_LONG_3_Ensemble4",
@@ -2212,7 +2236,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 3, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2227,7 +2251,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T14:08",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_Ensemble4 + VALIDATE_LONG_2_Ensemble4 : 46.2 % réunis, sous 50 %"
     },
     {
       "id": "VALIDATE_LONG_4_Ensemble4",
@@ -2235,7 +2262,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Ensemble4 : la 1.2 dont les 2 000 itérations se partagent entre quatre arbres (500 chacun), visites de la racine additionnées. Donnes 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2250,7 +2277,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T14:08",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_Ensemble4 + VALIDATE_LONG_2_Ensemble4 : 46.2 % réunis, sous 50 %"
     }
   ]
 }
