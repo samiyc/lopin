@@ -2288,8 +2288,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 1 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-12T18:42",
+      "minutes": 25,
+      "output": "backlog-runs/2026-10-12-18-18_VALIDATE_LONG_1_MarginBackup15.txt"
     },
     {
       "id": "VALIDATE_LONG_2_MarginBackup15",
@@ -2297,7 +2300,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 2 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2305,7 +2308,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T18:42",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_MarginBackup15 : 45.6 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_3_MarginBackup15",
@@ -2313,7 +2319,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 3 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2328,7 +2334,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T18:42",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_MarginBackup15 : 45.6 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_4_MarginBackup15",
@@ -2336,7 +2345,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 4 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2351,7 +2360,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T18:42",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_MarginBackup15 : 45.6 % réunis, sous 47 %"
     },
     {
       "id": "VALIDATE_LONG_1_DistOracle1Root-Exact12",
@@ -2359,8 +2371,11 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 1 sur 4.",
-      "status": "todo",
-      "stopIf": []
+      "status": "done",
+      "stopIf": [],
+      "doneAt": "2026-10-12T19:07",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-12-18-42_VALIDATE_LONG_1_DistOracle1Root-Exact12.txt"
     },
     {
       "id": "VALIDATE_LONG_2_DistOracle1Root-Exact12",
@@ -2368,7 +2383,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 2 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2376,7 +2391,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T19:31",
+      "minutes": 25,
+      "output": "backlog-runs/2026-10-12-19-07_VALIDATE_LONG_2_DistOracle1Root-Exact12.txt"
     },
     {
       "id": "VALIDATE_LONG_3_DistOracle1Root-Exact12",
@@ -2384,7 +2402,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 3 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2399,7 +2417,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T19:31",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_DistOracle1Root-Exact12 + VALIDATE_LONG_2_DistOracle1Root-Exact12 : 49.4 % réunis, sous 50 %"
     },
     {
       "id": "VALIDATE_LONG_4_DistOracle1Root-Exact12",
@@ -2407,7 +2428,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 4 sur 4, règle d'arrêt.",
-      "status": "todo",
+      "status": "skipped",
       "stopIf": [
         {
           "after": [
@@ -2422,7 +2443,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-12T19:31",
+      "minutes": 0,
+      "reason": "VALIDATE_LONG_1_DistOracle1Root-Exact12 + VALIDATE_LONG_2_DistOracle1Root-Exact12 : 49.4 % réunis, sous 50 %"
     }
   ]
 }
