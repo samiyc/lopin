@@ -21,7 +21,8 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     const state = position();
     const lines = textView(state, 0).split("\n");
     assert.match(lines[0], /^Tour 1 · pioche \d+ · main du robot 6 · bornes : toi 1, robot 1$/);
-    const board = lines.slice(2, 9);
+    assert.equal(lines[1], "Vues : ♠ 3/10 · ♥ 2/10 · ♣ 2/10 · ♦ 2/10 · JK 1/2", "the board and the hand, as the page's suit bar");
+    const board = lines.slice(3, 10);
     assert.equal(board.length, 7);
     assert.match(board[2], /^ {10}4♦$/, "the opponent's first card sits on the line just above the borders");
     assert.equal(board[3], "1A   2B   3-   4-   5-   6-   7-");
@@ -51,5 +52,6 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.equal(view.borders[1].won, "opponent");
     assert.deepEqual(view.hand.map((entry) => entry.card), handOrder(state, 0).map((card) => formatCard(SPEC, card)));
     assert.equal(view.over, false);
+    assert.deepEqual(view.seen, { "♠": "3/10", "♥": "2/10", "♣": "2/10", "♦": "2/10", JK: "1/2" });
   });
 });

@@ -1,6 +1,7 @@
 import { formatCard } from "../../src/core/notation.js";
 import { legalMoves } from "../../src/sim/game.js";
 import { sortBySuit, sortByValue } from "../../web/app/hand.js";
+import { suitCounts } from "../../web/app/view.js";
 
 /**
  * Bornage in a terminal (`npm run cli`, Sami 12/10): what the screen shows
@@ -28,7 +29,17 @@ const ownedBy = (state, player) => state.borders.filter((border) => border.owner
 /** One card line of the board: the `row`-th card of each border's side for `player`, blank where there is none. */
 const cardRow = (state, player, row) => state.borders.map((border) => pad(border.sides[player][row] === undefined ? "" : formatCard(state.spec, border.sides[player][row]))).join("").trimEnd();
 
-/** The text screen for player `me`: header, the seven-by-seven board, the numbered hand, the last move. */
+/**
+ * The cards of each suit the player can see (both sides of the board and
+ * their own hand) out of the deck's, as the page's suit bar shows them:
+ * « Vues : ♠ 7/10 · ♥ 5/10 · ♣ 6/10 · ♦ 4/10 · JK 1/2 ».
+ */
+export function seenLine(state, me) {
+  const counts = suitCounts(state.spec, state, { bottom: me, reveal: false });
+  return "Vues : " + counts.map(({ label, seen, total }) => `${label} ${seen}/${total}`).join(" · ");
+}
+
+/** The text screen for player `me`: header, the last move, the cards seen, the seven-by-seven board, the numbered hand. */
 export function textView(state, me, { order = handOrder(state, me), last = null, names = ["toi", "robot"] } = {}) {
   const header = `Tour ${state.turn + 1} · pioche ${state.pile.length} · main du ${names[1]} ${state.hands[1 - me].length} · bornes : ${names[0]} ${ownedBy(state, me)}, ${names[1]} ${ownedBy(state, 1 - me)}`;
   const theirs = [2, 1, 0].map((row) => cardRow(state, 1 - me, row));
@@ -36,7 +47,7 @@ export function textView(state, me, { order = handOrder(state, me), last = null,
   const mine = [0, 1, 2].map((row) => cardRow(state, me, row));
   const cards = order.map((card, index) => `${index + 1}:${formatCard(state.spec, card)}`);
   const hand = "Main : " + cards.join("  ");
-  return [header, ...(last ? [last] : []), "", ...theirs, borders, ...mine, "", hand].join("\n");
+  return [header, ...(last ? [last] : []), seenLine(state, me), "", ...theirs, borders, ...mine, "", hand].join("\n");
 }
 
 /** The legal moves as typed: "card border", the card by its place in `order` (a joker takes the first place it holds). */
@@ -57,6 +68,7 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     opponentHand: state.hands[1 - me].length,
     hand: order.map((card, index) => ({ n: index + 1, card: formatCard(state.spec, card) })),
     borders: state.borders.map((border, index) => ({ n: index + 1, mine: side(border.sides[me]), theirs: side(border.sides[1 - me]), won: won(border) })),
+    seen: Object.fromEntries(suitCounts(state.spec, state, { bottom: me, reveal: false }).map(({ label, seen, total }) => [label, `${seen}/${total}`])),
     legal: state.current === me && !state.over ? legalInputs(state, order) : [],
     last,
     over: Boolean(state.over),

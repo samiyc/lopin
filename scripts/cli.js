@@ -26,6 +26,9 @@ const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const machine = args.includes("--machine");
 const REPLAYS = new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url);
+const stepping = args.includes("--new") || args.includes("--step");
+const interactiveMode = machine ? "machine" : "interactive";
+const CLIENT_MODE = stepping ? "step" : interactiveMode;
 
 /** The options of a new game from the command line; the seed defaults to the clock. */
 const sessionOptions = (name) => ({ botId: option("--bot"), first: option("--first"), seed: option("--seed") === undefined ? undefined : Number(option("--seed")), name: option("--name") ?? name });
@@ -35,7 +38,10 @@ function newSession({ botId = "experimental", first = "me", seed = Date.now() % 
   const state = newGame(seed);
   const me = first === "bot" ? 1 : 0;
   const players = [humanEntry(me, name), botEntry(1 - me, botId)].sort((a, b) => a.seat - b.seat);
-  return { state, me, bot: botPlayer(botId, seed + 1), log: startLog(state, { rules: RULES, players, seed }), sort: "suit", last: null };
+  const log = startLog(state, { rules: RULES, players, seed });
+  // Where the game was played (Sami, 12/10): the page writes no `client`; the CLI says so, and how it was driven.
+  log.client = { app: "cli", mode: CLIENT_MODE };
+  return { state, me, bot: botPlayer(botId, seed + 1), log, sort: "suit", last: null };
 }
 
 /** A game saved by `--new` / `--step`: the replay is the save. */
@@ -75,15 +81,17 @@ function humanTurn(session, move, thinkMs) {
   if (thinkMs !== undefined) entry.thinkMs = thinkMs;
   const won = claims(session, before);
   botTurns(session);
-  if (won.length > 0) session.last = [`Toi : ${won.join(", ")}`, session.last].filter(Boolean).join(" · ");
+  // The claims right after the human's move: theirs, or the bot's (the opponent claims next under the page's rule).
+  if (won.length > 0) session.last = [`Après ton coup : ${won.join(", ")}`, session.last].filter(Boolean).join(" · ");
 }
 
 function endText(session) {
   const { state, me } = session;
   const mine = state.borders.filter((border) => border.owner === me).length;
   const theirs = state.borders.filter((border) => border.owner === 1 - me).length;
-  const how = state.winType === "adjacent" ? "trois bornes à la suite" : `${mine} bornes à ${theirs}`;
-  if (state.winner === null) return `Partie nulle, ${mine} bornes à ${theirs}.`;
+  const score = `${mine} ${mine > 1 ? "bornes" : "borne"} à ${theirs}`;
+  const how = state.winType === "adjacent" ? "trois bornes à la suite" : score;
+  if (state.winner === null) return `Partie nulle, ${score}.`;
   return state.winner === me ? `Gagné : ${how} !` : `Perdu : le robot l'emporte (${how}).`;
 }
 
@@ -129,15 +137,25 @@ async function onLine(session, line, thinkMs) {
   return false;
 }
 
+/** The player's name: `--name`, or asked on the first line (Sami, 12/10); a program (`--machine`) is "agent". */
+async function nameFrom(lines) {
+  if (option("--name") !== undefined) return option("--name");
+  if (machine) return "agent";
+  process.stdout.write("Ton prénom ? ");
+  const { value } = await lines.next();
+  return value?.trim() || "joueur";
+}
+
 async function interactive() {
-  const session = newSession(sessionOptions("sami"));
+  const input = createInterface({ input: process.stdin, terminal: false });
+  const lines = input[Symbol.asyncIterator]();
+  const session = newSession({ ...sessionOptions("agent"), name: await nameFrom(lines) });
   if (!machine) console.log(`Bornage contre ${BOT_LINEUP[session.bot.id].label} ${BOT_LINEUP[session.bot.id].version}. ${HELP}`);
   botTurns(session);
   show(session);
-  const input = createInterface({ input: process.stdin, terminal: false });
   let asked = performance.now();
-  for await (const line of input) {
-    if (await onLine(session, line, Math.round(performance.now() - asked))) break;
+  for (let next = await lines.next(); !next.done; next = await lines.next()) {
+    if (await onLine(session, next.value, Math.round(performance.now() - asked))) break;
     asked = performance.now();
   }
   input.close();

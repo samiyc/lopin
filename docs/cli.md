@@ -15,6 +15,9 @@ npm run cli -- --first bot           # le robot commence
 npm run cli -- --seed 42 --name sami # une donne choisie, ton prénom dans le replay
 ```
 
+Sans `--name`, le jeu demande ton prénom au début (une ligne vide : « joueur ») ; un programme
+(`--machine`, `--new`) s'appelle « agent ».
+
 Un coup : **le numéro de la carte dans ta main (1-6), puis la borne (1-7)**, séparés par une
 espace, une virgule ou un tiret, puis Entrée : `3 5` pose ta 3e carte sur la borne 5.
 
@@ -31,6 +34,7 @@ espace, une virgule ou un tiret, puis Entrée : `3 5` pose ta 3e carte sur la bo
 ```
 Tour 3 · pioche 28 · main du robot 6 · bornes : toi 0, robot 0
 Basique : 4♠ → borne 5
+Vues : ♠ 1/10 · ♥ 2/10 · ♣ 2/10 · ♦ 2/10 · JK 1/2
 
 
 
@@ -48,7 +52,10 @@ Main : 1:10♥  2:1♣  3:8♣  4:1♦  5:7♦  6:JK
 - Une borne : `-` libre, `A` gagnée par toi, `B` par le robot, `=` les deux côtés pleins mais
   personne n'a encore pu la revendiquer.
 - L'en-tête : le tour, la pioche, les cartes en main du robot, les bornes gagnées ; puis le
-  dernier coup du robot et les bornes revendiquées.
+  dernier coup du robot et les bornes revendiquées (« Après ton coup : borne 2 au robot » quand
+  le robot en revendique une juste après ton coup).
+- **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10, et les
+  jokers sur 2, comme la barre des couleurs de la page.
 - La main est triée par couleur (♠ ♥ ♣ ♦, du plus petit au plus grand, jokers à la fin) : les
   numéros changent quand une carte arrive.
 
@@ -64,8 +71,16 @@ Une ligne JSON par état sur la sortie, un coup par ligne en entrée (`3 5`), co
  "last":"Basique : 4♠ → borne 5","over":false,"winner":null}
 ```
 
-`won` vaut `"me"`, `"opponent"` ou `null` ; `legal` donne **tous** les coups permis, déjà écrits
-comme il faut les taper ; une saisie refusée renvoie le même état avec `"error"`.
+`won` vaut `"me"`, `"opponent"` ou `null` ; `seen` les cartes vues par couleur
+(`{"♠":"3/10",…,"JK":"1/2"}`) ; `legal` donne **tous** les coups permis, déjà écrits comme il faut
+les taper ; une saisie refusée renvoie le même état avec `"error"`.
+
+## La trace dans le replay
+
+Un replay joué en console porte `"client": { "app": "cli", "mode": "interactive" }` (ou
+`"machine"`, `"step"`) ; ceux de la page n'ont pas ce champ. On retrouve ainsi les parties de la
+console, ou d'un agent, pour une analyse ou un bug. Le reste du replay est celui de la page : tes
+temps de réflexion (`thinkMs`), les candidats du robot à chaque coup, les revendications.
 
 ## Pour un agent : le pas à pas
 
