@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { formatCard, parseCards } from "../src/core/notation.js";
 import { legalMoves } from "../src/sim/game.js";
 import { SPEC, newGame } from "../web/app/runner.js";
-import { handOrder, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
+import { claimText, endText, handOrder, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
 
 /** A game of the page's rules where player 0 holds `hand`, with a few cards and owners set by hand. */
 function position() {
@@ -41,6 +41,20 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.match(parseInput("bonjour", state, order).error, /Je n'ai pas compris/);
     assert.deepEqual(parseInput("t", state, order), { sort: true });
     assert.deepEqual(parseInput("Q", state, order), { quit: true });
+  });
+
+  it("says who claims, and how the game ended (Sami's second game, 12/10)", () => {
+    assert.equal(claimText([{ index: 6, owner: 0 }], 0), "tu revendiques la borne 7");
+    assert.equal(claimText([{ index: 1, owner: 1 }, { index: 3, owner: 1 }], 0), "le robot revendique les bornes 2 et 4");
+    const state = newGame(5);
+    [1, 2, 3].forEach((index) => (state.borders[index].owner = 1));
+    [0, 4, 6].forEach((index) => (state.borders[index].owner = 0));
+    Object.assign(state, { over: true, winner: 1, winType: "adjacent" });
+    const canClaim = (index, player) => index === 5 && player === 0;
+    assert.equal(endText(state, 0, { canClaim }), "Perdu : le robot l'emporte, bornes 2-3-4 à la suite. La borne 6 était à toi, mais celui qui vient de jouer revendique en premier, et la partie s'arrête à la première victoire.");
+    Object.assign(state, { winner: 0, winType: "majority" });
+    state.borders[1].owner = null;
+    assert.equal(endText(state, 0), "Gagné : tu gagnes, 3 bornes (1, 5 et 7).");
   });
 
   it("gives an agent the same position as JSON, with exactly the legal moves", () => {

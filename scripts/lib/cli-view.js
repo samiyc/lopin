@@ -76,6 +76,51 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
   };
 }
 
+const plural = (count, word) => `${count} ${word}${count > 1 ? "s" : ""}`;
+
+/** « 3 », « 3 et 5 », « 1, 3 et 5 ». */
+const listOf = (numbers) => (numbers.length < 2 ? String(numbers[0]) : `${numbers.slice(0, -1).join(", ")} et ${numbers.at(-1)}`);
+
+/** Who claimed what, said as such (Sami, 12/10): « tu revendiques la borne 7 », « le robot revendique les bornes 2 et 4 ». */
+export function claimText(borders, me) {
+  const by = (player) => borders.filter((border) => border.owner === player).map((border) => border.index + 1);
+  const say = (numbers, who, verb) => (numbers.length === 0 ? [] : [`${who} ${verb} ${numbers.length > 1 ? "les bornes" : "la borne"} ${listOf(numbers)}`]);
+  return [...say(by(me), "tu", "revendiques"), ...say(by(1 - me), "le robot", "revendique")].join(", ");
+}
+
+/** The borders of the winner's run of three (or more) adjacent ones, numbered from 1. */
+function winningRun(state) {
+  let run = [];
+  for (const [index, border] of state.borders.entries()) {
+    run = border.owner === state.winner ? [...run, index + 1] : [];
+    if (run.length >= state.spec.adjacent) return run;
+  }
+  return run;
+}
+
+/**
+ * The end of the game in words (Sami, 12/10): who won, with which borders,
+ * and — the page's claim rule lets the player who just moved claim first —
+ * the borders the loser could have claimed when the game stopped.
+ */
+export function endText(state, me, { canClaim = () => false } = {}) {
+  const won = (player) => state.borders.flatMap((border, index) => (border.owner === player ? [index + 1] : []));
+  if (state.winner === null) return `Partie nulle, ${plural(won(me).length, "borne")} à ${won(1 - me).length}.`;
+  const winner = state.winner === me ? "Gagné : tu gagnes" : "Perdu : le robot l'emporte";
+  const how = state.winType === "adjacent" ? `bornes ${winningRun(state).join("-")} à la suite` : `${plural(won(state.winner).length, "borne")} (${listOf(won(state.winner))})`;
+  return `${winner}, ${how}.${missedNote(state, me, canClaim)}`;
+}
+
+/** The borders the loser could have claimed when the game stopped, or nothing. */
+function missedNote(state, me, canClaim) {
+  const loser = 1 - state.winner;
+  const missed = state.borders.flatMap((border, index) => (border.owner === null && canClaim(index, loser) ? [index + 1] : []));
+  if (missed.length === 0) return "";
+  const owner = loser === me ? "à toi" : "au robot";
+  const which = missed.length > 1 ? `Les bornes ${listOf(missed)} étaient` : `La borne ${missed[0]} était`;
+  return ` ${which} ${owner}, mais celui qui vient de jouer revendique en premier, et la partie s'arrête à la première victoire.`;
+}
+
 export const HELP = "Joue « carte borne » : « 3 5 » pose la 3e carte de ta main sur la borne 5 (séparateurs : espace, virgule, tiret). t : trier par valeur / par couleur · p : passer (seulement sans coup possible) · ? : aide · q : abandonner.";
 
 const COMMANDS = { t: { sort: true }, "?": { help: true }, aide: { help: true }, q: { quit: true }, quitter: { quit: true } };

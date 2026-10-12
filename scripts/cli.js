@@ -4,7 +4,8 @@ import { createInterface } from "node:readline";
 import { BOT_IDS, BOT_LINEUP } from "../src/config/bots.js";
 import { finishLog, playLogged, startLog, stateAt } from "../src/replay/log.js";
 import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/runner.js";
-import { HELP, handOrder, machineView, parseInput, textView } from "./lib/cli-view.js";
+import { isClaimable } from "../src/sim/certainty.js";
+import { HELP, claimText, endText, handOrder, machineView, parseInput, textView } from "./lib/cli-view.js";
 import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
 
 /**
@@ -53,11 +54,11 @@ function loadSession(log) {
 
 const moveText = (state, entry) => (entry.pass ? "passe" : `${entry.move.card} → borne ${entry.move.border}`);
 
-/** The borders `before` did not own and the state now does, said in words. */
+/** The borders `before` did not own and the state now does, said in words (none: an empty list). */
 function claims(session, before) {
   const { state, me } = session;
   const news = state.borders.map((border, index) => ({ index, owner: border.owner })).filter(({ index, owner }) => owner !== null && owner !== undefined && owner !== before[index]);
-  return news.map(({ index, owner }) => `borne ${index + 1} ${owner === me ? "à toi" : "au robot"}`);
+  return news.length > 0 ? [claimText(news, me)] : [];
 }
 
 const owners = (state) => state.borders.map((border) => border.owner);
@@ -85,15 +86,8 @@ function humanTurn(session, move, thinkMs) {
   if (won.length > 0) session.last = [`Après ton coup : ${won.join(", ")}`, session.last].filter(Boolean).join(" · ");
 }
 
-function endText(session) {
-  const { state, me } = session;
-  const mine = state.borders.filter((border) => border.owner === me).length;
-  const theirs = state.borders.filter((border) => border.owner === 1 - me).length;
-  const score = `${mine} ${mine > 1 ? "bornes" : "borne"} à ${theirs}`;
-  const how = state.winType === "adjacent" ? "trois bornes à la suite" : score;
-  if (state.winner === null) return `Partie nulle, ${score}.`;
-  return state.winner === me ? `Gagné : ${how} !` : `Perdu : le robot l'emporte (${how}).`;
-}
+/** The end in words, with the borders the loser could still have claimed (the engine's own proof). */
+const endOf = ({ state, me }) => endText(state, me, { canClaim: (index, player) => isClaimable(state, index, player) });
 
 /** Writes the finished game to replays/, as the page does; returns its path. */
 async function saveReplay(session) {
@@ -128,7 +122,7 @@ async function onLine(session, line, thinkMs) {
   const read = apply(session, line, thinkMs);
   if (read.quit) return true;
   if (session.state.over) {
-    show(session, { end: endText(session), replay: await saveReplay(session) });
+    show(session, { end: endOf(session), replay: await saveReplay(session) });
     return true;
   }
   // A mistake or the help: the message alone, the board is still on screen (machine mode repeats the state).
@@ -177,7 +171,7 @@ async function stepMode() {
   // Over: the replay is finished (its result written) before the save file is.
   const replay = session.state.over ? await saveReplay(session) : null;
   await writeFile(path, JSON.stringify(session.log, null, 1));
-  if (replay) return show(session, { end: endText(session), replay });
+  if (replay) return show(session, { end: endOf(session), replay });
   show(session, read.error ? { error: read.error } : {});
 }
 

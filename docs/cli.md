@@ -52,8 +52,11 @@ Main : 1:10♥  2:1♣  3:8♣  4:1♦  5:7♦  6:JK
 - Une borne : `-` libre, `A` gagnée par toi, `B` par le robot, `=` les deux côtés pleins mais
   personne n'a encore pu la revendiquer.
 - L'en-tête : le tour, la pioche, les cartes en main du robot, les bornes gagnées ; puis le
-  dernier coup du robot et les bornes revendiquées (« Après ton coup : borne 2 au robot » quand
-  le robot en revendique une juste après ton coup).
+  dernier coup du robot et qui revendique quoi : « Expérimental : 1♥ → borne 7 · tu revendiques
+  la borne 7 », « Après ton coup : le robot revendique la borne 2 ».
+- La fin dit qui gagne et avec quelles bornes (« le robot l'emporte, bornes 2-3-4 à la suite »),
+  et, s'il y en a, les bornes que le perdant aurait pu revendiquer : celui qui vient de jouer
+  revendique en premier, et la partie s'arrête à la première victoire.
 - **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10, et les
   jokers sur 2, comme la barre des couleurs de la page.
 - La main est triée par couleur (♠ ♥ ♣ ♦, du plus petit au plus grand, jokers à la fin) : les
