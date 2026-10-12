@@ -47,16 +47,31 @@ async function cli(extra) {
   return { view: JSON.parse(stdout.trim().split("\n").at(-1)), ms: performance.now() - started };
 }
 
+const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+
+/**
+ * One Ollama request, tried again on a dropped connection (5 times, 5 s
+ * apart): restarting the service (to set OLLAMA_NUM_PARALLEL, 12/10) cut a
+ * request mid-game and stopped the whole batch.
+ */
+async function chat(body) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      const response = await fetch(`${host}/api/chat`, { method: "POST", body });
+      return await response.json();
+    } catch (error) {
+      if (attempt >= 6) throw error;
+      await pause(5000);
+    }
+  }
+}
+
 /** The model's answer to one position: `{ coup, raison }` (or null), and its time. */
 async function ask(view, retry) {
   const started = performance.now();
   const warning = retry ? "\n\nAttention : " + retry : "";
   const user = `${view.board}\n\nCoups permis : ${JSON.stringify(view.moves)}${warning}\nTon coup ?`;
-  const response = await fetch(`${host}/api/chat`, {
-    method: "POST",
-    body: JSON.stringify({ model, stream: false, format: "json", options: { temperature: 0.3 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }),
-  });
-  const body = await response.json();
+  const body = await chat(JSON.stringify({ model, stream: false, format: "json", options: { temperature: 0.3 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
   let answer = null;
   try {
     answer = JSON.parse(body.message?.content ?? "");
