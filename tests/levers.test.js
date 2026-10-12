@@ -87,7 +87,7 @@ describe("ISMCTS", () => {
   });
 
   it("plays whole games as an engine, with every way of searching deeper", () => {
-    for (const id of ["ismcts@40", "ismcts+puct=2@40", "ismcts+trees=2@40", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
+    for (const id of ["ismcts@40", "ismcts+puct=2@40", "ismcts+trees=2@40", "ismcts+simCertain=1@30", "ismcts+simCertain=1+simExact=4@30", "ismcts+pw=1+widen=6+depth=5@40", "ismcts+rave=300@40", "ismcts+exact=12+hope=1@40", "ismcts+widen=3+depth=5+core=nb1@30", "ismcts+shortlist=plain+rollout=nb2@30", "core:plain"]) assert.ok(playsThrough(id).over, id);
   });
 
   it("marks the move after the opponent has started all seven borders, once", () => {

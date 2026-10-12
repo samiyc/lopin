@@ -256,11 +256,12 @@ const lookaheadOf = (settings, name) => (rng) => {
 /**
  * The bot that plays the experimental search's rollouts: `settings`'
  * strategist without `certain` — certainties choose the real move; in the
- * rollouts they cost a third of the speed for nothing measurable.
+ * rollouts they cost a third of the speed for nothing measurable (0.7) —
+ * `keepCertain` (`+simCertain=1`, 12/10) keeps them, to measure it again.
  * `npm run policy` measures it on its own.
  */
 export const rolloutPolicyOf = (settings) => {
-  const rollouts = { ...settings, ideas: (settings.ideas ?? []).filter((idea) => idea !== "certain"), sample: settings.rolloutSample };
+  const rollouts = { ...settings, ideas: (settings.ideas ?? []).filter((idea) => settings.keepCertain || idea !== "certain"), sample: settings.rolloutSample };
   return (seeded) => strategistBot(seeded, rollouts);
 };
 
@@ -292,8 +293,9 @@ export const BOTS = Object.freeze({
 
 /** The ISMCTS bot on the experimental core; `sample` makes its rollouts draw their moves. */
 // `lite` (B1): the rollouts' core judges a one-card side by its card alone; at 1 the tree's nodes keep the whole core, at 2 only the root does.
-const ismctsOf = ({ sample, core = "exp", shortlist = core, rollout = core, lite = 0, ...tree }, budget) => (rng) =>
-  ismctsBot(rng, { base: strategistBot(rng, coreOf(shortlist)), policy: rolloutPolicyOf({ ...coreOf(rollout), rolloutSample: sample, lite: lite > 0 }), treePolicy: lite === 1 ? rolloutPolicyOf({ ...coreOf(rollout), rolloutSample: sample }) : undefined, oddsOf: winOdds, ...tree, ...budget });
+// `simCertain` (12/10): the simulations keep `certain`, the tree's nodes judge without it.
+const ismctsOf = ({ sample, core = "exp", shortlist = core, rollout = core, lite = 0, simCertain = 0, ...tree }, budget) => (rng) =>
+  ismctsBot(rng, { base: strategistBot(rng, coreOf(shortlist)), policy: rolloutPolicyOf({ ...coreOf(rollout), rolloutSample: sample, lite: lite > 0, keepCertain: simCertain > 0 }), treePolicy: lite === 1 || simCertain > 0 ? rolloutPolicyOf({ ...coreOf(rollout), rolloutSample: sample }) : undefined, oddsOf: winOdds, ...tree, ...budget });
 
 /**
  * An engine by id: one of `BOTS`, or `experimental:N` — the experimental bot

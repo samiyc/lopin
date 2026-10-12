@@ -1,4 +1,5 @@
 import { solveEndgame } from "./endgame.js";
+import { applyMove, legalMoves } from "./game.js";
 
 /**
  * The experimental bot's endgame (since 0.7): once the pile is empty and few
@@ -20,6 +21,29 @@ export const EXACT = Object.freeze({ maxCards: 8, nodes: 400_000 });
 const cardsLeft = (state) => state.hands[0].length + state.hands[1].length;
 
 export const exactApplies = (state, maxCards = EXACT.maxCards) => state.pile.length === 0 && cardsLeft(state) <= maxCards;
+
+/** The solver's verdict on `game` for its legal `moves`: the winner, or null for a draw. */
+function solvedWinner(game, moves) {
+  const value = Math.max(...solveEndgame(game, { moves, stopAtWin: true }).moves.map((entry) => entry.value));
+  if (value === 0) return null;
+  return value > 0 ? game.current : 1 - game.current;
+}
+
+/**
+ * `simExact` (Sami's 1.3 roadmap, 12/10): a simulation played by `policy`
+ * until the solver applies (pile empty, `maxCards` cards or fewer), then the
+ * solver's verdict instead of the policy's ending — the core errs in 3.6 % of
+ * won endgames, a third of them with the joker.
+ */
+export function playOutExact(game, policy, maxCards) {
+  const guard = game.spec.borders * 6 * 3;
+  while (!game.over && game.turn < guard) {
+    const moves = legalMoves(game);
+    if (moves.length > 0 && exactApplies(game, maxCards)) return solvedWinner(game, moves);
+    applyMove(game, moves.length > 0 ? policy.choose(game, moves) : null);
+  }
+  return game.winner;
+}
 
 /**
  * `scored` (the core's `scoreMoves` output) re-rated by the solver: a move's

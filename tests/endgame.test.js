@@ -5,6 +5,7 @@ import { ORDERS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
 import { BOTS } from "../src/sim/bots.js";
 import { bestMoves, solveEndgame } from "../src/sim/endgame.js";
+import { playOutExact } from "../src/sim/exact.js";
 import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
 import { cloneState } from "../src/sim/lookahead.js";
 
@@ -45,6 +46,16 @@ describe("the endgame solver", () => {
         assert.equal(value, naive(next, state.current), `seed ${seed}`);
       }
       assert.ok(bestMoves(solution).length >= 1);
+    }
+  });
+
+  it("ends a simulation with the solver's verdict once few cards are left (simExact)", () => {
+    for (let seed = 1; seed <= 12; seed += 1) {
+      const state = endgame(seed, 38);
+      const value = naive(state, state.current);
+      const winner = playOutExact(cloneState(state), BOTS.greedy(createRng(seed)), 8);
+      const decided = value > 0 ? state.current : 1 - state.current;
+      assert.equal(winner, value === 0 ? null : decided, `seed ${seed}`);
     }
   });
 
