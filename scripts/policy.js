@@ -3,7 +3,7 @@ import { createRng } from "../src/core/random.js";
 import { stateAt } from "../src/replay/log.js";
 import { BOT_PARAMS, rolloutPolicyOf } from "../src/sim/bots.js";
 import { bestMoves, solveEndgame } from "../src/sim/endgame.js";
-import { EXPERIMENT } from "../src/sim/experimental.js";
+import { EXPERIMENT, coreOf } from "../src/sim/experimental.js";
 import { legalMoves } from "../src/sim/game.js";
 
 /**
@@ -27,6 +27,9 @@ const POLICIES = {
   "température 0,5": withParams({ temperature: 0.5 }),
   "coût des cartes 0,04": withParams({ cardCost: 0.04 }),
   "coût des jokers 0,12": withParams({ jokerCost: 0.12 }),
+  // The 1.2's simulations, and the same keeping `certain` (+simCertain=1, 12/10).
+  "1.2 (stfig6)": rolloutPolicyOf(coreOf("stfig6")),
+  "1.2 + certain (SimCertain)": rolloutPolicyOf({ ...coreOf("stfig6"), keepCertain: true }),
 };
 const MAX_CARDS = 9;
 const SEEDS = [1, 2, 3];
