@@ -1,6 +1,7 @@
 import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
 import { createEnsemble, explorationBonus, pointsFor, pointsOf } from "./choice.js";
+import { reuseOf } from "./reuse.js";
 import { EXACT, exactApplies, exactScores, playOutExact } from "./exact.js";
 import { applyMove, legalMoves } from "./game.js";
 import { createHalving, parseHalving } from "./halving.js";
@@ -234,7 +235,7 @@ export function createIsmcts(state, scored, options) {
   if ((options.trees ?? 1) > 1) return createEnsemble(createIsmcts, state, scored, options);
   const deals = createRng(options.seed);
   const ctx = resolveCtx(state, scored, options, deals);
-  const root = newNode();
+  const root = options.root ?? newNode();
   const rated = () => ratingOf(root, scored, ctx);
   return {
     step() {
@@ -284,6 +285,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
   // `budgetMs`: a clock instead of a count, to compare variants of unequal speed at equal time; `late`, `early`, `smart`: budget.js.
   const { run, usage } = createBudget({ budget, budgetMs, late, early, smart });
   const recall = memoryOf(memory);
+  const reuse = reuseOf(settings.reuse);
   const solves = (state, moves) => moves.length > 1 && exactApplies(state, exact);
   const maxNodes = exact > EXACT.maxCards ? EXACT.nodes : Infinity;
   const winning = (scores) => scores && (!hope || scores.some((entry) => entry.exact && entry.gain > 0.5));
@@ -297,13 +299,13 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
     if (moves.length <= 1) return base.scoreMoves(state, moves, options);
     const exactly = solved(state, moves, options);
     if (exactly) return exactly;
-    return run(searchFor(state, moves, options, recall(state)), state.turn, isPivot(state) ? pivot : 1).scored();
+    return reuse.remember(state, run(searchFor(state, moves, options, { ...recall(state), root: reuse.rootFor(state) }), state.turn, isPivot(state) ? pivot : 1)).scored();
   };
   // `pick` is `choose` with the scores it chose from, for the replays to keep (bot-games.js).
   const pick = (state, moves) => {
     if (moves.length <= 1) return { move: moves[0], scored: null };
     const scored = scoreMoves(state, moves);
-    return { move: bestOf(scored), scored };
+    return { move: reuse.played(bestOf(scored)), scored };
   };
   return { name, base, policy, searchFor, solves, scoreMoves, usage, pick, choose: (state, moves) => pick(state, moves).move };
 }
@@ -323,7 +325,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

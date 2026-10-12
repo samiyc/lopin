@@ -3095,3 +3095,13 @@ racine et les nœuds gardent le cœur de la 1.2) :
   une amélioration doit y être **quasi gratuite** en temps (comme le solveur à la racine, qui ne
   joue qu'une fois par coup), ou rapporter plus que les itérations qu'elle prend.
 - Écartés ; les options restent (`+simCertain`, `+simExact`).
+
+## Les quatre pistes du 12/10
+
+**TreeReuse (`+reuse=1`, `src/sim/reuse.js`)** : l'arbre gardé d'un coup au suivant (le nœud sous
+mon coup et la réponse adverse devient la racine). Mesuré avant tout duel, sur deux parties de la
+1.2 à 2 000 contre elle-même : **13 visites offertes en moyenne par recherche** (moins de 1 % du
+budget ; 26 recherches sur 30 en reçoivent, une seule plus de 50 : 173 au tour 26). Sous mon coup,
+les 7 réponses adverses se partagent quelques centaines de visites, celle qui est jouée en a au
+mieux quelques dizaines, et l'étage d'après n'est presque jamais atteint. Pas de duel : il n'y a
+presque rien à garder. L'option reste.
