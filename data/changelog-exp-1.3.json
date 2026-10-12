@@ -203,6 +203,32 @@
    "when": "12/10 13:46",
    "note": "VALIDATE_LONG_1 et 2_Ensemble4 : 48,8 puis 43,6 %, 46,2 % sur 500 parties ; la règle d'arrêt a annulé les duels 3 et 4. Coût -0,7 % par itération.",
    "idea": "Le même partage du budget, en quatre : la borne haute reste sous 50 %."
+  },
+  {
+   "id": "sim-certain",
+   "name": "SimCertain : les simulations gardent certain (+simCertain=1)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 40.7,
+   "lo": 31.7,
+   "hi": 49.7,
+   "verdict": "perd",
+   "when": "12/10 16:39",
+   "note": "Tri à 2 s par coup contre la 1.2 (--screen --page, 108 parties). Plus juste en fin de partie (npm run policy : 95,0 % contre 93,8 %, 90,8 contre 88,3 sur les délicates) mais ≈ 1 150 itérations par coup contre ≈ 1 820.",
+   "idea": "Des simulations plus justes, quitte à en faire moins, à temps égal (Sami, 12/10)."
+  },
+  {
+   "id": "sim-certain-exact4",
+   "name": "SimCertainExact4 : et le solveur à 4 cartes en fin de simulation (+simExact=4)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 41,
+   "lo": 34.4,
+   "hi": 47.5,
+   "verdict": "perd",
+   "when": "12/10 16:49",
+   "note": "Tri à 2 s par coup contre la 1.2 (--screen --page, 144 parties) ; ≈ 1 040 itérations par coup contre ≈ 1 814. À 6 cartes le solveur coûte trop (376 simulations/s contre 1 385).",
+   "idea": "Le bruit des fins de partie simulées (le cœur se trompe dans 3,6 % des fins gagnées) remplacé par le résultat exact."
   }
  ],
  "manualJobs": [],
@@ -296,7 +322,7 @@
   {
    "when": "Maintenant",
    "title": "Le budget dans la page",
-   "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version."
+   "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version. Le 12/10 : sous 2 000 itérations, le budget coûte cher (−37 % d'itérations, environ −9 points, SimCertain) ; une amélioration doit être quasi gratuite en temps."
   },
   {
    "when": "À tester",

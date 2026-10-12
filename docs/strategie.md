@@ -3069,3 +3069,29 @@ l'arbre dans le temps de la 1.2 à 2 000, l'arbre compensant ce que le cœur ne 
   ne devrait en coûter qu'à peu près autant : un cœur de simulation plus juste, même deux fois plus
   lent, est rentable dès qu'il gagne ~3 points — à mesurer à temps égal. Les écarts sont toujours
   venus de là : `stfig` (1.0), la largeur (1.1), le solveur (1.2).
+
+## Des simulations plus justes, à temps égal (12/10)
+
+**L'idée de Sami** : puisque le budget rapporte peu au-dessus de 2 000, faire des simulations plus
+justes quitte à en faire moins, à 2 s par coup. Deux versions (les simulations seulement ; la
+racine et les nœuds gardent le cœur de la 1.2) :
+- **`SimCertain`** (`+simCertain=1`) : les simulations gardent l'idée `certain`, retirée en 0.7
+  (« un tiers de la vitesse pour rien de mesurable »).
+- **`SimCertainExact4`** (`+simCertain=1+simExact=4`) : en plus, une simulation s'arrête dès que la
+  pioche est vide et qu'il reste 4 cartes, et le solveur donne le résultat (`playOutExact`,
+  `exact.js`). À 6 cartes, trop cher : 376 simulations/s contre 1 385.
+
+| Mesure | 1.2 | `SimCertain` | `SimCertainExact4` |
+| --- | --- | --- | --- |
+| Simulations/s (`npm run bench`, 400, un fil) | 1 385 | 987 (71 %) | 875 (63 %) |
+| Itérations par coup à 2 s, 18 fils (replays) | ≈ 1 820 | ≈ 1 150 | ≈ 1 040 |
+| `npm run policy` : coup gagnant gardé (délicates) | 93,8 % (88,3) | **95,0 % (90,8)** | (le solveur, à 4 cartes) |
+| Tri à 2 s par coup contre la 1.2 (`--screen --page`) | — | **40,7 % (31,7 – 49,7)**, 108 parties | **41,0 % (34,4 – 47,5)**, 144 parties |
+
+- Les simulations sont plus justes (`policy` +1,2 point, +2,5 sur les positions délicates), mais
+  perdre un tiers des itérations coûte bien plus : les deux tris écartent (borne haute sous 50 %).
+- **Le budget n'est pas symétrique** : au-dessus de 2 000 il rapporte peu (×2 : +2,8 points), en
+  dessous il coûte cher (−37 % d'itérations : environ −9 points). La 1.2 est au coude de la courbe :
+  une amélioration doit y être **quasi gratuite** en temps (comme le solveur à la racine, qui ne
+  joue qu'une fois par coup), ou rapporter plus que les itérations qu'elle prend.
+- Écartés ; les options restent (`+simCertain`, `+simExact`).
