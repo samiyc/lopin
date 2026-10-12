@@ -36,6 +36,9 @@ const name = `${model.replaceAll(/[^a-z0-9.]+/gi, "-")}`;
 // `--view` (Sami, 12/10): how the position reaches the model — `grid` the CLI's screen, `list` one line a
 // border, `json` the CLI's own objects. qwen2.5:7b misread the grid's seven columns (cards it named were not there).
 const viewMode = option("--view", "grid");
+// `--think on|off` (Sami, 12/10): a thinking model (qwen3.5) reasons before it answers when on; left out, Ollama decides.
+const thinkOption = option("--think");
+const thinking = thinkOption === undefined ? {} : { think: thinkOption === "on" };
 
 const SYSTEM = [
   "Tu joues à Bornage (Schotten Totten) contre un robot. Tu poses une carte de ta main sur ton côté d'une borne.",
@@ -91,7 +94,7 @@ async function ask(view, retry) {
   const started = performance.now();
   const warning = retry ? "\n\nAttention : " + retry : "";
   const user = `${positionText(view)}\n\nCoups permis : ${JSON.stringify(view.moves)}${warning}\nTon coup ?`;
-  const body = await chat(JSON.stringify({ model, stream: false, format: "json", options: { temperature: 0.3 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
+  const body = await chat(JSON.stringify({ model, stream: false, format: "json", ...thinking, options: { temperature: 0.3 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
   let answer = null;
   try {
     answer = JSON.parse(body.message?.content ?? "");
@@ -158,5 +161,5 @@ const won = results.filter((result) => result.end?.startsWith("Gagné")).length;
 const minutes = ((performance.now() - started) / 60000).toFixed(1);
 const sum = (key) => results.reduce((total, result) => total + result[key], 0);
 const moves = Math.max(1, sum("moves"));
-console.log(`\n${won} victoires sur ${results.length} parties en ${minutes} min (${parallel} à la fois, vue ${viewMode}) ; le détail des temps : tmp/llm-play.jsonl`);
+console.log(`\n${won} victoires sur ${results.length} parties en ${minutes} min (${parallel} à la fois, vue ${viewMode}, thinking ${thinkOption ?? "par défaut"}) ; le détail des temps : tmp/llm-play.jsonl`);
 console.log(`Bornes gagnées par partie : ${(sum("bordersWon") / results.length).toFixed(2)} ; jokers posés : ${sum("jokers")} ; raisons qui citent une autre borne que celle jouée : ${((100 * sum("offBorder")) / moves).toFixed(0)} % ; essais par coup : ${(sum("tries") / moves).toFixed(2)} ; modèle ${(sum("llmMs") / moves / 1000).toFixed(1)} s / coup`);
