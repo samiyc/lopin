@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { formatCard, parseCards } from "../src/core/notation.js";
 import { legalMoves } from "../src/sim/game.js";
 import { SPEC, newGame } from "../web/app/runner.js";
-import { claimText, endText, handOrder, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
+import { claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
 
 /** A game of the page's rules where player 0 holds `hand`, with a few cards and owners set by hand. */
 function position() {
@@ -60,6 +60,37 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     Object.assign(state, { winner: 0, winType: "majority" });
     state.borders[1].owner = null;
     assert.equal(endText(state, 0), "Gagné : tu gagnes, 3 bornes (1, 5 et 7).");
+  });
+
+  it("gives the position as a real JSON object: groups named, no board drawn in a string (Sami, 13/10)", () => {
+    const state = position();
+    const view = jsonView(state, 0, { last: ["Toi : 9♠ → borne 1", "Expérimental : 4♦ → borne 3"] });
+    assert.equal(view.tour, 1);
+    assert.equal(view.main_robot, 6);
+    assert.deepEqual(view.bornes_gagnees, { toi: 1, robot: 1 });
+    assert.deepEqual(view.cartes_vues, { "♠": "3/10", "♥": "2/10", "♣": "2/10", "♦": "2/10", JK: "1/2" });
+    assert.equal(view.bornes.length, 7);
+    assert.deepEqual(view.bornes[0], { borne: 1, toi: ["9♠", "9♥", "9♣"], robot: [], statut: "gagnée" });
+    assert.deepEqual(view.bornes[1], { borne: 2, toi: [], robot: [], statut: "perdue" });
+    assert.deepEqual(view.bornes[2], { borne: 3, toi: [], robot: ["4♦"], statut: "libre" });
+    assert.deepEqual(view.main, ["2♠", "3♠", "10♥", "8♣", "7♦", "JK"]);
+    assert.equal(view.coups.length, legalMoves(state).length);
+    assert.ok(view.coups.every((text) => parseInput(text, state, handOrder(state, 0)).move));
+    assert.equal(view.terminee, false);
+    assert.match(view.regles, /3 bornes voisines ou 4 bornes/);
+    // Real JSON: it reads back as the same object, and no string carries a line break.
+    const text = formatJson(view);
+    assert.deepEqual(JSON.parse(text), view);
+    assert.ok(!JSON.stringify(view).includes("\\n"), "no line break inside a value");
+    assert.equal(text.split("\n").filter((line) => line.startsWith('  {"borne"')).length, 7, "one border a line");
+  });
+
+  it("marks a border with both sides full and nobody able to claim it yet as « pleine »", () => {
+    const state = position();
+    state.borders[3].sides[0] = parseCards(SPEC, ["1♠", "2♠", "3♦"]);
+    state.borders[3].sides[1] = parseCards(SPEC, ["5♥", "6♥", "7♣"]);
+    assert.equal(jsonView(state, 0).bornes[3].statut, "pleine");
+    assert.equal(jsonView(state, 1).bornes[0].statut, "perdue", "read from the robot's seat, the border you won is lost");
   });
 
   it("gives an agent the same position as JSON, with exactly the legal moves", () => {

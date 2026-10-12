@@ -359,9 +359,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **Bornage in a terminal** (`npm run cli`, Sami 12/10, `docs/cli.md`): the base game at the claim
   rule against a line-up bot, a move typed « card border » (« 3 5 », the hand sorted by suit). It
   plays through `web/app/runner.js` like the page and writes the same replay to `replays/`. The
-  screen and the input are pure (`scripts/lib/cli-view.js`, tested); `--machine` prints one JSON
-  state a line, `--new` / `--step` keep the game in a file (the replay itself) so an agent plays
-  one move per command. No HTTP API: the command line serves a human and an agent alike.
+  screen and the input are pure (`scripts/lib/cli-view.js`, tested); `--json` (Sami, 13/10) prints
+  the state as a real JSON object (`jsonView`: `bornes`, `main`, `coups`, no board in a string),
+  the format an agent reads; `--machine` is the flat one-line JSON kept for `llm-play`;
+  `--new` / `--step` keep the game in a file (the replay itself) so an agent plays one move per
+  command. No HTTP API: the command line serves a human and an agent alike.
 - **No legal move**: the human passes with « Passer mon tour » (`btn-pass`), shown only then.
 - **Puzzle attempts are tracked** (Sami, 07/10, `src/replay/puzzle-attempts.js`):
   `web/app/puzzle-tracker.js` times each attempt with the focus-aware clock and

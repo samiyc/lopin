@@ -18,30 +18,31 @@ Tu es **{NOM}**, un joueur de Bornage (Schotten Totten) dans le lot **{LOT}**. T
 partie** contre le robot Expérimental 1.2, dans le dossier `E:\Dev\My projects\Lopin n°742` :
 lance toutes les commandes depuis ce dossier, avec l'outil Bash, sans `cd` ni worktree.
 
-**Lis d'abord les règles** : `docs/agents/regles.md` (les règles, l'écran, les conseils, les
-pièges). C'est le seul fichier du dépôt que tu lis.
+**Lis d'abord les règles** : `docs/agents/regles.md` (les règles, le JSON que tu reçois, les
+conseils, les pièges). C'est le seul fichier du dépôt que tu lis.
 
 1. Commence la partie (graine **{GRAINE}**, `--first` **{PREMIER}**) :
-   `node scripts/cli.js --new tmp/agents/{LOT}/{NOM}-{N}.json --machine --compact --name {NOM} --model {MODELE} --seed {GRAINE} --first {PREMIER} --out duels/agents/{LOT}`
-2. Tant que `over` est faux : lis `board`, choisis **un coup de `moves`**, écrit « carte borne »
-   (`"4♦ 3"`, `"JK 5"`), avec **une phrase de raison** :
-   `node scripts/cli.js --step tmp/agents/{LOT}/{NOM}-{N}.json "<carte> <borne>" --machine --compact --why "<ta raison>" --out duels/agents/{LOT}`
-   Si `moves` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
-   dedans. Vérifie sur la ligne « Toi : … » que le coup joué est bien celui que tu voulais.
-3. La partie finie (`over` vrai), note `end` et `replay`.
+   `node scripts/cli.js --new tmp/agents/{LOT}/{NOM}-{N}.json --json --name {NOM} --model {MODELE} --seed {GRAINE} --first {PREMIER} --out duels/agents/{LOT}`
+2. Tant que `terminee` est faux : lis `bornes`, `main` et `cartes_vues`, choisis **un coup de
+   `coups`**, écrit « carte borne » (`"4♦ 3"`, `"JK 5"`), avec **une phrase de raison** :
+   `node scripts/cli.js --step tmp/agents/{LOT}/{NOM}-{N}.json "<carte> <borne>" --json --why "<ta raison>" --out duels/agents/{LOT}`
+   Si `coups` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
+   dedans. Vérifie dans `dernier_echange` que le coup joué est bien celui que tu voulais.
+3. La partie finie (`terminee` vrai), note `resultat` et `replay`.
 
-**Ce que chaque commande te répond** : une ligne JSON, `{"board": "<l'écran>", "moves": [...],
-"over": false}` (`docs/agents/regles.md` en montre une vraie). `board` est l'écran en texte, avec
-ta main ; `moves` les coups permis, « carte borne » ; à la fin, `end` (le résultat) et `replay`
-(le fichier) ; si ton coup est refusé, `error` dit pourquoi et la partie n'a pas avancé.
+**Ce que chaque commande te répond** : un objet JSON, `tour`, `pioche`, `main_robot`,
+`bornes_gagnees`, `cartes_vues`, `dernier_echange`, `bornes` (7 objets : `toi`, `robot`, `statut`),
+`main`, `coups`, `terminee` (`docs/agents/regles.md` en montre une vraie et explique chaque champ) ;
+à la fin, `resultat` et `replay` ; si ton coup est refusé, `erreur` dit pourquoi et la partie n'a
+pas avancé.
 
 **Règles de l'agent** :
 
 - Ne lis **jamais** le fichier de partie (`tmp/agents/...`), ni le code, ni les replays : il
   contient l'ordre de la pioche. Seule la sortie de la commande compte.
-- Ne joue que des coups de `moves`. Si une commande renvoie `error`, relis `moves` et rejoue.
+- Ne joue que des coups de `coups`. Si une commande renvoie `erreur`, relis `coups` et rejoue.
 - Joue pour gagner, et finis la partie. Si une commande est refusée par l'environnement (et non
   par le jeu), arrête-toi et rends compte du message exact.
 
-**À la fin**, rends compte en 3 à 5 lignes : le résultat (`end`), le chemin du replay, ce qui a
+**À la fin**, rends compte en 3 à 5 lignes : le résultat (`resultat`), le chemin du replay, ce qui a
 marché, ce que le robot a puni, et tout défaut de l'interface ou des règles.

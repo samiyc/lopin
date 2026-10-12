@@ -1,7 +1,7 @@
 # Bornage — les règles pour un agent
 
 Bornage est Schotten Totten joué avec un jeu de cartes ordinaire. Tu joues contre un robot
-(l'Expérimental 1.2) dans la console : tu lis la position, tu choisis un coup parmi `moves`.
+(l'Expérimental 1.2) dans la console : tu lis la position (un JSON), tu choisis un coup parmi `coups`.
 
 ## Le matériel
 
@@ -51,67 +51,62 @@ faible :
 - **3 bornes voisines** (par exemple 2-3-4), ou **4 bornes** en tout.
 - La partie s'arrête à la **première** victoire, même si l'autre aurait pu revendiquer aussi.
 
-## Ce que tu reçois : une ligne JSON par commande
+## Ce que tu reçois : un JSON par commande
 
-Chaque commande (`--new`, puis `--step`) répond **une ligne JSON** avec `--machine --compact`. Voici
-une vraie réponse, au tour 13 (la ligne est unique ; les retours à la ligne ne sont là que pour la
-lecture, et `\n` est un saut de ligne dans `board`) :
+Chaque commande (`--new`, puis `--step`) répond **un objet JSON** avec `--json` : les données
+nommées et groupées, aucun plateau dessiné dans un texte. Voici une vraie réponse, au tour 13 :
 
 ```json
 {
- "board": "Tour 13 · pioche 18 · main du robot 6 · bornes : toi 0, robot 0\nToi : 1♥ → borne 3 · Expérimental : 2♦ → borne 4\nVues : ♠ 2/10 · ♥ 5/10 · ♣ 5/10 · ♦ 5/10 · JK 1/2\n\n\n               2♦             3♣\n8♦        7♠   3♦             1♣\n1-   2-   3-   4-   5-   6-   7-\n          2♠   9♥   4♦   4♣\n          1♥   6♥\n\n\nMain : 1:5♥  2:10♥  3:2♣  4:10♣  5:7♦  6:JK",
- "moves": ["JK 1","JK 2","JK 3","JK 4","JK 5","JK 6","JK 7","10♥ 1","10♥ 2","10♥ 3","10♥ 4","10♥ 5","10♥ 6","10♥ 7","5♥ 1","5♥ 2","5♥ 3","5♥ 4","5♥ 5","5♥ 6","5♥ 7","2♣ 1","2♣ 2","2♣ 3","2♣ 4","2♣ 5","2♣ 6","2♣ 7","7♦ 1","7♦ 2","7♦ 3","7♦ 4","7♦ 5","7♦ 6","7♦ 7","10♣ 1","10♣ 2","10♣ 3","10♣ 4","10♣ 5","10♣ 6","10♣ 7"],
- "over": false
+ "tour": 13,
+ "pioche": 18,
+ "main_robot": 6,
+ "bornes_gagnees": {"toi":0,"robot":0},
+ "cartes_vues": {"♠":"2/10","♥":"5/10","♣":"5/10","♦":"5/10","JK":"1/2"},
+ "dernier_echange": ["Toi : 1♥ → borne 3","Expérimental : 2♦ → borne 4"],
+ "bornes": [
+  {"borne":1,"toi":[],"robot":["8♦"],"statut":"libre"},
+  {"borne":2,"toi":[],"robot":[],"statut":"libre"},
+  {"borne":3,"toi":["2♠","1♥"],"robot":["7♠"],"statut":"libre"},
+  {"borne":4,"toi":["9♥","6♥"],"robot":["3♦","2♦"],"statut":"libre"},
+  {"borne":5,"toi":["4♦"],"robot":[],"statut":"libre"},
+  {"borne":6,"toi":["4♣"],"robot":[],"statut":"libre"},
+  {"borne":7,"toi":[],"robot":["1♣","3♣"],"statut":"libre"}
+ ],
+ "main": ["5♥","10♥","2♣","10♣","7♦","JK"],
+ "coups": ["5♥ 1","5♥ 2","5♥ 3","5♥ 4","5♥ 5","5♥ 6","5♥ 7","10♥ 1","10♥ 2","10♥ 3","10♥ 4","10♥ 5","10♥ 6","10♥ 7","2♣ 1","2♣ 2","2♣ 3","2♣ 4","2♣ 5","2♣ 6","2♣ 7","10♣ 1","10♣ 2","10♣ 3","10♣ 4","10♣ 5","10♣ 6","10♣ 7","7♦ 1","7♦ 2","7♦ 3","7♦ 4","7♦ 5","7♦ 6","7♦ 7","JK 1","JK 2","JK 3","JK 4","JK 5","JK 6","JK 7"],
+ "terminee": false
 }
 ```
 
 | Champ | Contenu |
 | --- | --- |
-| `board` | **L'écran, en texte** : tout ce que tu sais de la partie (voir plus bas). |
-| `moves` | **Tous les coups permis**, chacun écrit comme tu dois le rendre : « carte borne ». |
-| `over` | `false` tant que la partie continue. |
-| `end`, `replay` | Seulement quand `over` est `true` : le résultat en une phrase, et le chemin du replay. |
-| `error` | Seulement quand ton coup est refusé : la raison. La partie n'a pas avancé, rejoue. |
-| `rules` | Seulement à la toute première réponse : les règles en une ligne. |
+| `tour` | Le numéro du tour (les deux joueurs comptés : toi 1, 3, 5…, ou 2, 4, 6… si le robot commence). |
+| `pioche` | Les cartes qui restent dans la pioche. |
+| `main_robot` | Le nombre de cartes dans la main du robot (tu ne vois pas lesquelles). |
+| `bornes_gagnees` | Les bornes déjà revendiquées par toi et par le robot. |
+| `cartes_vues` | Par couleur, les cartes que tu vois (le plateau et ta main) sur le total : `"5/10"`. Ce qui manque est dans la pioche ou dans la main du robot, donc peut encore sortir. |
+| `dernier_echange` | Ce qui vient de se passer, une phrase par événement : ton coup, la réponse du robot, les revendications (« tu revendiques la borne 5 »). Vide au début. |
+| `bornes` | Les 7 bornes, de 1 à 7. `toi` et `robot` : les cartes de chaque côté, **dans l'ordre où elles ont été posées**. |
+| `bornes[].statut` | `libre` : pas revendiquée ; `gagnée` : à toi ; `perdue` : au robot ; `pleine` : les deux côtés ont 3 cartes et personne ne peut encore la revendiquer (plus rien à y poser). |
+| `main` | Tes cartes. |
+| `coups` | **Tous les coups permis**, chacun écrit comme tu dois le rendre : « carte borne ». Vide si tu dois passer (joue alors `p`). |
+| `terminee` | `false` tant que la partie continue. |
+| `resultat`, `replay` | Seulement quand `terminee` est `true` : le résultat en une phrase, et le chemin du replay. |
+| `erreur` | Seulement quand ton coup est refusé : la raison. La partie n'a pas avancé, rejoue. |
+| `regles` | Seulement à la toute première réponse : les règles en une ligne. |
 
-Sans `--compact`, la réponse ajoute les mêmes faits en champs (`turn`, `pile`, `opponentHand`,
-`hand`, `borders`, `seen`, `last`, `winner`) : c'est `board` découpé, pour un programme. Un agent n'en
-a pas besoin.
+**Un coup s'écrit « carte borne »**, recopié de `coups` : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"`
+pour un joker). N'utilise pas la position de la carte dans `main` : elle change à chaque pioche.
+`dernier_echange` confirme le coup joué.
 
 **Ce que tu ne reçois pas** : la main du robot et la pioche (cachées, comme à la table) ; l'historique
-des tours (l'écran montre ce qui est posé, et l'échange qui vient d'avoir lieu — pas plus).
-
-### Lire `board`
-
-Le même `board`, mis en page, avec ce que chaque ligne veut dire :
-
-```
-Tour 13 · pioche 18 · main du robot 6 · bornes : toi 0, robot 0     ← le tour, les cartes de la pioche, les bornes revendiquées
-Toi : 1♥ → borne 3 · Expérimental : 2♦ → borne 4                    ← ton dernier coup, la réponse du robot (et les revendications)
-Vues : ♠ 2/10 · ♥ 5/10 · ♣ 5/10 · ♦ 5/10 · JK 1/2                  ← les cartes que tu as vues, par couleur
-
-
-               2♦             3♣       ← la 2e carte du robot sur chaque borne
-8♦        7♠   3♦             1♣       ← sa 1re carte, la plus proche des bornes
-1-   2-   3-   4-   5-   6-   7-       ← les bornes : - libre, A à toi, B au robot, = pleine non revendiquée
-          2♠   9♥   4♦   4♣            ← ta 1re carte
-          1♥   6♥                      ← ta 2e carte (et la 3e dessous, quand il y en a une)
-
-
-Main : 1:5♥  2:10♥  3:2♣  4:10♣  5:7♦  6:JK
-```
-
-- **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10. Ce qui
-  manque est dans la pioche ou dans la main du robot : c'est ce qui peut encore sortir.
-- **Un coup s'écrit « carte borne »**, recopié de `moves` : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"`
-  pour un joker). N'utilise pas les numéros de la main (`1:`, `2:` sur la ligne `Main`) : ils
-  changent à chaque pioche. La ligne « Toi : 4♦ → borne 3 » en tête de l'écran confirme le coup
-  joué ; elle dit aussi qui revendique quoi (« tu revendiques la borne 5 »).
+des tours (`bornes` montre ce qui est posé, et `dernier_echange` l'échange qui vient d'avoir lieu — pas plus).
 
 ## Conseils (ce qui fait gagner les robots et Sami)
 
 - **Compte les cartes** avant de viser une combinaison : pour finir 4♥ 5♥ il faut 3♥ ou 6♥ ;
-  regarde dans `Vues` et sur la table s'ils sont encore dehors.
+  regarde dans `cartes_vues` et sur les `bornes` s'ils sont encore dehors.
 - **Ne sépare pas une paire de même couleur** qui se suit (8♠ 9♠) : c'est une Suite couleur en
   puissance, la meilleure combinaison. Pose-les sur la même borne.
 - **N'ouvre pas deux bornes avec la même valeur** (deux 7 seuls) : elles veulent les mêmes cartes,
@@ -131,7 +126,7 @@ Main : 1:5♥  2:10♥  3:2♣  4:10♣  5:7♦  6:JK
   pour tes cartes faibles, sur une borne déjà perdue ou sans enjeu, plutôt que d'être forcé de
   gâcher une borne disputée.
 - Compte ce qui reste : avec la pioche vide, toutes les cartes sont connues sauf la main du robot
-  (ce qui manque dans `Vues`).
+  (ce qui manque dans `cartes_vues`).
 
 ## Pièges à éviter
 

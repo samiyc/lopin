@@ -7,7 +7,7 @@ import { BOT_IDS, BOT_LINEUP } from "../src/config/bots.js";
 import { finishLog, playLogged, startLog, stateAt } from "../src/replay/log.js";
 import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/runner.js";
 import { isClaimable } from "../src/sim/certainty.js";
-import { HELP, claimText, endText, handOrder, machineView, parseInput, textView } from "./lib/cli-view.js";
+import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "./lib/cli-view.js";
 import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
 
 /**
@@ -20,10 +20,13 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
  *   npm run cli -- --new partie.json [the same options]      (one move a command, for an agent)
  *   npm run cli -- --step partie.json "3 5"
  *
- * `--machine`: one JSON object a line (cli-view.js `machineView`) instead of
- * the board, for a program or an agent. `--new` / `--step`: the game lives in
- * a file (the replay itself); each command plays one move, lets the bot answer,
- * and writes the file back.
+ * `--json` (Sami, 13/10): the position as a real JSON object, the data named
+ * and grouped (cli-view.js `jsonView`: `bornes`, `main`, `coups`…), instead of
+ * the board: what an agent reads, and what Sami checks by playing it
+ * (`npm run cli -- --json --name sami`). `--machine`: one flat JSON object a
+ * line (`machineView`, with the board as text), kept for llm-play.
+ * `--new` / `--step`: the game lives in a file (the replay itself); each
+ * command plays one move, lets the bot answer, and writes the file back.
  *
  * For the agents' batches (Sami, 12/10; docs/agents/): `--out <dir>` puts the
  * finished replay there instead of replays/ (the batch uses duels/agents/<lot>/),
@@ -32,7 +35,8 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
  */
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
-const machine = args.includes("--machine");
+const json = args.includes("--json");
+const machine = args.includes("--machine") || json;
 const outDir = option("--out");
 const REPLAYS = outDir === undefined ? fileURLToPath(new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url)) : resolve(process.cwd(), outDir);
 const stepping = args.includes("--new") || args.includes("--step");
@@ -61,7 +65,8 @@ function loadSession(log) {
   const human = log.players.find((player) => player.kind === "human");
   const bot = log.players.find((player) => player.kind === "bot");
   // `client.last`: the exchange before, kept by `--step` so a refused move still shows what the robot just did.
-  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: log.client?.last ?? null };
+  const saved = log.client?.last ?? null;
+  return { state: stateAt(log, log.turns.length + 1), me: human.seat, bot: botPlayer(bot.bot, log.seed + 1), log, sort: "suit", last: typeof saved === "string" ? [saved] : saved };
 }
 
 const moveText = (state, entry) => (entry.pass ? "passe" : `${entry.move.card} → borne ${entry.move.border}`);
@@ -75,7 +80,7 @@ function claims(session, before) {
 
 const owners = (state) => state.borders.map((border) => border.owner);
 
-/** The bot plays until it is the human's turn or the game is over; `last` says what it did. */
+/** The bot plays until it is the human's turn or the game is over; `last` (a list of sentences) says what it did. */
 function botTurns(session) {
   const { state, me, log, bot } = session;
   const said = [];
@@ -84,8 +89,11 @@ function botTurns(session) {
     const entry = playBot(log, state, bot);
     said.push(`${BOT_LINEUP[bot.id].label} : ${moveText(state, entry)}`, ...claims(session, before));
   }
-  session.last = said.length > 0 ? said.join(" · ") : session.last;
+  session.last = said.length > 0 ? said : session.last;
 }
+
+/** What just happened, on one line for the board and the flat JSON. */
+const lastText = (session) => (session.last && session.last.length > 0 ? session.last.join(" · ") : null);
 
 /** The human's move (or pass), then the bot's answer. */
 function humanTurn(session, move, thinkMs) {
@@ -98,7 +106,7 @@ function humanTurn(session, move, thinkMs) {
   const mine = [`Toi : ${moveText(session.state, entry)}`, ...claims(session, before)].join(", ");
   session.last = null;
   botTurns(session);
-  session.last = [mine, session.last].filter(Boolean).join(" · ");
+  session.last = [mine, ...(session.last ?? [])];
 }
 
 /** The end in words, with the borders the loser could still have claimed (the engine's own proof). */
@@ -121,11 +129,20 @@ async function saveReplay(session) {
 const COMPACT_KEYS = ["board", "moves", "over", "end", "replay", "error", "rules"];
 const compact = (view) => Object.fromEntries(COMPACT_KEYS.filter((key) => view[key] !== undefined && view[key] !== null).map((key) => [key, view[key]]));
 
+/** `--json`'s extras: the refusal, and the end with the replay's path. */
+const jsonExtras = (extra) => ({ ...(extra.error ? { erreur: extra.error } : {}), ...(extra.end ? { resultat: extra.end, replay: extra.replay } : {}) });
+
 function show(session, extra = {}) {
   const order = handOrder(session.state, session.me, session.sort);
-  const view = { ...machineView(session.state, session.me, { order, last: session.last }), ...extra };
+  if (json) return console.log(formatJson({ ...jsonView(session.state, session.me, { order, last: session.last ?? [] }), ...jsonExtras(extra) }));
+  showText(session, order, extra);
+}
+
+/** The board (or `--machine`'s flat JSON), with the refusal and the end below it. */
+function showText(session, order, extra) {
+  const view ={ ...machineView(session.state, session.me, { order, last: lastText(session) }), ...extra };
   if (machine) return console.log(JSON.stringify(args.includes("--compact") ? compact(view) : view));
-  console.log(`\n${textView(session.state, session.me, { order, last: session.last })}`);
+  console.log(`\n${textView(session.state, session.me, { order, last: lastText(session) })}`);
   if (extra.error) console.log(`! ${extra.error}`);
   if (extra.end) console.log(["", extra.end, extra.replay ? "Replay : " + extra.replay : ""].join("\n").trimEnd());
 }

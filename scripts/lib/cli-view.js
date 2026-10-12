@@ -56,9 +56,63 @@ const playable = (state, me) => state.current === me && !state.over;
 /** The rules in one line, at the head of an agent's game (docs/agents/regles.md has them in full). */
 export const RULES_LINE = "7 bornes ; 3 cartes par joueur et par borne : Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini le premier ; joker sans couleur (n'importe quelle valeur) ; une borne se revendique dès que ton côté complet ne peut plus être battu ; victoire : 3 bornes voisines ou 4 bornes.";
 
-/** The same position as one JSON object, for `--machine` and an agent: the facts, and `board`, the screen as text. */
+/** The cards of a side, written « 7♠ ». */
+const sideOf = (state, cards) => cards.map((card) => formatCard(state.spec, card));
+
+/** The cards seen per suit, « 5/10 » (the page's suit bar). */
+const seenOf = (state, me) => Object.fromEntries(suitCounts(state.spec, state, { bottom: me, reveal: false }).map(({ label, seen, total }) => [label, `${seen}/${total}`]));
+
+/**
+ * The legal moves, the card named (« 8♠ 4 »), the only list an agent reads (Sami, 13/10: the hand's numbers, « 1 1 »,
+ * told nothing, and they move with each draw).
+ */
+const movesOf = (state, me, order = null) => {
+  if (!playable(state, me)) return [];
+  const moves = [...legalMoves(state)];
+  // `--json` lists them in the hand's order, then by border, so « main » and « coups » read the same way.
+  if (order) moves.sort((a, b) => order.indexOf(a.card) - order.indexOf(b.card) || a.border - b.border);
+  return moves.map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`);
+};
+
+/** `libre`, `gagnée` (yours), `perdue` (the robot's), or `pleine`: both sides full, nobody could claim it yet. */
+function statusOf(border, me) {
+  if (border.owner === me) return "gagnée";
+  if (border.owner === 1 - me) return "perdue";
+  return border.sides[0].length === 3 && border.sides[1].length === 3 ? "pleine" : "libre";
+}
+
+/**
+ * The position as a real JSON object (Sami, 13/10: no board drawn in a string, the data named and grouped):
+ * what `--json` prints and an agent reads. `last` is the list of what just happened, one sentence each.
+ */
+export function jsonView(state, me, { order = handOrder(state, me), last = [] } = {}) {
+  return {
+    tour: state.turn + 1,
+    pioche: state.pile.length,
+    main_robot: state.hands[1 - me].length,
+    bornes_gagnees: { toi: ownedBy(state, me), robot: ownedBy(state, 1 - me) },
+    cartes_vues: seenOf(state, me),
+    dernier_echange: last,
+    bornes: state.borders.map((border, index) => ({ borne: index + 1, toi: sideOf(state, border.sides[me]), robot: sideOf(state, border.sides[1 - me]), statut: statusOf(border, me) })),
+    main: sideOf(state, order),
+    coups: movesOf(state, me, order),
+    terminee: Boolean(state.over),
+    ...(state.turn < 2 ? { regles: RULES_LINE } : {}),
+  };
+}
+
+/** A JSON object laid out for a person: one key a line, the list of objects (the borders) one object a line. */
+export function formatJson(object) {
+  const rows = (list) => list.map((item) => "  " + JSON.stringify(item)).join(",\n");
+  const lines = Object.entries(object).map(([key, value]) => {
+    const objects = Array.isArray(value) && value.some((item) => typeof item === "object" && item !== null);
+    return " " + JSON.stringify(key) + ": " + (objects ? "[\n" + rows(value) + "\n ]" : JSON.stringify(value));
+  });
+  return "{\n" + lines.join(",\n") + "\n}";
+}
+
+/** The same position as one JSON object, for `--machine` (llm-play): the facts, and `board`, the screen as text. */
 export function machineView(state, me, { order = handOrder(state, me), last = null } = {}) {
-  const side = (cards) => cards.map((card) => formatCard(state.spec, card));
   const won = ({ owner }) => {
     if (owner === me) return "me";
     return owner === 1 - me ? "opponent" : null;
@@ -68,11 +122,9 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     pile: state.pile.length,
     opponentHand: state.hands[1 - me].length,
     hand: order.map((card, index) => ({ n: index + 1, card: formatCard(state.spec, card) })),
-    borders: state.borders.map((border, index) => ({ n: index + 1, mine: side(border.sides[me]), theirs: side(border.sides[1 - me]), won: won(border) })),
-    seen: Object.fromEntries(suitCounts(state.spec, state, { bottom: me, reveal: false }).map(({ label, seen, total }) => [label, `${seen}/${total}`])),
-    // The legal moves, the card named (« 8♠ 4 »), the only list an agent reads (Sami, 13/10: the hand's numbers, « 1 1 »,
-    // told nothing, and they move with each draw).
-    moves: playable(state, me) ? legalMoves(state).map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`) : [],
+    borders: state.borders.map((border, index) => ({ n: index + 1, mine: sideOf(state, border.sides[me]), theirs: sideOf(state, border.sides[1 - me]), won: won(border) })),
+    seen: seenOf(state, me),
+    moves: movesOf(state, me),
     last,
     over: Boolean(state.over),
     winner: state.over ? won({ owner: state.winner }) : null,

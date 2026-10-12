@@ -62,9 +62,56 @@ Main : 1:10♥  2:1♣  3:8♣  4:1♦  5:7♦  6:JK
 - La main est triée par couleur (♠ ♥ ♣ ♦, du plus petit au plus grand, jokers à la fin) : les
   numéros changent quand une carte arrive.
 
+## En JSON : `--json` (le format d'un agent, et pour vérifier)
+
+```
+npm run cli -- --json --name sami
+```
+
+La partie se joue comme à l'écran, mais chaque état est un vrai objet JSON (les données nommées et
+groupées, aucun plateau dessiné dans un texte) ; tu tapes le coup `10♥ 1` ou `3 1` comme
+d'habitude. Une clé par ligne, et une ligne par borne :
+
+```json
+{
+ "tour": 13,
+ "pioche": 18,
+ "main_robot": 6,
+ "bornes_gagnees": {"toi":0,"robot":0},
+ "cartes_vues": {"♠":"2/10","♥":"5/10","♣":"5/10","♦":"5/10","JK":"1/2"},
+ "dernier_echange": ["Toi : 1♥ → borne 3","Expérimental : 2♦ → borne 4"],
+ "bornes": [
+  {"borne":1,"toi":[],"robot":["8♦"],"statut":"libre"},
+  {"borne":3,"toi":["2♠","1♥"],"robot":["7♠"],"statut":"libre"},
+  {"borne":4,"toi":["9♥","6♥"],"robot":["3♦","2♦"],"statut":"libre"}
+ ],
+ "main": ["5♥","10♥","2♣","10♣","7♦","JK"],
+ "coups": ["5♥ 1","5♥ 2","10♥ 1","10♥ 2","JK 1","JK 2"],
+ "terminee": false
+}
+```
+
+(Deux champs d'exemple raccourcis : `bornes` en a 7, `coups` tous les coups permis.)
+
+| Champ | Contenu |
+| --- | --- |
+| `tour`, `pioche`, `main_robot` | le tour, les cartes de la pioche, les cartes du robot en main |
+| `bornes_gagnees` | les bornes revendiquées, par toi et par le robot |
+| `cartes_vues` | par couleur, les cartes que tu vois sur le total |
+| `dernier_echange` | ton dernier coup, la réponse du robot, les revendications : une phrase chacun |
+| `bornes[]` | `borne` (1-7), `toi` et `robot` (les cartes de chaque côté, dans l'ordre de pose), `statut` : `libre`, `gagnée`, `perdue`, `pleine` (les deux côtés à 3 cartes, pas encore revendiquée) |
+| `main` | ta main, triée par couleur |
+| `coups` | tous les coups permis, « carte borne », dans l'ordre de ta main ; vide : joue `p` |
+| `terminee` | `true` à la fin, avec `resultat` (la phrase) et `replay` (le chemin) |
+| `erreur` | un coup refusé : la raison (la partie n'a pas avancé) |
+| `regles` | la première fois seulement : les règles en une ligne |
+
+Avec `--new` / `--step`, la même réponse, un coup par commande (voir plus bas).
+
 ## Pour un programme : `--machine`
 
-Une ligne JSON par état sur la sortie, un coup par ligne en entrée (`3 5`), comme ci-dessus :
+Le format plat de `llm-play` (le plateau y est aussi un texte, `board`). Une ligne JSON par état
+sur la sortie, un coup par ligne en entrée (`3 5`), comme ci-dessus :
 
 ```json
 {"turn":3,"pile":28,"opponentHand":6,
@@ -86,7 +133,7 @@ caractère spécial à taper. `10♥ 1` ou `10h 1` fonctionnent aussi.
 ## La trace dans le replay
 
 Un replay joué en console porte `"client": { "app": "cli", "mode": "interactive" }` (ou
-`"machine"`, `"step"`) ; ceux de la page n'ont pas ce champ. On retrouve ainsi les parties de la
+`"machine"` — `--json` en fait partie —, `"step"`) ; ceux de la page n'ont pas ce champ. On retrouve ainsi les parties de la
 console, ou d'un agent, pour une analyse ou un bug. Le reste du replay est celui de la page : tes
 temps de réflexion (`thinkMs`), les candidats du robot à chaque coup, les revendications.
 
@@ -96,8 +143,8 @@ Un agent (Claude Code, par exemple) fait un appel d'outil par coup ; il ne garde
 ouvert. La partie vit donc dans un fichier, qui est le replay lui-même :
 
 ```
-npm run cli -- --new partie.json --machine [--bot experimental] [--first me|bot] [--name claude]
-npm run cli -- --step partie.json "3♥ 5" --machine
+npm run cli -- --new partie.json --json [--bot experimental] [--first me|bot] [--name claude]
+npm run cli -- --step partie.json "3♥ 5" --json
 ```
 
 Chaque `--step` relit la partie, joue le coup, fait répondre le robot, réécrit le fichier et
@@ -106,16 +153,15 @@ affiche le nouvel état ; à la fin, le replay est aussi copié dans `replays/`.
 Pour un lot d'agents (`docs/agents/` : les règles pour un agent, la consigne type) :
 `--out <dossier>` range le replay fini ailleurs (`duels/agents/<lot>/`), `--why "…"` garde la
 raison du coup dans le replay (`note` sur le tour), `--model <nom>` inscrit le modèle dans
-`client`. Le JSON porte aussi `board`, l'écran en texte, et `rules`, les règles en une ligne au
-premier tour. Le fichier de partie contient l'ordre de la pioche : un agent ne doit lire que la
-sortie de la commande.
+`client`. Le JSON porte aussi `regles`, les règles en une ligne au premier tour. Le fichier de
+partie contient l'ordre de la pioche : un agent ne doit lire que la sortie de la commande.
 
 **Une consigne prête à coller pour un agent** :
 
 > Tu joues à Bornage (Schotten Totten) contre l'Expérimental 1.2. Lance
-> `npm run cli -- --new tmp/agent.json --machine --name claude`, puis, tant que `over` est faux,
-> choisis un coup parmi `moves` (la carte puis la borne, `"7♠ 5"`) et lance
-> `npm run cli -- --step tmp/agent.json "<coup>" --machine`.
+> `npm run cli -- --new tmp/agent.json --json --name claude`, puis, tant que `terminee` est faux,
+> choisis un coup parmi `coups` (la carte puis la borne, `"7♠ 5"`) et lance
+> `npm run cli -- --step tmp/agent.json "<coup>" --json`.
 > Règles : 7 bornes ; sur chacune, 3 cartes par joueur ; la meilleure combinaison gagne la borne
 > (Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini en
 > premier) ; le joker (`JK`) remplace n'importe quelle valeur, sans couleur. On gagne avec 3 bornes
