@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { appendFileSync, mkdirSync } from "node:fs";
+import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -14,6 +14,8 @@ import { RULES_LINE } from "./lib/cli-view.js";
  * asked again (3 tries), then the first legal move is played and the note says
  * so. Game n starts with the model when n is odd. Timings per move (model,
  * CLI and bot) go to tmp/llm-play.jsonl, to see where the time goes.
+ *
+ * `--examples tmp/llm-examples.json`: worked examples before each position (`npm run llm-examples`).
  *
  * `--parallel N` plays N games at once (the bot's search uses one core each;
  * Ollama answers several requests at once only with OLLAMA_NUM_PARALLEL set).
@@ -39,6 +41,11 @@ const viewMode = option("--view", "grid");
 // `--think on|off` (Sami, 12/10): a thinking model (qwen3.5) reasons before it answers when on; left out, Ollama decides.
 const thinkOption = option("--think");
 const thinking = thinkOption === undefined ? {} : { think: thinkOption === "on" };
+// `--examples <file>` (Sami, 13/10): worked examples (`npm run llm-examples`) shown before each position as past
+// exchanges — the position, then the answer with its reason. They need a longer context than Ollama's 4 096 tokens.
+const examplesFile = option("--examples");
+const examples = examplesFile === undefined ? [] : JSON.parse(readFileSync(resolve(process.cwd(), examplesFile), "utf8"));
+const contextSize = examples.length > 0 ? { num_ctx: 8192 } : {};
 
 const SYSTEM = [
   "Tu joues à Bornage (Schotten Totten) contre un robot. Tu poses une carte de ta main sur ton côté d'une borne.",
@@ -62,6 +69,16 @@ function positionText(view) {
   }
   return view.board;
 }
+
+/** The question for one position: the position, the legal moves, a warning after a wrong answer. */
+const question = (view, warning = "") => `${positionText(view)}\n\nCoups permis : ${JSON.stringify(view.moves)}${warning}\nTon coup ?`;
+
+/** The examples as past exchanges: a question, then the answer the model should have given. */
+const shots = () =>
+  examples.flatMap((example) => [
+    { role: "user", content: question(example.view) },
+    { role: "assistant", content: JSON.stringify({ raison: example.raison, coup: example.coup }) },
+  ]);
 
 /** One CLI command (step mode, compact JSON): its last line, parsed, and how long it took. */
 async function cli(extra) {
@@ -105,8 +122,8 @@ async function chat(body) {
 async function ask(view, retry) {
   const started = performance.now();
   const warning = retry ? "\n\nAttention : " + retry : "";
-  const user = `${positionText(view)}\n\nCoups permis : ${JSON.stringify(view.moves)}${warning}\nTon coup ?`;
-  const body = await chat(JSON.stringify({ model, stream: false, format: answerSchema(view.moves), ...thinking, options: { temperature: 0.3, num_predict: 200 }, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] }));
+  const messages = [{ role: "system", content: SYSTEM }, ...shots(), { role: "user", content: question(view, warning) }];
+  const body = await chat(JSON.stringify({ model, stream: false, format: answerSchema(view.moves), ...thinking, options: { temperature: 0.3, num_predict: 200, ...contextSize }, messages }));
   let answer = null;
   try {
     answer = JSON.parse(body.message?.content ?? "");
@@ -173,5 +190,5 @@ const won = results.filter((result) => result.end?.startsWith("Gagné")).length;
 const minutes = ((performance.now() - started) / 60000).toFixed(1);
 const sum = (key) => results.reduce((total, result) => total + result[key], 0);
 const moves = Math.max(1, sum("moves"));
-console.log(`\n${won} victoires sur ${results.length} parties en ${minutes} min (${parallel} à la fois, vue ${viewMode}, thinking ${thinkOption ?? "par défaut"}) ; le détail des temps : tmp/llm-play.jsonl`);
+console.log(`\n${won} victoires sur ${results.length} parties en ${minutes} min (${parallel} à la fois, vue ${viewMode}, thinking ${thinkOption ?? "par défaut"}, ${examples.length} exemples) ; le détail des temps : tmp/llm-play.jsonl`);
 console.log(`Bornes gagnées par partie : ${(sum("bordersWon") / results.length).toFixed(2)} ; jokers posés : ${sum("jokers")} ; raisons qui citent une autre borne que celle jouée : ${((100 * sum("offBorder")) / moves).toFixed(0)} % ; essais par coup : ${(sum("tries") / moves).toFixed(2)} ; modèle ${(sum("llmMs") / moves / 1000).toFixed(1)} s / coup`);

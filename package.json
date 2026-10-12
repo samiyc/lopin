@@ -20,6 +20,7 @@
     "cli": "node scripts/cli.js",
     "agents": "node scripts/agents.js",
     "llm-play": "node scripts/llm-play.js",
+    "llm-examples": "node scripts/llm-examples.js",
     "duel": "node scripts/duel.js",
     "replays": "node scripts/replays.js",
     "fingerprint": "node scripts/fingerprint.js",
