@@ -64,6 +64,17 @@ describe("replay logs", () => {
     assert.equal(log.turns.at(-1).drew, null);
   });
 
+  it("returns the logged entry of a pass, marked as such (the CLI crashed on a pass)", () => {
+    const { spec, order, jokerRule, endMode } = rulesOf(RULES);
+    const passing = createGame(spec, { order, jokerRule, endMode, rng: createRng(3) });
+    const passLog = startLog(passing, { rules: RULES, players: [], seed: 3 });
+    const entry = playLogged(passLog, passing, null);
+    entry.note = "aucun coup possible";
+    assert.equal(passLog.turns.at(-1), entry);
+    assert.equal(entry.pass, true);
+    assert.equal(passLog.turns.at(-1).note, "aucun coup possible");
+  });
+
   it("rebuilds the very same game, move by move", () => {
     const frames = replayStates(JSON.parse(JSON.stringify(log)));
     assert.equal(frames.length, 43);

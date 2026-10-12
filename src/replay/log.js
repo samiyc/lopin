@@ -85,7 +85,10 @@ export function playLogged(log, state, move, scored = null) {
   };
   if (move === null) {
     applyMove(state, null);
-    log.turns.push({ ...entry, pass: true });
+    // The entry logged is the one returned: a copy lost the caller's `thinkMs` / `note`, and the CLI read a pass
+    // without `pass` as a move (llm-play, 13/10: a model with no legal move crashed the step).
+    entry.pass = true;
+    log.turns.push(entry);
     return entry;
   }
   Object.assign(entry, {
