@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { createInterface } from "node:readline";
+import { fileURLToPath } from "node:url";
 import { BOT_IDS, BOT_LINEUP } from "../src/config/bots.js";
 import { finishLog, playLogged, startLog, stateAt } from "../src/replay/log.js";
 import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/runner.js";
@@ -22,14 +23,23 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
  * the board, for a program or an agent. `--new` / `--step`: the game lives in
  * a file (the replay itself); each command plays one move, lets the bot answer,
  * and writes the file back.
+ *
+ * For the agents' batches (Sami, 12/10; docs/agents/): `--out <dir>` puts the
+ * finished replay there instead of replays/ (the batch uses duels/agents/<lot>/),
+ * `--why "…"` keeps the reason for a `--step` move in the replay (`note`), and
+ * `--model <name>` writes the player's model into the replay's `client`.
  */
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const machine = args.includes("--machine");
-const REPLAYS = new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url);
+const outDir = option("--out");
+const REPLAYS = outDir === undefined ? fileURLToPath(new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url)) : resolve(process.cwd(), outDir);
 const stepping = args.includes("--new") || args.includes("--step");
 const interactiveMode = machine ? "machine" : "interactive";
 const CLIENT_MODE = stepping ? "step" : interactiveMode;
+
+/** The replay's `client`: the CLI, how it was driven, and the player's model when `--model` names one. */
+const clientOf = () => (option("--model") ? { app: "cli", mode: CLIENT_MODE, model: option("--model") } : { app: "cli", mode: CLIENT_MODE });
 
 /** The options of a new game from the command line; the seed defaults to the clock. */
 const sessionOptions = (name) => ({ botId: option("--bot"), first: option("--first"), seed: option("--seed") === undefined ? undefined : Number(option("--seed")), name: option("--name") ?? name });
@@ -41,7 +51,7 @@ function newSession({ botId = "experimental", first = "me", seed = Date.now() % 
   const players = [humanEntry(me, name), botEntry(1 - me, botId)].sort((a, b) => a.seat - b.seat);
   const log = startLog(state, { rules: RULES, players, seed });
   // Where the game was played (Sami, 12/10): the page writes no `client`; the CLI says so, and how it was driven.
-  log.client = { app: "cli", mode: CLIENT_MODE };
+  log.client = clientOf();
   return { state, me, bot: botPlayer(botId, seed + 1), log, sort: "suit", last: null };
 }
 
@@ -80,6 +90,8 @@ function humanTurn(session, move, thinkMs) {
   const before = owners(session.state);
   const entry = playLogged(session.log, session.state, move);
   if (thinkMs !== undefined) entry.thinkMs = thinkMs;
+  // `--why`: the player's reason for the move, in their words, for the analysis.
+  if (option("--why")) entry.note = option("--why");
   const won = claims(session, before);
   botTurns(session);
   // The claims right after the human's move: theirs, or the bot's (the opponent claims next under the page's rule).
@@ -89,13 +101,13 @@ function humanTurn(session, move, thinkMs) {
 /** The end in words, with the borders the loser could still have claimed (the engine's own proof). */
 const endOf = ({ state, me }) => endText(state, me, { canClaim: (index, player) => isClaimable(state, index, player) });
 
-/** Writes the finished game to replays/, as the page does; returns its path. */
+/** Writes the finished game to replays/ (or `--out`), as the page does; returns its path from the working directory. */
 async function saveReplay(session) {
   finishLog(session.log, session.state);
   await mkdir(REPLAYS, { recursive: true });
-  const name = replayFileName(session.log);
-  await writeFile(new URL(name, REPLAYS), JSON.stringify(session.log, null, 1));
-  return `${REPLAY_DIRS.recent}/${name}`;
+  const path = join(REPLAYS, replayFileName(session.log));
+  await writeFile(path, JSON.stringify(session.log, null, 1));
+  return relative(process.cwd(), path).replaceAll("\\", "/");
 }
 
 function show(session, extra = {}) {

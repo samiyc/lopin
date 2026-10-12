@@ -67,5 +67,7 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.deepEqual(view.hand.map((entry) => entry.card), handOrder(state, 0).map((card) => formatCard(SPEC, card)));
     assert.equal(view.over, false);
     assert.deepEqual(view.seen, { "♠": "3/10", "♥": "2/10", "♣": "2/10", "♦": "2/10", JK: "1/2" });
+    assert.equal(view.board, textView(state, 0), "the screen as text, for an agent to read");
+    assert.match(view.rules, /3 bornes voisines ou 4 bornes/, "the rules in one line on the first turn");
   });
 });

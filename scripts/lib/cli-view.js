@@ -55,7 +55,10 @@ export function legalInputs(state, order) {
   return legalMoves(state).map((move) => `${order.indexOf(move.card) + 1} ${move.border + 1}`);
 }
 
-/** The same position as one JSON object, for `--machine` and an agent. */
+/** The rules in one line, at the head of an agent's game (docs/agents/regles.md has them in full). */
+export const RULES_LINE = "7 bornes ; 3 cartes par joueur et par borne : Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini le premier ; joker sans couleur (n'importe quelle valeur) ; une borne se revendique dès que ton côté complet ne peut plus être battu ; victoire : 3 bornes voisines ou 4 bornes.";
+
+/** The same position as one JSON object, for `--machine` and an agent: the facts, and `board`, the screen as text. */
 export function machineView(state, me, { order = handOrder(state, me), last = null } = {}) {
   const side = (cards) => cards.map((card) => formatCard(state.spec, card));
   const won = ({ owner }) => {
@@ -73,6 +76,8 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     last,
     over: Boolean(state.over),
     winner: state.over ? won({ owner: state.winner }) : null,
+    board: textView(state, me, { order, last }),
+    ...(state.turn < 2 ? { rules: RULES_LINE } : {}),
   };
 }
 

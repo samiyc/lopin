@@ -98,6 +98,13 @@ npm run cli -- --step partie.json "3 5" --machine
 Chaque `--step` relit la partie, joue le coup, fait répondre le robot, réécrit le fichier et
 affiche le nouvel état ; à la fin, le replay est aussi copié dans `replays/`.
 
+Pour un lot d'agents (`docs/agents/` : les règles pour un agent, la consigne type) :
+`--out <dossier>` range le replay fini ailleurs (`duels/agents/<lot>/`), `--why "…"` garde la
+raison du coup dans le replay (`note` sur le tour), `--model <nom>` inscrit le modèle dans
+`client`. Le JSON porte aussi `board`, l'écran en texte, et `rules`, les règles en une ligne au
+premier tour. Le fichier de partie contient l'ordre de la pioche : un agent ne doit lire que la
+sortie de la commande.
+
 **Une consigne prête à coller pour un agent** :
 
 > Tu joues à Bornage (Schotten Totten) contre l'Expérimental 1.2. Lance
