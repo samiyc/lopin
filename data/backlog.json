@@ -2281,6 +2281,148 @@
       "doneAt": "2026-10-12T14:08",
       "minutes": 0,
       "reason": "VALIDATE_LONG_1_Ensemble4 + VALIDATE_LONG_2_Ensemble4 : 46.2 % réunis, sous 50 %"
+    },
+    {
+      "id": "VALIDATE_LONG_1_MarginBackup15",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+margin=0.15@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 1 sur 4.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_2_MarginBackup15",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+margin=0.15@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 2 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MarginBackup15"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_MarginBackup15",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+margin=0.15@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 3 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MarginBackup15"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MarginBackup15",
+            "VALIDATE_LONG_2_MarginBackup15"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_MarginBackup15",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+margin=0.15@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "MarginBackup15 : 15 % de la note d'une simulation vient de l'écart de bornes ; tri à 400 du 12/10 : 52,8 % (48,4 – 57,2). Sans coût en temps. Donnes 4 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MarginBackup15"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MarginBackup15",
+            "VALIDATE_LONG_2_MarginBackup15"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_1_DistOracle1Root-Exact12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+shortlist=dist1+exact=12@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 1 sur 4.",
+      "status": "todo",
+      "stopIf": []
+    },
+    {
+      "id": "VALIDATE_LONG_2_DistOracle1Root-Exact12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+shortlist=dist1+exact=12@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 2 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_DistOracle1Root-Exact12"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_DistOracle1Root-Exact12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+shortlist=dist1+exact=12@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 3 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_DistOracle1Root-Exact12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_DistOracle1Root-Exact12",
+            "VALIDATE_LONG_2_DistOracle1Root-Exact12"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_DistOracle1Root-Exact12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+shortlist=dist1+exact=12@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "DistOracle1Root sur la 1.2 (le cœur réglé sur l'oracle choisit les 8 candidats) ; tri à 400 du 12/10 : 54,6 % (49,3 – 60,0). Une fois par coup : sans coût mesurable. Donnes 4 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_DistOracle1Root-Exact12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_DistOracle1Root-Exact12",
+            "VALIDATE_LONG_2_DistOracle1Root-Exact12"
+          ],
+          "below": 0.5
+        }
+      ]
     }
   ]
 }

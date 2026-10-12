@@ -3105,3 +3105,24 @@ budget ; 26 recherches sur 30 en reçoivent, une seule plus de 50 : 173 au tour 
 les 7 réponses adverses se partagent quelques centaines de visites, celle qui est jouée en a au
 mieux quelques dizaines, et l'étage d'après n'est presque jamais atteint. Pas de duel : il n'y a
 presque rien à garder. L'option reste.
+
+**Les tris des pistes 1 et 2** (400 itérations des deux côtés, contre la 1.2, `--screen --page`) :
+
+| Version | Score | Fourchette par paires | Suite |
+| --- | --- | --- | --- |
+| `margin=0.05` | 51,4 % (360 parties) | 46,5 – 56,3 % | gardé en réserve |
+| **`MarginBackup15`** (`margin=0.15`) | **52,8 %** (324) | 48,4 – 57,2 % | 1k@2k en file |
+| **`DistOracle1Root-Exact12`** (`shortlist=dist1`) | **54,6 %** (324) | 49,3 – 60,0 % | 1k@2k en file |
+| `exact=14` (solveur à la racine jusqu'à 14 cartes) | 47,5 % (360) | 43,3 – 51,7 % | abandonné : le plus faible, et son temps de résolution ne compte pas dans le budget |
+
+**La piste 3 : tes victoires contre la 1.2** (3 parties ; celle du 11/10 à 17 h 07 se jouait avec
+l'extension et est mise à part). Chaque coup de la 1.2 avant la pioche vide, recherché à nouveau à
+20 000 itérations avec tous les coups légaux en candidats ; un coup est signalé quand la recherche
+longue joue ailleurs et que le coup de la 1.2 a moins de la moitié de ses visites :
+- **16 coups signalés sur 30** dans les deux parties sans figure (5 sur 15 et 11 sur 15), dont les
+  premiers coups, où l'oracle lui-même ne s'accorde avec lui-même qu'une fois sur dix.
+- **Un motif** dans la partie du 11/10 à 17 h 15 : des tours 15 à 23, la recherche longue veut cinq
+  fois de suite renforcer la **borne 7**, un bord disputé où Sami menait 2 cartes à 1 ; la 1.2 joue
+  au centre ou ailleurs. Ailleurs, les désaccords sont variés (ouvrir, répondre, compléter).
+- Deux parties, c'est un indice, pas une règle : à refaire quand Sami aura d'autres victoires
+  contre la 1.2 (`sami-wins`, le script du 12/10, pourra devenir une commande).

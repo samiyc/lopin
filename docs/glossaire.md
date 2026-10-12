@@ -379,6 +379,9 @@ version :
 | `Ensemble3`, `Ensemble4` | Ensemble avec 3 ou 4 arbres (667 ou 500 itérations chacun, même total) | `ismcts+…+exact=12+trees=3@2000` |
 | `SimCertain` | la 1.2 dont les simulations gardent l'idée `certain` (plus de carte jetée sur une borne perdue) ; l'arbre juge sans elle | `ismcts+…+exact=12+simCertain=1` |
 | `SimCertainExact4` | `SimCertain`, et chaque simulation finie par le solveur exact dès que la pioche est vide et qu'il reste 4 cartes (le chiffre) | `ismcts+…+exact=12+simCertain=1+simExact=4` |
+| `MarginBackup15` | la 1.2 dont chaque simulation rend, pour 15 % de sa note, l'écart de bornes à la fin (½ + l'avance / 14) au lieu du seul gagné / perdu (`pointsOf`, `choice.js`) | `ismcts+…+exact=12+margin=0.15@2000` |
+| `DistOracle1Root-Exact12` | `DistOracle1Root` sur la 1.2 : le cœur réglé sur l'oracle choisit les 8 candidats de la racine, le reste de l'arbre garde `stfig6` | `ismcts+widen=7+depth=5+core=stfig6+shortlist=dist1+exact=12@2000` |
+| `TreeReuse` | la 1.2 qui garde son arbre d'un coup au suivant (`reuse.js`) ; mesurée : 13 visites offertes par recherche, sans duel | `ismcts+…+exact=12+reuse=1` |
 | `ForkThreat` | la 1.2 dont le cœur donne un bonus aux bornes qui gagnent la partie ou laisseraient une double menace, pour les deux camps (`fork.js`, cœurs `stfig6fork1/2/4`, le chiffre est le poids × 10) | `ismcts+…+core=stfig6fork2+exact=12@2000` |
 | `CriticalEnd` | le cœur 1.2 d'urgence tactique (`stfig6crit`, `src/sim/end-urgency.js`) : pioche vide, remboursement du cardCost, priorité de complétion et parades des 3 adjacentes | `ismcts+widen=7+depth=5+core=stfig6crit@2000` |
 | `CriticalEnd-Exact12` | le combo cœur tactique `stfig6crit` + solveur exact pioche vide à 12 cartes | `ismcts+widen=7+depth=5+core=stfig6crit+exact=12@2000` |
