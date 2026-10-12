@@ -1,7 +1,7 @@
 # Bornage — les règles pour un agent
 
 Bornage est Schotten Totten joué avec un jeu de cartes ordinaire. Tu joues contre un robot
-(l'Expérimental 1.2) dans la console : tu lis la position, tu choisis un coup parmi `legal`.
+(l'Expérimental 1.2) dans la console : tu lis la position, tu choisis un coup parmi `moves`.
 
 ## Le matériel
 
@@ -72,12 +72,12 @@ Main : 1:2♠  2:2♥  3:10♥  4:4♣  5:10♦  6:JK
 
 - **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10. Ce qui
   manque est dans la pioche ou dans la main du robot : c'est ce qui peut encore sortir.
-- Avec `--compact`, le JSON ne donne que `board` (l'écran), **`legal`** (tous les coups permis,
-  écrits comme il faut les taper : `"3 5"` = ta 3e carte sur la borne 5), `over`, et à la fin
-  `end` (le résultat) et `replay` (le chemin de la partie enregistrée).
-- **Les numéros de la main changent** quand une carte arrive. Pour ne pas te tromper, **nomme la
-  carte** : `"4♦ 3"` (ou `"4d 3"` : s ♠, h ♥, c ♣, d ♦ ; `"JK 3"` pour un joker). La ligne
-  « Toi : 4♦ → borne 3 » en tête de l'écran confirme le coup joué.
+- Avec `--compact`, le JSON ne donne que `board` (l'écran), **`moves`** (tous les coups permis),
+  `over`, et à la fin `end` (le résultat) et `replay` (le chemin de la partie enregistrée).
+- **Un coup s'écrit « carte borne »** : `"4♦ 3"` = le 4♦ sur la borne 3 (`"JK 3"` pour un joker),
+  exactement comme dans `moves`. N'utilise pas les numéros de la main (`1:`, `2:` sur l'écran) :
+  ils changent à chaque pioche. La ligne « Toi : 4♦ → borne 3 » en tête de l'écran confirme le
+  coup joué.
 
 ## Conseils (ce qui fait gagner les robots et Sami)
 

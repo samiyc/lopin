@@ -50,11 +50,6 @@ export function textView(state, me, { order = handOrder(state, me), last = null,
   return [header, ...(last ? [last] : []), seenLine(state, me), "", ...theirs, borders, ...mine, "", hand].join("\n");
 }
 
-/** The legal moves as typed: "card border", the card by its place in `order` (a joker takes the first place it holds). */
-export function legalInputs(state, order) {
-  return legalMoves(state).map((move) => `${order.indexOf(move.card) + 1} ${move.border + 1}`);
-}
-
 /** Is it `me`'s turn in a game still going? */
 const playable = (state, me) => state.current === me && !state.over;
 
@@ -75,8 +70,8 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     hand: order.map((card, index) => ({ n: index + 1, card: formatCard(state.spec, card) })),
     borders: state.borders.map((border, index) => ({ n: index + 1, mine: side(border.sides[me]), theirs: side(border.sides[1 - me]), won: won(border) })),
     seen: Object.fromEntries(suitCounts(state.spec, state, { bottom: me, reveal: false }).map(({ label, seen, total }) => [label, `${seen}/${total}`])),
-    legal: playable(state, me) ? legalInputs(state, order) : [],
-    // The same moves with the card named (« 8♠ 4 »): what a model should answer, since the hand's numbers move.
+    // The legal moves, the card named (« 8♠ 4 »), the only list an agent reads (Sami, 13/10: the hand's numbers, « 1 1 »,
+    // told nothing, and they move with each draw).
     moves: playable(state, me) ? legalMoves(state).map((move) => `${formatCard(state.spec, move.card)} ${move.border + 1}`) : [],
     last,
     over: Boolean(state.over),

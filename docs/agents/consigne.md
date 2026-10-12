@@ -23,10 +23,10 @@ pièges). C'est le seul fichier du dépôt que tu lis.
 
 1. Commence la partie (graine **{GRAINE}**, `--first` **{PREMIER}**) :
    `node scripts/cli.js --new tmp/agents/{LOT}/{NOM}-{N}.json --machine --compact --name {NOM} --model {MODELE} --seed {GRAINE} --first {PREMIER} --out duels/agents/{LOT}`
-2. Tant que `over` est faux : lis `board`, choisis **un coup de `legal`**, et joue-le **en
-   nommant la carte** (`"4♦ 3"`, `"JK 5"`) avec **une phrase de raison** :
+2. Tant que `over` est faux : lis `board`, choisis **un coup de `moves`**, écrit « carte borne »
+   (`"4♦ 3"`, `"JK 5"`), avec **une phrase de raison** :
    `node scripts/cli.js --step tmp/agents/{LOT}/{NOM}-{N}.json "<carte> <borne>" --machine --compact --why "<ta raison>" --out duels/agents/{LOT}`
-   Si `legal` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
+   Si `moves` est vide, joue `"p"`. La raison entre guillemets doubles, sans guillemets doubles
    dedans. Vérifie sur la ligne « Toi : … » que le coup joué est bien celui que tu voulais.
 3. La partie finie (`over` vrai), note `end` et `replay`.
 
@@ -34,7 +34,7 @@ pièges). C'est le seul fichier du dépôt que tu lis.
 
 - Ne lis **jamais** le fichier de partie (`tmp/agents/...`), ni le code, ni les replays : il
   contient l'ordre de la pioche. Seule la sortie de la commande compte.
-- Ne joue que des coups de `legal`. Si une commande renvoie `error`, relis `legal` et rejoue.
+- Ne joue que des coups de `moves`. Si une commande renvoie `error`, relis `moves` et rejoue.
 - Joue pour gagner, et finis la partie. Si une commande est refusée par l'environnement (et non
   par le jeu), arrête-toi et rends compte du message exact.
 

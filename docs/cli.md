@@ -70,13 +70,18 @@ Une ligne JSON par état sur la sortie, un coup par ligne en entrée (`3 5`), co
 {"turn":3,"pile":28,"opponentHand":6,
  "hand":[{"n":1,"card":"10♥"},{"n":2,"card":"1♣"}],
  "borders":[{"n":4,"mine":["3♥"],"theirs":[],"won":null},{"n":5,"mine":[],"theirs":["4♠"],"won":null}],
- "legal":["1 1","1 2"],
+ "moves":["10♥ 1","10♥ 2","1♣ 1","1♣ 2"],
  "last":"Basique : 4♠ → borne 5","over":false,"winner":null}
 ```
 
 `won` vaut `"me"`, `"opponent"` ou `null` ; `seen` les cartes vues par couleur
-(`{"♠":"3/10",…,"JK":"1/2"}`) ; `legal` donne **tous** les coups permis, déjà écrits comme il faut
-les taper ; une saisie refusée renvoie le même état avec `"error"`.
+(`{"♠":"3/10",…,"JK":"1/2"}`) ; `moves` donne **tous** les coups permis, la carte nommée puis la
+borne (`"10♥ 1"`), tels qu'il faut les rendre. Le numéro de la carte dans la main n'y figure plus
+(Sami, 13/10) : il change à chaque pioche et ne dit rien. Une saisie refusée renvoie le même état
+avec `"error"`.
+
+Au clavier, `3 5` (la 3e carte de la main sur la borne 5) reste la saisie courte : pas de
+caractère spécial à taper. `10♥ 1` ou `10h 1` fonctionnent aussi.
 
 ## La trace dans le replay
 
@@ -92,7 +97,7 @@ ouvert. La partie vit donc dans un fichier, qui est le replay lui-même :
 
 ```
 npm run cli -- --new partie.json --machine [--bot experimental] [--first me|bot] [--name claude]
-npm run cli -- --step partie.json "3 5" --machine
+npm run cli -- --step partie.json "3♥ 5" --machine
 ```
 
 Chaque `--step` relit la partie, joue le coup, fait répondre le robot, réécrit le fichier et
@@ -109,7 +114,8 @@ sortie de la commande.
 
 > Tu joues à Bornage (Schotten Totten) contre l'Expérimental 1.2. Lance
 > `npm run cli -- --new tmp/agent.json --machine --name claude`, puis, tant que `over` est faux,
-> choisis un coup parmi `legal` et lance `npm run cli -- --step tmp/agent.json "<coup>" --machine`.
+> choisis un coup parmi `moves` (la carte puis la borne, `"7♠ 5"`) et lance
+> `npm run cli -- --step tmp/agent.json "<coup>" --machine`.
 > Règles : 7 bornes ; sur chacune, 3 cartes par joueur ; la meilleure combinaison gagne la borne
 > (Suite couleur > Brelan > Couleur > Suite > Somme, puis la plus forte somme, puis qui a fini en
 > premier) ; le joker (`JK`) remplace n'importe quelle valeur, sans couleur. On gagne avec 3 bornes

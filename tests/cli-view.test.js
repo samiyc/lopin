@@ -64,8 +64,10 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
   it("gives an agent the same position as JSON, with exactly the legal moves", () => {
     const state = position();
     const view = machineView(state, 0);
-    assert.equal(view.legal.length, legalMoves(state).length);
-    assert.ok(view.legal.every((text) => parseInput(text, state, handOrder(state, 0)).move));
+    assert.equal(view.moves.length, legalMoves(state).length);
+    assert.ok(view.moves.every((text) => parseInput(text, state, handOrder(state, 0)).move), "each move is typed as « 7♠ 5 », the card named");
+    assert.ok(view.moves.every((text) => /^(JK|\d+[♠♥♣♦]) \d$/.test(text)));
+    assert.equal(view.legal, undefined, "no second list of moves by the hand's numbers (Sami, 13/10)");
     assert.deepEqual(view.borders[0], { n: 1, mine: ["9♠", "9♥", "9♣"], theirs: [], won: "me" });
     assert.equal(view.borders[1].won, "opponent");
     assert.deepEqual(view.hand.map((entry) => entry.card), handOrder(state, 0).map((card) => formatCard(SPEC, card)));
