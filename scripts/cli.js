@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { createInterface } from "node:readline";
@@ -106,7 +107,10 @@ const endOf = ({ state, me }) => endText(state, me, { canClaim: (index, player) 
 async function saveReplay(session) {
   finishLog(session.log, session.state);
   await mkdir(REPLAYS, { recursive: true });
-  const path = join(REPLAYS, replayFileName(session.log));
+  // Games started in the same second, by the same players, with the same score share a name (llm-play --parallel,
+  // 12/10: 3 replays of 10 were overwritten): the game's seed then tells them apart.
+  const named = join(REPLAYS, replayFileName(session.log));
+  const path = existsSync(named) ? named.replace(/\.json$/, `_${session.log.seed}.json`) : named;
   await writeFile(path, JSON.stringify(session.log, null, 1));
   return relative(process.cwd(), path).replaceAll("\\", "/");
 }
