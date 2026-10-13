@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
-import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { appendFileSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { RULES_LINE } from "./lib/cli-view.js";
@@ -16,6 +16,10 @@ import { RULES_LINE } from "./lib/cli-view.js";
  * CLI and bot) go to tmp/llm-play.jsonl, to see where the time goes.
  *
  * `--examples tmp/llm-examples.json`: worked examples before each position (`npm run llm-examples`).
+ *
+ * Each game also leaves a text journal beside its replay (`<replay>.log.txt`, Sami, 13/10): the
+ * console's JSON, the question put to the model, its raw answer (and its reasoning) and the
+ * command played, move by move.
  *
  * `--parallel N` plays N games at once (the bot's search uses one core each;
  * Ollama answers several requests at once only with OLLAMA_NUM_PARALLEL set).
@@ -80,11 +84,23 @@ const shots = () =>
     { role: "assistant", content: JSON.stringify({ raison: example.raison, coup: example.coup }) },
   ]);
 
-/** One CLI command (step mode, compact JSON): its last line, parsed, and how long it took. */
+/** One CLI command (step mode, compact JSON): its last line, that line parsed, and how long it took. */
 async function cli(extra) {
   const started = performance.now();
   const { stdout } = await run(process.execPath, [CLI, ...extra, "--machine", "--out", out, "--model", model], { encoding: "utf8" });
-  return { view: JSON.parse(stdout.trim().split("\n").at(-1)), ms: performance.now() - started };
+  const line = stdout.trim().split("\n").at(-1);
+  return { view: JSON.parse(line), line, ms: performance.now() - started };
+}
+
+/**
+ * The text journal of one game (Sami, 13/10, beside the replay): for each move the
+ * console's JSON, the question put to the model, its raw answer and the command
+ * played. Written as it goes to tmp/llm-play/, copied next to the replay at the end.
+ */
+function journalOf(n, header) {
+  const file = join(TMP, `${name}-${n}.log.txt`);
+  writeFileSync(file, `${header}\n`);
+  return { file, add: (text) => appendFileSync(file, `${text}\n`) };
 }
 
 const pause = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -118,53 +134,106 @@ async function chat(body) {
   }
 }
 
-/** The model's answer to one position: `{ coup, raison }` (or null), and its time. */
+/** The model's answer to one position: `{ coup, raison }` (or null), its time, and what was asked and answered, raw. */
 async function ask(view, retry) {
   const started = performance.now();
   const warning = retry ? "\n\nAttention : " + retry : "";
   const messages = [{ role: "system", content: SYSTEM }, ...shots(), { role: "user", content: question(view, warning) }];
   const body = await chat(JSON.stringify({ model, stream: false, format: answerSchema(view.moves), ...thinking, options: { temperature: 0.3, num_predict: 200, ...contextSize }, messages }));
-  let answer = null;
+  return { answer: parsed(body.message?.content), ms: performance.now() - started, raw: rawOf(messages.at(-1).content, body) };
+}
+
+/** The model's answer as an object, or null when it is not JSON. */
+function parsed(content) {
   try {
-    answer = JSON.parse(body.message?.content ?? "");
+    return JSON.parse(content ?? "");
   } catch {
-    answer = null;
+    return null;
   }
-  return { answer, ms: performance.now() - started };
+}
+
+/** What the journal keeps of an exchange: the question sent, the answer as it came, its reasoning and its length. */
+const rawOf = (sent, body) => ({ sent, content: body.message?.content ?? `(pas de réponse : ${body.error ?? "?"})`, thinking: body.message?.thinking ?? "", tokens: body.eval_count });
+
+/** What the journal says of one try: the question the first time (a retry adds its warning), then the raw answer. */
+function noteTry(journal, attempt, retry, { ms, raw }) {
+  journal.add(attempt === 1 ? `Question :\n${raw.sent}` : `Attention ajoutée : ${retry}`);
+  journal.add(`\nModèle ← essai ${attempt} · ${(ms / 1000).toFixed(1)} s · ${raw.tokens ?? "?"} tokens\n${raw.content}`);
+  if (raw.thinking) journal.add(`Modèle ← réflexion :\n${raw.thinking}`);
 }
 
 /** The model's move for this view: a legal one, after at most 3 tries; else the first legal move, said so in the note. */
-async function chooseMove(view) {
+async function chooseMove(view, journal) {
   let retry = null;
   let llmMs = 0;
   for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const { answer, ms } = await ask(view, retry);
-    llmMs += ms;
-    const coup = String(answer?.coup ?? "").trim().replaceAll(/\s+/g, " ");
-    if (view.moves.includes(coup)) return { coup, why: String(answer.raison ?? "").replaceAll('"', "'").slice(0, 300), tries: attempt, llmMs };
+    const tried = await ask(view, retry);
+    noteTry(journal, attempt, retry, tried);
+    llmMs += tried.ms;
+    const coup = String(tried.answer?.coup ?? "").trim().replaceAll(/\s+/g, " ");
+    if (view.moves.includes(coup)) return { coup, why: String(tried.answer.raison ?? "").replaceAll('"', "'").slice(0, 300), tries: attempt, llmMs };
     retry = `« ${coup || "?"} » n'est pas dans la liste. Choisis exactement un coup parmi : ${JSON.stringify(view.moves)}.`;
   }
   return { coup: view.moves[0], why: "(repli : aucune réponse valable en 3 essais)", tries: 4, llmMs };
+}
+
+/** The journal's first lines: who plays what, then the system prompt the model got. */
+const journalHeader = (n, seed, first) => [
+  `# Partie ${n} · ${model} contre ${bot} · graine ${seed} · ${first === "me" ? "le modèle commence" : "le robot commence"}`,
+  `# vue ${viewMode} · thinking ${thinkOption ?? "par défaut"} · ${examples.length} exemples · ${new Date().toISOString()}`,
+  "# « CLI → » : le JSON de scripts/cli.js (--machine) ; « Question » : ce que reçoit Ollama après les exemples ; « Modèle ← » : sa réponse brute.",
+  "",
+  "## Consigne système",
+  SYSTEM,
+  "",
+].join("\n");
+
+/** One move's lines of the journal: the command played and what the console answered. */
+function noteStep(journal, choice, step, moveNumber) {
+  const how = choice.tries > 3 ? "repli" : "essai " + choice.tries;
+  journal.add(`Coup ${moveNumber} joué : ${choice.coup} (${how})\n$ cli --step "${choice.coup}" --why "${choice.why}" · ${(step.ms / 1000).toFixed(1)} s\nCLI → ${step.line}\n`);
+}
+
+/** The journal goes next to the replay, `<replay>.log.txt`; returns its path. */
+function keepJournal(journal, view) {
+  journal.add(`Fin : ${view.end}\nReplay : ${view.replay}`);
+  const kept = resolve(process.cwd(), view.replay).replace(/\.json$/, ".log.txt");
+  copyFileSync(journal.file, kept);
+  return kept;
+}
+
+/** What one move adds to the game's tallies: times, jokers, and reasons that name another border than the one played. */
+function tally(stats, choice, step) {
+  const named = [...choice.why.matchAll(/borne (\d)/g)].map((match) => match[1]);
+  Object.assign(stats, {
+    jokers: stats.jokers + Number(choice.coup.startsWith("JK")),
+    offBorder: stats.offBorder + Number(named.length > 0 && !named.includes(choice.coup.split(" ")[1])),
+    moves: stats.moves + 1,
+    tries: stats.tries + choice.tries,
+    fallbacks: stats.fallbacks + Number(choice.tries > 3),
+    llmMs: stats.llmMs + choice.llmMs,
+    cliMs: stats.cliMs + step.ms,
+  });
 }
 
 async function playGame(n) {
   const file = join(TMP, `${name}-${n}.json`);
   const seed = seed0 + n;
   const first = n % 2 === 1 ? "me" : "bot";
-  let { view } = await cli(["--new", file, "--name", name, "--bot", bot, "--seed", String(seed), "--first", first]);
+  const journal = journalOf(n, journalHeader(n, seed, first));
+  const start = await cli(["--new", file, "--name", name, "--bot", bot, "--seed", String(seed), "--first", first]);
+  journal.add(`$ cli --new --seed ${seed} --first ${first}\nCLI → ${start.line}\n`);
+  let { view } = start;
   const stats = { n, seed, first, moves: 0, tries: 0, fallbacks: 0, llmMs: 0, cliMs: 0, jokers: 0, offBorder: 0 };
   while (!view.over) {
-    const choice = view.moves.length > 0 ? await chooseMove(view) : { coup: "p", why: "aucun coup possible", tries: 1, llmMs: 0 };
+    const choice = view.moves.length > 0 ? await chooseMove(view, journal) : { coup: "p", why: "aucun coup possible", tries: 1, llmMs: 0 };
     const step = await cli(["--step", file, choice.coup, "--why", choice.why]);
     view = step.view;
-    // How the model reads the table: a reason that names another border than the one played is a likely misreading.
-    const played = choice.coup.split(" ")[1];
-    const named = [...choice.why.matchAll(/borne (\d)/g)].map((match) => match[1]);
-    Object.assign(stats, { jokers: stats.jokers + Number(choice.coup.startsWith("JK")), offBorder: stats.offBorder + Number(named.length > 0 && !named.includes(played)) });
-    Object.assign(stats, { moves: stats.moves + 1, tries: stats.tries + choice.tries, fallbacks: stats.fallbacks + Number(choice.tries > 3), llmMs: stats.llmMs + choice.llmMs, cliMs: stats.cliMs + step.ms });
+    noteStep(journal, choice, step, stats.moves + 1);
+    tally(stats, choice, step);
     appendFileSync(TIMES, `${JSON.stringify({ game: n, move: stats.moves, tries: choice.tries, llmMs: Math.round(choice.llmMs), cliMs: Math.round(step.ms) })}\n`);
   }
-  return { ...stats, end: view.end, replay: view.replay, bordersWon: view.borders.filter((border) => border.won === "me").length };
+  return { ...stats, end: view.end, replay: view.replay, journal: keepJournal(journal, view), bordersWon: view.borders.filter((border) => border.won === "me").length };
 }
 
 mkdirSync(TMP, { recursive: true });
@@ -181,7 +250,7 @@ async function lane() {
     const result = await playGame(n);
     results.push(result);
     const perMove = (ms) => (ms / Math.max(1, result.moves) / 1000).toFixed(1);
-    console.log(`Partie ${n} (${result.first === "me" ? "le modèle commence" : "le robot commence"}) : ${result.end} — ${result.moves} coups, ${result.tries} essais, ${result.fallbacks} replis, modèle ${perMove(result.llmMs)} s / coup, console + robot ${perMove(result.cliMs)} s / coup`);
+    console.log(`Partie ${n} (${result.first === "me" ? "le modèle commence" : "le robot commence"}) : ${result.end} — ${result.moves} coups, ${result.tries} essais, ${result.fallbacks} replis, modèle ${perMove(result.llmMs)} s / coup, console + robot ${perMove(result.cliMs)} s / coup ; journal ${relative(process.cwd(), result.journal).replaceAll("\\", "/")}`);
   }
 }
 

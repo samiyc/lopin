@@ -137,6 +137,17 @@ Un replay joué en console porte `"client": { "app": "cli", "mode": "interactive
 console, ou d'un agent, pour une analyse ou un bug. Le reste du replay est celui de la page : tes
 temps de réflexion (`thinkMs`), les candidats du robot à chaque coup, les revendications.
 
+**Les notes sur les coups** : `--step … --why "<la raison>"` écrit la raison dans le tour du replay
+(`"note"`, à côté de `move`, `hand`, `thinkMs`) ; `llm-play` y met la `raison` du modèle, ou
+« (repli : aucune réponse valable en 3 essais) » / « aucun coup possible ». On les lit dans le
+fichier du replay, ou en bilan avec `npm run agents` (la part des coups avec une raison). La page
+(onglet Replays) ne les affiche pas encore.
+
+**Le journal d'une partie de `llm-play`** : à côté du replay, `<replay>.log.txt`. Pour chaque coup :
+le JSON renvoyé par la console (`CLI →`), la question posée au modèle, sa réponse brute et sa
+réflexion éventuelle (`Modèle ←`, une par essai), la commande jouée avec sa raison. Il garde aussi la
+consigne système et les options de la série.
+
 ## Pour un agent : le pas à pas
 
 Un agent (Claude Code, par exemple) fait un appel d'outil par coup ; il ne garde pas un programme
