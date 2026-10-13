@@ -13,15 +13,17 @@ npm run cli                          # contre l'Expérimental 1.2 (2 000 itérat
 npm run cli -- --bot stratege        # ou basique
 npm run cli -- --first bot           # le robot commence
 npm run cli -- --seed 42 --name sami # une donne choisie, ton prénom dans le replay
+npm run cli -- --gb                  # lettres anglaises S H C D au lieu de P H T C
 ```
 
 Sans `--name`, le jeu demande ton prénom au début (une ligne vide : « joueur ») ; un programme
 (`--machine`, `--new`) s'appelle « agent ».
 
 Un coup : **la carte telle que l'écran l'écrit, puis la borne (1-7)**, collées, puis Entrée :
-`7h4` pose le 7 de cœur sur la borne 4. Les couleurs sont les lettres de l'écran, **P** pique,
-**H** cœur, **T** trèfle, **C** carreau (S et D marchent aussi) ; **C est le carreau**, pas le
-trèfle anglais. Les anciennes saisies restent : `7h 4`, `7♥ 4`, ou `3 4` (la 3e carte de la main,
+`7h4` pose le 7 de cœur sur la borne 4. Les couleurs sont les lettres de l'écran : par défaut
+les françaises, **P** pique, **H** cœur, **T** trèfle, **C** carreau ; avec `--gb` les anglaises,
+**S** spade, **H** heart, **C** club, **D** diamond. Seul **C** change de sens (carreau, ou trèfle
+avec `--gb`) ; S, P, T et D se lisent dans les deux. Les anciennes saisies restent : `7h 4`, `7♥ 4`, ou `3 4` (la 3e carte de la main,
 même si l'écran ne numérote plus la main).
 
 | Saisie | Effet |
@@ -39,32 +41,35 @@ Le modèle de Sami (14/10) :
 ```
  TURN:15 | DECK:16 | OHAND:6 | U:8H1 ─ EXP:9T1
  P:02/10 | H:07/10 | T:05/10 | C:06/10 | JK:0/2
- ┌─────────────────────────────────┐
- │··   ··   ··   ··   ··   8C│  ··││
- │9T   ··   ··   ··   ··   1C│  ··││
- │4T   6C   ··   ··   9H   3C│  8P││
- │1═╗  2─   3─   4─   5─   6═╝  7═╝│
- │1H│  ··   4C   5H   6T   ··   ·· │
- │2H│  ··   ··   6H   ··   ··   ·· │
- │8H│  ··   ··   ··   ··   ··   ·· │
- └─────────────────────────────────┘
+ ┌──────────────────────────────────┐
+ │ ··   ··   ··   ··   ··   8C│  ··││
+ │ 9T   ··   ··   ··   ··   1C│  ··││
+ │ 4T   6C   ··   ··   9H  10C│  8P││
+ │ 1═╗  2─   3─   4─   5─   6═╝  7═╝│
+ │ 1H│  ··   4C   5H   6T   ··   ·· │
+ │ 2H│  ··   ··   6H   ··   ··   ·· │
+ │10H│  ··   ··   ··   ··   ··   ·· │
+ └──────────────────────────────────┘
   --=[ 3P  7H  1T  3T  2C  8C ]=--
 
-GB => SHCD   (Spade,Heart,Club,Diamond)
 FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)
 Input exemple: 7h4   (7Coeur sur la borne 4)
 ```
 
 - L'en-tête : le tour, la pioche (`DECK`), les cartes en main du robot (`OHAND`), puis le
   dernier échange : ton coup (`U:8H1`, le 8♥ sur la borne 1) et celui du robot (`EXP:9T1`, les
-  trois premières lettres de son nom : `EXP`, `STR`, `BAS`).
+  trois premières lettres de son nom : `EXP`, `STR`, `BAS`). Jusqu'à l'échange, la largeur ne
+  bouge pas : le tour et la pioche sur deux chiffres (`TURN:05`, `DECK:07`), `DECK:--` quand la
+  pioche est vide ; seul l'échange s'allonge d'un caractère pour un 10 (`U:10H1`).
 - La deuxième ligne : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10,
   et les jokers sur 2, comme la barre des couleurs de la page.
-- Les cartes s'écrivent valeur puis lettre de couleur : `8H`, `10P`, `JK`. `··` : une place vide.
+- Les cartes s'écrivent valeur puis lettre de couleur : `8H`, `10P`, `JK`, alignées à droite sur
+  trois caractères (` 8H`, `10H`) pour que les 10 ne décalent rien. `··` : une place vide.
 - Sept colonnes, une par borne : les trois cartes du robot (sa 3e en haut), la ligne des bornes,
   tes trois cartes. Une borne : `4─` pas encore gagnée, `1═╗` gagnée par toi (le coin descend
-  vers ton côté, barré à droite), `6═╝` par le robot (le coin monte vers le sien). Un 10 sur un
-  côté gagné de la borne 7 élargit le cadre d'un caractère.
+  vers ton côté, barré à droite), `6═╝` par le robot (le coin monte vers le sien). Le cadre a
+  toujours la même largeur.
+- La légende ne donne que l'alphabet en cours (FR, ou GB avec `--gb`).
 - Sous la main, les revendications de l'échange (« tu revendiques la borne 7 »), s'il y en a.
 - La fin dit qui gagne et avec quelles bornes (« le robot l'emporte, bornes 2-3-4 à la suite »),
   et, s'il y en a, les bornes que le perdant aurait pu revendiquer : celui qui vient de jouer

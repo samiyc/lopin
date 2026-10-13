@@ -358,7 +358,8 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   the pile. Written into the log's rules, so the replay shows both hands.
 - **Bornage in a terminal** (`npm run cli`, Sami 12/10, `docs/cli.md`): the base game at the claim
   rule against a line-up bot, a move typed « card border » (« 7h4 », Sami's screen of 14/10: suits
-  P H T C, so `c` is carreau; « 3 5 » by hand position still reads). `--machine` keeps the old
+  P H T C, so `c` is carreau, or S H C D with `--gb`; cards right-aligned on 3 characters and a
+  fixed-width header up to the exchange; « 3 5 » by hand position still reads). `--machine` keeps the old
   board (`boardText`) so llm-play's prompt does not move. It
   plays through `web/app/runner.js` like the page and writes the same replay to `replays/`. The
   screen and the input are pure (`scripts/lib/cli-view.js`, tested); `--json` (Sami, 13/10) prints

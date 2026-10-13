@@ -16,7 +16,7 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
  * typed « card border » (« 7h4 », Sami's template of 14/10). The finished game is a replay in replays/,
  * as from the page.
  *
- *   npm run cli -- [--bot experimental] [--first me|bot] [--seed N] [--name sami] [--machine]
+ *   npm run cli -- [--bot experimental] [--first me|bot] [--seed N] [--name sami] [--gb] [--machine]
  *   npm run cli -- --new partie.json [the same options]      (one move a command, for an agent)
  *   npm run cli -- --step partie.json "3 5"
  *
@@ -36,6 +36,8 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const json = args.includes("--json");
+/** The suit letters of the screen and the keyboard (Sami, 14/10): French P H T C, or `--gb` S H C D. */
+const letters = args.includes("--gb") ? "gb" : "fr";
 const machine = args.includes("--machine") || json;
 const outDir = option("--out");
 const REPLAYS = outDir === undefined ? fileURLToPath(new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url)) : resolve(process.cwd(), outDir);
@@ -165,15 +167,15 @@ function show(session, extra = {}) {
 function showText(session, order, extra) {
   const view ={ ...machineView(session.state, session.me, { order, last: lastText(session) }), ...extra };
   if (machine) return console.log(JSON.stringify(args.includes("--compact") ? compact(view) : view));
-  console.log(`\n${textView(session.state, session.me, { order, last: session.last, bot: BOT_LINEUP[session.bot.id].label })}`);
-  if (extra.error) console.log(`! ${shortCard(extra.error)}`);
+  console.log(`\n${textView(session.state, session.me, { order, last: session.last, bot: BOT_LINEUP[session.bot.id].label, letters })}`);
+  if (extra.error) console.log(`! ${shortCard(extra.error, letters)}`);
   if (extra.end) console.log(["", extra.end, extra.replay ? "Replay : " + extra.replay : ""].join("\n").trimEnd());
 }
 
 /** Applies one typed line; true when a move (or pass) was played. */
 function apply(session, line, thinkMs) {
   const order = handOrder(session.state, session.me, session.sort);
-  const read = parseInput(line, session.state, order);
+  const read = parseInput(line, session.state, order, { letters });
   if (read.error) return { error: read.error };
   if (read.help) return { error: HELP };
   if (read.sort) session.sort = session.sort === "suit" ? "value" : "suit";
@@ -191,7 +193,7 @@ async function onLine(session, line, thinkMs) {
   }
   // A mistake or the help: the message alone, the board is still on screen (machine mode repeats the state).
   // The screen writes cards « 3C », its messages too (the JSON keeps « 3♦ »).
-  if (read.error && !machine) console.log(`! ${shortCard(read.error)}`);
+  if (read.error && !machine) console.log(`! ${shortCard(read.error, letters)}`);
   else show(session, read.error ? { error: read.error } : {});
   return false;
 }

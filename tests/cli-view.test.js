@@ -21,18 +21,18 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     const state = position();
     const last = { toi: "9♠ → borne 1", robot: "4♦ → borne 3", revendications: ["tu revendiques la borne 1"] };
     const lines = textView(state, 0, { last, bot: "Expérimental" }).split("\n");
-    assert.match(lines[0], /^ TURN:1 \| DECK:\d+ \| OHAND:6 \| U:9P1 ─ EXP:4C3$/);
+    assert.match(lines[0], /^ TURN:01 \| DECK:\d\d \| OHAND:6 \| U:9P1 ─ EXP:4C3$/, "two digits up to the exchange: the columns do not shift");
     assert.equal(lines[1], " P:03/10 | H:02/10 | T:02/10 | C:02/10 | JK:1/2", "two digits for the suits, as the page's suit bar counts");
     assert.deepEqual(lines.slice(2, 11), [
-      " ┌─────────────────────────────────┐",
-      " │··   ··│  ··   ··   ··   ··   ·· │",
-      " │··   ··│  ··   ··   ··   ··   ·· │",
-      " │··   ··│  4C   ··   ··   ··   ·· │",
-      " │1═╗  2═╝  3─   4─   5─   6─   7─ │",
-      " │9P│  ··   ··   ··   ··   ··   ·· │",
-      " │9H│  ··   ··   ··   ··   ··   ·· │",
-      " │9T│  ··   ··   ··   ··   ··   ·· │",
-      " └─────────────────────────────────┘",
+      " ┌──────────────────────────────────┐",
+      " │ ··   ··│  ··   ··   ··   ··   ·· │",
+      " │ ··   ··│  ··   ··   ··   ··   ·· │",
+      " │ ··   ··│  4C   ··   ··   ··   ·· │",
+      " │ 1═╗  2═╝  3─   4─   5─   6─   7─ │",
+      " │ 9P│  ··   ··   ··   ··   ··   ·· │",
+      " │ 9H│  ··   ··   ··   ··   ··   ·· │",
+      " │ 9T│  ··   ··   ··   ··   ··   ·· │",
+      " └──────────────────────────────────┘",
     ], "the bar on the winner's side, the corner pointing at it: down for the player, up for the robot");
     assert.equal(lines[11], "  --=[ 2P  3P  10H  8T  7C  JK ]=--");
     assert.equal(lines[12], "  tu revendiques la borne 1");
@@ -40,13 +40,32 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.match(textView(state, 0).split("\n")[0], /OHAND:6$/, "no exchange yet: no « U: »");
   });
 
-  it("widens the frame for a 10 on the right of a won border", () => {
+  it("right-aligns the cards so a 10 keeps the columns, and writes the empty pile « -- » (Sami, 14/10)", () => {
     const state = position();
-    state.borders[6].sides[1] = parseCards(SPEC, ["10♠", "9♠", "8♠"]);
+    state.borders[6].sides[1] = parseCards(SPEC, ["10♠", "9♠", "3♠"]);
     state.borders[6].owner = 1;
+    state.borders[3].sides[1] = parseCards(SPEC, ["7♦", "10♦"]);
+    state.pile = [];
     const lines = textView(state, 0).split("\n");
-    assert.equal(lines[5], " │··   ··│  4C   ··   ··   ··   10P││");
+    assert.match(lines[0], /^ TURN:01 \| DECK:-- \| OHAND:6$/);
+    assert.deepEqual(lines.slice(3, 6), [
+      " │ ··   ··│  ··   ··   ··   ··   3P││",
+      " │ ··   ··│  ··  10C   ··   ··   9P││",
+      " │ ··   ··│  4C   7C   ··   ··  10P││",
+    ]);
     assert.equal(new Set(lines.slice(2, 11).map((line) => line.length)).size, 1, "every line of the frame as wide");
+  });
+
+  it("speaks English with --gb: S H C D on the screen, « c » read as clubs", () => {
+    const state = position();
+    const lines = textView(state, 0, { letters: "gb", last: { toi: "7♦ → borne 4" } }).split("\n");
+    assert.match(lines[0], /U:7D4$/);
+    assert.equal(lines[1], " S:03/10 | H:02/10 | C:02/10 | D:02/10 | JK:1/2");
+    assert.equal(lines[11], "  --=[ 2S  3S  10H  8C  7D  JK ]=--");
+    assert.match(lines.at(-2), /^GB => SHCD/, "only the alphabet in use in the legend");
+    const order = handOrder(state, 0);
+    assert.deepEqual(parseInput("8c6", state, order, { letters: "gb" }).move, { card: parseCards(SPEC, ["8♣"])[0], border: 5 });
+    assert.deepEqual(parseInput("7d4", state, order, { letters: "gb" }).move, { card: parseCards(SPEC, ["7♦"])[0], border: 3 });
   });
 
   it("reads « 7h4 »: the card and the border with nothing between, C as carreau like the screen", () => {
