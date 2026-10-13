@@ -18,12 +18,15 @@ npm run cli -- --seed 42 --name sami # une donne choisie, ton prénom dans le re
 Sans `--name`, le jeu demande ton prénom au début (une ligne vide : « joueur ») ; un programme
 (`--machine`, `--new`) s'appelle « agent ».
 
-Un coup : **le numéro de la carte dans ta main (1-6), puis la borne (1-7)**, séparés par une
-espace, une virgule ou un tiret, puis Entrée : `3 5` pose ta 3e carte sur la borne 5.
+Un coup : **la carte telle que l'écran l'écrit, puis la borne (1-7)**, collées, puis Entrée :
+`7h4` pose le 7 de cœur sur la borne 4. Les couleurs sont les lettres de l'écran, **P** pique,
+**H** cœur, **T** trèfle, **C** carreau (S et D marchent aussi) ; **C est le carreau**, pas le
+trèfle anglais. Les anciennes saisies restent : `7h 4`, `7♥ 4`, ou `3 4` (la 3e carte de la main,
+même si l'écran ne numérote plus la main).
 
 | Saisie | Effet |
 | --- | --- |
-| `3 5` | joue la carte 3 sur la borne 5 |
+| `7h4` | joue le 7♥ sur la borne 4 (`10p2`, `jk5` : le 10♠, le joker) |
 | `t` | trie ta main par valeur, puis de nouveau par couleur (par défaut) |
 | `p` | passe, seulement quand tu n'as aucun coup possible |
 | `?` | l'aide |
@@ -31,36 +34,45 @@ espace, une virgule ou un tiret, puis Entrée : `3 5` pose ta 3e carte sur la bo
 
 ## L'écran
 
+Le modèle de Sami (14/10) :
+
 ```
-Tour 3 · pioche 28 · main du robot 6 · bornes : toi 0, robot 0
-Basique : 4♠ → borne 5
-Vues : ♠ 1/10 · ♥ 2/10 · ♣ 2/10 · ♦ 2/10 · JK 1/2
+ TURN:15 | DECK:16 | OHAND:6 | U:8H1 ─ EXP:9T1
+ P:02/10 | H:07/10 | T:05/10 | C:06/10 | JK:0/2
+ ┌─────────────────────────────────┐
+ │··   ··   ··   ··   ··   8C│  ··││
+ │9T   ··   ··   ··   ··   1C│  ··││
+ │4T   6C   ··   ··   9H   3C│  8P││
+ │1═╗  2─   3─   4─   5─   6═╝  7═╝│
+ │1H│  ··   4C   5H   6T   ··   ·· │
+ │2H│  ··   ··   6H   ··   ··   ·· │
+ │8H│  ··   ··   ··   ··   ··   ·· │
+ └─────────────────────────────────┘
+  --=[ 3P  7H  1T  3T  2C  8C ]=--
 
-
-
-                    4♠
-1-   2-   3-   4-   5-   6-   7-
-               3♥
-
-
-
-Main : 1:10♥  2:1♣  3:8♣  4:1♦  5:7♦  6:JK
+GB => SHCD   (Spade,Heart,Club,Diamond)
+FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)
+Input exemple: 7h4   (7Coeur sur la borne 4)
 ```
 
-- Sept colonnes, une par borne, sur sept lignes : les trois cartes du robot (sa 3e en haut), la
-  ligne des bornes, tes trois cartes.
-- Une borne : `-` libre, `A` gagnée par toi, `B` par le robot, `=` les deux côtés pleins mais
-  personne n'a encore pu la revendiquer.
-- L'en-tête : le tour, la pioche, les cartes en main du robot, les bornes gagnées ; puis le
-  dernier coup du robot et qui revendique quoi : « Expérimental : 1♥ → borne 7 · tu revendiques
-  la borne 7 », « Après ton coup : le robot revendique la borne 2 ».
+- L'en-tête : le tour, la pioche (`DECK`), les cartes en main du robot (`OHAND`), puis le
+  dernier échange : ton coup (`U:8H1`, le 8♥ sur la borne 1) et celui du robot (`EXP:9T1`, les
+  trois premières lettres de son nom : `EXP`, `STR`, `BAS`).
+- La deuxième ligne : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10,
+  et les jokers sur 2, comme la barre des couleurs de la page.
+- Les cartes s'écrivent valeur puis lettre de couleur : `8H`, `10P`, `JK`. `··` : une place vide.
+- Sept colonnes, une par borne : les trois cartes du robot (sa 3e en haut), la ligne des bornes,
+  tes trois cartes. Une borne : `4─` pas encore gagnée, `1═╗` gagnée par toi (le coin descend
+  vers ton côté, barré à droite), `6═╝` par le robot (le coin monte vers le sien). Un 10 sur un
+  côté gagné de la borne 7 élargit le cadre d'un caractère.
+- Sous la main, les revendications de l'échange (« tu revendiques la borne 7 »), s'il y en a.
 - La fin dit qui gagne et avec quelles bornes (« le robot l'emporte, bornes 2-3-4 à la suite »),
   et, s'il y en a, les bornes que le perdant aurait pu revendiquer : celui qui vient de jouer
   revendique en premier, et la partie s'arrête à la première victoire.
-- **Vues** : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10, et les
-  jokers sur 2, comme la barre des couleurs de la page.
-- La main est triée par couleur (♠ ♥ ♣ ♦, du plus petit au plus grand, jokers à la fin) : les
-  numéros changent quand une carte arrive.
+- La main est triée par couleur (P H T C, du plus petit au plus grand, jokers à la fin) ; `t`
+  la trie par valeur.
+- `--machine` (llm-play) garde l'ancien plateau dans `board` (`boardText`), pour que le prompt
+  des modèles ne change pas.
 
 ## En JSON : `--json` (le format d'un agent, et pour vérifier)
 

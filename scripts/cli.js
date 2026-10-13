@@ -7,13 +7,13 @@ import { BOT_IDS, BOT_LINEUP } from "../src/config/bots.js";
 import { finishLog, playLogged, startLog, stateAt } from "../src/replay/log.js";
 import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/runner.js";
 import { isClaimable } from "../src/sim/certainty.js";
-import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "./lib/cli-view.js";
+import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, shortCard, textView } from "./lib/cli-view.js";
 import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
 
 /**
  * `npm run cli`: Bornage in a terminal, against a bot of the line-up (Sami,
  * 12/10; docs/cli.md). The base game only, at the page's claim rule; a move is
- * typed « card border » (« 3 5 »). The finished game is a replay in replays/,
+ * typed « card border » (« 7h4 », Sami's template of 14/10). The finished game is a replay in replays/,
  * as from the page.
  *
  *   npm run cli -- [--bot experimental] [--first me|bot] [--seed N] [--name sami] [--machine]
@@ -165,8 +165,8 @@ function show(session, extra = {}) {
 function showText(session, order, extra) {
   const view ={ ...machineView(session.state, session.me, { order, last: lastText(session) }), ...extra };
   if (machine) return console.log(JSON.stringify(args.includes("--compact") ? compact(view) : view));
-  console.log(`\n${textView(session.state, session.me, { order, last: lastText(session) })}`);
-  if (extra.error) console.log(`! ${extra.error}`);
+  console.log(`\n${textView(session.state, session.me, { order, last: session.last, bot: BOT_LINEUP[session.bot.id].label })}`);
+  if (extra.error) console.log(`! ${shortCard(extra.error)}`);
   if (extra.end) console.log(["", extra.end, extra.replay ? "Replay : " + extra.replay : ""].join("\n").trimEnd());
 }
 
@@ -190,7 +190,8 @@ async function onLine(session, line, thinkMs) {
     return true;
   }
   // A mistake or the help: the message alone, the board is still on screen (machine mode repeats the state).
-  if (read.error && !machine) console.log(`! ${read.error}`);
+  // The screen writes cards « 3C », its messages too (the JSON keeps « 3♦ »).
+  if (read.error && !machine) console.log(`! ${shortCard(read.error)}`);
   else show(session, read.error ? { error: read.error } : {});
   return false;
 }

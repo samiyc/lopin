@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { formatCard, parseCards } from "../src/core/notation.js";
 import { legalMoves } from "../src/sim/game.js";
 import { SPEC, newGame } from "../web/app/runner.js";
-import { claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
+import { boardText, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
 
 /** A game of the page's rules where player 0 holds `hand`, with a few cards and owners set by hand. */
 function position() {
@@ -17,9 +17,52 @@ function position() {
 }
 
 describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
-  it("shows the header, seven columns on seven lines, and the hand sorted by suit and numbered", () => {
+  it("draws Sami's template (14/10): the exchange in the header, the suit letters P H T C, a framed board, the corners of won borders", () => {
     const state = position();
+    const last = { toi: "9♠ → borne 1", robot: "4♦ → borne 3", revendications: ["tu revendiques la borne 1"] };
+    const lines = textView(state, 0, { last, bot: "Expérimental" }).split("\n");
+    assert.match(lines[0], /^ TURN:1 \| DECK:\d+ \| OHAND:6 \| U:9P1 ─ EXP:4C3$/);
+    assert.equal(lines[1], " P:03/10 | H:02/10 | T:02/10 | C:02/10 | JK:1/2", "two digits for the suits, as the page's suit bar counts");
+    assert.deepEqual(lines.slice(2, 11), [
+      " ┌─────────────────────────────────┐",
+      " │··   ··│  ··   ··   ··   ··   ·· │",
+      " │··   ··│  ··   ··   ··   ··   ·· │",
+      " │··   ··│  4C   ··   ··   ··   ·· │",
+      " │1═╗  2═╝  3─   4─   5─   6─   7─ │",
+      " │9P│  ··   ··   ··   ··   ··   ·· │",
+      " │9H│  ··   ··   ··   ··   ··   ·· │",
+      " │9T│  ··   ··   ··   ··   ··   ·· │",
+      " └─────────────────────────────────┘",
+    ], "the bar on the winner's side, the corner pointing at it: down for the player, up for the robot");
+    assert.equal(lines[11], "  --=[ 2P  3P  10H  8T  7C  JK ]=--");
+    assert.equal(lines[12], "  tu revendiques la borne 1");
+    assert.equal(lines.at(-1), "Input exemple: 7h4   (7Coeur sur la borne 4)");
+    assert.match(textView(state, 0).split("\n")[0], /OHAND:6$/, "no exchange yet: no « U: »");
+  });
+
+  it("widens the frame for a 10 on the right of a won border", () => {
+    const state = position();
+    state.borders[6].sides[1] = parseCards(SPEC, ["10♠", "9♠", "8♠"]);
+    state.borders[6].owner = 1;
     const lines = textView(state, 0).split("\n");
+    assert.equal(lines[5], " │··   ··│  4C   ··   ··   ··   10P││");
+    assert.equal(new Set(lines.slice(2, 11).map((line) => line.length)).size, 1, "every line of the frame as wide");
+  });
+
+  it("reads « 7h4 »: the card and the border with nothing between, C as carreau like the screen", () => {
+    const state = position();
+    const order = handOrder(state, 0);
+    assert.deepEqual(parseInput("7c4", state, order).move, { card: parseCards(SPEC, ["7♦"])[0], border: 3 });
+    assert.deepEqual(parseInput("8T6", state, order).move, { card: parseCards(SPEC, ["8♣"])[0], border: 5 });
+    assert.deepEqual(parseInput("10h5", state, order).move, { card: parseCards(SPEC, ["10♥"])[0], border: 4 });
+    assert.deepEqual(parseInput("2p3", state, order).move, { card: parseCards(SPEC, ["2♠"])[0], border: 2 });
+    assert.equal(parseInput("jk7", state, order).move.card, parseCards(SPEC, ["JK"])[0]);
+    assert.match(parseInput("8c4", state, order).error, /^8♦ n'est pas dans ta main/, "c is carreau, not clubs");
+  });
+
+  it("keeps llm-play's board as it was (boardText): header, seven columns on seven lines, the hand numbered", () => {
+    const state = position();
+    const lines = boardText(state, 0).split("\n");
     assert.match(lines[0], /^Tour 1 · pioche \d+ · main du robot 6 · bornes : toi 1, robot 1$/);
     assert.equal(lines[1], "Vues : ♠ 3/10 · ♥ 2/10 · ♣ 2/10 · ♦ 2/10 · JK 1/2", "the board and the hand, as the page's suit bar");
     const board = lines.slice(3, 10);
@@ -112,7 +155,7 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.deepEqual(view.hand.map((entry) => entry.card), handOrder(state, 0).map((card) => formatCard(SPEC, card)));
     assert.equal(view.over, false);
     assert.deepEqual(view.seen, { "♠": "3/10", "♥": "2/10", "♣": "2/10", "♦": "2/10", JK: "1/2" });
-    assert.equal(view.board, textView(state, 0), "the screen as text, for an agent to read");
+    assert.equal(view.board, boardText(state, 0), "the board llm-play's prompt knows, not the new screen (14/10)");
     assert.match(view.rules, /3 bornes voisines ou 4 bornes/, "the rules in one line on the first turn");
   });
 });

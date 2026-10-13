@@ -39,8 +39,11 @@ export function seenLine(state, me) {
   return "Vues : " + counts.map(({ label, seen, total }) => `${label} ${seen}/${total}`).join(" · ");
 }
 
-/** The text screen for player `me`: header, the last move, the cards seen, the seven-by-seven board, the numbered hand. */
-export function textView(state, me, { order = handOrder(state, me), last = null, names = ["toi", "robot"] } = {}) {
+/**
+ * The board as llm-play's prompt knows it (`--machine`'s `board`): header, the last move, the cards seen, the
+ * seven-by-seven board, the numbered hand. The screen people play on is `textView`.
+ */
+export function boardText(state, me, { order = handOrder(state, me), last = null, names = ["toi", "robot"] } = {}) {
   const header = `Tour ${state.turn + 1} · pioche ${state.pile.length} · main du ${names[1]} ${state.hands[1 - me].length} · bornes : ${names[0]} ${ownedBy(state, me)}, ${names[1]} ${ownedBy(state, 1 - me)}`;
   const theirs = [2, 1, 0].map((row) => cardRow(state, 1 - me, row));
   const borders = state.borders.map((border, index) => pad(`${index + 1}${borderMark(border, me)}`)).join("").trimEnd();
@@ -48,6 +51,89 @@ export function textView(state, me, { order = handOrder(state, me), last = null,
   const cards = order.map((card, index) => `${index + 1}:${formatCard(state.spec, card)}`);
   const hand = "Main : " + cards.join("  ");
   return [header, ...(last ? [last] : []), seenLine(state, me), "", ...theirs, borders, ...mine, "", hand].join("\n");
+}
+
+/** The suits as one letter on the screen (Sami, 14/10): the French ones, P H T C — « Pchit ! ». */
+const SUIT_CODES = { "♠": "P", "♥": "H", "♣": "T", "♦": "C" };
+
+/** « 8♥ » → « 8H », « 10♠ » → « 10P », « JK » stays: a card in two or three characters. */
+export const shortCard = (text) => text.replaceAll(/[♠♥♣♦]/g, (suit) => SUIT_CODES[suit]);
+
+const codeOf = (state, card) => shortCard(formatCard(state.spec, card));
+
+/** A slot of a side with no card yet. */
+const EMPTY_SLOT = "··";
+
+/**
+ * One border's side for `player`, cards in the rows asked: `··` where there is none, and a bar after each when
+ * `player` won the border — the bar the border's corner (`═╗` / `═╝`) points to.
+ */
+function sideCells(state, border, player, rows) {
+  const won = border.owner === player;
+  return rows.map((row) => {
+    const card = border.sides[player][row];
+    const text = card === undefined ? EMPTY_SLOT : codeOf(state, card);
+    return won ? text + "│" : text;
+  });
+}
+
+/** `4─` undecided (or full, nobody able to claim it yet), `1═╗` won by the player (below), `6═╝` by the opponent. */
+function borderCell(border, index, me) {
+  if (border.owner === me) return `${index + 1}═╗`;
+  if (border.owner === 1 - me) return `${index + 1}═╝`;
+  return `${index + 1}─`;
+}
+
+/** Seven cells on one line: five characters each, the last one three, as the frame is drawn. */
+const boardLine = (cells) => cells.map((cell, index) => cell.padEnd(index === cells.length - 1 ? 3 : 5)).join("");
+
+/** The opponent's side (third card on top), the borders, the player's side, framed; the frame widens for a « 10P│ » on the right. */
+function framedBoard(state, me) {
+  const sides = (player, rows) => state.borders.map((border) => sideCells(state, border, player, rows));
+  const theirs = sides(1 - me, [2, 1, 0]);
+  const mine = sides(me, [0, 1, 2]);
+  const rows = [
+    ...[0, 1, 2].map((row) => boardLine(theirs.map((cells) => cells[row]))),
+    boardLine(state.borders.map((border, index) => borderCell(border, index, me))),
+    ...[0, 1, 2].map((row) => boardLine(mine.map((cells) => cells[row]))),
+  ];
+  const width = Math.max(...rows.map((row) => row.length));
+  return [` ┌${"─".repeat(width)}┐`, ...rows.map((row) => ` │${row.padEnd(width)}│`), ` └${"─".repeat(width)}┘`];
+}
+
+/** « Expérimental » → « EXP »: the bot's tag in the header. */
+const tagOf = (name) => name.normalize("NFD").replaceAll(/\p{M}/gu, "").slice(0, 3).toUpperCase();
+
+/** « 8♥ → borne 1 » → « 8H1 »; « passe » stays; the bot's moves in a row are joined by « ; ». */
+const moveCode = (text) => text.split(" ; ").map((move) => (move === "passe" ? move : shortCard(move.replace(" → borne ", "")))).join(";");
+
+/** The cards seen per suit, two digits for the suits: « P:02/10 | H:07/10 | T:05/10 | C:06/10 | JK:0/2 ». */
+function seenCodes(state, me) {
+  const counts = suitCounts(state.spec, state, { bottom: me, reveal: false });
+  return counts.map(({ label, seen, total }) => (label === "JK" ? `JK:${seen}/${total}` : `${SUIT_CODES[label] ?? label}:${String(seen).padStart(2, "0")}/${total}`)).join(" | ");
+}
+
+/** What the screen's foot says every turn: the suit letters and how a move is typed. */
+export const LEGEND = ["GB => SHCD   (Spade,Heart,Club,Diamond)", "FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)", "Input exemple: 7h4   (7Coeur sur la borne 4)"];
+
+/**
+ * The text screen for player `me` (Sami's template, 14/10): turn, pile, the opponent's hand and the last exchange
+ * (« U:8H1 ─ EXP:9T1 »), the cards seen per suit, the framed board, the hand, the claims just made, the legend.
+ * `last`: `{ toi, robot, revendications }`, the moves written « 8♥ → borne 1 »; `bot`: the bot's name.
+ */
+export function textView(state, me, { order = handOrder(state, me), last = null, bot = "robot" } = {}) {
+  const hand = `  --=[ ${order.map((card) => codeOf(state, card)).join("  ")} ]=--`;
+  return [` ${headerLine(state, me, last ?? {}, bot)}`, ` ${seenCodes(state, me)}`, ...framedBoard(state, me), hand, ...claimLines(last), "", ...LEGEND].join("\n");
+}
+
+/** The claims of the exchange, on one line under the hand; none, no line. */
+const claimLines = (last) => (last?.revendications?.length > 0 ? [`  ${last.revendications.join(", ")}`] : []);
+
+/** « TURN:15 | DECK:16 | OHAND:6 | U:8H1 ─ EXP:9T1 »: the exchange only for the sides that moved. */
+function headerLine(state, me, { toi, robot }, bot) {
+  const moves = [toi ? `U:${moveCode(toi)}` : "", robot ? `${tagOf(bot)}:${moveCode(robot)}` : ""].filter(Boolean);
+  const exchange = moves.length > 0 ? [moves.join(" ─ ")] : [];
+  return [`TURN:${state.turn + 1}`, `DECK:${state.pile.length}`, `OHAND:${state.hands[1 - me].length}`, ...exchange].join(" | ");
 }
 
 /** Is it `me`'s turn in a game still going? */
@@ -141,7 +227,7 @@ export function machineView(state, me, { order = handOrder(state, me), last = nu
     last,
     over: Boolean(state.over),
     winner: state.over ? won({ owner: state.winner }) : null,
-    board: textView(state, me, { order, last }),
+    board: boardText(state, me, { order, last }),
     ...(state.turn < 2 ? { rules: RULES_LINE } : {}),
   };
 }
@@ -191,7 +277,7 @@ function missedNote(state, me, canClaim) {
   return ` ${which} ${owner}, mais celui qui vient de jouer revendique en premier, et la partie s'arrête à la première victoire.`;
 }
 
-export const HELP = "Joue « carte borne » : « 3 5 » pose la 3e carte de ta main sur la borne 5, « 4♦ 5 » ou « 4d 5 » la nomme (séparateurs : espace, virgule, tiret). t : trier par valeur / par couleur · p : passer (seulement sans coup possible) · ? : aide · q : abandonner.";
+export const HELP = "Joue la carte puis la borne : « 7h4 » pose le 7 de cœur sur la borne 4 (couleurs : P pique, H cœur, T trèfle, C carreau ; S et D aussi) ; « 7h 4 », « 7♥ 4 » ou « 3 4 » (la 3e carte de ta main) aussi. t : trier par valeur / par couleur · p : passer (seulement sans coup possible) · ? : aide · q : abandonner.";
 
 const COMMANDS = { t: { sort: true }, "?": { help: true }, aide: { help: true }, q: { quit: true }, quitter: { quit: true } };
 
@@ -212,8 +298,11 @@ export function parseInput(text, state, order) {
   return moveFor(numbers, state, order, legal);
 }
 
-/** Suit letters an agent or a keyboard may type for ♠ ♥ ♣ ♦ (and the French ones: pique, cœur, trèfle, carreau). */
-const SUIT_LETTERS = { s: "♠", p: "♠", h: "♥", c: "♣", t: "♣", d: "♦", k: "♦" };
+/**
+ * Suit letters an agent or a keyboard may type for ♠ ♥ ♣ ♦: the screen's (P H T C), S and D. « c » is carreau, as
+ * the screen writes it (Sami's template, 14/10); clubs are « t ».
+ */
+const SUIT_LETTERS = { s: "♠", p: "♠", h: "♥", t: "♣", c: "♦", d: "♦", k: "♦" };
 
 /** A card as typed (« 4♦ », « 4d », « jk ») in the notation of the game's cards (« 4♦ », « JK »). */
 const writtenCard = (text) => (text.toUpperCase() === "JK" ? "JK" : text.replace(/[a-z]$/, (letter) => SUIT_LETTERS[letter] ?? letter));
@@ -230,7 +319,9 @@ function placeOfCard(text, state, order) {
  * draw, and « 4 3 » played the 2♦ it meant as the 4♦); anything else → null.
  */
 function cardAndBorder(line, state, order) {
-  const parts = line.replaceAll(/(\d)-(\d)/g, "$1 $2").split(/[\s,;/]+/).filter(Boolean);
+  // « 7h4 », « 10p2 », « jk5 » (Sami's template, 14/10): the card and the border with nothing between.
+  const joined = /^((?:10|[1-9])[a-z♠♥♣♦]|jk)(\d)$/.exec(line);
+  const parts = joined ? [joined[1], joined[2]] : line.replaceAll(/(\d)-(\d)/g, "$1 $2").split(/[\s,;/]+/).filter(Boolean);
   if (parts.length !== 2 || !/^\d+$/.test(parts[1])) return null;
   const place = /^\d+$/.test(parts[0]) ? Number(parts[0]) : placeOfCard(parts[0], state, order);
   if (place > 0) return [place, Number(parts[1])];
