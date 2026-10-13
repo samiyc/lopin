@@ -126,7 +126,12 @@ export function wireSuitBar() {
     event.target.setPointerCapture?.(event.pointerId);
     highlight(suit);
   });
-  for (const type of ["pointerup", "pointercancel", "lostpointercapture", "focusout"]) bar.addEventListener(type, () => highlight(null));
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) bar.addEventListener(type, () => highlight(null));
+  // Pressing ♥ right after ♠ moves the focus from one button to the other just
+  // after ♥'s pointerdown lit it: only focus leaving the bar puts the light out.
+  bar.addEventListener("focusout", (event) => {
+    if (!bar.contains(event.relatedTarget)) highlight(null);
+  });
   bar.addEventListener("keydown", (event) => {
     if ((event.key === "Enter" || event.key === " ") && suitOf(event)) {
       event.preventDefault();

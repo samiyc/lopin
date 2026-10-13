@@ -94,10 +94,12 @@ button, select, input { font: inherit; }
 .layout.folded #panel-play .label, .layout.folded #panel-play .hint { display: none; }
 .layout.folded #panel-play .glyph { display: inline; font-size: 1.2rem; line-height: 1; }
 .layout.folded #panel-play button { padding: 6px 0; }
-.layout.folded .counters > :not(.deck), .layout.folded .deck .card.back { display: none; }
-.layout.folded .deck { justify-content: center; }
-.layout.folded #pile-text { font-size: 0; }
-.layout.folded #pile-text strong { font-size: 1rem; }
+.layout.folded .counters > :not(.deck) { display: none; }
+/* Folded, the pile is a card back as wide as the column, its count written on it. */
+.layout.folded .deck { position: relative; display: grid; place-items: center; }
+.layout.folded .deck .card.back { --card-w: 48px; --card-h: 68px; grid-area: 1 / 1; }
+.layout.folded #pile-text { grid-area: 1 / 1; z-index: 1; font-size: 0; }
+.layout.folded #pile-text strong { display: block; min-width: 30px; padding: 2px 4px; border-radius: 6px; background: var(--panel); color: var(--ink); font-size: 1rem; line-height: 1.2; text-align: center; box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 8px; }
 .panel label { display: grid; gap: 2px; font-size: 0.9rem; color: var(--ink-2); }
 .hint { margin: 0; font-size: 0.85rem; color: var(--ink-2); }
