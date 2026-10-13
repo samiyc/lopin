@@ -29,13 +29,14 @@ function eloBlock(elo) {
       "tr",
       { class: row.human ? "human" : "" },
       el("td", {}, name(row.player), vs ? el("small", { class: "facts" }, ` ${vs}`) : null),
+      el("td", { class: "num" }, String(row.games)),
+      el("td", { class: "bar-cell" }, el("span", { class: "bar", style: `width:${(100 * (row.elo - 400)) / (top - 400)}%` })),
       el("td", { class: "num" }, String(row.elo)),
       el("td", { class: "num" }, `±${row.margin}`),
-      el("td", { class: "bar-cell" }, el("span", { class: "bar", style: `width:${(100 * (row.elo - 400)) / (top - 400)}%` })),
-      el("td", { class: "num" }, String(row.games)),
     );
   });
-  return [el("h3", {}, "Classement Elo"), table(["Joueur", "Elo", "Marge", "", "Parties"], rows), el("p", { class: "hint" }, "Basique = 500. Tes parties et les duels entre robots, en un seul ajustement (npm run elo).")];
+  // Sami, 14/10: the games first, the bar right before the Elo it draws.
+  return [el("h3", {}, "Classement Elo"), table(["Joueur", "Parties", "", "Elo", "Marge"], rows), el("p", { class: "hint" }, "Basique = 500. Tes parties et les duels entre robots, en un seul ajustement (npm run elo).")];
 }
 
 function recordBlock(lines) {
