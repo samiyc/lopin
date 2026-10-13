@@ -108,6 +108,9 @@ confirme le coup joué.
 **Ce que tu ne reçois pas** : la main du robot et la pioche (cachées, comme à la table) ; l'historique
 des tours (`bornes` montre ce qui est posé, et `dernier_echange` l'échange qui vient d'avoir lieu — pas plus).
 
+**Des exemples** : `docs/agents/exemples.md` donne quelques vraies positions (INPUT, le JSON ci-dessus)
+avec le coup parfait (OUTPUT).
+
 ## Conseils (ce qui fait gagner les robots et Sami)
 
 - **Compte les cartes** avant de viser une combinaison : pour finir 4♥ 5♥ il faut 3♥ ou 6♥ ;

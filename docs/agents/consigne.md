@@ -19,7 +19,8 @@ partie** contre le robot Expérimental 1.2, dans le dossier `E:\Dev\My projects\
 lance toutes les commandes depuis ce dossier, avec l'outil Bash, sans `cd` ni worktree.
 
 **Lis d'abord les règles** : `docs/agents/regles.md` (les règles, le JSON que tu reçois, les
-conseils, les pièges). C'est le seul fichier du dépôt que tu lis.
+conseils, les pièges), puis `docs/agents/exemples.md` (quelques positions avec le coup parfait,
+INPUT puis OUTPUT). Ce sont les deux seuls fichiers du dépôt que tu lis.
 
 1. Commence la partie (graine **{GRAINE}**, `--first` **{PREMIER}**) :
    `node scripts/cli.js --new tmp/agents/{LOT}/{NOM}-{N}.json --json --name {NOM} --model {MODELE} --seed {GRAINE} --first {PREMIER} --out duels/agents/{LOT}`
