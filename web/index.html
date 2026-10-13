@@ -44,8 +44,8 @@
     </div>
 
     <section class="panel" id="panel-play">
-      <button type="button" id="btn-new">Nouvelle partie</button>
-      <button type="button" id="btn-reset" class="quiet">Recommencer</button>
+      <button type="button" id="btn-new" title="Nouvelle partie"><span class="glyph" aria-hidden="true">+</span><span class="label">Nouvelle partie</span></button>
+      <button type="button" id="btn-reset" class="quiet" title="Recommencer"><span class="glyph" aria-hidden="true">↻</span><span class="label">Recommencer</span></button>
       <p class="hint">Glisse une carte sur une borne, ou clique la carte puis la borne (touches 1 à 7). Glisse dans ta main pour la ranger.</p>
     </section>
 
@@ -99,6 +99,7 @@
 
     <section class="panel explain" id="explain" hidden aria-live="polite"></section>
   </aside>
+  <button type="button" id="btn-fold" class="quiet sidebar-fold" aria-expanded="true" title="Replier le panneau">«</button>
 
   <section class="table" id="table" aria-label="Table de jeu">
     <p class="seat-label" id="label-top"></p>

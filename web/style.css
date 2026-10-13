@@ -85,6 +85,19 @@ button, select, input { font: inherit; }
 /* ── Layout ──────────────────────────────── */
 .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 16px 20px; align-items: start; }
 .sidebar { display: grid; gap: 14px; position: sticky; top: 12px; }
+/* The folded sidebar (Sami, 13/10, for a vertical split screen): Jouer only, a
+   48px column with the pile count and the buttons reduced to their glyph. */
+.sidebar-fold { position: fixed; left: 20px; bottom: 12px; z-index: 10; width: 48px; padding: 4px 0; background: var(--panel); font-size: 1.1rem; line-height: 1; }
+#panel-play .glyph { display: none; }
+.layout.folded { grid-template-columns: 48px 1fr; }
+.layout.folded #panel-play { padding: 6px 4px; }
+.layout.folded #panel-play .label, .layout.folded #panel-play .hint { display: none; }
+.layout.folded #panel-play .glyph { display: inline; font-size: 1.2rem; line-height: 1; }
+.layout.folded #panel-play button { padding: 6px 0; }
+.layout.folded .counters > :not(.deck), .layout.folded .deck .card.back { display: none; }
+.layout.folded .deck { justify-content: center; }
+.layout.folded #pile-text { font-size: 0; }
+.layout.folded #pile-text strong { font-size: 1rem; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 8px; }
 .panel label { display: grid; gap: 2px; font-size: 0.9rem; color: var(--ink-2); }
 .hint { margin: 0; font-size: 0.85rem; color: var(--ink-2); }
@@ -252,8 +265,10 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
 
 @media (max-width: 900px) {
   :root { --ui-zoom: 1; }
-  .layout { grid-template-columns: 1fr; }
+  .layout, .layout.folded { grid-template-columns: 1fr; }
   .sidebar { position: static; }
+  .layout.folded #panel-play { display: flex; justify-content: flex-start; }
+  .layout.folded #panel-play button { width: 48px; }
   :root { --card-w: 44px; --card-h: 62px; --overlap: 20px; }
 }
 

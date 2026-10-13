@@ -43,6 +43,27 @@ const EMPTY_MESSAGES = {
   stats: "",
 };
 
+/** Folding the sidebar (« / »): Jouer only, remembered in this browser. */
+const FOLD_KEY = "lopin.sidebarFolded";
+let folded = false;
+try { folded = localStorage.getItem(FOLD_KEY) === "1"; } catch { /* storage blocked: start unfolded */ }
+
+function applyFold() {
+  const on = folded && mode === "play";
+  document.querySelector(".layout").classList.toggle("folded", on);
+  const button = $("btn-fold");
+  button.hidden = mode !== "play";
+  button.textContent = on ? "»" : "«";
+  button.title = on ? "Déplier le panneau" : "Replier le panneau";
+  button.setAttribute("aria-expanded", String(!on));
+}
+
+$("btn-fold").addEventListener("click", () => {
+  folded = !folded;
+  try { localStorage.setItem(FOLD_KEY, folded ? "1" : "0"); } catch { /* storage blocked: this visit only */ }
+  applyFold();
+});
+
 function redraw(tab) {
   if (tab === "stats") return renderStats();
   if (tab === "puzzles") return renderPuzzle();
@@ -64,6 +85,7 @@ function show(tab) {
   $("counters").hidden = tab === "stats";
   document.querySelector(".sidebar").hidden = tab === "stats";
   $("stats-view").hidden = tab !== "stats";
+  applyFold();
   setVisible(tab === "play");
   showPuzzles(tab === "puzzles");
   redraw(tab);
