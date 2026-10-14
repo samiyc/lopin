@@ -10,6 +10,7 @@ import { createReader, inferredHands, pickHand } from "./infer.js";
 import { determinize } from "./lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
+import { withTreeStats } from "./tree-stats.js";
 import { moveKey } from "./search.js";
 
 /**
@@ -264,7 +265,9 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
     if (moves.length <= 1) return base.scoreMoves(state, moves, options);
     const exactly = solved(state, moves, options);
     if (exactly) return exactly;
-    return reuse.remember(state, run(searchFor(state, moves, options, { ...recall(state), root: reuse.rootFor(state) }), state.turn, isPivot(state) ? pivot : 1)).scored();
+    const search = reuse.remember(state, run(searchFor(state, moves, options, { ...recall(state), root: reuse.rootFor(state) }), state.turn, isPivot(state) ? pivot : 1));
+    // The tree's shape by level, for the replays (tree-stats.js).
+    return withTreeStats(search.scored(), search);
   };
   // `pick` is `choose` with the scores it chose from, for the replays to keep (bot-games.js).
   const pick = (state, moves) => {

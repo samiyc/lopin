@@ -71,6 +71,14 @@ export function candidatesOf(spec, scored, kept = CANDIDATES_KEPT) {
 }
 
 /**
+ * What a bot's search leaves in its move: its best candidates, and for a tree bot the tree by level (tree-stats.js,
+ * Sami 14/10: nodes, with 0 and 1 visit, the most visits — is depth 5 to 10 used?).
+ */
+function searchOf(spec, scored) {
+  return { candidates: candidatesOf(spec, scored), ...(scored?.tree ? { tree: scored.tree } : {}) };
+}
+
+/**
  * Applies `move` (or a pass, `null`) to `state` and appends the turn to `log`.
  * `scored` is the bot's `scoreMoves` output, kept as its best candidates.
  */
@@ -101,7 +109,7 @@ export function playLogged(log, state, move, scored = null) {
     },
     side: sideContext(state, player, move.border),
     joker: isJoker(move.card),
-    candidates: candidatesOf(spec, scored),
+    ...searchOf(spec, scored),
   });
   const drawing = state.pile.length > 0 && drawsAfter(move.card, move);
   applyMove(state, move);
