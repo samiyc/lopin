@@ -2596,7 +2596,10 @@
       "estimate": "105 min",
       "limit": 120,
       "why": "Budget20000 : la 1.2 à 20 000 itérations (le même arbre, dix fois le budget) contre la 1.2@2000, 140 parties. La suite de Budget4000 (+2,8 points à deux fois le budget) et le premier candidat juge : il doit gagner nettement (≥ 60 %). ~13 min la partie à 18 fils (16 s par coup sur un fil, ×2,2 en parallèle).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-14T15:16",
+      "minutes": 73,
+      "output": "backlog-runs/2026-10-14-14-03_DEEP_DUEL_1_Budget20000.txt"
     },
     {
       "id": "DEEP_DUEL_1_Budget20000-Depth10Pw",
@@ -2604,6 +2607,17 @@
       "estimate": "105 min",
       "limit": 120,
       "why": "Budget20000-Depth10Pw : la même avec 10 étages et pw=1 (1 + √visites, jusqu'à 7 réponses), sur les mêmes donnes (offset 12) : comparable partie par partie avec Budget20000. À 2 000 pw=1 étranglait les plis 2-3 (46,4 %) ; à 20 000 un nœud ouvre plus vite ses 7 réponses.",
+      "status": "done",
+      "doneAt": "2026-10-14T16:27",
+      "minutes": 71,
+      "output": "backlog-runs/2026-10-14-15-16_DEEP_DUEL_1_Budget20000-Depth10Pw.txt"
+    },
+    {
+      "id": "DEEP_DUEL_2_Budget20000-Depth10Pw",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --games 70 --page --offset 13",
+      "estimate": "75 min",
+      "limit": 120,
+      "why": "Confirmer Budget20000-Depth10Pw (61,4 %, 55,1 – 67,8 sur 140 parties, offset 12) sur de nouvelles donnes : 280 parties en tout, le seuil d'un juge (≥ 60 % sur 200 et plus). S'il tient, il devient Oracle3 pour relire les parties de la 1.2.",
       "status": "todo"
     }
   ]
