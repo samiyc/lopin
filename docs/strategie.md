@@ -3300,3 +3300,24 @@ contre greedy, identique) et pas plus rapide (6 807 contre 6 721 ms par partie, 
 51,5 % à temps égal est du bruit. **Le niveau 2 est neutre** : parier sur la fourche ne perd pas comme
 `trunc` (41-46 %), mais ne gagne rien. La piste de la double menace est close ; l'option reste
 (`+forkCut`, éteinte par défaut : empreinte de la 1.2 inchangée, `1d041613cd7bcd8d`).
+
+## L'hybride MCTS-minimax : les sauvegardes implicites (14/10)
+
+**L'idée** (la littérature du 14/10 : Lanctot, Winands, Pepels et Sturtevant, 2014) : garder dans
+chaque nœud une estimation de la partie à part du taux de victoire de ses simulations, et les mêler à
+la sélection. `+implicit=α` (`src/sim/implicit-minimax.js`) : un nœud prend l'estimation du cœur
+(`winOdds`) là où il est atteint pour la première fois, avant la simulation ; en remontant, un nœud vaut
+1 − la meilleure estimation de ses enfants (l'adversaire choisit) ; UCB lit (1 − α) × taux + α ×
+estimation. La simulation reste entière, là où `trunc` la remplaçait. Coût : 11 % par itération
+(7 659 contre 6 864 ms par partie à 300 itérations), donc tri à temps égal.
+
+| Version | Score contre la 1.2 (`@t400`, `--screen --page`) | Fourchette par paires | Parties |
+| --- | --- | --- | --- |
+| `Implicit2` (α = 0,2) | 48,6 % | 44,2 – 53,1 % | 432 |
+| `Implicit4` (α = 0,4) | **40,0 %** | 33,2 – 46,8 % | 180, arrêté |
+
+Plus l'estimation pèse, plus la version perd : l'estimation du cœur vaut moins que le résultat des
+simulations, et la mêler ne fait que le diluer. C'est la leçon de `trunc` sous une autre forme. Un α
+plus petit ramènerait vers la 1.2 : la piste est close, l'option reste (`+implicit`, éteinte par
+défaut, empreinte de la 1.2 inchangée). Les simulations vont dans `src/sim/rollouts.js`
+(`ismcts.js` dépassait ses 220 lignes).

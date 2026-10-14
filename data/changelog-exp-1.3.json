@@ -398,6 +398,32 @@
    "when": "14/10",
    "note": "Tri à 400 à temps égal contre la 1.2, 540 parties. Neutre : ne perd pas comme trunc (41-46 %), ne gagne rien. La piste de la double menace est close.",
    "idea": "Les Pièges Puissance 4 (Sami, 11/10) là où la partie se joue : une fourche établie vaut une victoire, sans attendre la fin de la simulation."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "14/10",
+   "idea": "Les sauvegardes minimax implicites (Lanctot et al., 2014) : l'estimation du cœur (winOdds) gardée dans chaque nœud, remontée en minimax et mêlée au taux de victoire, la simulation restant entière.",
+   "id": "implicit-2",
+   "name": "Implicit2 : l'hybride MCTS-minimax, α = 0,2",
+   "score": 48.6,
+   "lo": 44.2,
+   "hi": 53.1,
+   "verdict": "neutre",
+   "note": "Tri à 400 à temps égal contre la 1.2 (432 parties) ; 11 % plus cher par itération."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "14/10",
+   "idea": "Les sauvegardes minimax implicites (Lanctot et al., 2014) : l'estimation du cœur (winOdds) gardée dans chaque nœud, remontée en minimax et mêlée au taux de victoire, la simulation restant entière.",
+   "id": "implicit-4",
+   "name": "Implicit4 : l'hybride MCTS-minimax, α = 0,4",
+   "score": 40,
+   "lo": 33.2,
+   "hi": 46.8,
+   "verdict": "perd",
+   "note": "Tri à 400 à temps égal contre la 1.2, arrêté à 180 parties : plus l'estimation pèse, plus on perd. Piste close."
   }
  ],
  "manualJobs": [],
@@ -626,11 +652,6 @@
    "when": "À tester",
    "title": "La 1.2 à 20 000, plus profonde : depth=10+pw=1",
    "text": "La même avec 10 étages et l'élargissement progressif d'aujourd'hui (1 + √visites, jusqu'à 7 réponses), contre la 1.2@20000 puis contre la 1.2@2000. À 2 000 itérations pw=1 étranglait les plis 2-3 (46,4 %) ; à 20 000, un nœud atteint plus vite les 36 visites qui ouvrent ses 7 réponses. Aucun code ; un élargissement plus rapide (2 + √visites, k·visites^α) viendrait ensuite."
-  },
-  {
-   "when": "À tester",
-   "title": "Hybride MCTS-minimax : les sauvegardes implicites",
-   "text": "De la littérature (Lanctot et al., 2014 ; Baier et Winands) : garder dans chaque nœud une estimation de la partie à part du taux de victoire, remontée en minimax, et la mêler à UCB (α × estimation + (1 − α) × taux). L'estimation existe (oddsOf, truncate.js). Ici la simulation reste entière : trunc, qui la remplaçait par l'estimation, avait perdu (41-46 %). Coût à mesurer : une estimation par nœud créé."
   },
   {
    "when": "Maintenant",
