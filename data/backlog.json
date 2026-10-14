@@ -2624,6 +2624,76 @@
       "output": "backlog-runs/2026-10-14-16-41_DEEP_DUEL_2_Budget20000-Depth10Pw.txt"
     },
     {
+      "id": "VALIDATE_LONG_1_Pw3-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 1 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_2_Pw3-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Pw3-ExactEnd12"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_Pw3-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Pw3-ExactEnd12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Pw3-ExactEnd12",
+            "VALIDATE_LONG_2_Pw3-ExactEnd12"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_Pw3-ExactEnd12",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=3@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "35 min",
+      "limit": 60,
+      "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_Pw3-ExactEnd12"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_Pw3-ExactEnd12",
+            "VALIDATE_LONG_2_Pw3-ExactEnd12"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
       "id": "READ_V12_Oracle3",
       "command": "npm run oracle -- --oracle 3 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 110 --out v12-oracle3",
       "estimate": "115 min",
