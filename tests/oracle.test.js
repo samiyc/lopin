@@ -3,11 +3,24 @@ import assert from "node:assert/strict";
 import { DECKS, JOKER_RULES } from "../src/config/decks.js";
 import { ORDERS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
-import { ORACLE, confirmVerdict, coreRanking, favouriteOf, meanAndHalf, moveOfLabel, movesToConfirm, needsSecondRun, pointsFor, rankOf, verdictOf } from "../src/replay/oracle.js";
+import { ORACLE, ORACLES, oracleOf, confirmVerdict, coreRanking, favouriteOf, meanAndHalf, moveOfLabel, movesToConfirm, needsSecondRun, pointsFor, rankOf, verdictOf } from "../src/replay/oracle.js";
 import { BOTS, engineFor } from "../src/sim/bots.js";
 import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
 
 const m = (card, border) => ({ card, border });
+
+describe("the oracles by version (Sami, 14/10)", () => {
+  it("keeps Oracle1 frozen, names a known engine for each version, and refuses an unknown one", () => {
+    assert.equal(oracleOf(), ORACLE, "version 1 by default, the frozen one");
+    assert.equal(ORACLE.engine, "ismcts+candidates=99+widen=6+depth=5+smart=1");
+    for (const [version, oracle] of Object.entries(ORACLES)) {
+      assert.equal(oracle.version, Number(version));
+      assert.ok(engineFor(`${oracle.engine}@${oracle.budget}`), `version ${version}: a known engine`);
+    }
+    assert.equal(oracleOf(3).engine, "ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1", "Oracle3 is the deep oracle, Depth10Pw");
+    assert.throws(() => oracleOf(9), /Oracle inconnu/);
+  });
+});
 
 describe("the oracle", () => {
   it("ranks the core's moves, those its habits refuse last", () => {

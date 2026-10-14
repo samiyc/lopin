@@ -35,6 +35,9 @@ export const ORACLE = Object.freeze({
 export const ORACLES = Object.freeze({
   1: ORACLE,
   2: Object.freeze({ ...ORACLE, version: 2, engine: "ismcts+candidates=99+widen=7+depth=5+smart=1+core=stfig6+exact=12" }),
+  // Oracle3 (Sami, 14/10): the deep oracle Budget20000-Depth10Pw, the 1.2's own root with pw, the first judge stronger
+  // than the 1.2 (57.1 % over 280 games against the 1.2@2000).
+  3: Object.freeze({ ...ORACLE, version: 3, engine: "ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1" }),
 });
 
 /** The oracle of a version (1 when none is given), or an error naming the known ones. */

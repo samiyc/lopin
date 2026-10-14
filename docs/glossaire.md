@@ -359,6 +359,11 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   Oracle1 contre Oracle2 (`ORACLE_DUEL_1/2_Oracle2`, nuit du 14/10) devait dire lequel relit les
   parties de la 1.2 : **48,1 % pour Oracle2** sur 108 parties, une égalité ; Oracle1 reste la
   référence (`ORACLE.version` 1). Le détail : `docs/strategie.md`, « La nuit du 14/10 ».
+- **Oracle3** (Sami, 14/10) : l'oracle profond `Budget20000-Depth10Pw`
+  (`ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000`, `ORACLES[3]`, `npm run oracle -- --oracle
+  3`) : la racine de la 1.2 (8 candidats) avec l'élargissement progressif, 57,1 % contre la 1.2@2000 sur
+  280 parties — le premier juge plus fort qu'elle. Il relit les parties de la 1.2 sur le même corpus
+  qu'Oracle1, pour comparer leurs avis position par position.
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6

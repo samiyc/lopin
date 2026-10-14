@@ -2622,6 +2622,30 @@
       "doneAt": "2026-10-14T17:51",
       "minutes": 71,
       "output": "backlog-runs/2026-10-14-16-41_DEEP_DUEL_2_Budget20000-Depth10Pw.txt"
+    },
+    {
+      "id": "READ_V12_Oracle3",
+      "command": "npm run oracle -- --oracle 3 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 110 --out v12-oracle3",
+      "estimate": "115 min",
+      "limit": 120,
+      "why": "Oracle3 (Depth10Pw, 57,1 % contre la 1.2 sur 280 parties : le premier juge plus fort qu'elle) relit les parties de la 1.2 sur le même corpus et dans le même ordre qu'Oracle1 (Budget4000, tours 12-28, stfig6, --spread) : leurs avis se comparent position par position. ~4,5 s par position sur tous les fils (Oracle1 : 2 s), ~1 450 positions et ~730 écarts en 110 min.",
+      "status": "todo"
+    },
+    {
+      "id": "CONFIRM_1_V12_Oracle3",
+      "command": "npm run oracle -- --confirm --out v12-oracle3 --seeds 4 --minutes 110",
+      "estimate": "115 min",
+      "limit": 120,
+      "why": "Les écarts d'Oracle3 rejoués : son coup, le favori du cœur et le coup joué par la 1.2, suite par les robots de la partie, 4 graines, jugés au tour 30. ~14 s par écart ; partie 1 sur 2, la seconde reprend où la première s'arrête.",
+      "status": "todo"
+    },
+    {
+      "id": "CONFIRM_2_V12_Oracle3",
+      "command": "npm run oracle -- --confirm --out v12-oracle3 --seeds 4 --minutes 110",
+      "estimate": "115 min",
+      "limit": 120,
+      "why": "Les écarts d'Oracle3 rejoués : son coup, le favori du cœur et le coup joué par la 1.2, suite par les robots de la partie, 4 graines, jugés au tour 30. ~14 s par écart ; partie 2 sur 2, la seconde reprend où la première s'arrête.",
+      "status": "todo"
     }
   ]
 }
