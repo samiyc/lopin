@@ -220,7 +220,9 @@ html[data-colors="4"] .suits i[data-suit="♣"] { color: var(--suit-club); }
 .stone.animate { animation: settle 450ms ease; }
 @keyframes settle { from { transform: translateY(0) scale(1.15); background: var(--stone); } }
 
-.banner { position: absolute; inset: 0 0 auto; padding: 16px 20px; border-radius: 12px; background: var(--panel); border: 2px solid var(--felt); text-align: center; font: 700 1.3rem var(--display); box-shadow: 0 8px 30px rgb(0 0 0 / 0.25); }
+/* Centred on the table at its own width (Sami, 14/10): across the whole top row it hid the opponent's hand and the
+   suit buttons at the end of a replay. */
+.banner { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: max-content; min-width: min(280px, 100% - 32px); max-width: min(360px, 100% - 32px); padding: 16px 20px; border-radius: 12px; background: var(--panel); border: 2px solid var(--felt); text-align: center; font: 700 1.3rem var(--display); box-shadow: 0 8px 30px rgb(0 0 0 / 0.25); }
 .banner.won { border-color: var(--won); }
 .banner.lost { border-color: var(--lost); }
 .banner small { display: block; font: 400 0.95rem var(--body); margin-top: 4px; }
