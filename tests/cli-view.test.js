@@ -70,7 +70,7 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.ok(four.includes(`${ESC}[34m4C${ESC}[0m`), "♦ blue, here on the board and in the header");
     assert.ok(four.includes(`${ESC}[32m8T${ESC}[0m`), "♣ green, in the hand");
     assert.ok(four.includes(`${ESC}[31m10H${ESC}[0m`), "♥ red");
-    assert.ok(four.includes(`${ESC}[95mJK${ESC}[0m`), "the joker in violet (Solarized's violet), four colours only");
+    assert.ok(four.includes(" JK ") && !four.includes(`${ESC}[95m`), "the joker keeps the text's colour (Sami, 14/10)");
     assert.ok(!four.includes(`${ESC}[31m9P`), "♠ keeps the terminal's own colour");
     const two = textView(state, 0, { last, colors: 2 });
     assert.ok(two.includes(`${ESC}[31m4C${ESC}[0m`) && !two.includes(`${ESC}[32m`), "two colours: ♦ red, ♣ plain");

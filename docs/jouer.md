@@ -73,7 +73,7 @@ chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
   haut gauche, la partie qui reste visible quand les cartes se chevauchent.
   Survole une carte d'une pile pour la voir en entier.
 - **Quatre couleurs** (Sami, 14/10) : le bouton « 4 couleurs », en haut à droite après « Règles »,
-  met les ♦ en bleu, les ♣ en vert et le joker en violet (♠ noir, ♥ rouge), pour ne jamais prendre
+  met les ♦ en bleu et les ♣ en vert (♠ noir, ♥ rouge, le joker inchangé), pour ne jamais prendre
   un carreau pour un cœur dans une suite. Il vaut pour tous les onglets et le navigateur s'en
   souvient ; ses quatre symboles montrent les couleurs en cours.
 - **Compter les couleurs** : en haut à droite, un bouton par couleur donne le

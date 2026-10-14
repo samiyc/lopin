@@ -25,12 +25,12 @@ export const shortCard = (text, letters = "fr") => text.replaceAll(/[♠♥♣�
 
 /** The colours the text screen may paint a card in (Sami, 14/10): `0` none, `2` red and black, `4` ♥ red, ♦ blue, ♣ green. */
 const ESC = String.fromCharCode(27);
-// The joker in violet (Sami, 14/10, in four colours only; bold hardly showed): 95, bright magenta, is Solarized's violet.
-const SGR = { red: "31", green: "32", blue: "34", violet: "95" };
+// The joker keeps the text's own colour (Sami, 14/10: bold hardly showed, violet made one colour too many).
+const SGR = { red: "31", green: "32", blue: "34" };
 const TONES = {
   0: {},
   2: { "♥": "red", "♦": "red" },
-  4: { "♥": "red", "♦": "blue", "♣": "green", JK: "violet" },
+  4: { "♥": "red", "♦": "blue", "♣": "green" },
 };
 const ANSI_CODE = new RegExp(`${ESC}\\[[0-9;]*m`, "g");
 
