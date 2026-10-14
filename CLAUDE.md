@@ -356,7 +356,8 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   `atLeast` too, so both branches of a choice can be queued; `--confirm` takes `--out`.
 - **The deep oracle** (14/10, `docs/strategie.md`): against the 1.2@2000, the 1.2's own tree at 20 000
   iterations scores 55.7 % and `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000` (Depth10Pw) 61.4 %
-  (55.1 – 67.8, 140 games): the first judge stronger than the 1.2 (confirmation on offset 13 queued).
+  (55.1 – 67.8, 140 games), then 52.9 % on new decks: 57.1 % pooled over 280 games (≈ 52.0 – 62.3), the
+  first judge stronger than the 1.2, short of the 60 % rule.
   Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
   tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula.

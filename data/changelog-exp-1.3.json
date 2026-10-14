@@ -443,12 +443,12 @@
    "name": "Budget20000-Depth10Pw : 20 000 itérations, 10 étages, élargissement progressif",
    "family": "arbre",
    "bench": "duel",
-   "score": 61.4,
-   "lo": 55.1,
-   "hi": 67.8,
+   "score": 57.1,
+   "lo": 52,
+   "hi": 62.3,
    "verdict": "gagne",
    "when": "14/10",
-   "note": "Contre la 1.2@2000, 140 parties sur les mêmes donnes (offset 12) : le premier juge plus fort que la 1.2 (58,6 % en commençant, 64,3 % en second). Les niveaux 6 à 10 ne sont jamais atteints : le gain vient de pw, qui concentre les niveaux 3-4. Confirmation de 140 parties en cours (offset 13).",
+   "note": "Contre la 1.2@2000, 280 parties : 61,4 % (55,1 – 67,8) sur l'offset 12, puis 52,9 % (44,9 – 60,8) sur l'offset 13 ; réunis 57,1 % (≈ 52,0 – 62,3). Le premier juge plus fort que la 1.2, sous les 60 % de la règle. Les niveaux 6 à 10 ne sont jamais atteints : le gain vient de pw, qui concentre les niveaux 3-4.",
    "idea": "Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur ; pw=1, qui perdait à 2 000, n'étrangle plus les plis 2-3 à 20 000."
   }
  ],
@@ -667,7 +667,7 @@
   {
    "when": "Maintenant",
    "title": "Oracle3 : la 1.2 relue par l'oracle profond",
-   "text": "Budget20000-Depth10Pw bat la 1.2@2000 à 61,4 % (55,1 – 67,8, 140 parties) ; si la confirmation (140 parties de plus, offset 13) tient, il relit les parties de la 1.2 comme Oracle1 la nuit du 14/10 — relecture, puis confirmation par le jeu — environ 1,5 fois plus lentement. Ses écarts diront enfin où la 1.2 se trompe."
+   "text": "Budget20000-Depth10Pw bat la 1.2@2000 à 57,1 % sur 280 parties (≈ 52,0 – 62,3 ; 61,4 % puis 52,9 %) : le juge le plus fort qu'on ait, un peu sous les 60 % visés. Il peut relire les parties de la 1.2 comme Oracle1 la nuit du 14/10 (relecture, puis confirmation par le jeu), environ 1,5 fois plus lentement — ou d'abord gagner quelques points avec une meilleure formule de pw."
   },
   {
    "when": "À tester",

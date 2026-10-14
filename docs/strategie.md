@@ -3341,8 +3341,11 @@ CPU libre) :
   encore significatif (les fourchettes se chevauchent), mais net.
 - **`pw=1` paie à 20 000 et perdait à 2 000** (46,4 %, `PW-ExactEnd12`) : à 20 000, les nœuds atteignent
   plus vite les 36 visites qui ouvrent leurs 7 réponses.
-- **Confirmation en cours** : `DEEP_DUEL_2_Budget20000-Depth10Pw`, 140 parties de plus sur de nouvelles
-  donnes (offset 13, lancée à 16 h 41, ~75 min). La règle d'un juge : ≥ 60 % sur 200 parties et plus.
+- **La confirmation redescend** : `DEEP_DUEL_2_Budget20000-Depth10Pw` (offset 13, 140 parties, 16 h 41 –
+  17 h 52) fait **52,9 % (44,9 – 60,8)**, 51,4 % en commençant, 54,3 % en second. **Réunis : 57,1 % sur
+  280 parties (≈ 52,0 – 62,3)** — toujours au-dessus de la 1.2, sous les 60 % de la règle d'un juge ;
+  le premier duel avait eu de la chance, comme souvent. Pour Sami, un juge autour de 58 % est
+  utilisable : on y est presque, à ± 5 points.
 
 **La profondeur atteinte, mesurée** (`src/sim/tree-stats.js`, une position du tour 15, 42 coups
 légaux ; « nœuds » : tous ceux créés à ce niveau, même jamais essayés) :
@@ -3370,8 +3373,10 @@ légaux ; « nœuds » : tous ceux créés à ce niveau, même jamais essayés) 
 Pour Sami, un juge autour de 58 % et plus est utilisable.
 
 **La suite** :
-1. **Oracle3** : si la confirmation tient, `Depth10Pw` relit les parties de la 1.2 comme Oracle1 la
-   nuit dernière (relecture, confirmation par le jeu), environ 1,5 fois plus lentement.
+1. **Oracle3** : à 57 % (52 – 62) sur 280 parties, `Depth10Pw` est le juge le plus fort qu'on ait ; il
+   peut relire les parties de la 1.2 comme Oracle1 la nuit dernière (relecture, confirmation par le
+   jeu), environ 1,5 fois plus lentement — ou d'abord gagner quelques points avec une meilleure
+   formule de `pw` (point 3).
 2. **Une formule de `pw` réglable pour le 1.3** (`k + c · visites^α`, au lieu de 1 + √visites) :
    `2 + √visites` (7 réponses dès 25 visites), `3 + visites / 3`. La mesure par niveau dira laquelle
    remplit les niveaux 3-4 sans les étrangler ; à essayer à 2 000-4 000 itérations contre la 1.2, à

@@ -2618,7 +2618,10 @@
       "estimate": "75 min",
       "limit": 120,
       "why": "Confirmer Budget20000-Depth10Pw (61,4 %, 55,1 – 67,8 sur 140 parties, offset 12) sur de nouvelles donnes : 280 parties en tout, le seuil d'un juge (≥ 60 % sur 200 et plus). S'il tient, il devient Oracle3 pour relire les parties de la 1.2.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-14T17:51",
+      "minutes": 71,
+      "output": "backlog-runs/2026-10-14-16-41_DEEP_DUEL_2_Budget20000-Depth10Pw.txt"
     }
   ]
 }
