@@ -562,28 +562,13 @@
  "next": [
   {
    "when": "Maintenant",
-   "title": "1. Des retours qui comptent la marge (MarginBackup)",
-   "text": "Une simulation rend aujourd'hui gagné, perdu ou nul. Y ajouter une petite part de l'écart de bornes à la fin donne un signal moins bruité au même nombre de simulations, pour un coût nul. Jamais essayé ici ; deux poids, un tri puis le protocole."
-  },
-  {
-   "when": "Maintenant",
-   "title": "2. Ce qui ne tourne qu'une fois par coup",
-   "text": "La classe d'idées de la 1.2 (le solveur à la racine), quasi gratuite en temps : le solveur au-delà de 12 cartes à la racine (avec un plafond de positions), et DistOracle1Root (le cœur réglé sur l'oracle pour choisir les 8 candidats, 51,6 % sur le V1, jamais combiné avec la 1.2)."
-  },
-  {
-   "when": "Fait (14/10)",
-   "title": "3. Où la 1.2 se trompe : relue par l'oracle",
-   "text": "Nuit du 14/10 : Oracle2 (le juge avec le cœur, le solveur et la largeur de la 1.2) fait 48,1 % contre Oracle1, qui reste la référence. Oracle1 a relu 1 642 positions de la 1.2 (851 écarts, tous rejoués) : son coup ne bat pas celui que joue la 1.2 (+0,7 ± 2,0 points), et hors du top 8 il ne vaut rien de plus (−0,2 ± 2,2). La sélection de la racine n'est pas le goulot ; il manque un juge plus fort que la 1.2."
+   "title": "Un oracle plus fort que la 1.2 : la profondeur",
+   "text": "Ni Oracle1 ni Oracle2 ne battent la 1.2 (14/10) : tous les coups à la racine dispersent 20 000 itérations (~480 visites par coup). Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur : d'abord la 1.2 à 20 000 (le même arbre, dix fois le budget), puis depth=10 et un élargissement progressif plus rapide que 1 + √visites (2 + √visites, ou k·visites^α à régler), qui à 20 000 n'étranglerait plus les plis 2-3. Un juge doit battre la 1.2@2000 nettement en duel avant de relire ses parties."
   },
   {
    "when": "Maintenant",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
    "text": "La seule piste de la nuit du 14/10 : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +3,6 ± 4,7 points de plus sur 153 cas. Relire plus de positions (READ_V12_Oracle1 reprend où il s'est arrêté), ne confirmer que ce groupe à 8 graines ; si l'écart tient, c'est le bruit du choix final qu'il faut réduire, pas la sélection."
-  },
-  {
-   "when": "Ensuite",
-   "title": "4. Réutiliser l'arbre d'un coup à l'autre (TreeReuse)",
-   "text": "Après mon coup et la réponse adverse, le sous-arbre existe déjà avec ses visites ; l'ISMCTS le jette. Le garder (les statistiques des coups encore jouables) donnerait des itérations gratuites, précisément ce que le coude de la courbe du budget demande."
   },
   {
    "when": "Maintenant",
@@ -594,16 +579,6 @@
    "when": "À tester",
    "title": "Pièges Puissance 4 (Double Menace) : du bonus statique au cut-off de simulation",
    "text": "Le bonus additif sur l'évaluation statique du cœur (stfig6fork, poids 0,1 à 1,0) n'a rien rapporté en duel cœur (49,9 %). La vraie force d'une fourche (2 bornes gagnées encadrées par 2 menaces imparables) doit être exploitée dans l'arbre : détection terminale anticipée (Terminal Fork Cutoff) dans les rollouts renvoyant 1.0 immédiat, et parade défensive obligatoire."
-  },
-  {
-   "when": "À tester",
-   "title": "Autopsie de l'élargissement progressif : Root-PW et Fast-PW",
-   "text": "pw=1 global a échoué (46,4 %) car 1 + √visites a bridé les plis 2-3 à 3-4 réponses (faute d'atteindre 36 visites). Pour garder la profondeur record (4,16) sans étrangler la réactivité tactique, deux pistes : Root-PW (progressif à la racine seule, shortlist libre à 7) ou Fast-PW (k = min(7, 2 + N/3) qui libère les 7 réponses dès 15 visites)."
-  },
-  {
-   "when": "Piste Architecture",
-   "title": "Allocation temporelle asymétrique (Budget dynamique)",
-   "text": "Au lieu de 2 000 itérations plates par coup, dépenser 1 200 itérations en ouverture (T1-10, où le plateau est vide et l'accord Oracle de 3-5 %) et 2 800 itérations en fin de manche (T21-30, où tout le gain de la 1.1 s'est fait). Moyenne globale conservée à 2 000 itérations, pour un impact décisif sur les fins de parties tendues."
   },
   {
    "when": "Ensuite",

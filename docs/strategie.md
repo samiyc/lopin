@@ -3204,3 +3204,34 @@ sa recherche l'a trouvé depuis les rangs 4 à 8.
 reprend où il s'est arrêté — puis ne confirmer que ce groupe, à 8 graines) ; un juge exact là où
 il peut l'être (le solveur à partir de 14-16 cartes) ; Oracle3 avec l'élargissement progressif, qui
 étranglerait moins les plis 2-3 à 20 000 itérations qu'à 2 000.
+
+### Ce que dit la littérature (recherche du 14/10)
+
+Aucun article sur Schotten Totten ni Battle Line. Le plus proche est **Lost Cities** (Knizia, deux
+joueurs, une pioche), dans Pepels, Cazenave et Winands (2015) : **H-MCTS** (Sequential Halving à la
+racine, UCT dessous) y fait jeu égal avec l'arbre UCT. C'est notre `RootHalving`, neutre ici aussi
+(49,5 % puis 52,0 % contre 53,4 % pour la largeur seule, 05-06/10). Les autres pistes :
+- **Élargissement progressif** : la règle générale est `k · N^α` enfants pour N visites (Couëtoux et
+  al., 2011) ; notre `pw=1` est k = 1, α = 0,5. Pas de valeurs recommandées : elles se règlent par
+  jeu, et un élargissement prudent fait des arbres petits, un élargissement agressif des arbres plus
+  profonds et plus chers.
+- **Hybrides MCTS-minimax** (Baier et Winands) : un minimax court comme a priori des nœuds est
+  l'hybride le plus fort de leurs trois jeux ; les **sauvegardes minimax implicites** (Lanctot et al.,
+  2014) gardent à part la note heuristique et le résultat des simulations. Pour nous : le cœur comme
+  note séparée, mêlée au taux de victoire, plutôt que seulement comme filtre.
+- **Information imparfaite** : ISMCTS bat PIMC parce qu'il limite la fusion de stratégies (Whitehouse,
+  2014) ; **EPIMC** (Arjonilla, Saffidine et Cazenave, 2024) retarde la résolution en information
+  parfaite et gagne là où la fusion de stratégies pèse le plus. À regarder si la pioche cachée est ce
+  qui trompe la 1.2.
+- **Le choix final** : le coup le plus visité (« robust child ») est la règle d'AlphaZero et de Gumbel
+  MuZero ; *Anytime Sequential Halving* (Sagers, Winands et Soemers, 2024) en fait une version qui
+  s'arrête à tout moment, utile pour un robot à l'horloge comme celui de la page.
+
+Sources : [Pepels, Cazenave, Winands 2015, H-MCTS](https://www.lamsade.dauphine.fr/~cazenave/papers/po-hybrid.pdf) ;
+[Anytime Sequential Halving](https://arxiv.org/abs/2411.07171) ;
+[MCTS-minimax hybrids](https://dke.maastrichtuniversity.nl/m.winands/documents/mcts-minimax_hybrids_final.pdf) ;
+[Implicit minimax backups](https://arxiv.org/abs/1406.0486) ;
+[ISMCTS, Cowling et al.](https://eprints.whiterose.ac.uk/id/eprint/75048/1/CowlingPowleyWhitehouse2012.pdf) ;
+[Whitehouse 2014](https://etheses.whiterose.ac.uk/id/eprint/8117/) ;
+[Revue MCTS 2022](https://arxiv.org/abs/2103.04931) ;
+[Élargissement progressif, POMDP continus](https://arxiv.org/abs/1709.06196).
