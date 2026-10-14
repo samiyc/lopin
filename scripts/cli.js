@@ -16,7 +16,7 @@ import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
  * typed « card border » (« 7h4 », Sami's template of 14/10). The finished game is a replay in replays/,
  * as from the page.
  *
- *   npm run cli -- [--bot experimental] [--first me|bot] [--seed N] [--name sami] [--gb] [--machine]
+ *   npm run cli -- [--bot experimental] [--first me|bot] [--seed N] [--name sami] [--gb] [--colors 4|2|0] [--machine]
  *   npm run cli -- --new partie.json [the same options]      (one move a command, for an agent)
  *   npm run cli -- --step partie.json "3 5"
  *
@@ -38,6 +38,12 @@ const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name
 const json = args.includes("--json");
 /** The suit letters of the screen and the keyboard (Sami, 14/10): French P H T C, or `--gb` S H C D. */
 const letters = args.includes("--gb") ? "gb" : "fr";
+/**
+ * The cards' colours on the screen (Sami, 14/10): `--colors 4` (♥ red, ♦ blue, ♣ green), `2` (red and black) or
+ * `0`. Four by default in a terminal; none when the output goes to a program or a file, or with NO_COLOR.
+ */
+const colorsByDefault = process.stdout.isTTY && !process.env.NO_COLOR ? 4 : 0;
+const colors = args.includes("--colors") ? Number(option("--colors")) : colorsByDefault;
 const machine = args.includes("--machine") || json;
 const outDir = option("--out");
 const REPLAYS = outDir === undefined ? fileURLToPath(new URL(`../${REPLAY_DIRS.recent}/`, import.meta.url)) : resolve(process.cwd(), outDir);
@@ -167,7 +173,7 @@ function show(session, extra = {}) {
 function showText(session, order, extra) {
   const view ={ ...machineView(session.state, session.me, { order, last: lastText(session) }), ...extra };
   if (machine) return console.log(JSON.stringify(args.includes("--compact") ? compact(view) : view));
-  console.log(`\n${textView(session.state, session.me, { order, last: session.last, bot: BOT_LINEUP[session.bot.id].label, letters })}`);
+  console.log(`\n${textView(session.state, session.me, { order, last: session.last, bot: BOT_LINEUP[session.bot.id].label, letters, colors })}`);
   if (extra.error) console.log(`! ${shortCard(extra.error, letters)}`);
   if (extra.end) console.log(["", extra.end, extra.replay ? "Replay : " + extra.replay : ""].join("\n").trimEnd());
 }

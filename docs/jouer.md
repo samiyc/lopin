@@ -72,6 +72,10 @@ chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
 - **Lire les piles** : chaque carte porte sa valeur et sa couleur dans le coin
   haut gauche, la partie qui reste visible quand les cartes se chevauchent.
   Survole une carte d'une pile pour la voir en entier.
+- **Quatre couleurs** (Sami, 14/10) : le bouton « 4 couleurs » sous « Recommencer » met les ♦ en
+  bleu et les ♣ en vert (♠ noir, ♥ rouge), pour ne jamais prendre un carreau pour un cœur dans
+  une suite. Il vaut pour tous les onglets et le navigateur s'en souvient ; colonne repliée, il
+  montre les quatre symboles dans les couleurs en cours.
 - **Compter les couleurs** : en haut à droite, un bouton par couleur donne le
   nombre de cartes de cette couleur que tu vois, sur le plateau et dans ta main,
   sur 10 (« ♥ 6/10 »), puis les jokers sur 2 (« JK 1/2 »). Maintiens un bouton,

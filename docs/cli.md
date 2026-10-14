@@ -14,6 +14,7 @@ npm run cli -- --bot stratege        # ou basique
 npm run cli -- --first bot           # le robot commence
 npm run cli -- --seed 42 --name sami # une donne choisie, ton prénom dans le replay
 npm run cli -- --gb                  # lettres anglaises S H C D au lieu de P H T C
+npm run cli -- --colors 2            # cartes rouges et noires ; 4 (par défaut) : ♥ rouge, ♦ bleu, ♣ vert ; 0 : sans couleur
 ```
 
 Sans `--name`, le jeu demande ton prénom au début (une ligne vide : « joueur ») ; un programme
@@ -70,6 +71,13 @@ Input exemple: 7h4   (7Coeur sur la borne 4)
   vers ton côté, barré à droite), `6═╝` par le robot (le coin monte vers le sien). Le cadre a
   toujours la même largeur.
 - La légende ne donne que l'alphabet en cours (FR, ou GB avec `--gb`).
+- **Les couleurs** (Sami, 14/10) : dans un terminal, les cartes sont en quatre couleurs, ♠ dans la
+  couleur du texte, ♥ rouge, ♦ bleu, ♣ vert, le joker en gras, sur le plateau, dans la main,
+  l'en-tête et le compte des cartes vues. Ce sont les couleurs ANSI standard : un thème comme
+  Solarized Light les rend dans ses propres tons, doux sur le beige. `--colors 2` revient au
+  rouge et noir, `--colors 0` les retire ; sans terminal (un agent, `--step`, une redirection) ou
+  avec `NO_COLOR`, il n'y en a pas. Les colonnes ne bougent pas : l'alignement se mesure sans les
+  codes de couleur.
 - Sous la main, les revendications de l'échange (« tu revendiques la borne 7 »), s'il y en a.
 - La fin dit qui gagne et avec quelles bornes (« le robot l'emporte, bornes 2-3-4 à la suite »),
   et, s'il y en a, les bornes que le perdant aurait pu revendiquer : celui qui vient de jouer

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { formatCard, parseCards } from "../src/core/notation.js";
 import { legalMoves } from "../src/sim/game.js";
 import { SPEC, newGame } from "../web/app/runner.js";
-import { boardText, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView } from "../scripts/lib/cli-view.js";
+import { boardText, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, textView, visible } from "../scripts/lib/cli-view.js";
 
 /** A game of the page's rules where player 0 holds `hand`, with a few cards and owners set by hand. */
 function position() {
@@ -54,6 +54,24 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
       " │ ··   ··│  4C   7C   ··   ··  10P││",
     ]);
     assert.equal(new Set(lines.slice(2, 11).map((line) => line.length)).size, 1, "every line of the frame as wide");
+  });
+
+  it("paints the cards in four colours (or two) without moving a single column (Sami, 14/10)", () => {
+    const state = position();
+    const last = { toi: "9♠ → borne 1", robot: "4♦ → borne 3", revendications: [] };
+    const plain = textView(state, 0, { last });
+    const four = textView(state, 0, { last, colors: 4 });
+    assert.notEqual(four, plain, "colour codes are written");
+    assert.equal(visible(four), plain, "the same screen once the colour codes are left out: every column in place");
+    const ESC = String.fromCharCode(27);
+    assert.ok(four.includes(`${ESC}[34m4C${ESC}[0m`), "♦ blue, here on the board and in the header");
+    assert.ok(four.includes(`${ESC}[32m8T${ESC}[0m`), "♣ green, in the hand");
+    assert.ok(four.includes(`${ESC}[31m10H${ESC}[0m`), "♥ red");
+    assert.ok(four.includes(`${ESC}[1mJK${ESC}[0m`), "the joker in bold");
+    assert.ok(!four.includes(`${ESC}[31m9P`), "♠ keeps the terminal's own colour");
+    const two = textView(state, 0, { last, colors: 2 });
+    assert.ok(two.includes(`${ESC}[31m4C${ESC}[0m`) && !two.includes(`${ESC}[32m`), "two colours: ♦ red, ♣ plain");
+    assert.equal(visible(two), plain);
   });
 
   it("speaks English with --gb: S H C D on the screen, « c » read as clubs", () => {

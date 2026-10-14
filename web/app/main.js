@@ -1,3 +1,4 @@
+import { wireDeckColors } from "./deck-colors.js";
 import { $, openDialog } from "./dom.js";
 import { setupInput } from "./drag.js";
 import { wireObserve, wireReplays } from "./panels.js";
@@ -13,6 +14,7 @@ import { loaded, pause, render as renderViewer, wirePlayer } from "./viewer.js";
  * the visible tab draws on the table: a bot still thinking in "Jouer" waits
  * for its tab to come back.
  */
+wireDeckColors();
 const replays = wireReplays();
 
 wirePlayer();

@@ -16,6 +16,14 @@
   --card: #ffffff;
   --card-edge: #bfc7c1;
   --red: #c1121f;
+  /* Four colours (Sami, 14/10; after Okabe-Ito, softened for white cards): ♠ ink, ♥ red, ♦ blue, ♣ bluish green.
+     The cards stay light in both themes; `--ui-*` are the same suits on the page's own panels. */
+  --suit-diamond: #1565c0;
+  --suit-club: #0b7d5b;
+  --ui-spade: #16181a;
+  --ui-heart: #c1121f;
+  --ui-diamond: #1565c0;
+  --ui-club: #0b7d5b;
   --stone: #aab2ac;
   --won: #1f8a4c;
   --lost: #c23b3b;
@@ -54,6 +62,10 @@ html { zoom: var(--ui-zoom); }
     --lost: #e06464;
     --recall: #3cc4d6;
     --discard: #f59a3a;
+    --ui-spade: #eef2ec;
+    --ui-heart: #ff7a7a;
+    --ui-diamond: #7ab4ff;
+    --ui-club: #5fd3a5;
     color-scheme: dark;
   }
 }
@@ -129,6 +141,9 @@ select, input { padding: 4px 6px; border: 1px solid var(--line); border-radius: 
 .card .cs { font-size: 1.2rem; font-family: var(--suit); transform: translateY(-1.5px); display: inline-block; }
 .card .s { justify-self: end; align-self: end; font-size: 1.62rem; line-height: 1; font-family: var(--suit); }
 .card.red { color: var(--red); }
+/* Four colours (the « 4 couleurs » toggle, deck-colors.js): ♦ and ♣ leave red and black. */
+html[data-colors="4"] .card[data-suit="♦"] { color: var(--suit-diamond); }
+html[data-colors="4"] .card[data-suit="♣"] { color: var(--suit-club); }
 .card.joker { border-style: dashed; }
 .card .j { place-self: center; font: 700 0.7rem var(--body); letter-spacing: 0.05em; }
 .card.back { background: repeating-linear-gradient(45deg, var(--felt) 0 5px, var(--felt-2) 5px 10px); border-color: var(--felt); }
@@ -166,6 +181,15 @@ select, input { padding: 4px 6px; border: 1px solid var(--line); border-radius: 
 .suit-bar button { background: var(--panel); color: var(--ink); border-color: var(--line); font-weight: 700; padding: 6px 10px; touch-action: none; user-select: none; }
 .suit-bar button .sym { font-family: var(--suit); font-size: 1.2em; line-height: 1; }
 .suit-bar button.red { color: var(--red); }
+html[data-colors="4"] .suit-bar button[data-suit="♦"] { color: var(--ui-diamond); }
+html[data-colors="4"] .suit-bar button[data-suit="♣"] { color: var(--ui-club); }
+/* The toggle's four symbols, in the colours of the mode on show: red and black, or four. */
+.suits i { font-style: normal; font-family: var(--suit); color: var(--ui-spade); }
+.suits i[data-suit="♥"], .suits i[data-suit="♦"] { color: var(--ui-heart); }
+html[data-colors="4"] .suits i[data-suit="♦"] { color: var(--ui-diamond); }
+html[data-colors="4"] .suits i[data-suit="♣"] { color: var(--ui-club); }
+button.toggle[aria-pressed="true"] { border-color: var(--felt-2); background: color-mix(in oklab, var(--felt-2) 14%, transparent); font-weight: 700; }
+.layout.folded #panel-play .glyph.suits { font-size: 0.78rem; letter-spacing: -0.5px; }
 .suit-bar button:active { border-color: var(--focus); }
 .hand.bottom { padding: 8px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); }
 .hand-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }

@@ -1,7 +1,10 @@
 import { formatCard } from "../../src/core/notation.js";
 import { legalMoves } from "../../src/sim/game.js";
-import { sortBySuit, sortByValue } from "../../web/app/hand.js";
 import { suitCounts } from "../../web/app/view.js";
+import { handOrder } from "./cli-screen.js";
+
+// The text screen people play on (Sami's template, 14/10) lives in cli-screen.js; its names are this module's too.
+export { LEGEND, SUIT_CODES, handOrder, lookOf, shortCard, textView, visible } from "./cli-screen.js";
 
 /**
  * Bornage in a terminal (`npm run cli`, Sami 12/10): what the screen shows
@@ -14,9 +17,6 @@ import { suitCounts } from "../../web/app/view.js";
  */
 const WIDTH = 5;
 const pad = (text) => text.padEnd(WIDTH);
-
-/** The player's hand in the order shown: by suit (the default) or by value. */
-export const handOrder = (state, me, sort = "suit") => (sort === "value" ? sortByValue : sortBySuit)(state.spec, state.hands[me]);
 
 function borderMark(border, me) {
   if (border.owner === me) return "A";
@@ -51,102 +51,6 @@ export function boardText(state, me, { order = handOrder(state, me), last = null
   const cards = order.map((card, index) => `${index + 1}:${formatCard(state.spec, card)}`);
   const hand = "Main : " + cards.join("  ");
   return [header, ...(last ? [last] : []), seenLine(state, me), "", ...theirs, borders, ...mine, "", hand].join("\n");
-}
-
-/**
- * The suits as one letter on the screen (Sami, 14/10): the French ones by default, P H T C — « Pchit ! » —, the
- * English ones S H C D with `--gb`. The same letters are read back from the keyboard.
- */
-export const SUIT_CODES = {
-  fr: { "♠": "P", "♥": "H", "♣": "T", "♦": "C" },
-  gb: { "♠": "S", "♥": "H", "♣": "C", "♦": "D" },
-};
-
-/** « 8♥ » → « 8H », « 10♠ » → « 10P » (« 10S » with `gb`), « JK » stays: every card of a text in two or three characters. */
-export const shortCard = (text, letters = "fr") => text.replaceAll(/[♠♥♣♦]/g, (suit) => SUIT_CODES[letters][suit]);
-
-const codeOf = (state, card, letters) => shortCard(formatCard(state.spec, card), letters);
-
-/** A slot of a side with no card yet. */
-const EMPTY_SLOT = "··";
-
-/**
- * One border's side for `player`, cards in the rows asked, each right-aligned on three characters (« 4H », « 10H »
- * end in the same column, Sami 14/10): `··` where there is none, then a bar when `player` won the border — the bar
- * the border's corner (`═╗` / `═╝`) points to — or a space.
- */
-function sideCells(state, border, player, { rows, letters }) {
-  const won = border.owner === player;
-  return rows.map((row) => {
-    const card = border.sides[player][row];
-    const text = card === undefined ? EMPTY_SLOT : codeOf(state, card, letters);
-    return text.padStart(3) + (won ? "│" : " ");
-  });
-}
-
-/** ` 4─ ` undecided (or full, nobody able to claim it yet), ` 1═╗` won by the player (below), ` 6═╝` by the opponent. */
-function borderCell(border, index, me) {
-  const number = String(index + 1).padStart(2);
-  if (border.owner === me) return `${number}═╗`;
-  if (border.owner === 1 - me) return `${number}═╝`;
-  return `${number}─ `;
-}
-
-/** The opponent's side (third card on top), the borders, the player's side, framed: seven cells of four, always 34 wide. */
-function framedBoard(state, me, letters) {
-  const sides = (player, rows) => state.borders.map((border) => sideCells(state, border, player, { rows, letters }));
-  const theirs = sides(1 - me, [2, 1, 0]);
-  const mine = sides(me, [0, 1, 2]);
-  const rows = [
-    ...[0, 1, 2].map((row) => theirs.map((cells) => cells[row]).join(" ")),
-    state.borders.map((border, index) => borderCell(border, index, me)).join(" "),
-    ...[0, 1, 2].map((row) => mine.map((cells) => cells[row]).join(" ")),
-  ];
-  const width = rows[0].length;
-  return [` ┌${"─".repeat(width)}┐`, ...rows.map((row) => ` │${row}│`), ` └${"─".repeat(width)}┘`];
-}
-
-/** « Expérimental » → « EXP »: the bot's tag in the header. */
-const tagOf = (name) => name.normalize("NFD").replaceAll(/\p{M}/gu, "").slice(0, 3).toUpperCase();
-
-/** « 8♥ → borne 1 » → « 8H1 »; « passe » stays; the bot's moves in a row are joined by « ; ». */
-const moveCode = (text, letters) => text.split(" ; ").map((move) => (move === "passe" ? move : shortCard(move.replace(" → borne ", ""), letters))).join(";");
-
-/** The cards seen per suit, two digits for the suits: « P:02/10 | H:07/10 | T:05/10 | C:06/10 | JK:0/2 ». */
-function seenCodes(state, me, letters) {
-  const counts = suitCounts(state.spec, state, { bottom: me, reveal: false });
-  return counts.map(({ label, seen, total }) => (label === "JK" ? `JK:${seen}/${total}` : `${SUIT_CODES[letters][label] ?? label}:${String(seen).padStart(2, "0")}/${total}`)).join(" | ");
-}
-
-/** What the screen's foot says every turn: the suit letters in use and how a move is typed. */
-export const LEGEND = {
-  fr: ["FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)", "Input exemple: 7h4   (7Coeur sur la borne 4)"],
-  gb: ["GB => SHCD   (Spade,Heart,Club,Diamond)", "Input exemple: 7h4   (7Coeur sur la borne 4)"],
-};
-
-/**
- * The text screen for player `me` (Sami's template, 14/10): turn, pile, the opponent's hand and the last exchange
- * (« U:8H1 ─ EXP:9T1 »), the cards seen per suit, the framed board, the hand, the claims just made, the legend.
- * `last`: `{ toi, robot, revendications }`, the moves written « 8♥ → borne 1 »; `bot`: the bot's name; `letters`:
- * `fr` (P H T C) or `gb` (S H C D).
- */
-export function textView(state, me, { order = handOrder(state, me), last = null, bot = "robot", letters = "fr" } = {}) {
-  const hand = `  --=[ ${order.map((card) => codeOf(state, card, letters)).join("  ")} ]=--`;
-  return [` ${headerLine(state, me, last ?? {}, { bot, letters })}`, ` ${seenCodes(state, me, letters)}`, ...framedBoard(state, me, letters), hand, ...claimLines(last), "", ...LEGEND[letters]].join("\n");
-}
-
-/** The claims of the exchange, on one line under the hand; none, no line. */
-const claimLines = (last) => (last?.revendications?.length > 0 ? [`  ${last.revendications.join(", ")}`] : []);
-
-/** Two digits, so the header's columns do not shift (Sami, 14/10): « 05 »; the empty pile is « -- ». */
-const twoDigits = (count) => String(count).padStart(2, "0");
-
-/** « TURN:15 | DECK:16 | OHAND:6 | U:8H1 ─ EXP:9T1 »: fixed width up to the exchange, given only for the sides that moved. */
-function headerLine(state, me, { toi, robot }, { bot, letters }) {
-  const moves = [toi ? `U:${moveCode(toi, letters)}` : "", robot ? `${tagOf(bot)}:${moveCode(robot, letters)}` : ""].filter(Boolean);
-  const exchange = moves.length > 0 ? [moves.join(" ─ ")] : [];
-  const pile = state.pile.length === 0 ? "--" : twoDigits(state.pile.length);
-  return [`TURN:${twoDigits(state.turn + 1)}`, `DECK:${pile}`, `OHAND:${state.hands[1 - me].length}`, ...exchange].join(" | ");
 }
 
 /** Is it `me`'s turn in a game still going? */
