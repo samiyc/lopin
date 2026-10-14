@@ -120,9 +120,10 @@ function seenCodes(state, me, look) {
 }
 
 /** What the screen's foot says every turn: the suit letters in use and how a move is typed. */
+// Three short lines (Sami, 14/10): the one with the four names wrapped in a narrow terminal.
 export const LEGEND = {
-  fr: ["FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)", "Input exemple: 7h4   (7Coeur sur la borne 4)"],
-  gb: ["GB => SHCD   (Spade,Heart,Club,Diamond)", "Input exemple: 7h4   (7Coeur sur la borne 4)"],
+  fr: ["FR => PCHT Prononcé Pchit!", "P:Pic H:Heart T:Trefle C:Carreau", "Input exemple: 7h4 (7Coeur sur la borne 4)"],
+  gb: ["GB => SHCD", "S:Spade H:Heart C:Club D:Diamond", "Input exemple: 7h4 (7Coeur sur la borne 4)"],
 };
 
 /**

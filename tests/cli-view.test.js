@@ -36,7 +36,10 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     ], "the bar on the winner's side, the corner pointing at it: down for the player, up for the robot");
     assert.equal(lines[11], "  --=[ 2P  3P  10H  8T  7C  JK ]=--");
     assert.equal(lines[12], "  tu revendiques la borne 1");
-    assert.equal(lines.at(-1), "Input exemple: 7h4   (7Coeur sur la borne 4)");
+    assert.deepEqual(lines.slice(-3), ["FR => PCHT Prononcé Pchit!", "P:Pic H:Heart T:Trefle C:Carreau", "Input exemple: 7h4 (7Coeur sur la borne 4)"]);
+    // The cards-seen line has a fixed width and fits Sami's terminal; the old legend line (55) wrapped (14/10).
+    const seenWidth = lines[1].length;
+    assert.ok(lines.slice(-3).every((line) => line.length <= seenWidth), "the legend no wider than the cards-seen line: it wraps no sooner");
     assert.match(textView(state, 0).split("\n")[0], /OHAND:6$/, "no exchange yet: no « U: »");
   });
 
@@ -80,7 +83,8 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.match(lines[0], /U:7D4$/);
     assert.equal(lines[1], " S:03/10 | H:02/10 | C:02/10 | D:02/10 | JK:1/2");
     assert.equal(lines[11], "  --=[ 2S  3S  10H  8C  7D  JK ]=--");
-    assert.match(lines.at(-2), /^GB => SHCD/, "only the alphabet in use in the legend");
+    assert.match(lines.at(-3), /^GB => SHCD/, "only the alphabet in use in the legend");
+    assert.equal(lines.at(-2), "S:Spade H:Heart C:Club D:Diamond");
     const order = handOrder(state, 0);
     assert.deepEqual(parseInput("8c6", state, order, { letters: "gb" }).move, { card: parseCards(SPEC, ["8♣"])[0], border: 5 });
     assert.deepEqual(parseInput("7d4", state, order, { letters: "gb" }).move, { card: parseCards(SPEC, ["7♦"])[0], border: 3 });

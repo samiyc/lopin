@@ -53,8 +53,9 @@ Le modèle de Sami (14/10) :
  └──────────────────────────────────┘
   --=[ 3P  7H  1T  3T  2C  8C ]=--
 
-FR => PHTC Prononcé Pchit!  (Pic,Heart,Trefle,Carreau)
-Input exemple: 7h4   (7Coeur sur la borne 4)
+FR => PCHT Prononcé Pchit!
+P:Pic H:Heart T:Trefle C:Carreau
+Input exemple: 7h4 (7Coeur sur la borne 4)
 ```
 
 - L'en-tête : le tour, la pioche (`DECK`), les cartes en main du robot (`OHAND`), puis le
