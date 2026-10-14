@@ -93,9 +93,15 @@ export function suitBudgetBonus(context, border, card) {
   const side = mySides[border];
   const color = isJoker(card) ? -1 : colorOf(spec, card);
   const move = { color, was: budget.onSuit[border], now: suitWith(spec, side, card, color), length: side.length };
-  // The suits the move touches, each once: the card's own (it leaves my hand), the side's before and after.
-  let change = color >= 0 ? changeOf(budget, color, move) : 0;
-  if (move.was >= 0 && move.was !== color) change += changeOf(budget, move.was, move);
-  if (move.now >= 0 && move.now !== color && move.now !== move.was) change += changeOf(budget, move.now, move);
+  const change = touchedChange(budget, move);
   return change === 0 ? 0 : -weights.suitBudget * change;
+}
+
+/** The change summed over the suits the move touches, each once: the card's own (it leaves my hand), the side's before and after. */
+function touchedChange(budget, move) {
+  const { color, was, now } = move;
+  let change = color >= 0 ? changeOf(budget, color, move) : 0;
+  if (was >= 0 && was !== color) change += changeOf(budget, was, move);
+  if (now >= 0 && now !== color && now !== was) change += changeOf(budget, now, move);
+  return change;
 }
