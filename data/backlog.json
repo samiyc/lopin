@@ -2629,7 +2629,10 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 1 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-14T19:36",
+      "minutes": 23,
+      "output": "backlog-runs/2026-10-14-19-14_VALIDATE_LONG_1_Pw3-ExactEnd12.txt"
     },
     {
       "id": "VALIDATE_LONG_2_Pw3-ExactEnd12",
@@ -2637,7 +2640,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2645,7 +2648,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-14T19:58",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-14-19-36_VALIDATE_LONG_2_Pw3-ExactEnd12.txt"
     },
     {
       "id": "VALIDATE_LONG_3_Pw3-ExactEnd12",
@@ -2653,7 +2659,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2668,7 +2674,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-14T20:21",
+      "minutes": 23,
+      "output": "backlog-runs/2026-10-14-19-58_VALIDATE_LONG_3_Pw3-ExactEnd12.txt"
     },
     {
       "id": "VALIDATE_LONG_4_Pw3-ExactEnd12",
@@ -2676,7 +2685,7 @@
       "estimate": "35 min",
       "limit": 60,
       "why": "Pw3-ExactEnd12 (la 1.2 avec pw = 3 + √visites) : 56,1 % (49,6 – 62,6) contre la 1.2 en duel long le 14/10 (180 parties, offset 14), devant pw=1 (51,1 %) et pw=2 (47,8 %). Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Coût par itération ~2 % : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2691,7 +2700,10 @@
           ],
           "below": 0.5
         }
-      ]
+      ],
+      "doneAt": "2026-10-14T20:43",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-14-20-21_VALIDATE_LONG_4_Pw3-ExactEnd12.txt"
     },
     {
       "id": "READ_V12_Oracle3",

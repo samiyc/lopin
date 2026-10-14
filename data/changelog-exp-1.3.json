@@ -450,6 +450,45 @@
    "when": "14/10",
    "note": "Contre la 1.2@2000, 280 parties : 61,4 % (55,1 – 67,8) sur l'offset 12, puis 52,9 % (44,9 – 60,8) sur l'offset 13 ; réunis 57,1 % (≈ 52,0 – 62,3). Le premier juge plus fort que la 1.2, sous les 60 % de la règle. Les niveaux 6 à 10 ne sont jamais atteints : le gain vient de pw, qui concentre les niveaux 3-4.",
    "idea": "Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur ; pw=1, qui perdait à 2 000, n'étrangle plus les plis 2-3 à 20 000."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "14/10",
+   "idea": "Le gain de l'oracle profond vient de pw : une formule k + √visites (Sami) ouvrirait les réponses plus tôt à 2 000 itérations et servirait la 1.3 sans toucher au cœur.",
+   "id": "pw1-2000",
+   "name": "La 1.2 avec pw = 1 + √visites, à 2 000 itérations",
+   "score": 51.1,
+   "lo": 46,
+   "hi": 56.2,
+   "verdict": "neutre",
+   "note": "Duel long contre la 1.2 (180 parties, offset 14). L'arbre descend le plus : le 5e niveau dans 55,7 % des coups (la 1.2 : 15,7 %), 20,5 % de nœuds jamais visités au 3e niveau (60 %)."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "14/10",
+   "idea": "Le gain de l'oracle profond vient de pw : une formule k + √visites (Sami) ouvrirait les réponses plus tôt à 2 000 itérations et servirait la 1.3 sans toucher au cœur.",
+   "id": "pw2-2000",
+   "name": "Pw2-ExactEnd12 : pw = 2 + √visites, à 2 000 itérations",
+   "score": 47.8,
+   "lo": 41.8,
+   "hi": 53.8,
+   "verdict": "neutre",
+   "note": "Duel long contre la 1.2 (180 parties, offset 14). 5e niveau dans 28,6 % des coups."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "14/10",
+   "idea": "Le gain de l'oracle profond vient de pw : une formule k + √visites (Sami) ouvrirait les réponses plus tôt à 2 000 itérations et servirait la 1.3 sans toucher au cœur.",
+   "id": "pw3-2000",
+   "name": "Pw3-ExactEnd12 : pw = 3 + √visites, à 2 000 itérations",
+   "score": 51.2,
+   "lo": 48.9,
+   "hi": 53.5,
+   "verdict": "neutre",
+   "note": "56,1 % (49,6 – 62,6) au duel long de l'offset 14, puis la validation 1k@2k : 51,6, 53,2, 47,2 et 50,0 % ; réunis 51,2 % sur 1 180 parties. Ne passe pas : à 2 000, pw change la forme de l'arbre (k règle profondeur contre largeur), pas le niveau."
   }
  ],
  "manualJobs": [],
@@ -668,11 +707,6 @@
    "when": "Maintenant",
    "title": "Oracle3 : la 1.2 relue par l'oracle profond",
    "text": "Budget20000-Depth10Pw bat la 1.2@2000 à 57,1 % sur 280 parties (≈ 52,0 – 62,3 ; 61,4 % puis 52,9 %) : le juge le plus fort qu'on ait, un peu sous les 60 % visés. Il peut relire les parties de la 1.2 comme Oracle1 la nuit du 14/10 (relecture, puis confirmation par le jeu), environ 1,5 fois plus lentement — ou d'abord gagner quelques points avec une meilleure formule de pw."
-  },
-  {
-   "when": "À tester",
-   "title": "Une formule d'élargissement progressif réglable, pour le 1.3",
-   "text": "Le gain de Depth10Pw vient de pw, pas de la profondeur (les niveaux 6 à 10 ne sont jamais atteints). À 2 000 itérations, pw = 1 + √visites étranglait les plis 2-3 (46,4 %) : essayer k + c·visites^α (2 + √visites : 7 réponses dès 25 visites ; 3 + visites/3) à 2 000-4 000 itérations contre la 1.2, à temps égal, sans toucher au cœur. Les statistiques par niveau des replays (tree-stats.js) départageront les formules."
   },
   {
    "when": "Maintenant",

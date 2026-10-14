@@ -360,7 +360,10 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   first judge stronger than the 1.2, short of the 60 % rule.
   Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
   tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
-  those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula.
+  those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
+  reads it from kept duels. `+pw=k` offers k + √visits replies (`pw=1` unchanged): at 2 000 iterations no
+  formula changes the 1.2's level (`pw=1` 51.1 %, `pw=2` 47.8 %, `Pw3-ExactEnd12` 51.2 % over 1 180 games,
+  48.9 – 53.5), only the tree's shape — `k` trades depth for width; at 20 000 `pw=1` pays.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

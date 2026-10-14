@@ -3384,3 +3384,48 @@ Pour Sami, un juge autour de 58 % et plus est utilisable.
 3. **Renforcer l'oracle** : la même formule de `pw` à 20 000 ; le solveur plus tôt (`exact=14` ou `16`,
    trop lent pour jouer, pas pour juger). Plus de profondeur (`depth=15`) ne servirait à rien tant que
    le 6e niveau n'est pas atteint.
+
+## La formule de `pw` à 2 000 itérations : `1+`, `2+`, `3+` (14/10, soir)
+
+**L'idée** (Sami) : si `pw` fait le gain de l'oracle à 20 000, une formule réglée pourrait servir la 1.3
+directement à 2 000, sans toucher au cœur. `+pw=k` offre désormais `k + √visites` réponses sous la racine
+(jusqu'à 7) ; `pw=1` est l'ancienne formule (mêmes coups, empreinte `9f8c06c64bb5eca5` avant et après),
+`pw=2` et `pw=3` ouvrent les 7 réponses dès 25 et 16 visites au lieu de 36. Coût : ~2 % par itération,
+donc duels à itérations égales.
+
+**Trois duels longs contre la 1.2@2000** (`--long --page`, 180 parties chacun, mêmes donnes : offset 14) :
+
+| Version | Score | Fourchette par paires | En commençant / en second |
+| --- | --- | --- | --- |
+| `pw=1` (`PW-ExactEnd12`) | 51,1 % | 46,0 – 56,2 % | 45,6 / 56,7 % |
+| `pw=2` (`Pw2-ExactEnd12`) | 47,8 % | 41,8 – 53,8 % | 41,1 / 54,4 % |
+| `pw=3` (`Pw3-ExactEnd12`) | 56,1 % | 49,6 – 62,6 % | 48,9 / 63,3 % |
+
+**La forme de l'arbre** (`npm run tree-stats -- --last 3`, ~2 700 coups par version, 8 069 pour la 1.2
+qui jouait les trois duels ; « atteint » : la part des coups dont l'arbre a un nœud visité à ce niveau) :
+
+| Moteur @2000 | Niveau 3 : nœuds / 0 visite | Niveau 4 : atteint / 0 visite | **Niveau 5 atteint** |
+| --- | --- | --- | --- |
+| 1.2 (sans `pw`) | 3 276 / 60,0 % | 88,1 % / 77,2 % | **15,7 %** |
+| `pw=1` | 1 374 / **20,5 %** | 99,9 % / 39,2 % | **55,7 %** |
+| `pw=2` | 1 822 / 33,5 % | 99,0 % / 54,8 % | 28,6 % |
+| `pw=3` | 2 283 / 43,7 % | 95,8 % / 64,3 % | 20,0 % |
+
+`k` règle exactement l'équilibre entre largeur et profondeur : `pw=1` descend le plus (le 5e niveau dans
+plus d'un coup sur deux), `pw=3` reste proche de la largeur de la 1.2 en descendant un peu plus.
+
+**La validation de `pw=3`** (le protocole 1k@2k, `VALIDATE_LONG_1..4_Pw3-ExactEnd12`, offsets 0 à 3, 14/10
+de 19 h 14 à 20 h 44) : 51,6 %, 53,2 %, 47,2 % et 50,0 %. Réunis avec le duel de l'offset 14
+(`npm run versus`) : **51,2 % sur 1 180 parties (48,9 – 53,5)**, 49,0 % en commençant, 53,4 % en second.
+**Il ne passe pas** : le bas de la fourchette reste sous 50 %. Le 56,1 % du premier duel était un duel
+chanceux, comme d'autres avant lui.
+
+**Ce qui en ressort** :
+- **À 2 000 itérations, `pw` ne change pas le niveau de jeu**, quelle que soit la formule : il change la
+  forme de l'arbre, pas la qualité du coup. Aller plus profond ou rester large se vaut à ce budget.
+- **À 20 000, `pw=1` paie** (Depth10Pw, 57,1 % sur 280 parties) : avec dix fois plus de visites, il
+  descend sans étrangler. La bonne formule dépend du budget ; pour l'oracle c'est `pw=1`.
+- La piste « une formule de `pw` pour le 1.3 » est close à 2 000 ; elle resterait à essayer à 4 000, où
+  Budget4000 gagnait 2,8 points.
+- **Un outil reste** : `npm run tree-stats` lit la forme de l'arbre dans n'importe quel duel gardé depuis
+  le 14/10.
