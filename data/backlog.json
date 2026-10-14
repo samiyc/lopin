@@ -2466,10 +2466,10 @@
     },
     {
       "id": "READ_V12_Oracle2",
-      "command": "npm run oracle -- --oracle 2 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 110 --out v12-oracle2",
-      "estimate": "115 min",
-      "limit": 120,
-      "why": "L'Oracle2 relit les parties de la 1.2 (1.2@4000 contre 1.2@2000, Budget4000 du 11/10 : le même cœur des deux côtés), tours 12 à 28, classées par stfig6 ; écart = son coup hors du top 3 du cœur, hors top 8 = la racine ne le voit pas. Annulé si l'autre oracle gagne le duel (stopIf). Arrêt propre à 110 min, on reprend où il s'est arrêté.",
+      "command": "npm run oracle -- --oracle 2 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 55 --out v12-oracle2",
+      "estimate": "60 min",
+      "limit": 75,
+      "why": "L'Oracle2 relit les parties de la 1.2 (1.2@4000 contre 1.2@2000, Budget4000 du 11/10 : le même cœur des deux côtés), tours 12 à 28, classées par stfig6 ; écart = son coup hors du top 3 du cœur, hors top 8 = la racine ne le voit pas. Annulé si l'autre oracle gagne le duel (stopIf). Arrêt propre à 55 min (Sami, 14/10 : la confirmation est le goulot, la relecture donne déjà ~10× plus d'écarts qu'elle n'en traite), on reprend où il s'est arrêté.",
       "status": "todo",
       "stopIf": [
         {
@@ -2483,10 +2483,10 @@
     },
     {
       "id": "READ_V12_Oracle1",
-      "command": "npm run oracle -- --oracle 1 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 110 --out v12-oracle1",
-      "estimate": "115 min",
-      "limit": 120,
-      "why": "L'Oracle1 relit les parties de la 1.2 (1.2@4000 contre 1.2@2000, Budget4000 du 11/10 : le même cœur des deux côtés), tours 12 à 28, classées par stfig6 ; écart = son coup hors du top 3 du cœur, hors top 8 = la racine ne le voit pas. Annulé si l'autre oracle gagne le duel (stopIf). Arrêt propre à 110 min, on reprend où il s'est arrêté.",
+      "command": "npm run oracle -- --oracle 1 --source \"ismcts+widen=7+depth=5+core=stfig6+exact=12@4000,ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --turns 12-28 --rank stfig6 --spread --minutes 55 --out v12-oracle1",
+      "estimate": "60 min",
+      "limit": 75,
+      "why": "L'Oracle1 relit les parties de la 1.2 (1.2@4000 contre 1.2@2000, Budget4000 du 11/10 : le même cœur des deux côtés), tours 12 à 28, classées par stfig6 ; écart = son coup hors du top 3 du cœur, hors top 8 = la racine ne le voit pas. Annulé si l'autre oracle gagne le duel (stopIf). Arrêt propre à 55 min (Sami, 14/10 : la confirmation est le goulot, la relecture donne déjà ~10× plus d'écarts qu'elle n'en traite), on reprend où il s'est arrêté.",
       "status": "todo",
       "stopIf": [
         {
@@ -2499,11 +2499,11 @@
       ]
     },
     {
-      "id": "CONFIRM_V12_Oracle2",
-      "command": "npm run oracle -- --confirm --out v12-oracle2 --minutes 110",
+      "id": "CONFIRM_1_V12_Oracle2",
+      "command": "npm run oracle -- --confirm --out v12-oracle2 --seeds 4 --minutes 110",
       "estimate": "115 min",
       "limit": 120,
-      "why": "Les écarts de READ_V12_Oracle2 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne.",
+      "why": "Les écarts de READ_V12_Oracle2 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne. 4 graines par coup (12 suites par écart) ; partie 1 sur 2, la seconde reprend où la première s'arrête (les écarts faits sont sautés).",
       "status": "todo",
       "stopIf": [
         {
@@ -2516,11 +2516,45 @@
       ]
     },
     {
-      "id": "CONFIRM_V12_Oracle1",
-      "command": "npm run oracle -- --confirm --out v12-oracle1 --minutes 110",
+      "id": "CONFIRM_2_V12_Oracle2",
+      "command": "npm run oracle -- --confirm --out v12-oracle2 --seeds 4 --minutes 110",
       "estimate": "115 min",
       "limit": 120,
-      "why": "Les écarts de READ_V12_Oracle1 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne.",
+      "why": "Les écarts de READ_V12_Oracle2 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne. 4 graines par coup (12 suites par écart) ; partie 2 sur 2, la seconde reprend où la première s'arrête (les écarts faits sont sautés).",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "ORACLE_DUEL_1_Oracle2",
+            "ORACLE_DUEL_2_Oracle2"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "CONFIRM_1_V12_Oracle1",
+      "command": "npm run oracle -- --confirm --out v12-oracle1 --seeds 4 --minutes 110",
+      "estimate": "115 min",
+      "limit": 120,
+      "why": "Les écarts de READ_V12_Oracle1 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne. 4 graines par coup (12 suites par écart) ; partie 1 sur 2, la seconde reprend où la première s'arrête (les écarts faits sont sautés).",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "ORACLE_DUEL_1_Oracle2",
+            "ORACLE_DUEL_2_Oracle2"
+          ],
+          "atLeast": 0.5
+        }
+      ]
+    },
+    {
+      "id": "CONFIRM_2_V12_Oracle1",
+      "command": "npm run oracle -- --confirm --out v12-oracle1 --seeds 4 --minutes 110",
+      "estimate": "115 min",
+      "limit": 120,
+      "why": "Les écarts de READ_V12_Oracle1 rejoués : le coup de l'oracle, le favori du cœur et le coup joué, suite par les robots de la partie, 6 graines, jugés au tour 30 par le solveur. Groupes : hors du top 8 (sélection de la racine) et dans le top 8 (budget, bruit). Annulé si l'autre oracle gagne. 4 graines par coup (12 suites par écart) ; partie 2 sur 2, la seconde reprend où la première s'arrête (les écarts faits sont sautés).",
       "status": "todo",
       "stopIf": [
         {
