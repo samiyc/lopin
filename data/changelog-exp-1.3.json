@@ -566,6 +566,16 @@
    "text": "Ni Oracle1 ni Oracle2 ne battent la 1.2 (14/10) : tous les coups à la racine dispersent 20 000 itérations (~480 visites par coup). Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur : d'abord la 1.2 à 20 000 (le même arbre, dix fois le budget), puis depth=10 et un élargissement progressif plus rapide que 1 + √visites (2 + √visites, ou k·visites^α à régler), qui à 20 000 n'étranglerait plus les plis 2-3. Un juge doit battre la 1.2@2000 nettement en duel avant de relire ses parties."
   },
   {
+   "when": "À tester",
+   "title": "La 1.2 à 20 000 itérations",
+   "text": "Le même arbre que la 1.2 (8 candidats, 7 réponses, 5 étages, solveur à 12 cartes), dix fois le budget : ismcts+widen=7+depth=5+core=stfig6+exact=12@20000 contre la 1.2@2000. La suite de Budget4000 (+2,8 points à deux fois le budget) et le premier candidat juge : il doit gagner nettement (≥ 60 % sur 200 parties et plus). Aucun code ; ~10 min la partie à 18 fils, ~110 parties à l'heure."
+  },
+  {
+   "when": "À tester",
+   "title": "La 1.2 à 20 000, plus profonde : depth=10+pw=1",
+   "text": "La même avec 10 étages et l'élargissement progressif d'aujourd'hui (1 + √visites, jusqu'à 7 réponses), contre la 1.2@20000 puis contre la 1.2@2000. À 2 000 itérations pw=1 étranglait les plis 2-3 (46,4 %) ; à 20 000, un nœud atteint plus vite les 36 visites qui ouvrent ses 7 réponses. Aucun code ; un élargissement plus rapide (2 + √visites, k·visites^α) viendrait ensuite."
+  },
+  {
    "when": "Maintenant",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
    "text": "La seule piste de la nuit du 14/10 : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +3,6 ± 4,7 points de plus sur 153 cas. Relire plus de positions (READ_V12_Oracle1 reprend où il s'est arrêté), ne confirmer que ce groupe à 8 graines ; si l'écart tient, c'est le bruit du choix final qu'il faut réduire, pas la sélection."
