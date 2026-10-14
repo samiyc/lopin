@@ -2711,7 +2711,10 @@
       "estimate": "115 min",
       "limit": 120,
       "why": "Oracle3 (Depth10Pw, 57,1 % contre la 1.2 sur 280 parties : le premier juge plus fort qu'elle) relit les parties de la 1.2 sur le même corpus et dans le même ordre qu'Oracle1 (Budget4000, tours 12-28, stfig6, --spread) : leurs avis se comparent position par position. ~4,5 s par position sur tous les fils (Oracle1 : 2 s), ~1 450 positions et ~730 écarts en 110 min.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-14T22:33",
+      "minutes": 110,
+      "output": "backlog-runs/2026-10-14-20-43_READ_V12_Oracle3.txt"
     },
     {
       "id": "CONFIRM_1_V12_Oracle3",
@@ -2727,6 +2730,14 @@
       "estimate": "115 min",
       "limit": 120,
       "why": "Les écarts d'Oracle3 rejoués : son coup, le favori du cœur et le coup joué par la 1.2, suite par les robots de la partie, 4 graines, jugés au tour 30. ~14 s par écart ; partie 2 sur 2, la seconde reprend où la première s'arrête.",
+      "status": "todo"
+    },
+    {
+      "id": "CONFIRM_3_V12_Oracle3",
+      "command": "npm run oracle -- --confirm --out v12-oracle3 --seeds 4 --minutes 110",
+      "estimate": "~75 min",
+      "limit": 120,
+      "why": "La relecture d'Oracle3 a trouvé 1 367 écarts (2 s par position, plus vite que prévu) : CONFIRM_1 et 2 en rejouent ~900, celui-ci reprend la suite (~470 écarts, ~15 s chacun).",
       "status": "todo"
     }
   ]
