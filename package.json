@@ -37,6 +37,7 @@
     "puzzle-stats": "node scripts/puzzle-stats.js",
     "traps": "node scripts/traps.js",
     "trap-bench": "node scripts/trap-bench.js",
+    "tree-stats": "node scripts/tree-stats.js",
     "hiding": "node scripts/hiding.js",
     "policy": "node scripts/policy.js",
     "bretagne": "node scripts/bretagne.js",
