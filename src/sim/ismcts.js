@@ -79,8 +79,11 @@ function select(node, moves, { exploration, amaf, rave, puct, implicit }, mover)
   return children[scores.indexOf(Math.max(...scores))];
 }
 
-/** How many of the core's moves a node below the root offers: all `widen`, or 1 + √visits with `pw`. */
-const breadth = (node, ctx) => (ctx.pw ? Math.min(ctx.widen, 1 + Math.floor(Math.sqrt(node.visits))) : ctx.widen);
+/**
+ * How many of the core's moves a node below the root offers: all `widen`, or with `pw=k` k + √visits (Sami, 14/10:
+ * `pw=1` is the 1 + √visits of before; `pw=2`, `pw=3` open the replies sooner — 7 at 25 and 16 visits, not 36).
+ */
+const breadth = (node, ctx) => (ctx.pw ? Math.min(ctx.widen, ctx.pw + Math.floor(Math.sqrt(node.visits))) : ctx.widen);
 
 /** Credits every distinct (player, move) of an iteration with its result for that player. */
 function creditShared(amaf, played, winner) {
