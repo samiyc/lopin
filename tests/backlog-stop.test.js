@@ -32,4 +32,16 @@ describe("stopIf: a series of long duels that starts badly stops there (backlog-
     assert.equal(stopReason(second, [duel("d1", 0.46, "todo"), second], outputOf), null);
     assert.equal(stopReason({ id: "x" }, [], outputOf), null);
   });
+
+  it("runs exactly one branch of a choice: `atLeast` cancels the loser's job, `below` the winner's (Sami, 14/10)", () => {
+    const after = ["o1", "o2"];
+    const ifWins = { id: "read2", stopIf: [{ after, below: 0.5 }] };
+    const ifLoses = { id: "read1", stopIf: [{ after, atLeast: 0.5 }] };
+    for (const [first, second] of [[0.53, 0.51], [0.47, 0.49], [0.5, 0.5]]) {
+      const jobs = [duel("o1", first), duel("o2", second), ifWins, ifLoses];
+      const skipped = [ifWins, ifLoses].filter((job) => stopReason(job, jobs, outputOf) !== null);
+      assert.equal(skipped.length, 1, `${first} / ${second}: one branch skipped`);
+    }
+    assert.match(stopReason(ifLoses, [duel("o1", 0.53), duel("o2", 0.51), ifLoses], outputOf), /52\.0 % réunis, 50 % ou plus/);
+  });
 });

@@ -351,6 +351,18 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
 - **Top 8** : le coup de l'oracle est-il parmi les 8 candidats que le cœur donne à la racine ?
 - **Distiller** (`npm run distill`) : régler les poids du cœur pour qu'il mette les coups de
   l'oracle dans son top 8.
+- **Oracle1 / Oracle2** (Sami, 14/10) : Oracle1 est l'oracle gelé (`ORACLE.version` 1,
+  `ismcts+candidates=99+widen=6+depth=5+smart=1@20000`, le cœur du 0.9, sans solveur). Oracle2
+  est le même arbre avec ce que la 1.2 a en plus : le cœur `stfig6`, le solveur `exact=12` et 7
+  réponses (`ORACLES[2]`, `npm run oracle -- --oracle 2` ; pas plus cher par itération, 0,99×).
+  Ses écarts avec la 1.2 ne viennent donc que de la racine (tous les coups) et du budget. Le duel
+  Oracle1 contre Oracle2 (`ORACLE_DUEL_1/2_Oracle2`, 14/10) dit lequel relit les parties de la
+  1.2 ; s'il gagne, Oracle2 devient la référence (`ORACLE.version` 2).
+- **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
+  l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
+  l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6
+  graines (même pioche, autre chance des recherches) jusqu'au tour 30, où le solveur exact dit
+  qui tient la partie. L'écart vaut la différence moyenne entre ces suites.
 
 ## Nommer les versions et les jobs
 

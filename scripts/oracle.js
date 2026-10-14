@@ -1,5 +1,5 @@
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
-import { ORACLE } from "../src/replay/oracle.js";
+import { ORACLE, oracleOf } from "../src/replay/oracle.js";
 import { readIndex } from "./lib/game-index.js";
 import { confirmGaps, summarizeConfirm } from "./lib/oracle-confirm.js";
 import { benchCores, disagree, rerank, summarizeDisagree } from "./lib/oracle-cores.js";
@@ -25,8 +25,11 @@ import { runPool } from "./lib/pool.js";
  * taking new positions after that long. The gaps and the rates by turn and
  * by player go to data/oracle-diffs.json; `--summary` rebuilds it alone.
  *
- * `--confirm [--seeds 6]`: the gaps played out instead (scripts/lib/oracle-confirm.js),
- * verdict in data/oracle-confirm.json.
+ * `--confirm [--seeds 6] [--out <name>]`: the gaps played out instead (scripts/lib/oracle-confirm.js),
+ * verdict in data/oracle-confirm.json (data/oracle-confirm-<name>.json for another corpus).
+ *
+ * `--oracle 2` (Sami, 14/10): Oracle2 instead of the frozen one, the same search with the 1.2's core,
+ * solver and width (`ORACLES` in src/replay/oracle.js); its lines carry `oracle: 2`.
  *
  * Another corpus (03/10, the V1 + oracle reference): `--source <A>,<B>` reads the
  * games those two engines played against each other instead, into
@@ -51,7 +54,9 @@ import { runPool } from "./lib/pool.js";
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const minutes = Number(option("--minutes", Infinity));
-const budget = Number(option("--budget", ORACLE.budget));
+// `--oracle 2` (Sami, 14/10): Oracle2, the search with the 1.2's core, solver and width (src/replay/oracle.js).
+const oracle = oracleOf(option("--oracle", "1"));
+const budget = Number(option("--budget", oracle.budget));
 /** "15,16,20" or "1-30". */
 const parseTurns = (text) => text.split(",").flatMap((part) => {
   const [from, to = from] = part.split("-").map(Number);
@@ -166,7 +171,7 @@ async function summarize() {
   console.log(`Les traits des écarts : coup de l'oracle / premier coup du cœur`);
   for (const row of traits.slice(0, 10)) console.log(`  ${pct(row.oracle)} / ${pct(row.core)}  ${row.trait}`);
   // The gaps themselves stay in oracle/positions.jsonl: here only what they add up to.
-  const summary = { built: new Date().toISOString().slice(0, 10), engine: ORACLE.engine, budget, positions: positions.length, gaps: gaps.length, byTurn, byPlayer, traits };
+  const summary = { built: new Date().toISOString().slice(0, 10), oracle: oracle.version, engine: oracle.engine, budget, positions: positions.length, gaps: gaps.length, byTurn, byPlayer, traits };
   summary.ms = msByTurn(positions);
   const kept = await readFile(DIFFS, "utf8").then((text) => JSON.parse(text).cores, () => undefined);
   const core = option("--core", null);
@@ -184,13 +189,13 @@ async function hunt() {
   await mkdir(new URL("oracle/", ROOT), { recursive: true });
   const done = new Set((await readPositions()).map((entry) => `${entry.key}|${entry.turn}`));
   const tasks = (await rowsToRead())
-    .flatMap((row) => turnsOf(row).map((turn) => ({ row: { key: row.key, file: row.file, game: row.game, handClasses: row.handClasses }, turn, budget, runs, rank, keep, at: at ?? "tours fixes" })))
+    .flatMap((row) => turnsOf(row).map((turn) => ({ row: { key: row.key, file: row.file, game: row.game, handClasses: row.handClasses }, turn, budget, runs, rank, keep, at: at ?? "tours fixes", oracle: oracle.version })))
     .filter((task) => !done.has(`${task.row.key}|${task.turn}`));
   if (args.includes("--spread")) tasks.sort((x, y) => shuffleKey(x) - shuffleKey(y));
   const started = Date.now();
   const tally = { done: 0, gaps: 0 };
   const cap = Number.isFinite(minutes) ? `${minutes} min au plus` : "sans limite de temps";
-  console.log(`${tasks.length} positions à lire (${done.size} déjà faites), oracle ${ORACLE.engine}@${budget}, ${cap}`);
+  console.log(`${tasks.length} positions à lire (${done.size} déjà faites), oracle ${oracle.version} ${oracle.engine}@${budget}, ${cap}`);
   await runPool(new URL("./lib/oracle-worker.js", import.meta.url), tasks, {
     shouldStop: () => Date.now() - started > minutes * 60_000,
     onResult: (result) => {
@@ -207,8 +212,9 @@ const against = option("--disagree", null);
 if (args.includes("--bench")) {
   await benchCores(option("--bench", "").split(","));
 } else if (args.includes("--confirm")) {
-  await confirmGaps({ minutes, seeds: Number(option("--seeds", 6)) });
-  await summarizeConfirm();
+  // `--out <name>`: the gaps of oracle/positions-<name>.jsonl (the 1.2's corpus of 14/10), not the 0.9's.
+  await confirmGaps({ minutes, seeds: Number(option("--seeds", 6)), out });
+  await summarizeConfirm({ out });
 } else if (against) {
   await (args.includes("--summary") ? summarizeDisagree(against, { budget }) : disagree(against, { minutes, budget }));
 } else {

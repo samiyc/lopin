@@ -26,6 +26,24 @@ export const ORACLE = Object.freeze({
   shortlist: 8,
 });
 
+/**
+ * The oracles by version (Sami, 14/10; `Oracle2` in docs/glossaire.md): 1 is the frozen one above; 2 is the same
+ * search with what the 1.2 added — its core `stfig6`, the exact solver up to 12 cards, 7 replies (no dearer an
+ * iteration: 0.99× measured) — so that its gaps with the 1.2 come from the root (every move) and the budget alone.
+ * `npm run oracle -- --oracle 2`. `ORACLE` stays version 1 until a duel says otherwise.
+ */
+export const ORACLES = Object.freeze({
+  1: ORACLE,
+  2: Object.freeze({ ...ORACLE, version: 2, engine: "ismcts+candidates=99+widen=7+depth=5+smart=1+core=stfig6+exact=12" }),
+});
+
+/** The oracle of a version (1 when none is given), or an error naming the known ones. */
+export function oracleOf(version = 1) {
+  const oracle = ORACLES[version];
+  if (!oracle) throw new Error(`Oracle inconnu : « ${version} » (${Object.keys(ORACLES).join(", ")})`);
+  return oracle;
+}
+
 const same = (a, b) => Boolean(a && b) && a.card === b.card && a.border === b.border;
 
 /** The core's moves from best to worst; those its habits refuse come last. */

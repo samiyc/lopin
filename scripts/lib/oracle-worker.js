@@ -3,7 +3,7 @@ import { formatCard } from "../../src/core/notation.js";
 import { createRng } from "../../src/core/random.js";
 import { stateAt } from "../../src/replay/log.js";
 import { contextsOf, traitsOf } from "../../src/replay/move-features.js";
-import { ORACLE, coreRanking, needsSecondRun, rankOf, verdictOf } from "../../src/replay/oracle.js";
+import { ORACLE, coreRanking, needsSecondRun, oracleOf, rankOf, verdictOf } from "../../src/replay/oracle.js";
 import { engineFor, strategistBot } from "../../src/sim/bots.js";
 import { EXPERIMENT, coreOf } from "../../src/sim/experimental.js";
 import { legalMoves } from "../../src/sim/game.js";
@@ -27,8 +27,8 @@ const loggedLabel = (entry) => (entry?.move ? `${entry.move.card}→${entry.move
 const opensSide = (state, mover, move) => state.borders[move.border].sides[mover].length === 0;
 
 /** One run of the oracle, or two when the first finds a move outside the core's top 3 — or always `runs` when asked. */
-function oracleRuns(state, moves, { key, budget, ranking, runs }) {
-  const search = (run) => engineFor(`${ORACLE.engine}@${budget}`)(createRng(seedOf(key, run))).scoreMoves(state, moves, { keepAll: true });
+function oracleRuns(state, moves, { key, budget, ranking, runs, engine }) {
+  const search = (run) => engineFor(`${engine}@${budget}`)(createRng(seedOf(key, run))).scoreMoves(state, moves, { keepAll: true });
   const first = search(1);
   const second = runs ? runs >= 2 : needsSecondRun(ranking, first);
   return second ? [first, search(2)] : [first];
@@ -47,18 +47,19 @@ function visitsOf(spec, searched, keep) {
   return { visits: searched.map(top) };
 }
 
-parentPort.on("message", async ({ row, turn, budget, runs, rank, keep, at }) => {
+parentPort.on("message", async ({ row, turn, budget, runs, rank, keep, at, oracle: version }) => {
   const started = Date.now();
+  const oracle = oracleOf(version);
   const log = await loadGame(row);
   const state = stateAt(log, turn);
   const moves = state.over ? [] : legalMoves(state);
-  const base = { key: row.key, file: row.file, game: row.game, turn, at, oracle: ORACLE.version };
+  const base = { key: row.key, file: row.file, game: row.game, turn, at, oracle: oracle.version };
   if (moves.length <= 1) return parentPort.postMessage({ ...base, skipped: true });
   const { spec } = state;
   const mover = state.current;
   const hand = [...state.hands[mover]];
   const ranking = rankingAt(state, moves, rank);
-  const searched = oracleRuns(state, moves, { key: `${row.key}|${turn}`, budget, ranking, runs });
+  const searched = oracleRuns(state, moves, { key: `${row.key}|${turn}`, budget, ranking, runs, engine: oracle.engine });
   const verdict = verdictOf(ranking, searched);
   const played = loggedLabel(log.turns[turn - 1]);
   const playedRank = ranking.findIndex((move) => labelOf(spec, move) === played) + 1;

@@ -8,10 +8,16 @@ import { runPool } from "./pool.js";
  * last-column ones first, then the clearest (widest margin) first; each
  * result is appended to oracle/confirm.jsonl as it lands and a new run skips
  * the gaps already there. The verdict goes to data/oracle-confirm.json.
+ *
+ * `out` (Sami, 14/10: the 1.2's games read by Oracle2): another corpus,
+ * oracle/positions-<out>.jsonl, confirmed into oracle/confirm-<out>.jsonl
+ * and data/oracle-confirm-<out>.json.
  */
 const ROOT = new URL("../../", import.meta.url);
-const POSITIONS = new URL("oracle/positions.jsonl", ROOT);
-const OUT = new URL("oracle/confirm.jsonl", ROOT);
+const filesOf = (out) => {
+  const suffix = out ? `-${out}` : "";
+  return { positions: new URL(`oracle/positions${suffix}.jsonl`, ROOT), confirmed: new URL(`oracle/confirm${suffix}.jsonl`, ROOT), summary: new URL(`data/oracle-confirm${suffix}.json`, ROOT) };
+};
 
 const readLines = async (url) =>
   (await readFile(url, "utf8").catch(() => ""))
@@ -22,15 +28,16 @@ const keyOf = (entry) => `${entry.key}|${entry.turn}`;
 const pts = (x) => `${x >= 0 ? "+" : ""}${(100 * x).toFixed(1).replace(".", ",")}`;
 
 /** The gaps still to play out, in the order they are worth it. */
-async function gapsToConfirm() {
-  const done = new Set((await readLines(OUT)).map(keyOf));
-  const gaps = (await readLines(POSITIONS)).filter((entry) => entry.gap && !done.has(keyOf(entry)));
+async function gapsToConfirm(files) {
+  const done = new Set((await readLines(files.confirmed)).map(keyOf));
+  const gaps = (await readLines(files.positions)).filter((entry) => entry.gap && !done.has(keyOf(entry)));
   const lastColumn = (entry) => (entry.at === "last-column" ? 0 : 1);
   return gaps.sort((a, b) => lastColumn(a) - lastColumn(b) || b.share - b.runnerUp - (a.share - a.runnerUp));
 }
 
-export async function confirmGaps({ minutes = Infinity, seeds = 6 } = {}) {
-  const gaps = await gapsToConfirm();
+export async function confirmGaps({ minutes = Infinity, seeds = 6, out = null } = {}) {
+  const files = filesOf(out);
+  const gaps = await gapsToConfirm(files);
   const started = Date.now();
   let done = 0;
   const cap = Number.isFinite(minutes) ? `${minutes} min au plus` : "sans limite";
@@ -39,7 +46,7 @@ export async function confirmGaps({ minutes = Infinity, seeds = 6 } = {}) {
     shouldStop: () => Date.now() - started > minutes * 60_000,
     onResult: (result) => {
       done += 1;
-      appendFile(OUT, `${JSON.stringify(result)}\n`);
+      appendFile(files.confirmed, `${JSON.stringify(result)}\n`);
       if (done % 25 === 0) console.log(`  ${done} écarts, ${((Date.now() - started) / 1000 / done).toFixed(1)} s par écart (sur tous les fils), ${((Date.now() - started) / 60_000).toFixed(0)} min`);
     },
   });
@@ -54,11 +61,12 @@ function verdictOf(rows) {
 
 function printVerdict(label, verdict) {
   const line = ({ mean, half, count }) => `${pts(mean)} ± ${(100 * half).toFixed(1).replace(".", ",")} pts (${count})`;
-  console.log(`  ${label.padEnd(34)} contre le cœur ${line(verdict.vsCore)} ; contre le 0.9 ${line(verdict.vsPlayed)}`);
+  console.log(`  ${label.padEnd(34)} contre le cœur ${line(verdict.vsCore)} ; contre le coup joué ${line(verdict.vsPlayed)}`);
 }
 
-export async function summarizeConfirm() {
-  const rows = await readLines(OUT);
+export async function summarizeConfirm({ out = null } = {}) {
+  const files = filesOf(out);
+  const rows = await readLines(files.confirmed);
   if (rows.length === 0) return;
   const groups = {
     "tous les écarts": rows,
@@ -66,7 +74,9 @@ export async function summarizeConfirm() {
     "tours fixes": rows.filter((row) => row.at !== "last-column"),
     "marge de l'oracle ≥ 0,15": rows.filter((row) => row.margin >= 0.15),
     "marge de l'oracle < 0,15": rows.filter((row) => row.margin < 0.15),
+    // Sami, 14/10: outside the top 8, the root's selection never shows the move; inside it, the search chose another.
     "hors du top 8 du cœur": rows.filter((row) => row.rank > 8),
+    "dans le top 8 (rangs 4 à 8)": rows.filter((row) => row.rank <= 8),
   };
   console.log(`Confirmation par le jeu : ce que le coup de l'oracle tient de plus au tour 30`);
   const summary = { built: new Date().toISOString().slice(0, 10), groups: {} };
@@ -75,5 +85,5 @@ export async function summarizeConfirm() {
     summary.groups[label] = verdictOf(group);
     printVerdict(label, summary.groups[label]);
   }
-  await writeFile(new URL("data/oracle-confirm.json", ROOT), `${JSON.stringify(summary, null, 1)}\n`);
+  await writeFile(files.summary, `${JSON.stringify(summary, null, 1)}\n`);
 }

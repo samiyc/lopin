@@ -3,7 +3,8 @@
  * under 50 % out of four, and the other two will not bring the lower bound
  * above it). A job may carry `stopIf`, a list of conditions
  * `{ after: [job ids], below: 0.5 }`: once every job of `after` is done, their
- * duels' pairs pooled scoring under `below` cancels this one (`skipped`). Pure:
+ * duels' pairs pooled scoring under `below` cancels this one (`skipped`), and
+ * `{ after, atLeast: 0.5 }` cancels it when they score that much or more. Pure:
  * the runner (scripts/backlog.js) hands the jobs and a reader of their outputs.
  *
  * What the defaults cost (pairs' sd ≈ 0.31, 125 pairs a duel): after one duel
@@ -35,12 +36,23 @@ export function pooledMean(groups) {
  * returns a finished job's output text.
  */
 export function stopReason(job, jobs, outputOf) {
-  for (const { after, below } of job.stopIf ?? []) {
-    const earlier = after.map((id) => jobs.find((other) => other.id === id));
+  for (const condition of job.stopIf ?? []) {
+    const earlier = condition.after.map((id) => jobs.find((other) => other.id === id));
     if (earlier.some((other) => other?.status !== "done")) continue;
     const mean = pooledMean(earlier.map((other) => pairsOf(outputOf(other))));
-    if (mean !== null && mean < below) return `${after.join(" + ")} : ${(100 * mean).toFixed(1)} % réunis, sous ${Math.round(100 * below)} %`;
+    const crossed = mean === null ? null : barCrossed(mean, condition);
+    if (crossed) return `${condition.after.join(" + ")} : ${(100 * mean).toFixed(1)} % réunis, ${crossed}`;
   }
+  return null;
+}
+
+/**
+ * The bar `mean` crosses, in words, or null: under `below`, or — `atLeast` (Sami, 14/10), the other branch of a
+ * choice, a job for the loser of a duel cancelled when A wins it — that much or more.
+ */
+function barCrossed(mean, { below, atLeast }) {
+  if (below !== undefined && mean < below) return `sous ${Math.round(100 * below)} %`;
+  if (atLeast !== undefined && mean >= atLeast) return `${Math.round(100 * atLeast)} % ou plus`;
   return null;
 }
 
