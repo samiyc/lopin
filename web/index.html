@@ -32,6 +32,7 @@
     </nav>
   </details>
   <a class="rules-link" href="/regles/regles.pdf" target="_blank" rel="noopener">Règles</a>
+  <button type="button" id="btn-colors" class="colors-toggle" aria-pressed="false" title="Quatre couleurs : ♠ noir, ♥ rouge, ♦ bleu, ♣ vert, le joker violet">4 couleurs <span class="suits" aria-hidden="true"><i data-suit="♠">♠</i><i data-suit="♥">♥</i><i data-suit="♦">♦</i><i data-suit="♣">♣</i></span></button>
 </header>
 
 <main class="layout">
@@ -45,9 +46,7 @@
 
     <section class="panel" id="panel-play">
       <button type="button" id="btn-new" title="Nouvelle partie"><span class="glyph" aria-hidden="true">+</span><span class="label">Nouvelle partie</span></button>
-      <button type="button" id="btn-reset" class="quiet" title="Recommencer"><span class="glyph" aria-hidden="true">↻</span><span class="label">Recommencer</span></button>
-      <button type="button" id="btn-colors" class="quiet toggle" aria-pressed="false" title="Quatre couleurs : ♠ noir, ♥ rouge, ♦ bleu, ♣ vert"><span class="glyph suits" aria-hidden="true"><i data-suit="♠">♠</i><i data-suit="♥">♥</i><i data-suit="♦">♦</i><i data-suit="♣">♣</i></span><span class="label">4 couleurs <span class="suits" aria-hidden="true"><i data-suit="♠">♠</i><i data-suit="♥">♥</i><i data-suit="♦">♦</i><i data-suit="♣">♣</i></span></span></button>
-      <p class="hint">Glisse une carte sur une borne, ou clique la carte puis la borne (touches 1 à 7). Glisse dans ta main pour la ranger.</p>
+      <button type="button" id="btn-reset" class="quiet" title="Recommencer"><span class="glyph" aria-hidden="true">↻</span><span class="label">Recommencer</span></button>      <p class="hint">Glisse une carte sur une borne, ou clique la carte puis la borne (touches 1 à 7). Glisse dans ta main pour la ranger.</p>
     </section>
 
     <section class="panel" id="panel-observe" hidden>

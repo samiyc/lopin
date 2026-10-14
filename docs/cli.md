@@ -73,7 +73,8 @@ Input exemple: 7h4 (7Coeur sur la borne 4)
   toujours la même largeur.
 - La légende ne donne que l'alphabet en cours (FR, ou GB avec `--gb`).
 - **Les couleurs** (Sami, 14/10) : dans un terminal, les cartes sont en quatre couleurs, ♠ dans la
-  couleur du texte, ♥ rouge, ♦ bleu, ♣ vert, le joker en gras, sur le plateau, dans la main,
+  couleur du texte, ♥ rouge, ♦ bleu, ♣ vert, le joker en violet (le violet de Solarized ; en deux
+  couleurs il reste sans couleur), sur le plateau, dans la main,
   l'en-tête et le compte des cartes vues. Ce sont les couleurs ANSI standard : un thème comme
   Solarized Light les rend dans ses propres tons, doux sur le beige. `--colors 2` revient au
   rouge et noir, `--colors 0` les retire ; sans terminal (un agent, `--step`, une redirection) ou
