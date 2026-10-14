@@ -157,6 +157,12 @@ export const CORES = Object.freeze({
   stlate: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.4, stayFrom: 20 } },
   stbehind: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.4, stayBehind: 1 } },
   stfig6: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
+  // The suit budget on the 1.2's core (Sami, 14/10, suit-budget.js): per card of shortfall on a suit, 0.05 to 1.
+  stfig6sb6: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "suitBudget"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, suitBudget: 0.6 } },
+  stfig6sb10: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "suitBudget"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, suitBudget: 1 } },
+  stfig6sb05: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "suitBudget"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, suitBudget: 0.05 } },
+  stfig6sb1: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "suitBudget"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, suitBudget: 0.1 } },
+  stfig6sb3: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "suitBudget"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, suitBudget: 0.3 } },
   jkxf: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "junk", "outbid", "exposure", "stay"], weights: { ...EXPERIMENT.weights, junk: 0.2, outbid: 0.2, exposure: 0.2, stay: 0.4, stayFigure: 1 } },
   stfig8: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.8, stayFigure: 1 } },
   stfig10: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 1, stayFigure: 1 } },

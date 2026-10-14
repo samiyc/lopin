@@ -59,6 +59,7 @@ mesures détaillées sont plus bas, section par section.
 | Les bonus du 0.9 (middle, spread, connector, joker, opening, suited) coupés après le tour 10 | 03/10 | 49,0 – 50,9 % (arbre, 400 itérations, 10 min) | neutres : après le tour 10 l'arbre décide | — |
 | Les bonus du 0.9 à partir du tour 15 ; connector à partir du tour 11, 15 ou 19 (à temps égal) | 03/10 | 49,0 – 50,9 % ; connector 48,5 – 48,9 % ; suited seulement après 15 : 41,1 % | neutres, sauf suited, qui sert au début | — |
 | Simulations tronquées à la première borne décidée (`trunc=5`, `trunc=8`, à temps égal) | 03/10 | 41,1 % ; 45,6 % | écartées : l'estimation au point d'arrêt coûte plus que le temps gagné ; l'option reste (`+trunc`) | — |
+| EPIMC (Arjonilla, Saffidine et Cazenave, 2024 : retarder la résolution en information parfaite) | 14/10 | pas codé | rejeté sur le papier : EPIMC améliore PIMC, que l'ISMCTS dépasse déjà (son arbre est fait d'ensembles d'information, ce qui limite la fusion de stratégies), et la fin de partie est en information parfaite (pioche vide : les cartes non vues sont la main adverse). Il ne resterait que les simulations, l'endroit où `trunc` a perdu | — |
 
 ## Comment le Stratège choisit un coup
 
@@ -3218,11 +3219,14 @@ racine, UCT dessous) y fait jeu égal avec l'arbre UCT. C'est notre `RootHalving
 - **Hybrides MCTS-minimax** (Baier et Winands) : un minimax court comme a priori des nœuds est
   l'hybride le plus fort de leurs trois jeux ; les **sauvegardes minimax implicites** (Lanctot et al.,
   2014) gardent à part la note heuristique et le résultat des simulations. Pour nous : le cœur comme
-  note séparée, mêlée au taux de victoire, plutôt que seulement comme filtre.
+  note séparée, mêlée au taux de victoire, plutôt que seulement comme filtre. **À tester** (Sami,
+  14/10) : `oddsOf` (`truncate.js`) donne déjà une estimation de la partie ; la stocker dans chaque nœud
+  et la mêler à UCB sans couper la simulation (là où `trunc` la remplaçait, et perdait).
 - **Information imparfaite** : ISMCTS bat PIMC parce qu'il limite la fusion de stratégies (Whitehouse,
   2014) ; **EPIMC** (Arjonilla, Saffidine et Cazenave, 2024) retarde la résolution en information
-  parfaite et gagne là où la fusion de stratégies pèse le plus. À regarder si la pioche cachée est ce
-  qui trompe la 1.2.
+  parfaite et gagne là où la fusion de stratégies pèse le plus. **Rejeté** (Sami, 14/10) : il améliore
+  PIMC, que l'ISMCTS dépasse déjà, et la fin de partie est en information parfaite (voir « Tentatives
+  écartées »).
 - **Le choix final** : le coup le plus visité (« robust child ») est la règle d'AlphaZero et de Gumbel
   MuZero ; *Anytime Sequential Halving* (Sagers, Winands et Soemers, 2024) en fait une version qui
   s'arrête à tout moment, utile pour un robot à l'horloge comme celui de la page.
@@ -3235,3 +3239,37 @@ Sources : [Pepels, Cazenave, Winands 2015, H-MCTS](https://www.lamsade.dauphine.
 [Whitehouse 2014](https://etheses.whiterose.ac.uk/id/eprint/8117/) ;
 [Revue MCTS 2022](https://arxiv.org/abs/2103.04931) ;
 [Élargissement progressif, POMDP continus](https://arxiv.org/abs/1709.06196).
+
+## Le budget des couleurs (14/10)
+
+**L'idée** (Sami) : ouvrir une troisième borne à cœur quand 8 cœurs sur 10 sont déjà vus demande
+des cartes qui ne viendront pas. Le cœur jugeait chaque côté seul contre les cartes non vues
+(`potential.js`) : deux de mes côtés à cœur comptaient chacun tous les cœurs restants comme les leurs.
+`suitBudget` (`src/sim/suit-budget.js`) les pèse ensemble : un côté est « sur » une couleur (borne
+non décidée, 1 ou 2 cartes, toutes ses vraies cartes de cette couleur) et en réclame 3 − sa longueur ;
+j'attends de la couleur mes cartes en main plus ma part des non vues (mes pioches sur les non vues) ;
+le manque est ce qui dépasse, et un coup coûte `poids × la variation du manque`.
+
+**Le brelan, lui, est déjà compté** : la valeur d'une paire (`drawPotentialOf`) fait la moyenne sur
+les cartes non vues et pèse la chance de piocher une troisième carte de la valeur ou un joker. Une
+paire dont les deux autres cartes sont vues vaut déjà peu ; la concurrence entre deux de mes côtés
+sur la même valeur est `spread`. Un « budget des brelans » ferait doublon.
+
+**Cœur contre cœur** (8 000 parties par poids contre `stfig6`, `--page`) :
+
+| Poids | Score | Fourchette par paires |
+| --- | --- | --- |
+| 0,05 | 52,1 % | 51,2 – 53,0 % |
+| 0,1 | 51,9 % | 51,0 – 52,9 % |
+| **0,3** | **52,8 %** | **51,9 – 53,8 %** |
+| 0,6 | 51,1 % | 50,1 – 52,1 % |
+| 1 | 49,2 % | 48,3 – 50,2 % |
+
+Le coût : 13 % de plus sur le cœur dans sa première écriture, 4 % une fois les allocations retirées
+(mêmes coups : empreinte `4a9034c132a35510` à 200 parties ; le cœur sans l'idée garde `e875ba6988a3b138`
+contre greedy).
+
+**Dans l'arbre** (`SuitBudget3`, `core=stfig6sb3`, tri à 400 à temps égal contre la 1.2, `--screen
+--page`, 504 parties) : **48,8 % (45,0 – 52,6)**, neutre. Comme stfig, fork ou les idées copiées de
+l'oracle, le gain du cœur ne passe pas l'arbre : la recherche corrige déjà ce que l'idée corrige.
+Pas de duel long sans nouvelle raison ; l'option reste (`suitBudget`, cœurs `stfig6sb05` à `sb10`).

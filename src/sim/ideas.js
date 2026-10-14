@@ -6,6 +6,7 @@ import { JOKER_IDEAS, jokerTrapBonus } from "./joker-ideas.js";
 import { MINED_IDEAS, anyMined, minedBonus } from "./mined.js";
 import { ORACLE_IDEAS, anyOracleIdea, oracleBonus } from "./oracle-ideas.js";
 import { SHAPE_IDEAS, anyShapeIdea, shapesBonus } from "./shapes.js";
+import { suitBudgetBonus } from "./suit-budget.js";
 import { PRINCIPLES, PRINCIPLE_WEIGHTS, activePrinciples, principlesBonus } from "./principles.js";
 
 /**
@@ -24,7 +25,7 @@ import { PRINCIPLES, PRINCIPLE_WEIGHTS, activePrinciples, principlesBonus } from
  * - `spread`: never open a value that already sits alone on another border:
  *   two lone 7s want the same cards, and one of them will miss its trips.
  */
-export const IDEAS = Object.freeze(["counter", "middle", "edges", "spread", "weight", "runs", "dump", "whole", "certain", "neighbors", "outbid", "exposure", "fork", ...SHAPE_IDEAS, ...MINED_IDEAS, ...JOKER_IDEAS, "bait", ...ORACLE_IDEAS, ...PRINCIPLES]);
+export const IDEAS = Object.freeze(["counter", "middle", "edges", "spread", "weight", "runs", "dump", "whole", "certain", "neighbors", "outbid", "exposure", "fork", "suitBudget",...SHAPE_IDEAS, ...MINED_IDEAS, ...JOKER_IDEAS, "bait", ...ORACLE_IDEAS, ...PRINCIPLES]);
 
 /**
  * What the strategist plays. 1.1: measured against 1.0 over 24 000 games
@@ -92,6 +93,8 @@ export const IDEA_WEIGHTS = Object.freeze({
   middleWeak: 0.15,
   edges: 0.1,
   spread: 0.6,
+  // suit-budget.js (Sami, 14/10): per card of shortfall on a suit.
+  suitBudget: 0.1,
   weight: 0.15,
   runs: 0.5,
   dump: 0.1,
@@ -174,6 +177,7 @@ export function ideasBonus(context, border, card) {
   if (ideas.has("counter")) bonus += counterBonus(context, mine, context.theirSides[border], card);
   if (ideas.has("dump")) bonus += dumpBonus(context, border, card);
   if (gates.principles.length > 0) bonus += principlesBonus(context, border, card);
+  if (ideas.has("suitBudget")) bonus += suitBudgetBonus(context, border, card);
   bonus += familiesBonus(context, gates, border, card);
   if (mine.length > 0) return gates.shapes ? bonus + shapesBonus(context, mine, card) : bonus;
   return bonus + firstCardBonus(context, border, card);

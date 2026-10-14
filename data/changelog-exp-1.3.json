@@ -346,6 +346,32 @@
    "when": "14/10",
    "note": "328 écarts dans le top 8 : la 1.2 a joué le coup de l'oracle dans 175 ; dans les 153 autres, il tient +3,6 ± 4,7 points de plus. Pas significatif : à trancher avec plus de positions et 8 graines.",
    "idea": "Le choix entre candidats, le bruit et le budget plutôt que la sélection, dans le sens de Budget4000 (+2,8 points à deux fois le temps)."
+  },
+  {
+   "id": "suit-budget-core",
+   "name": "Le budget des couleurs, cœur contre cœur (stfig6sb05 à sb10)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 52.8,
+   "lo": 51.9,
+   "hi": 53.8,
+   "verdict": "gagne",
+   "when": "14/10",
+   "note": "8 000 parties par poids contre stfig6 (--page) : 0,05 → 52,1 %, 0,1 → 51,9 %, 0,3 → 52,8 % (51,9 – 53,8), 0,6 → 51,1 %, 1 → 49,2 %. Le sommet est à 0,3 ; coût d'environ 4 % sur le cœur, empreinte du cœur sans l'idée inchangée.",
+   "idea": "L'idée de Sami : mes côtés lancés sur une couleur réclament ensemble plus de cartes de cette couleur que je n'en ai en main plus ma part des non vues (« H:8/10 » : il en reste 2 à partager). Chaque côté comptait toutes les cartes non vues comme les siennes."
+  },
+  {
+   "id": "suit-budget-screen",
+   "name": "SuitBudget3 dans l'arbre de la 1.2 (tri à 400, à temps égal)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 48.8,
+   "lo": 45,
+   "hi": 52.6,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "ismcts+widen=7+depth=5+core=stfig6sb3+exact=12@t400 contre la 1.2@t400, --screen --page, 504 parties. Un tri à 400 rejette, il ne promeut jamais : les duels longs décident.",
+   "idea": "Le cœur gagnant du budget des couleurs, dans l'arbre (simulations et sélection des candidats)."
   }
  ],
  "manualJobs": [],
@@ -574,6 +600,11 @@
    "when": "À tester",
    "title": "La 1.2 à 20 000, plus profonde : depth=10+pw=1",
    "text": "La même avec 10 étages et l'élargissement progressif d'aujourd'hui (1 + √visites, jusqu'à 7 réponses), contre la 1.2@20000 puis contre la 1.2@2000. À 2 000 itérations pw=1 étranglait les plis 2-3 (46,4 %) ; à 20 000, un nœud atteint plus vite les 36 visites qui ouvrent ses 7 réponses. Aucun code ; un élargissement plus rapide (2 + √visites, k·visites^α) viendrait ensuite."
+  },
+  {
+   "when": "À tester",
+   "title": "Hybride MCTS-minimax : les sauvegardes implicites",
+   "text": "De la littérature (Lanctot et al., 2014 ; Baier et Winands) : garder dans chaque nœud une estimation de la partie à part du taux de victoire, remontée en minimax, et la mêler à UCB (α × estimation + (1 − α) × taux). L'estimation existe (oddsOf, truncate.js). Ici la simulation reste entière : trunc, qui la remplaçait par l'estimation, avait perdu (41-46 %). Coût à mesurer : une estimation par nœud créé."
   },
   {
    "when": "Maintenant",
