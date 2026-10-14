@@ -54,7 +54,9 @@ describe("replay file names", () => {
       borders: null,
       durationMs: null,
       bonus: 0,
+      client: null,
     });
+    assert.equal(replayHeader("recent", "x.json", { ...log, client: { app: "cli", mode: "interactive" } }).client, "cli", "a game played in the terminal says so");
     const withBonus = { ...log, rules: { bonus: 6 } };
     assert.equal(replayHeader("recent", "x.json", withBonus).bonus, 6);
     const withDeckFigures = { ...log, deck: ["1♠", "V♣", "D♥", "2♠"] };

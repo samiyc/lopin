@@ -81,5 +81,7 @@ export function replayHeader(dir, name, log) {
     borders: bordersWon(log.result),
     durationMs: durationOf(log),
     bonus: bonusCount(log),
+    // Where the game was played (Sami, 14/10): "cli" for npm run cli, null for the page, which writes no client.
+    client: log.client?.app ?? null,
   };
 }

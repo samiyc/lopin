@@ -196,6 +196,8 @@ describe("the replay list", () => {
     assert.equal(lost.detail, "3 bornes connectées. Extension (6 bonus)");
     assert.equal(lost.sub, "Durée:21min. 24/09/26 à 01h57");
     assert.equal(lost.outcome, "lost");
+    assert.equal(replayLabel(header({ client: "cli" }), nameOf).detail, "Score:4-3. Standard · CLI", "a game played in the terminal (Sami, 14/10)");
+    assert.equal(replayLabel(header({ client: "cli", bonus: 6 }), nameOf).detail, "Score:4-3. Extension (6 bonus) · CLI");
   });
 
   it("leaves bot games uncoloured, and skips what an old log lacks", () => {

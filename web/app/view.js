@@ -156,16 +156,19 @@ function modeLabel(bonus) {
   return `Extension (${bonus} bonus)`;
 }
 
+/** The mode, and « CLI » after it for a game played in the terminal (Sami, 14/10): the page writes no client. */
+const playedLabel = ({ bonus, client }) => (client === "cli" ? `${modeLabel(bonus)} · CLI` : modeLabel(bonus));
+
 /**
  * A replay list entry on three lines. `title`: both players, first player first,
- * "(W)" on the winner's side. `detail`: score and mode ("Standard" or "Extension (X bonus)").
+ * "(W)" on the winner's side. `detail`: score and mode ("Standard" or "Extension (X bonus)", « · CLI » for the terminal).
  * `sub`: duration and date. `outcome`: "won" or "lost" for the human, null for bots.
  */
 export function replayLabel(header, nameOf) {
   const [first, second] = [...header.players].sort((a, b) => a.seat - b.seat).map(nameOf);
   const title = `${header.winner === 0 ? "(W) " : ""}${first} -vs- ${second}${header.winner === 1 ? " (W)" : ""}`;
   const how = header.winType === "adjacent" ? "3 bornes connectées" : header.borders && `Score:${header.borders.join("-")}`;
-  const detail = [how, modeLabel(header.bonus)].filter(Boolean).join(". ");
+  const detail = [how, playedLabel(header)].filter(Boolean).join(". ");
   const time = header.durationMs ? `Durée:${formatMinutes(header.durationMs).replace(" ", "")}` : null;
   const sub = [time, shortDate(header.startedAt)].filter(Boolean).join(". ");
   return { title, detail, sub, outcome: outcomeOf(header) };
