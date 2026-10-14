@@ -354,6 +354,12 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   **The root's 8 candidates are not the bottleneck**, and the oracle is no stronger judge than the
   1.2; only the top-8 group (ranks 4-8, +3.6 ± 4.7 over 153) is left open. `stopIf` takes
   `atLeast` too, so both branches of a choice can be queued; `--confirm` takes `--out`.
+- **The deep oracle** (14/10, `docs/strategie.md`): against the 1.2@2000, the 1.2's own tree at 20 000
+  iterations scores 55.7 % and `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000` (Depth10Pw) 61.4 %
+  (55.1 – 67.8, 140 games): the first judge stronger than the 1.2 (confirmation on offset 13 queued).
+  Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
+  tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
+  those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

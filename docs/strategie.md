@@ -3321,3 +3321,61 @@ simulations, et la mêler ne fait que le diluer. C'est la leçon de `trunc` sous
 plus petit ramènerait vers la 1.2 : la piste est close, l'option reste (`+implicit`, éteinte par
 défaut, empreinte de la 1.2 inchangée). Les simulations vont dans `src/sim/rollouts.js`
 (`ismcts.js` dépassait ses 220 lignes).
+
+## L'oracle profond : un juge plus fort que la 1.2 (14/10)
+
+**La question** (Sami) : Oracle1 et Oracle2 regardent tous les coups à la racine et ne battent pas
+la 1.2 ; garder sa racine (8 candidats) et donner le budget à la profondeur. Deux versions, chacune
+contre la 1.2@2000 sur les mêmes donnes (offset 12, 140 parties, `--page`, lancées à 14 h 05, le
+CPU libre) :
+
+| Version | Moteur | Score | Fourchette par paires | En commençant / en second |
+| --- | --- | --- | --- | --- |
+| `Budget20000` | `ismcts+widen=7+depth=5+core=stfig6+exact=12@20000` | **55,7 %** | 48,1 – 63,3 % | 52,9 / 58,6 % |
+| `Budget20000-Depth10Pw` | `…+depth=10+…+pw=1@20000` | **61,4 %** | **55,1 – 67,8 %** | 58,6 / 64,3 % |
+
+- **`Depth10Pw` est le premier juge qui bat la 1.2** : le bas de sa fourchette passe 55 %, et il gagne
+  des deux côtés. Oracle1 et Oracle2 faisaient jeu égal avec elle (14/10, nuit).
+- **2 000 itérations sont un plafond** : ×2 rapporte +2,8 points (Budget4000), ×10 seulement +5,7
+  (Budget20000). Au même budget de 20 000, la profondeur avec `pw` ajoute ~6 points de plus — pas
+  encore significatif (les fourchettes se chevauchent), mais net.
+- **`pw=1` paie à 20 000 et perdait à 2 000** (46,4 %, `PW-ExactEnd12`) : à 20 000, les nœuds atteignent
+  plus vite les 36 visites qui ouvrent leurs 7 réponses.
+- **Confirmation en cours** : `DEEP_DUEL_2_Budget20000-Depth10Pw`, 140 parties de plus sur de nouvelles
+  donnes (offset 13, lancée à 16 h 41, ~75 min). La règle d'un juge : ≥ 60 % sur 200 parties et plus.
+
+**La profondeur atteinte, mesurée** (`src/sim/tree-stats.js`, une position du tour 15, 42 coups
+légaux ; « nœuds » : tous ceux créés à ce niveau, même jamais essayés) :
+
+| Moteur | Niveau 2 (nœuds / 0 visite / max) | Niveau 3 | Niveau 4 | Niveau 5 |
+| --- | --- | --- | --- | --- |
+| 1.2@2000 | 487 / 34 / 26 | 3 767 / 2 261 / 4 | 212 / 179 / **1** | — |
+| 1.2@20000 | 625 / 12 / 501 | 11 315 / 2 965 / 56 | 43 959 / 33 090 / 4 | 1 074 / 914 / **1** |
+| `Depth10Pw@20000` | 621 / 8 / 373 | 8 654 / **713** / 47 | 17 521 / **6 601** / 4 | 1 009 / 491 / **1** |
+
+- **Les niveaux 6 à 10 ne sont jamais atteints** : avec `depth=10`, l'arbre s'arrête au 5e niveau
+  comme avec `depth=5`. Le gain de `Depth10Pw` vient donc de `pw`, qui concentre les visites (4 fois
+  moins de nœuds jamais visités au niveau 3, 5 fois moins au niveau 4), pas de la profondeur.
+- **Pourquoi c'est si dur de descendre** : le niveau 2 compte ~620 nœuds pour 8 candidats, ~78
+  réponses adverses par candidat au lieu de 7. Chaque donne distribue une autre main à l'adversaire,
+  donc ses 7 meilleures réponses changent d'une donne à l'autre : l'information cachée multiplie la
+  largeur sous chaque coup.
+- **Un outil pour la suite** : chaque coup d'un robot à arbre porte maintenant `tree` dans les replays
+  (les duels, la console, le self-play ; pas le worker de la page) : ses itérations, et par niveau
+  les nœuds, ceux à 0 et 1 visite, le plus visité. Une partie dit en un coup d'œil quels niveaux
+  servent, et départagera les formules de `pw`. Aucun coup ne change (empreinte de la 1.2 inchangée).
+
+**Valider sur 500 parties** : il en resterait ~220 après la confirmation, ~2 h (≈ 30 s la partie à
+18 fils). Précision du score (± à 95 %) : ± 6,3 points à 140 parties, ± 4,5 à 280, ± 3,4 à 500.
+Pour Sami, un juge autour de 58 % et plus est utilisable.
+
+**La suite** :
+1. **Oracle3** : si la confirmation tient, `Depth10Pw` relit les parties de la 1.2 comme Oracle1 la
+   nuit dernière (relecture, confirmation par le jeu), environ 1,5 fois plus lentement.
+2. **Une formule de `pw` réglable pour le 1.3** (`k + c · visites^α`, au lieu de 1 + √visites) :
+   `2 + √visites` (7 réponses dès 25 visites), `3 + visites / 3`. La mesure par niveau dira laquelle
+   remplit les niveaux 3-4 sans les étrangler ; à essayer à 2 000-4 000 itérations contre la 1.2, à
+   temps égal, sans toucher au cœur.
+3. **Renforcer l'oracle** : la même formule de `pw` à 20 000 ; le solveur plus tôt (`exact=14` ou `16`,
+   trop lent pour jouer, pas pour juger). Plus de profondeur (`depth=15`) ne servirait à rien tant que
+   le 6e niveau n'est pas atteint.

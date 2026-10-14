@@ -424,6 +424,32 @@
    "hi": 46.8,
    "verdict": "perd",
    "note": "Tri à 400 à temps égal contre la 1.2, arrêté à 180 parties : plus l'estimation pèse, plus on perd. Piste close."
+  },
+  {
+   "id": "budget-20000",
+   "name": "Budget20000 : la 1.2 à 20 000 itérations (le même arbre, dix fois le budget)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 55.7,
+   "lo": 48.1,
+   "hi": 63.3,
+   "verdict": "tendance",
+   "when": "14/10",
+   "note": "Contre la 1.2@2000, 140 parties (offset 12, --page). ×2 rapportait +2,8 points (Budget4000), ×10 seulement +5,7 : 2 000 itérations sont un plafond. Mesuré : le 5e niveau de l'arbre n'est atteint qu'une fois.",
+   "idea": "Le premier candidat juge : un oracle doit battre la 1.2 nettement pour relire ses parties."
+  },
+  {
+   "id": "budget-20000-depth10-pw",
+   "name": "Budget20000-Depth10Pw : 20 000 itérations, 10 étages, élargissement progressif",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 61.4,
+   "lo": 55.1,
+   "hi": 67.8,
+   "verdict": "gagne",
+   "when": "14/10",
+   "note": "Contre la 1.2@2000, 140 parties sur les mêmes donnes (offset 12) : le premier juge plus fort que la 1.2 (58,6 % en commençant, 64,3 % en second). Les niveaux 6 à 10 ne sont jamais atteints : le gain vient de pw, qui concentre les niveaux 3-4. Confirmation de 140 parties en cours (offset 13).",
+   "idea": "Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur ; pw=1, qui perdait à 2 000, n'étrangle plus les plis 2-3 à 20 000."
   }
  ],
  "manualJobs": [],
@@ -640,18 +666,13 @@
  "next": [
   {
    "when": "Maintenant",
-   "title": "Un oracle plus fort que la 1.2 : la profondeur",
-   "text": "Ni Oracle1 ni Oracle2 ne battent la 1.2 (14/10) : tous les coups à la racine dispersent 20 000 itérations (~480 visites par coup). Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur : d'abord la 1.2 à 20 000 (le même arbre, dix fois le budget), puis depth=10 et un élargissement progressif plus rapide que 1 + √visites (2 + √visites, ou k·visites^α à régler), qui à 20 000 n'étranglerait plus les plis 2-3. Un juge doit battre la 1.2@2000 nettement en duel avant de relire ses parties."
+   "title": "Oracle3 : la 1.2 relue par l'oracle profond",
+   "text": "Budget20000-Depth10Pw bat la 1.2@2000 à 61,4 % (55,1 – 67,8, 140 parties) ; si la confirmation (140 parties de plus, offset 13) tient, il relit les parties de la 1.2 comme Oracle1 la nuit du 14/10 — relecture, puis confirmation par le jeu — environ 1,5 fois plus lentement. Ses écarts diront enfin où la 1.2 se trompe."
   },
   {
    "when": "À tester",
-   "title": "La 1.2 à 20 000 itérations",
-   "text": "Le même arbre que la 1.2 (8 candidats, 7 réponses, 5 étages, solveur à 12 cartes), dix fois le budget : ismcts+widen=7+depth=5+core=stfig6+exact=12@20000 contre la 1.2@2000. La suite de Budget4000 (+2,8 points à deux fois le budget) et le premier candidat juge : il doit gagner nettement (≥ 60 % sur 200 parties et plus). Aucun code ; ~10 min la partie à 18 fils, ~110 parties à l'heure."
-  },
-  {
-   "when": "À tester",
-   "title": "La 1.2 à 20 000, plus profonde : depth=10+pw=1",
-   "text": "La même avec 10 étages et l'élargissement progressif d'aujourd'hui (1 + √visites, jusqu'à 7 réponses), contre la 1.2@20000 puis contre la 1.2@2000. À 2 000 itérations pw=1 étranglait les plis 2-3 (46,4 %) ; à 20 000, un nœud atteint plus vite les 36 visites qui ouvrent ses 7 réponses. Aucun code ; un élargissement plus rapide (2 + √visites, k·visites^α) viendrait ensuite."
+   "title": "Une formule d'élargissement progressif réglable, pour le 1.3",
+   "text": "Le gain de Depth10Pw vient de pw, pas de la profondeur (les niveaux 6 à 10 ne sont jamais atteints). À 2 000 itérations, pw = 1 + √visites étranglait les plis 2-3 (46,4 %) : essayer k + c·visites^α (2 + √visites : 7 réponses dès 25 visites ; 3 + visites/3) à 2 000-4 000 itérations contre la 1.2, à temps égal, sans toucher au cœur. Les statistiques par niveau des replays (tree-stats.js) départageront les formules."
   },
   {
    "when": "Maintenant",
