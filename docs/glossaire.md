@@ -356,8 +356,9 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   est le même arbre avec ce que la 1.2 a en plus : le cœur `stfig6`, le solveur `exact=12` et 7
   réponses (`ORACLES[2]`, `npm run oracle -- --oracle 2` ; pas plus cher par itération, 0,99×).
   Ses écarts avec la 1.2 ne viennent donc que de la racine (tous les coups) et du budget. Le duel
-  Oracle1 contre Oracle2 (`ORACLE_DUEL_1/2_Oracle2`, 14/10) dit lequel relit les parties de la
-  1.2 ; s'il gagne, Oracle2 devient la référence (`ORACLE.version` 2).
+  Oracle1 contre Oracle2 (`ORACLE_DUEL_1/2_Oracle2`, nuit du 14/10) devait dire lequel relit les
+  parties de la 1.2 : **48,1 % pour Oracle2** sur 108 parties, une égalité ; Oracle1 reste la
+  référence (`ORACLE.version` 1). Le détail : `docs/strategie.md`, « La nuit du 14/10 ».
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6

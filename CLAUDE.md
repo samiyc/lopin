@@ -346,6 +346,14 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   seeds, root visits added) are off by default — the 1.0 (`152e2a9c9d66170c`) and the 1.2
   (`"ismcts+widen=7+depth=5+core=stfig6+exact=12@150,greedy" 20` → `1d041613cd7bcd8d`)
   fingerprints did not move. `Budget4000` measures what doubling the budget is worth.
+- **The 1.2 read by the oracle** (night of 14/10, `docs/strategie.md`): Oracle2 (`ORACLES[2]`,
+  `npm run oracle -- --oracle 2`: the oracle's tree with `core=stfig6+exact=12+widen=7`) scored
+  48.1 % against Oracle1 over 108 games, so Oracle1 stays version 1. Oracle1 read the 1.2's
+  Budget4000 games (1 642 positions, 851 gaps) and every gap was confirmed by play: the oracle's
+  move holds +0.7 ± 2.0 points over the move the 1.2 played, −0.2 ± 2.2 outside the core's top 8.
+  **The root's 8 candidates are not the bottleneck**, and the oracle is no stronger judge than the
+  1.2; only the top-8 group (ranks 4-8, +3.6 ± 4.7 over 153) is left open. `stopIf` takes
+  `atLeast` too, so both branches of a choice can be queued; `--confirm` takes `--out`.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

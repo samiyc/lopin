@@ -3138,3 +3138,69 @@ Des quatre pistes du 12/10, aucune ne bat la 1.2 : la marge perd, `DistOracle1Ro
 solveur à 14 cartes et la réutilisation de l'arbre ont été écartés avant les duels. Le seul gain
 mesuré du 1.3 reste le budget brut (Budget4000 : 52,8 %, deux fois le temps). La piste 3 (où la 1.2
 se trompe) attend des parties : celles de Sami, et celles d'un agent en console (`npm run cli`).
+
+## La nuit du 14/10 : Oracle2, et la 1.2 relue par l'oracle
+
+**La question** (Sami) : des parties de la 1.2 jugées par l'oracle disent-elles où elle se trompe ?
+Et la sélection des 8 candidats à la racine est-elle ce qu'il faut régler pour le 1.3 ?
+
+**Oracle2** (`ORACLES[2]`, `npm run oracle -- --oracle 2`) : l'arbre de l'oracle gelé avec ce que la
+1.2 a en plus, le cœur `stfig6`, le solveur `exact=12` et 7 réponses
+(`ismcts+candidates=99+widen=7+depth=5+smart=1+core=stfig6+exact=12@20000`). Il ne coûte pas plus
+par itération (0,99× l'Oracle2 à 6 réponses, sur les 6 premiers coups d'une partie). Une partie
+Oracle1 contre Oracle2 : 470 s sur un fil, environ 17 min à 18 fils (un coup d'oracle prend 2,2 fois
+plus de temps quand les 18 fils travaillent : 64 s contre 29 s au tour 1).
+
+**Le duel** (`ORACLE_DUEL_1/2_Oracle2`, 2 × 54 parties, donnes décalées de 10 et 11, `--page`) :
+
+| Duel | Oracle2 contre Oracle1 | Fourchette par paires |
+| --- | --- | --- |
+| offset 10 | 50,0 % | 38,3 – 61,7 % |
+| offset 11 | 46,3 % | 35,9 – 56,7 % |
+| **réunis** (108 parties) | **48,1 %** | ≈ 40,4 – 55,9 % |
+
+Égalité dans les marges : le cœur, le solveur et la largeur de la 1.2 ne font pas un meilleur juge.
+Le `stopIf` (nouveau seuil `atLeast`, `scripts/lib/backlog-stop.js`) a gardé **Oracle1** ; l'oracle
+reste en version 1.
+
+**La relecture** (`READ_V12_Oracle1`, 55 min) : les parties 1.2@4000 contre 1.2@2000 (les duels
+Budget4000 du 11/10 : le même cœur des deux côtés), tours 12 à 28, classées par `stfig6`. **1 642
+positions, 851 écarts** (le coup de l'oracle, le même dans ses deux recherches, hors du top 3 du
+cœur), dont 523 hors du top 8, que la racine de la 1.2 ne regarde jamais. Environ 2 s par position
+sur tous les fils. Les traits de ses écarts sont ceux du 04/10 sur le 1.0 : l'oracle bâtit un côté
+sans figure (30 % contre 1 % pour le cœur), complète un côté (36 % contre 18 %), joue un joker
+(17 % contre 1 %) ; le cœur bâtit une suite de couleur (49 % contre 21 %).
+
+**La confirmation par le jeu** (`CONFIRM_1/2_V12_Oracle1`, 4 graines, les 851 écarts en 3 h 25) :
+pour chaque écart, le coup de l'oracle, le favori du cœur et le coup joué par la 1.2, la suite jouée
+par la 1.2 (@4000 et @2000, les robots de la partie), qui tient la partie au tour 30 selon le
+solveur. Ce que le coup de l'oracle tient de plus :
+
+| Groupe | contre le favori du cœur | contre le coup joué par la 1.2 |
+| --- | --- | --- |
+| tous les écarts | **+2,1 ± 1,7 pts** (851) | **+0,7 ± 2,0 pts** (676) |
+| **hors du top 8** (la racine ne le voit pas) | +1,0 ± 2,2 (523) | **−0,2 ± 2,2** (523) |
+| **dans le top 8** (rangs 4 à 8) | **+3,8 ± 2,9** (328) | +3,6 ± 4,7 (153) |
+| oracle sûr de lui (marge ≥ 0,15) | +1,8 ± 2,4 (485) | +0,1 ± 2,8 (367) |
+| oracle hésitant (marge < 0,15) | +2,4 ± 2,6 (366) | +1,3 ± 2,7 (309) |
+
+Dans 175 écarts sur 851, la 1.2 a joué le coup de l'oracle : tous dans le top 8 (175 sur 328),
+sa recherche l'a trouvé depuis les rangs 4 à 8.
+
+**Ce qui en ressort** :
+- **Oracle1 ne joue pas mieux que la 1.2.** Son coup bat le premier choix du cœur (+2,1, tout juste
+  hors du bruit), pas le coup que la 1.2 joue après sa recherche (+0,7 ± 2,0) : l'arbre rattrape
+  déjà ce que le cœur rate. La confiance de l'oracle n'y change rien (marge ≥ 0,15 : +0,1).
+- **La sélection des 8 candidats n'est pas le goulot** : les 523 coups que la racine ne voit
+  jamais ne valent rien de plus (−0,2 ± 2,2). Régler la sélection du cœur sur l'oracle ne
+  rapporterait rien, ce que `DistOracle1Root` (49,4 % sur la 1.2) avait déjà montré.
+- **Une piste, non significative** : dans le top 8, quand la 1.2 voit le coup de l'oracle et en
+  joue un autre, +3,6 ± 4,7 sur 153 cas. C'est le choix entre candidats, le bruit et le budget,
+  dans le sens de Budget4000 (+2,8 points à deux fois le temps).
+- **Il manque un juge plus fort que la 1.2.** Ni Oracle1 ni Oracle2 n'en sont un (Oracle2 n'est pas
+  meilleur qu'Oracle1, et Oracle1 pas meilleur que la 1.2 sur ses écarts).
+
+**Pour la suite** : trancher les rangs 4 à 8 (relire plus de positions — `READ_V12_Oracle1`
+reprend où il s'est arrêté — puis ne confirmer que ce groupe, à 8 graines) ; un juge exact là où
+il peut l'être (le solveur à partir de 14-16 cartes) ; Oracle3 avec l'élargissement progressif, qui
+étranglerait moins les plis 2-3 à 20 000 itérations qu'à 2 000.

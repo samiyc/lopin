@@ -294,10 +294,66 @@
    "when": "12/10",
    "note": "Mesuré sur deux parties de la 1.2 à 2 000 contre elle-même : 13 visites offertes en moyenne par recherche, moins de 1 % du budget. Pas de duel.",
    "idea": "Des itérations gratuites, si le sous-arbre sous mon coup et la réponse adverse avait des visites ; à 2 000, presque aucune."
+  },
+  {
+   "id": "oracle2-duel",
+   "name": "Oracle2 contre Oracle1 : le juge avec le cœur, le solveur et la largeur de la 1.2",
+   "family": "outils",
+   "bench": "duel",
+   "score": 48.1,
+   "lo": 40.4,
+   "hi": 55.9,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "ORACLE_DUEL_1 et 2 (nuit du 14/10, 2 × 54 parties à 20 000 itérations, --page) : 50,0 % puis 46,3 %, 48,1 % réunis. Égalité : Oracle1 reste la référence (ORACLE.version 1) et relit les parties de la 1.2.",
+   "idea": "Un juge plus proche de la 1.2 (core=stfig6, exact=12, widen=7 ; 0,99× le temps d'une itération), pour que ses écarts ne viennent que de la racine et du budget."
+  },
+  {
+   "id": "v12-gaps-all",
+   "name": "La 1.2 relue par l'oracle : tous les écarts, contre le coup joué",
+   "family": "racine",
+   "bench": "jeu",
+   "score": 0.7,
+   "lo": -1.3,
+   "hi": 2.7,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "Oracle1 sur 1 642 positions des duels Budget4000 (tours 12-28), 851 écarts hors du top 3 de stfig6, tous rejoués (4 graines, suite par la 1.2, jugés au tour 30). Contre le favori du cœur +2,1 ± 1,7 ; contre le coup joué par la 1.2 +0,7 ± 2,0 : l'arbre rattrape ce que le cœur rate, et l'oracle ne joue pas mieux que la 1.2.",
+   "idea": "Trouver où la 1.2 se trompe en confrontant ses coups à ceux de l'oracle, confirmés par le jeu."
+  },
+  {
+   "id": "v12-gaps-root",
+   "name": "Hors du top 8 : les coups que la racine de la 1.2 ne regarde jamais",
+   "family": "racine",
+   "bench": "jeu",
+   "score": -0.2,
+   "lo": -2.4,
+   "hi": 2,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "523 écarts sur 851 : le coup de l'oracle hors des 8 candidats ne vaut rien de plus que celui de la 1.2 (−0,2 ± 2,2 points). La sélection de la racine n'est pas le goulot, comme DistOracle1Root (49,4 %) le laissait voir.",
+   "idea": "Si la racine écartait de bons coups, régler la sélection du cœur paierait : c'était la stratégie envisagée pour le 1.3."
+  },
+  {
+   "id": "v12-gaps-top8",
+   "name": "Dans le top 8 (rangs 4 à 8) : la 1.2 voit le coup de l'oracle et en joue un autre",
+   "family": "racine",
+   "bench": "jeu",
+   "score": 3.6,
+   "lo": -1.1,
+   "hi": 8.3,
+   "verdict": "attente",
+   "when": "14/10",
+   "note": "328 écarts dans le top 8 : la 1.2 a joué le coup de l'oracle dans 175 ; dans les 153 autres, il tient +3,6 ± 4,7 points de plus. Pas significatif : à trancher avec plus de positions et 8 graines.",
+   "idea": "Le choix entre candidats, le bruit et le budget plutôt que la sélection, dans le sens de Budget4000 (+2,8 points à deux fois le temps)."
   }
  ],
  "manualJobs": [],
  "commitLabels": {
+  "1164647": [
+   "outils",
+   "llm-play : un journal texte à côté de chaque replay"
+  ],
   "8950651": [
    "extension",
    "Le recyclage du V♣ ajusté ; le worker du robot ne plante plus"
@@ -381,6 +437,126 @@
   "36b537f": [
    "lecteur",
    "La marge des boutons du lecteur de replays"
+  ],
+  "b27cf15": [
+   "arbre",
+   "MarginBackup15 et DistOracle1Root-Exact12 joués, tous deux arrêtés"
+  ],
+  "9cabea3": [
+   "arbre",
+   "Aucune des deux pistes ne tient en duel long : 45,6 % et 49,4 %"
+  ],
+  "1551b34": [
+   "outils",
+   "La console dit qui revendique et comment la partie finit"
+  ],
+  "5dce129": [
+   "outils",
+   "Le lot d'agents préparé : --out, --why, --model, le plateau en JSON"
+  ],
+  "a84a15d": [
+   "outils",
+   "npm run agents : le bilan d'un lot de parties d'agents"
+  ],
+  "2ca4ed5": [
+   "outils",
+   "La console et la doc des agents, d'après l'agent pilote"
+  ],
+  "fb6af9a": [
+   "outils",
+   "npm run llm-play : un modèle local (Ollama) joue par la console"
+  ],
+  "55ea6ca": [
+   "outils",
+   "llm-play --parallel : plusieurs parties à la fois"
+  ],
+  "4393f5a": [
+   "outils",
+   "llm-play : une requête Ollama coupée est relancée"
+  ],
+  "b2e5b21": [
+   "outils",
+   "La console : deux replays de même nom ne s'écrasent plus"
+  ],
+  "702285f": [
+   "outils",
+   "llm-play --view, la raison avant le coup, les mesures relues"
+  ],
+  "90bee0a": [
+   "outils",
+   "llm-play --think, pour les modèles qui réfléchissent"
+  ],
+  "1bfa5c0": [
+   "outils",
+   "llm-play : le schéma JSON de la réponse (coups légaux seulement)"
+  ],
+  "661d826": [
+   "outils",
+   "llm-examples : des exemples commentés pour llm-play"
+  ],
+  "2b0db38": [
+   "outils",
+   "playLogged : un passe rend l'entrée qu'il écrit"
+  ],
+  "f561f3d": [
+   "outils",
+   "cli --machine : les coups seulement, la carte nommée"
+  ],
+  "3cb8fa6": [
+   "outils",
+   "Les modèles locaux jouent au niveau du hasard du cœur"
+  ],
+  "4e242c5": [
+   "outils",
+   "La console garde le dernier échange après un coup refusé"
+  ],
+  "14eb2ce": [
+   "outils",
+   "cli --json : la position en vrai objet JSON"
+  ],
+  "cb3f5f6": [
+   "outils",
+   "cli --json : les bornes jouables plutôt que tous les coups"
+  ],
+  "69ea3b2": [
+   "outils",
+   "cli --json : le dernier échange en objet"
+  ],
+  "7b03e47": [
+   "outils",
+   "agent-examples : des exemples pour les agents"
+  ],
+  "a6ec07d": [
+   "lecteur",
+   "La colonne de gauche se replie en 48 px (« / »)"
+  ],
+  "341de17": [
+   "lecteur",
+   "La pioche repliée en dos de carte ; les boutons des couleurs répondent vite"
+  ],
+  "51d7ec6": [
+   "outils",
+   "La console au modèle de Sami : plateau encadré, P H T C, « 7h4 »"
+  ],
+  "d8cad99": [
+   "outils",
+   "La console : les 10 alignés, l'en-tête fixe, --gb"
+  ],
+  "64a9352": [
+   "lecteur",
+   "Le classement Elo : Joueur, Parties, barre, Elo, Marge"
+  ],
+  "ed05aa5": [
+   "outils",
+   "Oracle2 (--oracle 2), la confirmation sur un autre corpus, stopIf atLeast"
+  ],
+  "b46402a": [
+   "outils",
+   "La nuit du 14/10 tournée vers la confirmation"
+  ],
+  "dbb4302": [
+   "racine",
+   "La nuit du 14/10 : Oracle1 garde la main, la racine n'est pas le goulot"
   ]
  },
  "next": [
@@ -395,9 +571,14 @@
    "text": "La classe d'idées de la 1.2 (le solveur à la racine), quasi gratuite en temps : le solveur au-delà de 12 cartes à la racine (avec un plafond de positions), et DistOracle1Root (le cœur réglé sur l'oracle pour choisir les 8 candidats, 51,6 % sur le V1, jamais combiné avec la 1.2)."
   },
   {
+   "when": "Fait (14/10)",
+   "title": "3. Où la 1.2 se trompe : relue par l'oracle",
+   "text": "Nuit du 14/10 : Oracle2 (le juge avec le cœur, le solveur et la largeur de la 1.2) fait 48,1 % contre Oracle1, qui reste la référence. Oracle1 a relu 1 642 positions de la 1.2 (851 écarts, tous rejoués) : son coup ne bat pas celui que joue la 1.2 (+0,7 ± 2,0 points), et hors du top 8 il ne vaut rien de plus (−0,2 ± 2,2). La sélection de la racine n'est pas le goulot ; il manque un juge plus fort que la 1.2."
+  },
+  {
    "when": "Maintenant",
-   "title": "3. Où la 1.2 se trompe",
-   "text": "Chercher les erreurs plutôt qu'inventer : npm run oracle -- --disagree sur le cœur de la 1.2, l'analyse d'arbre des tours 21-30 (où le 1.1 a fait son gain, jamais analysés), et les parties que Sami gagne contre la 1.2 depuis qu'elle joue à 2 000 itérations, rejouées et jugées par le solveur."
+   "title": "Les rangs 4 à 8 : le choix entre candidats",
+   "text": "La seule piste de la nuit du 14/10 : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +3,6 ± 4,7 points de plus sur 153 cas. Relire plus de positions (READ_V12_Oracle1 reprend où il s'est arrêté), ne confirmer que ce groupe à 8 graines ; si l'écart tient, c'est le bruit du choix final qu'il faut réduire, pas la sélection."
   },
   {
    "when": "Ensuite",
