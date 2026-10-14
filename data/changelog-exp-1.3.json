@@ -372,6 +372,32 @@
    "when": "14/10",
    "note": "ismcts+widen=7+depth=5+core=stfig6sb3+exact=12@t400 contre la 1.2@t400, --screen --page, 504 parties. Un tri à 400 rejette, il ne promeut jamais : les duels longs décident.",
    "idea": "Le cœur gagnant du budget des couleurs, dans l'arbre (simulations et sélection des candidats)."
+  },
+  {
+   "id": "fork-cut-1",
+   "name": "ForkCut1 : la simulation arrêtée à la première victoire sur les bornes remplies",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 51.5,
+   "lo": 47.7,
+   "hi": 55.3,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "Tri à 400 à temps égal contre la 1.2, 468 parties. Exact (mêmes coups : empreinte identique à 300 itérations) et pas plus rapide (la victoire tombe en fin de simulation) : le 51,5 % est du bruit.",
+   "idea": "Une borne aux deux côtés pleins a déjà son gagnant, même à la règle final des simulations : s'arrêter à la victoire économiserait des coups."
+  },
+  {
+   "id": "fork-cut-2",
+   "name": "ForkCut2 : la fourche (deux menaces contre aucune) comptée gagnée dans la simulation",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 49.6,
+   "lo": 46.1,
+   "hi": 53.2,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "Tri à 400 à temps égal contre la 1.2, 540 parties. Neutre : ne perd pas comme trunc (41-46 %), ne gagne rien. La piste de la double menace est close.",
+   "idea": "Les Pièges Puissance 4 (Sami, 11/10) là où la partie se joue : une fourche établie vaut une victoire, sans attendre la fin de la simulation."
   }
  ],
  "manualJobs": [],
@@ -615,11 +641,6 @@
    "when": "Maintenant",
    "title": "Le budget dans la page",
    "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version. Le 12/10 : sous 2 000 itérations, le budget coûte cher (−37 % d'itérations, environ −9 points, SimCertain) ; une amélioration doit être quasi gratuite en temps."
-  },
-  {
-   "when": "À tester",
-   "title": "Pièges Puissance 4 (Double Menace) : du bonus statique au cut-off de simulation",
-   "text": "Le bonus additif sur l'évaluation statique du cœur (stfig6fork, poids 0,1 à 1,0) n'a rien rapporté en duel cœur (49,9 %). La vraie force d'une fourche (2 bornes gagnées encadrées par 2 menaces imparables) doit être exploitée dans l'arbre : détection terminale anticipée (Terminal Fork Cutoff) dans les rollouts renvoyant 1.0 immédiat, et parade défensive obligatoire."
   },
   {
    "when": "Ensuite",

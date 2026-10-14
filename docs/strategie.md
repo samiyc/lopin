@@ -3273,3 +3273,30 @@ contre greedy).
 --page`, 504 parties) : **48,8 % (45,0 – 52,6)**, neutre. Comme stfig, fork ou les idées copiées de
 l'oracle, le gain du cœur ne passe pas l'arbre : la recherche corrige déjà ce que l'idée corrige.
 Pas de duel long sans nouvelle raison ; l'option reste (`suitBudget`, cœurs `stfig6sb05` à `sb10`).
+
+## La double menace dans les simulations (14/10)
+
+**L'idée** (Sami, 11/10, « Pièges Puissance 4 ») : le bonus statique du cœur (`stfig6fork`, 49,9 % en
+cœur contre cœur) ne voit pas la vraie force d'une fourche ; la chercher là où la partie se joue, dans
+les simulations. Une simulation joue à la règle `final`, où aucune borne n'a de propriétaire avant la
+fin ; pourtant une borne aux deux côtés pleins a déjà son gagnant (`pickWinner`). `+forkCut`
+(`src/sim/fork-cut.js`) tient ces propriétaires à jour quand une borne se remplit, et arrête la
+simulation :
+- **niveau 1, exact** : à la première victoire sur les bornes remplies. Le gagnant est celui de la
+  simulation entière (vérifié sur 300 parties) ;
+- **niveau 2, un pari** : aussi quand un joueur tient au moins deux menaces (des bornes qui lui
+  donneraient chacune la partie) et l'autre aucune, compté gagné.
+
+**Tris à 400, à temps égal** contre la 1.2 (`--screen --page`) :
+
+| Version | Score | Fourchette par paires | Parties |
+| --- | --- | --- | --- |
+| `ForkCut1` | 51,5 % | 47,7 – 55,3 % | 468 |
+| `ForkCut2` | 49,6 % | 46,1 – 53,2 % | 540 |
+
+**Le niveau 1 ne fait rien** : mêmes coups que la 1.2 (empreinte `8aa551a563200563` à 300 itérations
+contre greedy, identique) et pas plus rapide (6 807 contre 6 721 ms par partie, puis 6 838 contre
+6 773). La victoire tombe presque toujours en fin de simulation : s'y arrêter n'économise rien. Son
+51,5 % à temps égal est du bruit. **Le niveau 2 est neutre** : parier sur la fourche ne perd pas comme
+`trunc` (41-46 %), mais ne gagne rien. La piste de la double menace est close ; l'option reste
+(`+forkCut`, éteinte par défaut : empreinte de la 1.2 inchangée, `1d041613cd7bcd8d`).
