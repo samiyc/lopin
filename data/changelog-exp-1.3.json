@@ -536,11 +536,11 @@
    "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
    "id": "final-mean",
    "name": "FinalMean : la racine joue le meilleur taux de victoire (+final=0)",
-   "score": 49.8,
-   "lo": 46,
-   "hi": 53.5,
-   "verdict": "neutre",
-   "note": "Tri à 800 contre la 1.2@800 (--screen --page --games 200 --offset 15, 400 parties) : 49,8 %, 46,0 / 53,5 % en commençant / en second."
+   "score": 54.8,
+   "lo": 49.5,
+   "hi": 60.1,
+   "verdict": "attente",
+   "note": "Tri à 800 contre la 1.2@800 (400 parties, offset 15) : 49,8 %, dans le bruit. Dernière chance à 2 000 (Sami) : VALIDATE_LONG_1_FinalMean, 250 parties contre la 1.2@2000, 54,8 % (49,5 – 60,1), 59,2 / 50,4 % en commençant / en second. Le 1k@2k (offsets 1 à 3) est en file."
   },
   {
    "family": "racine",
@@ -549,11 +549,11 @@
    "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
    "id": "final-lcb1",
    "name": "FinalLcb1 : le taux moins 1 / √visites (+final=1)",
-   "score": 51.7,
-   "lo": 47.7,
-   "hi": 55.8,
-   "verdict": "neutre",
-   "note": "Tri à 800 contre la 1.2@800, mêmes donnes (400 parties) : 51,7 %, 50,0 / 53,5 %. Sous le seuil d'un duel long ; le choix final ne se règle qu'avec plus de simulations."
+   "score": 55.2,
+   "lo": 50.4,
+   "hi": 60,
+   "verdict": "attente",
+   "note": "Tri à 800 contre la 1.2@800, mêmes donnes (400 parties) : 51,7 %, dans le bruit. Dernière chance à 2 000 (Sami) : VALIDATE_LONG_1_FinalLcb1, 250 parties contre la 1.2@2000, 55,2 % (50,4 – 60,0), 57,6 / 52,8 %. Le 1k@2k (offsets 1 à 3) passe en premier."
   }
  ],
  "manualJobs": [],
@@ -771,7 +771,7 @@
   {
    "when": "Maintenant",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 est prise pour le plafond à 2 000 simulations (aucune variante ne passe la 1k@2k ; seul le budget paie). Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
+   "text": "La 1.2 était prise pour le plafond à 2 000 simulations, à une exception près en cours de validation : le choix final (FinalLcb1, FinalMean). Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
   },
   {
    "when": "Maintenant",
@@ -779,9 +779,9 @@
    "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8, donc parmi ses 8 candidats) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). Le bon coup est cherché mais pas retenu : c'est le choix final qu'il faut affiner, avec les trois options qui suivent, mesurées en duels contre la 1.2."
   },
   {
-   "when": "Fait",
+   "when": "Maintenant",
    "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
-   "text": "Tris à 800 du 15/10 (400 parties chacun) : FinalMean (final=0) 49,8 %, FinalLcb1 (final=1) 51,7 % (47,7 – 55,8). Neutres, pas de duel long. L'option +final=c reste."
+   "text": "Dans le bruit au tri à 800 (FinalMean 49,8 %, FinalLcb1 51,7 %), mais 54,8 % et 55,2 % au premier duel long à 2 000 (250 parties chacun, 15/10) : le budget change le verdict, un taux de victoire n'est fiable qu'avec assez de visites. Le 1k@2k des deux tourne (FinalLcb1 d'abord) ; si l'un passe, il devient la 1.3, sans coût par itération."
   },
   {
    "when": "Plus tard",

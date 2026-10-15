@@ -3482,7 +3482,27 @@ Même coût par itération ; sans l'option, rien ne change (empreinte de la 1.2 
 | `FinalMean` (`final=0`) | 49,8 % | 46,0 – 53,5 % | 46,0 / 53,5 % |
 | `FinalLcb1` (`final=1`) | 51,7 % | 47,7 – 55,8 % | 50,0 / 53,5 % |
 
-**Verdict** : aucun ne sort du bruit ; pas de duel long. Le plus visité et le meilleur taux désignent presque
-toujours le même coup, et quand ils divergent, aucune des deux règles n'est meilleure. Le bruit du choix final ne
-se réduit qu'avec plus de simulations (Budget4000). C'est le dernier essai pour battre la 1.2 à 2 000 : la suite
-est dans `docs/1.3-to-oracle-shift.md` (l'oracle jouable).
+**Au tri** : aucun ne sort du bruit. Sami n'en est pas convaincu (à 800, les candidats sont peu visités et les
+deux règles désignent presque toujours le même coup) et demande une dernière chance à 2 000.
+
+**La dernière chance à 2 000** (`VALIDATE_LONG_1_FinalMean` / `_FinalLcb1`, `--long --games 125 --page --offset 0`,
+250 parties chacun contre la 1.2@2000, 15/10 de 15 h 17 à 16 h 06) :
+
+| Version | Score | Fourchette par paires | En commençant / en second |
+| --- | --- | --- | --- |
+| `FinalMean` (`final=0`) | **54,8 %** | 49,5 – 60,1 % | 59,2 / 50,4 % |
+| `FinalLcb1` (`final=1`) | **55,2 %** | 50,4 – 60,0 % | 57,6 / 52,8 % |
+
+**Ce que ça dit** :
+- **Le budget change le verdict** : 49,8 % et 51,7 % à 800, 54,8 % et 55,2 % à 2 000. Plus les candidats sont
+  visités, plus leur taux de victoire est fiable, et plus il vaut la peine de le préférer au nombre de visites. À
+  800, un candidat rarement visité a un taux trop bruité pour qu'on le choisisse : la règle n'a rien à départager.
+- **Les deux versions vont dans le même sens**, sur les mêmes donnes : c'est la règle « le taux plutôt que les
+  visites » qui paie, la marge d'incertitude (`final=1`) n'y change presque rien.
+- **Rien n'est décidé** : Pw3 avait fait 56,1 % sur un premier duel avant de finir à 51,2 % sur 1 180 parties. Les
+  offsets 1 à 3 des deux versions sont en file (`VALIDATE_LONG_2..4_FinalLcb1` puis `_FinalMean`, règle d'arrêt
+  sous 47 %), FinalLcb1 d'abord (sa borne basse est la seule au-dessus de 50 %). Rapport complet vers 18 h 35, après
+  `npm run versus` sur chaque version.
+- **Si l'un passe**, c'est le premier gain sur la 1.2 à budget égal, et sans coût : il deviendra la 1.3 (nom,
+  version, ligne de robots), et le constat « la 1.2 est un plafond à 2 000 » de `docs/1.3-to-oracle-shift.md` sera
+  à revoir.
