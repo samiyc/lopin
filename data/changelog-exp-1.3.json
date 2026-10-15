@@ -811,7 +811,7 @@
   {
    "when": "Plus tard",
    "title": "Omniscient 1.0 : le juge de la donne",
-   "text": "Un moteur qui voit les deux mains et l'ordre de la pioche (MCTS à information parfaite, puis le solveur exact bien avant 12 cartes). Il ne juge pas les coups de la 1.2 (son meilleur coup exploite la pioche qu'il voit : la fusion de stratégies de PIMC), il juge la donne : la part des parties décidées par la chance, des duels plus précis en repérant les donnes gagnées d'avance, la valeur de l'information (contre Oracle3, avec openHands en étape). Voir docs/1.3-to-oracle-shift.md."
+   "text": "Un moteur qui voit les deux mains et l'ordre de la pioche (MCTS à information parfaite, puis le solveur exact bien avant 12 cartes). Il ne juge pas les coups de la 1.2 (son meilleur coup exploite la pioche qu'il voit : la fusion de stratégies de PIMC), il juge la donne : la part des parties décidées par la chance, des duels plus précis en repérant les donnes gagnées d'avance, la valeur de l'information (contre Oracle3, avec openHands en étape). Voir docs/1.3-to-oracle-shift.md. Usage prévu (Sami) : un pool de 1 000 donnes équilibrées (40-60 % pour l'Omniscient) pour valider les idées en moins de parties, avec un second pool de réserve pour les verdicts et la promotion confirmée sur les donnes ordinaires."
   }
  ]
 }
