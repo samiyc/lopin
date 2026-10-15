@@ -1,6 +1,7 @@
 import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
 import { createEnsemble, explorationBonus, pointsFor, pointsOf } from "./choice.js";
+import { finalChoice } from "./final-choice.js";
 import { reuseOf } from "./reuse.js";
 import { EXACT, exactApplies, exactScores } from "./exact.js";
 import { backUpEstimates, blendedRate, estimateLeaf } from "./implicit-minimax.js";
@@ -144,12 +145,12 @@ function rootChoice(root, ctx) {
 
 /**
  * The root's moves as the search rates them: a candidate's gain is its visits;
- * with `halving`, the finalist with the best win rate gets one more than the
+ * with `halving` (or `final`, final-choice.js), the finalist with the best win rate gets one more than the
  * most visited, so that it is the one played.
  */
 function ratingOf(root, scored, ctx) {
   const visits = (move) => root.children.get(moveKey(move))?.visits ?? 0;
-  const chosen = ctx.halving?.best(rootStats(root));
+  const chosen = ctx.halving?.best(rootStats(root)) ?? finalChoice(root, ctx.rootMoves, ctx.final, moveKey);
   const top = Math.max(0, ...ctx.rootMoves.map(visits));
   return scored.map((entry) => {
     if (!ctx.rootMoves.includes(entry.move)) return { ...entry, gain: -1 + entry.gain / 100 };
@@ -186,7 +187,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(createRng(deals.int(2 ** 31))),
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit,
+    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -285,7 +286,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+pw=1`, `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+pw=1`, `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -296,7 +297,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );
