@@ -2,6 +2,7 @@ import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
 import { createEnsemble, explorationBonus, pointsFor, pointsOf } from "./choice.js";
 import { finalChoice } from "./final-choice.js";
+import { breadthOf, wideningOf } from "./widening.js";
 import { reuseOf } from "./reuse.js";
 import { EXACT, exactApplies, exactScores } from "./exact.js";
 import { backUpEstimates, blendedRate, estimateLeaf } from "./implicit-minimax.js";
@@ -80,11 +81,8 @@ function select(node, moves, { exploration, amaf, rave, puct, implicit }, mover)
   return children[scores.indexOf(Math.max(...scores))];
 }
 
-/**
- * How many of the core's moves a node below the root offers: all `widen`, or with `pw=k` k + √visits (Sami, 14/10:
- * `pw=1` is the 1 + √visits of before; `pw=2`, `pw=3` open the replies sooner — 7 at 25 and 16 visits, not 36).
- */
-const breadth = (node, ctx) => (ctx.pw ? Math.min(ctx.widen, ctx.pw + Math.floor(Math.sqrt(node.visits))) : ctx.widen);
+/** How many of the core's moves a node below the root offers: all `widen`, or fewer with `pwl` / `pw` (widening.js). */
+const breadth = (node, ctx) => breadthOf(node.visits, ctx.widen, ctx.pw);
 
 /** Credits every distinct (player, move) of an iteration with its result for that player. */
 function creditShared(amaf, played, winner) {
@@ -187,7 +185,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(createRng(deals.int(2 ** 31))),
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: cfg.pw, rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final,
+    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -286,7 +284,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+pw=1`, `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+pwl=0..3` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -297,7 +295,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

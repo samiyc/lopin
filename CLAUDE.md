@@ -361,7 +361,10 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
   tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
-  reads it from kept duels. `+pw=k` offers k + √visits replies (`pw=1` unchanged): at 2 000 iterations no
+  reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 4
+  the deepest (7 replies at 16 / 25 / 31 / 36 visits); `+pw=k` is obsolete, kept for old engine ids (`pw=1` =
+  `pwl=4`, `pw=2` = `pwl=2`, `pw=3` = `pwl=1`, same moves: `afcf0cce6dde1a56` with
+  `"ismcts+widen=7+depth=5+core=stfig6+exact=12+pwl=4@150,greedy" 20`). `+pw=k` offers k + √visits replies: at 2 000 iterations no
   formula changes the 1.2's level (`pw=1` 51.1 %, `pw=2` 47.8 %, `Pw3-ExactEnd12` 51.2 % over 1 180 games,
   48.9 – 53.5), only the tree's shape — `k` trades depth for width; at 20 000 `pw=1` pays.
 - **From the 1.3 to a playable oracle** (Sami, 15/10, `docs/1.3-to-oracle-shift.md`): the 1.2 is taken as the
