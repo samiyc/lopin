@@ -3565,3 +3565,25 @@ Sur ces mêmes donnes, Depth10Pw à 20 000 faisait 61,4 % et Budget20000 55,7 %.
   36 min pour 140 parties sur 18 fils (environ 5 s par coup et par fil, deux fois moins que prévu).
 - **La suite** : confirmer `OracleLight-Pw2` sur des donnes neuves (offsets 13 et suivants, 140 parties chacun),
   puis mesurer sa vitesse dans le worker de la page.
+
+**La confirmation de `OracleLight-Pw2`** (`LIGHT_DUEL_2/3_OracleLight-Pw2`, offsets 13 et 14, 140 parties chacun,
+15-16/10 de 22 h 55 à 0 h 17) : **47,1 % puis 58,6 %**. Réunis avec le tri (`npm run versus`) : **54,5 % (50,6 –
+58,4) sur 420 parties** contre la 1.2@2000, 51,0 % en commençant. La borne basse reste au-dessus de 50 % : l'Oracle
+light bat la 1.2 avec la moitié du budget d'Oracle3 (57,1 % sur 280 parties), pour environ 5 s par coup et par fil.
+C'est le candidat pour jouer contre l'oracle dans la page ; la suite est sa vitesse dans le worker.
+
+## `pwl` : l'élargissement progressif en niveaux (Sami, 16/10)
+
+`+pw=k` allait à l'envers de l'intuition (`pw=1` poussait le plus vers la profondeur). **`+pwl=n`** (`widening.js`)
+va de 0 (aucun) à 4 (le plus profond) : avec `widen=7`, les 7 réponses s'ouvrent à 16, 25, 31 et 36 visites. `pw=k`
+reste lu (obsolète) pour que les anciens moteurs rejouent les mêmes coups : `pw=1` = `pwl=4` (empreinte
+`afcf0cce6dde1a56` avant et après), `pw=2` = `pwl=2`, `pw=3` = `pwl=1`. **Le niveau 3 est nouveau** (k = 1,5, Sami :
+un pas entre 28,6 % et 55,7 %, visé à 42,5 %) ; mesuré sur un duel de 40 parties à 2 000 (`npm run tree-stats`) :
+
+| `pwl` à 2 000 | 7 réponses dès | 5e niveau atteint |
+| --- | --- | --- |
+| 0 (la 1.2) | — | 15,7 % (16,8 % dans ce duel) |
+| 1 | 16 visites | 20,0 % |
+| 2 | 25 visites | 28,6 % |
+| **3** | 31 visites | **40,1 %** |
+| 4 | 36 visites | 55,7 % |

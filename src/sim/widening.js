@@ -3,8 +3,8 @@
  * `widen`, so its first visits go deeper instead of wider. Two ways to name it:
  * - `+pwl=n`, the level, 0 to 4: 0 is none, and the higher the level the more the tree is pushed towards depth.
  *   With `widen=7` the 7 replies open at 16 visits (pwl=1), 25 (2), 31 (3) and 36 (4); at 2 000 iterations the tree
- *   reached its 5th level in 20.0 %, 28.6 % and 55.7 % of the moves with levels 1, 2 and 4 — level 3 sits between,
- *   aimed at about 42.5 %.
+ *   reached its 5th level in 20.0 %, 28.6 % and 55.7 % of the moves with levels 1, 2 and 4 — level 3 (new, aimed at
+ *   42.5 %) reached it in 40.1 %.
  * - `+pw=k`, obsolete, kept so that old engine ids (Oracle3, the duels, the Elo lines, the backlog) keep their moves:
  *   pw=1 is pwl=4, pw=2 is pwl=2, pw=3 is pwl=1.
  * For an integer k, ⌊k + √visits⌋ is the k + ⌊√visits⌋ of before: every fingerprint is unchanged.
