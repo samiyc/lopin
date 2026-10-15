@@ -364,6 +364,12 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   3`) : la racine de la 1.2 (8 candidats) avec l'élargissement progressif, 57,1 % contre la 1.2@2000 sur
   280 parties — le premier juge plus fort qu'elle. Il relit les parties de la 1.2 sur le même corpus
   qu'Oracle1, pour comparer leurs avis position par position.
+- **Omniscient 1.0** (Sami, 15/10, à construire plus tard) : un moteur qui voit tout — les deux mains et
+  l'ordre de la pioche — et joue le jeu à information parfaite qui en résulte (un MCTS sans tirage des
+  cartes cachées, puis le solveur exact bien avant 12 cartes). Ce n'est pas un oracle : son meilleur coup
+  exploite la pioche qu'il voit (« fusion de stratégies »), il ne juge donc pas les coups de la 1.2, sauf
+  en toute fin de partie. Il juge **la donne** : qui gagne avec un jeu parfait des deux côtés, et de
+  combien. Le détail : `docs/1.3-to-oracle-shift.md`.
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6
