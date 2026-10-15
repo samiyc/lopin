@@ -2989,6 +2989,22 @@
       "doneAt": "2026-10-15T22:30",
       "minutes": 38,
       "output": "backlog-runs/2026-10-15-21-52_LIGHT_DUEL_1_OracleLight-Pw3.txt"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pw2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 110,
+      "why": "OracleLight-Pw2 a fait 57,9 % (51,4 – 64,4) contre la 1.2@2000 sur 140 parties (offset 12), devant pw=1 (50,7 %) et pw=3 (51,4 %). Confirmation sur des donnes neuves (offset 13, 140 parties) : Depth10Pw était passé de 61,4 % à 52,9 % au deuxième jeu.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pw2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 110,
+      "why": "OracleLight-Pw2 a fait 57,9 % (51,4 – 64,4) contre la 1.2@2000 sur 140 parties (offset 12), devant pw=1 (50,7 %) et pw=3 (51,4 %). Confirmation sur des donnes neuves (offset 14, 140 parties) : Depth10Pw était passé de 61,4 % à 52,9 % au deuxième jeu.",
+      "status": "todo"
     }
   ]
 }
