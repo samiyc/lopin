@@ -745,7 +745,22 @@
   {
    "when": "Maintenant",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
-   "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). C'est le bruit du choix final qu'il faut réduire (coup le plus visité contre meilleure moyenne, itérations réservées aux premiers candidats, ensemble de graines), à mesurer en duels à temps égal, Oracle3 comme adversaire de référence."
+   "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8, donc parmi ses 8 candidats) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). Le bon coup est cherché mais pas retenu : c'est le choix final qu'il faut affiner, avec les trois options qui suivent, mesurées en duels contre la 1.2."
+  },
+  {
+   "when": "Maintenant",
+   "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
+   "text": "À tester. La 1.2 joue le candidat le plus visité (« robust child »). Variantes : le meilleur taux de victoire (« max child »), la borne basse de confiance (« secure child » : taux − c/√visites), ou prolonger la recherche quand le plus visité n'est pas le meilleur taux. Même coût par itération : duels à itérations égales, tri puis 1k@2k."
+  },
+  {
+   "when": "Maintenant",
+   "title": "Choix final 2 : réserver des itérations aux finalistes",
+   "text": "À tester sur la 1.2, avec prudence. RootHalving (élimination par moitiés, 05-06/10) a été neutre sur le V1 avec Tree-5w (52,0 % contre 53,4 % pour la largeur seule), jamais sur la 1.2 et son solveur. Une forme plus douce : UCB jusqu'à ~70 % du budget, puis le reste partagé entre les 2-3 premiers (Anytime Sequential Halving, Sagers et al. 2024)."
+  },
+  {
+   "when": "Fait",
+   "title": "Choix final 3 : plusieurs graines (Ensemble)",
+   "text": "Déjà mesuré le 12/10 : Ensemble (+trees=2, deux arbres de 1 000, visites additionnées) fait 51,0 % sur 1 500 parties, neutre ; trois et quatre arbres perdent (42,0 % et 46,2 %). Chaque arbre perd en profondeur ce que la moyenne gagne en stabilité. Ne se reprendrait qu'avec un budget plus grand (ex. 2 × 2 000 dans la page)."
   },
   {
    "when": "Maintenant",
