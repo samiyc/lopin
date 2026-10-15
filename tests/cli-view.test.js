@@ -24,7 +24,7 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
     assert.match(lines[0], /^ TURN:01 \| DECK:\d\d \| OHAND:6 \| U:9P1 ─ EXP:4C3$/, "two digits up to the exchange: the columns do not shift");
     assert.equal(lines[1], " P:03/10 | H:02/10 | T:02/10 | C:02/10 | JK:1/2", "two digits for the suits, as the page's suit bar counts");
     assert.deepEqual(lines.slice(2, 11), [
-      " ┌──────────────────────────────────┐",
+      " ╭──────────────────────────────────╮",
       " │ ··   ··│  ··   ··   ··   ··   ·· │",
       " │ ··   ··│  ··   ··   ··   ··   ·· │",
       " │ ··   ··│  4C   ··   ··   ··   ·· │",
@@ -32,7 +32,7 @@ describe("Bornage in a terminal (scripts/lib/cli-view.js, Sami 12/10)", () => {
       " │ 9P│  ··   ··   ··   ··   ··   ·· │",
       " │ 9H│  ··   ··   ··   ··   ··   ·· │",
       " │ 9T│  ··   ··   ··   ··   ··   ·· │",
-      " └──────────────────────────────────┘",
+      " ╰──────────────────────────────────╯",
     ], "the bar on the winner's side, the corner pointing at it: down for the player, up for the robot");
     assert.equal(lines[11], "  --=[ 2P  3P  10H  8T  7C  JK ]=--");
     assert.equal(lines[12], "  tu revendiques la borne 1");

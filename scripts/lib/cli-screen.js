@@ -95,7 +95,7 @@ function framedBoard(state, me, look) {
     ...[0, 1, 2].map((row) => mine.map((cells) => cells[row]).join(" ")),
   ];
   const width = visible(rows[0]).length;
-  return [` ┌${"─".repeat(width)}┐`, ...rows.map((row) => ` │${row}│`), ` └${"─".repeat(width)}┘`];
+  return [` ╭${"─".repeat(width)}╮`, ...rows.map((row) => ` │${row}│`), ` ╰${"─".repeat(width)}╯`];
 }
 
 /** « Expérimental » → « EXP »: the bot's tag in the header. */
