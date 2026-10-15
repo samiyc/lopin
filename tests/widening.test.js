@@ -10,8 +10,8 @@ const opensAt = (offset, widen = 7) => {
   return visits;
 };
 
-test("pwl runs from 0 (none) to 4 (the deepest); the obsolete pw maps onto it", () => {
-  assert.deepEqual([0, 1, 2, 3, 4].map(widenOffset), [0, 3, 2, 1.5, 1]);
+test("pwl runs from 0 (none) to 5 (the deepest); the obsolete pw maps onto it", () => {
+  assert.deepEqual([0, 1, 2, 3, 4, 5].map(widenOffset), [0, 3, 2, 1.5, 1, 0.75]);
   assert.equal(wideningOf({ pw: 1 }), widenOffset(4));
   assert.equal(wideningOf({ pw: 3 }), widenOffset(1));
   assert.equal(wideningOf({ pw: 1, pwl: 1 }), 3);
@@ -19,7 +19,8 @@ test("pwl runs from 0 (none) to 4 (the deepest); the obsolete pw maps onto it", 
 });
 
 test("the higher the level, the later a node opens its 7 replies", () => {
-  assert.deepEqual([1, 2, 3, 4].map((level) => opensAt(widenOffset(level))), [16, 25, 31, 36]);
+  assert.deepEqual([1, 2, 3, 4, 5].map((level) => opensAt(widenOffset(level))), [16, 25, 31, 36, 40]);
+  assert.equal(breadthOf(0, 7, widenOffset(5)), 1);
 });
 
 test("an integer offset widens as k + ⌊√visits⌋ did, so old engine ids keep their moves", () => {
@@ -28,6 +29,6 @@ test("an integer offset widens as k + ⌊√visits⌋ did, so old engine ids kee
 
 test("no widening offers every reply; a level off the scale is refused", () => {
   assert.equal(breadthOf(0, 7, 0), 7);
-  for (const level of [5, -1, 2.5]) assert.throws(() => widenOffset(level), /pwl va de 0/);
+  for (const level of [6, -1, 2.5]) assert.throws(() => widenOffset(level), /pwl va de 0/);
   assert.deepEqual(ismctsSettings("ismcts+pwl=3"), { pwl: 3 });
 });
