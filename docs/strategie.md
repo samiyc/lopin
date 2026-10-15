@@ -3429,3 +3429,40 @@ chanceux, comme d'autres avant lui.
   Budget4000 gagnait 2,8 points.
 - **Un outil reste** : `npm run tree-stats` lit la forme de l'arbre dans n'importe quel duel gardé depuis
   le 14/10.
+
+## Oracle3 : la 1.2 relue par l'oracle profond (nuit du 14/10, fin le 15/10)
+
+**La mesure** : la même méthode qu'Oracle1 la nuit d'avant, avec le juge le plus fort qu'on ait
+(`ORACLES[3]`, `Depth10Pw@20000`, 57,1 % contre la 1.2). `READ_V12_Oracle3` relit **3 728 positions**
+des duels Budget4000 (tours 12-28, le corpus d'Oracle1 et sa suite) : **1 367 écarts** hors du top 3
+du cœur. `CONFIRM_1..3_V12_Oracle3` les rejouent tous (4 graines, suite jouée par la 1.2, jugés au tour
+30) ; arrêtés dans la nuit, repris le 15/10 de 10 h 55 à 12 h 58.
+
+| Groupe (contre le coup joué par la 1.2) | Oracle1 | Oracle3 |
+| --- | --- | --- |
+| Tous les écarts | +0,7 ± 2,0 (676) | +1,6 ± 2,1 (643) |
+| Hors du top 8 du cœur | −0,2 ± 2,2 (523) | −1,0 ± 4,5 (171) |
+| **Dans le top 8 (rangs 4 à 8)** | +3,6 ± 4,7 (153) | **+2,5 ± 2,4 (472)** |
+| Marge de l'oracle ≥ 0,15 | +0,1 ± 2,8 (367) | +1,8 ± 2,6 (445) |
+| Bascules (la 1.2 perd, l'oracle gagne / l'inverse) | 26 / 16 | 29 / 22 |
+
+En points de part gagnée au tour 30, entre parenthèses les écarts où la 1.2 a joué autre chose que le
+coup de l'oracle (elle a joué le sien dans 724 des 1 367). Contre le favori du cœur : +3,1 ± 1,5.
+
+**Ce qui en ressort** :
+- **Hors du top 8, rien** chez les deux oracles : les 8 candidats de la racine ne ratent pas de coup
+  qui compte. La sélection n'est pas le goulot, c'est confirmé par un juge plus fort que la 1.2.
+- **Les rangs 4 à 8 sont la seule piste, et elle tient chez les deux juges** : +2,5 ± 2,4 sur 472 cas
+  (fourchette ≈ +0,1 – +4,9), tout juste au-dessus de zéro ; Oracle1 disait +3,6 ± 4,7 dans le même
+  sens. Réunis à poids inverses de la variance : ≈ +2,7 ± 2,1, mais les deux corpus se recouvrent
+  (1 642 positions communes), donc c'est optimiste. Quand la 1.2 a vu le bon coup et en joue un autre,
+  elle perd environ 2,5 points : c'est le **choix final entre candidats** (bruit, budget), dans le sens
+  de Budget4000 (+2,8 points à deux fois le temps).
+- **Les deux oracles ne s'accordent pas** : même coup favori dans 32 % des 1 642 positions communes
+  seulement. L'avantage d'Oracle3 sur la 1.2 est diffus, pas une faute isolée qu'on corrigerait d'une
+  règle ; les bascules (29 contre 22) ne sont pas un signal.
+
+**Pour la suite** : réduire le bruit du choix final à la racine (le coup le plus visité contre la
+meilleure moyenne, plus d'itérations réservées aux 2-3 premiers candidats en fin de recherche, un
+ensemble de graines) et le mesurer en duels à temps égal ; Oracle3 reste l'adversaire de référence pour
+juger une 1.3 plus forte que la 1.2.

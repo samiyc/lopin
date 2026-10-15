@@ -2722,7 +2722,10 @@
       "estimate": "115 min",
       "limit": 120,
       "why": "Les écarts d'Oracle3 rejoués : son coup, le favori du cœur et le coup joué par la 1.2, suite par les robots de la partie, 4 graines, jugés au tour 30. ~14 s par écart ; partie 1 sur 2, la seconde reprend où la première s'arrête.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T00:28",
+      "minutes": 115,
+      "output": "backlog-runs/2026-10-14-22-33_CONFIRM_1_V12_Oracle3.txt"
     },
     {
       "id": "CONFIRM_2_V12_Oracle3",
@@ -2730,7 +2733,10 @@
       "estimate": "115 min",
       "limit": 120,
       "why": "Les écarts d'Oracle3 rejoués : son coup, le favori du cœur et le coup joué par la 1.2, suite par les robots de la partie, 4 graines, jugés au tour 30. ~14 s par écart ; partie 2 sur 2, la seconde reprend où la première s'arrête.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T12:52",
+      "minutes": 116,
+      "output": "backlog-runs/2026-10-15-10-55_CONFIRM_2_V12_Oracle3.txt"
     },
     {
       "id": "CONFIRM_3_V12_Oracle3",
@@ -2738,7 +2744,10 @@
       "estimate": "~75 min",
       "limit": 120,
       "why": "La relecture d'Oracle3 a trouvé 1 367 écarts (2 s par position, plus vite que prévu) : CONFIRM_1 et 2 en rejouent ~900, celui-ci reprend la suite (~470 écarts, ~15 s chacun).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T12:58",
+      "minutes": 7,
+      "output": "backlog-runs/2026-10-15-12-52_CONFIRM_3_V12_Oracle3.txt"
     }
   ]
 }

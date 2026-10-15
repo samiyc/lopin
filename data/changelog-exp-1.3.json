@@ -489,6 +489,45 @@
    "hi": 53.5,
    "verdict": "neutre",
    "note": "56,1 % (49,6 – 62,6) au duel long de l'offset 14, puis la validation 1k@2k : 51,6, 53,2, 47,2 et 50,0 % ; réunis 51,2 % sur 1 180 parties. Ne passe pas : à 2 000, pw change la forme de l'arbre (k règle profondeur contre largeur), pas le niveau."
+  },
+  {
+   "family": "racine",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-all",
+   "name": "La 1.2 relue par Oracle3 : tous les écarts, contre le coup joué",
+   "score": 1.6,
+   "lo": -0.5,
+   "hi": 3.7,
+   "verdict": "neutre",
+   "note": "3 728 positions des duels Budget4000 (tours 12-28), 1 367 écarts hors du top 3 du cœur, tous rejoués (4 graines, suite par la 1.2, jugés au tour 30). Contre le favori du cœur +3,1 ± 1,5 ; contre le coup joué +1,6 ± 2,1 (643) ; la 1.2 a joué le coup de l'oracle dans 724. Bascules 29 contre 22. Même favori qu'Oracle1 dans 32 % des positions communes."
+  },
+  {
+   "family": "racine",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-root",
+   "name": "Oracle3, hors du top 8 du cœur",
+   "score": -1,
+   "lo": -5.5,
+   "hi": 3.5,
+   "verdict": "perd",
+   "note": "171 écarts : -1,0 ± 4,5 contre le coup joué (Oracle1 : -0,2 ± 2,2). Les 8 candidats de la racine ne ratent rien qui compte, même pour un juge plus fort que la 1.2."
+  },
+  {
+   "family": "racine",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-top8",
+   "name": "Oracle3, dans le top 8 (rangs 4 à 8) : la 1.2 voit le coup et en joue un autre",
+   "score": 2.5,
+   "lo": 0.1,
+   "hi": 4.9,
+   "verdict": "tendance",
+   "note": "472 écarts : +2,5 ± 2,4 contre le coup joué, tout juste au-dessus de zéro ; Oracle1 disait +3,6 ± 4,7 (153) dans le même sens. Le choix final entre candidats coûte ~2,5 points quand la 1.2 a vu le bon coup."
   }
  ],
  "manualJobs": [],
@@ -705,13 +744,8 @@
  "next": [
   {
    "when": "Maintenant",
-   "title": "Oracle3 : la 1.2 relue par l'oracle profond",
-   "text": "Budget20000-Depth10Pw bat la 1.2@2000 à 57,1 % sur 280 parties (≈ 52,0 – 62,3 ; 61,4 % puis 52,9 %) : le juge le plus fort qu'on ait, un peu sous les 60 % visés. Il peut relire les parties de la 1.2 comme Oracle1 la nuit du 14/10 (relecture, puis confirmation par le jeu), environ 1,5 fois plus lentement — ou d'abord gagner quelques points avec une meilleure formule de pw."
-  },
-  {
-   "when": "Maintenant",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
-   "text": "La seule piste de la nuit du 14/10 : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +3,6 ± 4,7 points de plus sur 153 cas. Relire plus de positions (READ_V12_Oracle1 reprend où il s'est arrêté), ne confirmer que ce groupe à 8 graines ; si l'écart tient, c'est le bruit du choix final qu'il faut réduire, pas la sélection."
+   "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). C'est le bruit du choix final qu'il faut réduire (coup le plus visité contre meilleure moyenne, itérations réservées aux premiers candidats, ensemble de graines), à mesurer en duels à temps égal, Oracle3 comme adversaire de référence."
   },
   {
    "when": "Maintenant",
