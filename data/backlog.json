@@ -2748,6 +2748,22 @@
       "doneAt": "2026-10-15T12:58",
       "minutes": 7,
       "output": "backlog-runs/2026-10-15-12-52_CONFIRM_3_V12_Oracle3.txt"
+    },
+    {
+      "id": "VALIDATE_LONG_1_FinalMean",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=0@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "Dernière chance (Sami, 15/10) : FinalMean (final=0, la racine joue le meilleur taux moins 0 / √visites) a fait 49,8 % (46,0 – 53,5) au tri à 800 sur 400 parties. 250 parties à 2 000 contre la 1.2, donnes 1 sur 4 du protocole 1k@2k : les offsets 1 à 3 suivront si ça tient. Même coût par itération : à itérations égales.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_1_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "Dernière chance (Sami, 15/10) : FinalLcb1 (final=1, la racine joue le meilleur taux moins 1 / √visites) a fait 51,7 % (47,7 – 55,8) au tri à 800 sur 400 parties. 250 parties à 2 000 contre la 1.2, donnes 1 sur 4 du protocole 1k@2k : les offsets 1 à 3 suivront si ça tient. Même coût par itération : à itérations égales.",
+      "status": "todo"
     }
   ]
 }
