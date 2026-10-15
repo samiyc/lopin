@@ -528,6 +528,32 @@
    "hi": 4.9,
    "verdict": "tendance",
    "note": "472 écarts : +2,5 ± 2,4 contre le coup joué, tout juste au-dessus de zéro ; Oracle1 disait +3,6 ± 4,7 (153) dans le même sens. Le choix final entre candidats coûte ~2,5 points quand la 1.2 a vu le bon coup."
+  },
+  {
+   "family": "racine",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
+   "id": "final-mean",
+   "name": "FinalMean : la racine joue le meilleur taux de victoire (+final=0)",
+   "score": 49.8,
+   "lo": 46,
+   "hi": 53.5,
+   "verdict": "neutre",
+   "note": "Tri à 800 contre la 1.2@800 (--screen --page --games 200 --offset 15, 400 parties) : 49,8 %, 46,0 / 53,5 % en commençant / en second."
+  },
+  {
+   "family": "racine",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
+   "id": "final-lcb1",
+   "name": "FinalLcb1 : le taux moins 1 / √visites (+final=1)",
+   "score": 51.7,
+   "lo": 47.7,
+   "hi": 55.8,
+   "verdict": "neutre",
+   "note": "Tri à 800 contre la 1.2@800, mêmes donnes (400 parties) : 51,7 %, 50,0 / 53,5 %. Sous le seuil d'un duel long ; le choix final ne se règle qu'avec plus de simulations."
   }
  ],
  "manualJobs": [],
@@ -744,18 +770,23 @@
  "next": [
   {
    "when": "Maintenant",
+   "title": "Changement de cap : l'oracle jouable",
+   "text": "La 1.2 est prise pour le plafond à 2 000 simulations (aucune variante ne passe la 1k@2k ; seul le budget paie). Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
+  },
+  {
+   "when": "Maintenant",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
    "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8, donc parmi ses 8 candidats) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). Le bon coup est cherché mais pas retenu : c'est le choix final qu'il faut affiner, avec les trois options qui suivent, mesurées en duels contre la 1.2."
   },
   {
-   "when": "Maintenant",
+   "when": "Fait",
    "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
-   "text": "À tester. La 1.2 joue le candidat le plus visité (« robust child »). Variantes : le meilleur taux de victoire (« max child »), la borne basse de confiance (« secure child » : taux − c/√visites), ou prolonger la recherche quand le plus visité n'est pas le meilleur taux. Même coût par itération : duels à itérations égales, tri puis 1k@2k."
+   "text": "Tris à 800 du 15/10 (400 parties chacun) : FinalMean (final=0) 49,8 %, FinalLcb1 (final=1) 51,7 % (47,7 – 55,8). Neutres, pas de duel long. L'option +final=c reste."
   },
   {
-   "when": "Maintenant",
+   "when": "Plus tard",
    "title": "Choix final 2 : réserver des itérations aux finalistes",
-   "text": "À tester sur la 1.2, avec prudence. RootHalving (élimination par moitiés, 05-06/10) a été neutre sur le V1 avec Tree-5w (52,0 % contre 53,4 % pour la largeur seule), jamais sur la 1.2 et son solveur. Une forme plus douce : UCB jusqu'à ~70 % du budget, puis le reste partagé entre les 2-3 premiers (Anytime Sequential Halving, Sagers et al. 2024)."
+   "text": "Mis de côté avec le changement de cap du 15/10 (docs/1.3-to-oracle-shift.md) : RootHalving était neutre sur le V1, et le choix final ne s'est réglé qu'avec le budget."
   },
   {
    "when": "Fait",

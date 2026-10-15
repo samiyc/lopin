@@ -3466,3 +3466,23 @@ coup de l'oracle (elle a joué le sien dans 724 des 1 367). Contre le favori du 
 meilleure moyenne, plus d'itérations réservées aux 2-3 premiers candidats en fin de recherche, un
 ensemble de graines) et le mesurer en duels à temps égal ; Oracle3 reste l'adversaire de référence pour
 juger une 1.3 plus forte que la 1.2.
+
+## Le choix final à la racine : `FinalMean`, `FinalLcb1` (15/10)
+
+**L'idée** : la 1.2 joue son candidat le plus visité ; Oracle3 dit qu'elle cherche le bon coup (rangs 4 à 8) et en
+joue un autre (+2,5 ± 2,4 points). `+final=c` (`src/sim/final-choice.js`) joue le candidat au meilleur taux de
+victoire moins c / √visites : c = 0 le meilleur taux (`FinalMean`), c = 1 une borne basse à ~95 % (`FinalLcb1`).
+Même coût par itération ; sans l'option, rien ne change (empreinte de la 1.2 `1d041613cd7bcd8d`).
+
+**Deux tris à 800** contre la 1.2@800 (Sami : à 400 les candidats sont trop peu visités pour que la règle compte),
+`--screen --page --games 200 --offset 15`, 400 parties chacun, mêmes donnes :
+
+| Version | Score | Fourchette par paires | En commençant / en second |
+| --- | --- | --- | --- |
+| `FinalMean` (`final=0`) | 49,8 % | 46,0 – 53,5 % | 46,0 / 53,5 % |
+| `FinalLcb1` (`final=1`) | 51,7 % | 47,7 – 55,8 % | 50,0 / 53,5 % |
+
+**Verdict** : aucun ne sort du bruit ; pas de duel long. Le plus visité et le meilleur taux désignent presque
+toujours le même coup, et quand ils divergent, aucune des deux règles n'est meilleure. Le bruit du choix final ne
+se réduit qu'avec plus de simulations (Budget4000). C'est le dernier essai pour battre la 1.2 à 2 000 : la suite
+est dans `docs/1.3-to-oracle-shift.md` (l'oracle jouable).

@@ -364,6 +364,12 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   reads it from kept duels. `+pw=k` offers k + √visits replies (`pw=1` unchanged): at 2 000 iterations no
   formula changes the 1.2's level (`pw=1` 51.1 %, `pw=2` 47.8 %, `Pw3-ExactEnd12` 51.2 % over 1 180 games,
   48.9 – 53.5), only the tree's shape — `k` trades depth for width; at 20 000 `pw=1` pays.
+- **From the 1.3 to a playable oracle** (Sami, 15/10, `docs/1.3-to-oracle-shift.md`): the 1.2 is taken as the
+  ceiling at 2 000 simulations — no variant passed the 1k@2k against it, only budget pays (Budget4000, Oracle3).
+  Oracle3 reread the 1.2 (1 367 gaps confirmed): nothing outside its 8 candidates, +2.5 ± 2.4 points on ranks 4-8.
+  `+final=c` (`final-choice.js`) plays the root candidate with the best win rate minus c / √visits instead of the
+  most visited (off by default, fingerprints unchanged). Next: an **Oracle light** (`pw=2-3` at 10 000) playable in
+  the page, the oracle's Elo in the Stats tab; the 1.3 changelog turns into the oracle's.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family
