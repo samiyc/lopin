@@ -2755,7 +2755,10 @@
       "estimate": "30 min",
       "limit": 60,
       "why": "Dernière chance (Sami, 15/10) : FinalMean (final=0, la racine joue le meilleur taux moins 0 / √visites) a fait 49,8 % (46,0 – 53,5) au tri à 800 sur 400 parties. 250 parties à 2 000 contre la 1.2, donnes 1 sur 4 du protocole 1k@2k : les offsets 1 à 3 suivront si ça tient. Même coût par itération : à itérations égales.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T15:42",
+      "minutes": 26,
+      "output": "backlog-runs/2026-10-15-15-17_VALIDATE_LONG_1_FinalMean.txt"
     },
     {
       "id": "VALIDATE_LONG_1_FinalLcb1",
@@ -2763,7 +2766,112 @@
       "estimate": "30 min",
       "limit": 60,
       "why": "Dernière chance (Sami, 15/10) : FinalLcb1 (final=1, la racine joue le meilleur taux moins 1 / √visites) a fait 51,7 % (47,7 – 55,8) au tri à 800 sur 400 parties. 250 parties à 2 000 contre la 1.2, donnes 1 sur 4 du protocole 1k@2k : les offsets 1 à 3 suivront si ça tient. Même coût par itération : à itérations égales.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T16:06",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-15-15-42_VALIDATE_LONG_1_FinalLcb1.txt"
+    },
+    {
+      "id": "VALIDATE_LONG_2_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalLcb1"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalLcb1",
+            "VALIDATE_LONG_2_FinalLcb1"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalLcb1",
+            "VALIDATE_LONG_2_FinalLcb1",
+            "VALIDATE_LONG_3_FinalLcb1"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_2_FinalMean",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=0@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalMean"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_FinalMean",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=0@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalMean",
+            "VALIDATE_LONG_2_FinalMean"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_FinalMean",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=0@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_FinalMean",
+            "VALIDATE_LONG_2_FinalMean",
+            "VALIDATE_LONG_3_FinalMean"
+          ],
+          "below": 0.47
+        }
+      ]
     }
   ]
 }
