@@ -2777,7 +2777,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2785,7 +2785,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T16:31",
+      "minutes": 23,
+      "output": "backlog-runs/2026-10-15-16-07_VALIDATE_LONG_2_FinalLcb1.txt"
     },
     {
       "id": "VALIDATE_LONG_3_FinalLcb1",
@@ -2793,7 +2796,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2802,7 +2805,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T16:54",
+      "minutes": 23,
+      "output": "backlog-runs/2026-10-15-16-31_VALIDATE_LONG_3_FinalLcb1.txt"
     },
     {
       "id": "VALIDATE_LONG_4_FinalLcb1",
@@ -2810,7 +2816,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalLcb1 (final=1) : 55,2 % (50,4 – 60,0) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2820,7 +2826,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T17:19",
+      "minutes": 25,
+      "output": "backlog-runs/2026-10-15-16-54_VALIDATE_LONG_4_FinalLcb1.txt"
     },
     {
       "id": "VALIDATE_LONG_2_FinalMean",
@@ -2828,7 +2837,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 2 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2836,7 +2845,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T17:45",
+      "minutes": 26,
+      "output": "backlog-runs/2026-10-15-17-19_VALIDATE_LONG_2_FinalMean.txt"
     },
     {
       "id": "VALIDATE_LONG_3_FinalMean",
@@ -2844,7 +2856,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 3 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2853,7 +2865,10 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T18:09",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-15-17-45_VALIDATE_LONG_3_FinalMean.txt"
     },
     {
       "id": "VALIDATE_LONG_4_FinalMean",
@@ -2861,7 +2876,7 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "FinalMean (final=0) : 54,8 % (49,5 – 60,1) au premier duel long à 2 000 (offset 0, 15/10), après un tri à 800 dans le bruit. Le protocole 1k@2k : donnes 4 sur 4, règle d'arrêt. Même coût par itération : à itérations égales.",
-      "status": "todo",
+      "status": "done",
       "stopIf": [
         {
           "after": [
@@ -2871,7 +2886,26 @@
           ],
           "below": 0.47
         }
-      ]
+      ],
+      "doneAt": "2026-10-15T18:32",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-15-18-09_VALIDATE_LONG_4_FinalMean.txt"
+    },
+    {
+      "id": "VALIDATE_LONG_5_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalLcb1 passe la 1k@2k : 52,7 % (50,1 – 55,3) sur 1 000 parties (55,2 / 54,4 / 49,6 / 51,6 %), borne basse tout juste au-dessus de 50 %. La série de confirmation sur des donnes neuves (comme Tree-7w, ExactEnd12 et Ensemble, qui y est retombé à 51,0 %) : donnes 5 sur 6.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_6_FinalLcb1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 5",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "FinalLcb1 passe la 1k@2k : 52,7 % (50,1 – 55,3) sur 1 000 parties (55,2 / 54,4 / 49,6 / 51,6 %), borne basse tout juste au-dessus de 50 %. La série de confirmation sur des donnes neuves (comme Tree-7w, ExactEnd12 et Ensemble, qui y est retombé à 51,0 %) : donnes 6 sur 6.",
+      "status": "todo"
     }
   ]
 }
