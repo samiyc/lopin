@@ -536,11 +536,11 @@
    "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
    "id": "final-mean",
    "name": "FinalMean : la racine joue le meilleur taux de victoire (+final=0)",
-   "score": 54.8,
-   "lo": 49.5,
-   "hi": 60.1,
-   "verdict": "attente",
-   "note": "Tri à 800 contre la 1.2@800 (400 parties, offset 15) : 49,8 %, dans le bruit. Dernière chance à 2 000 (Sami) : VALIDATE_LONG_1_FinalMean, 250 parties contre la 1.2@2000, 54,8 % (49,5 – 60,1), 59,2 / 50,4 % en commençant / en second. Le 1k@2k (offsets 1 à 3) est en file."
+   "score": 51.9,
+   "lo": 49.3,
+   "hi": 54.5,
+   "verdict": "neutre",
+   "note": "Tri à 800 : 49,8 %. La 1k@2k (offsets 0 à 3, 15/10) : 54,8 / 52,4 / 49,2 / 51,2 %, réunis 51,9 % (49,3 – 54,5) sur 1 000 parties ; 52,8 / 51,0 % en commençant / en second. Ne passe pas : le meilleur taux brut retient parfois un candidat peu visité au taux gonflé par la chance."
   },
   {
    "family": "racine",
@@ -549,11 +549,11 @@
    "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
    "id": "final-lcb1",
    "name": "FinalLcb1 : le taux moins 1 / √visites (+final=1)",
-   "score": 55.2,
-   "lo": 50.4,
-   "hi": 60,
-   "verdict": "attente",
-   "note": "Tri à 800 contre la 1.2@800, mêmes donnes (400 parties) : 51,7 %, dans le bruit. Dernière chance à 2 000 (Sami) : VALIDATE_LONG_1_FinalLcb1, 250 parties contre la 1.2@2000, 55,2 % (50,4 – 60,0), 57,6 / 52,8 %. Le 1k@2k (offsets 1 à 3) passe en premier."
+   "score": 52.7,
+   "lo": 50.1,
+   "hi": 55.3,
+   "verdict": "gagne",
+   "note": "Tri à 800 : 51,7 %. La 1k@2k (offsets 0 à 3, 15/10) : 55,2 / 54,4 / 49,6 / 51,6 %, réunis 52,7 % (50,1 – 55,3) sur 1 000 parties ; 52,2 / 53,2 % en commençant / en second. Passe la règle, sans coût par itération : candidat à l'Expérimental 1.3. Série de confirmation (offsets 4 et 5) en cours."
   }
  ],
  "manualJobs": [],
@@ -781,7 +781,7 @@
   {
    "when": "Maintenant",
    "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
-   "text": "Dans le bruit au tri à 800 (FinalMean 49,8 %, FinalLcb1 51,7 %), mais 54,8 % et 55,2 % au premier duel long à 2 000 (250 parties chacun, 15/10) : le budget change le verdict, un taux de victoire n'est fiable qu'avec assez de visites. Le 1k@2k des deux tourne (FinalLcb1 d'abord) ; si l'un passe, il devient la 1.3, sans coût par itération. Règle (Sami, 15/10) : FinalLcb1 ou FinalMean devient candidat à l'Expérimental 1.3 si sa borne basse dépasse 50 % sur 1 000 parties à 2 000 (npm run versus)."
+   "text": "FinalLcb1 (le taux moins 1 / √visites) passe la 1k@2k : 52,7 % (50,1 – 55,3) ; FinalMean (le taux brut) non : 51,9 % (49,3 – 54,5). À 800, les deux étaient dans le bruit : un taux de victoire n'est fiable qu'avec assez de visites. FinalLcb1 est le candidat à l'Expérimental 1.3 (règle de Sami : borne basse > 50 % sur 1 000 parties à 2 000) ; sa série de confirmation (offsets 4 et 5) tourne avant de le nommer."
   },
   {
    "when": "Plus tard",

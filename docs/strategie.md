@@ -3506,3 +3506,22 @@ deux règles désignent presque toujours le même coup) et demande une dernière
 - **Si l'un passe**, c'est le premier gain sur la 1.2 à budget égal, et sans coût : il deviendra la 1.3 (nom,
   version, ligne de robots), et le constat « la 1.2 est un plafond à 2 000 » de `docs/1.3-to-oracle-shift.md` sera
   à revoir.
+
+**La 1k@2k** (`VALIDATE_LONG_1..4_FinalLcb1` puis `_FinalMean`, offsets 0 à 3, 15/10 de 15 h 17 à 18 h 33), réunie
+avec `npm run versus` :
+
+| Version | Duels (offsets 0 à 3) | Réunis sur 1 000 parties | En commençant / en second |
+| --- | --- | --- | --- |
+| **`FinalLcb1`** (`final=1`) | 55,2 / 54,4 / 49,6 / 51,6 % | **52,7 % (50,1 – 55,3)** | 52,2 / 53,2 % |
+| `FinalMean` (`final=0`) | 54,8 / 52,4 / 49,2 / 51,2 % | 51,9 % (49,3 – 54,5) | 52,8 / 51,0 % |
+
+- **`FinalLcb1` passe la règle** (borne basse au-dessus de 50 %) : le même score que l'ExactEnd12 quand il est
+  devenu la 1.2, et sans coût par itération. **Candidat à l'Expérimental 1.3** (Sami).
+- **`FinalMean` ne passe pas** : le meilleur taux brut choisit parfois un candidat peu visité au taux gonflé par la
+  chance ; la marge d'incertitude (− 1 / √visites) ne détrône le plus visité que si l'écart tient. Sami l'avait
+  pressenti : la version corrigée est la plus robuste.
+- **Une borne basse à 50,1 %, c'est juste** : Ensemble avait fait 52,5 % sur quatre duels avant de retomber à 51,0 %
+  sur deux jeux de donnes neufs. La série de confirmation (`VALIDATE_LONG_5/6_FinalLcb1`, offsets 4 et 5, 500
+  parties) tourne avant de nommer la 1.3.
+- **La leçon de méthode** : une idée qui touche la lecture des visites se juge à 2 000, pas au tri à 400-800 (49,8
+  et 51,7 % à 800). D'où les quatre « dernière chance » à 2 000 (PUCT-2, Implicit 0,2, ForkCut1, MarginBackup05).
