@@ -648,13 +648,13 @@
   },
   {
    "id": "pwl-levels",
-   "name": "pwl : l'élargissement progressif en niveaux, 0 à 4",
+   "name": "pwl : l'élargissement progressif en niveaux, 0 à 5",
    "family": "outils",
    "bench": "jeu",
    "when": "16/10",
    "verdict": "neutre",
    "idea": "Une échelle intuitive (Sami) : plus le niveau monte, plus l'arbre va en profondeur ; pw=k reste lu pour les anciens moteurs.",
-   "note": "pwl=1..4 ouvre les 7 réponses à 16, 25, 31, 36 visites ; le 5e niveau à 2 000 : 20,0 / 28,6 / 40,1 / 55,7 % des coups (le niveau 3, nouveau, visé à 42,5 %). pw=1 = pwl=4, mêmes coups (afcf0cce6dde1a56)."
+   "note": "pwl=1..5 ouvre les 7 réponses à 16, 25, 31, 36, 40 visites ; le 5e niveau à 2 000 : 20,0 / 28,6 / 40,1 / 55,7 / 67,6 % des coups (les niveaux 3 et 5, nouveaux, visés à 42,5 et 65 % ; le 5 avec k = 0,75 et au moins une réponse par nœud, k = 0,5 donnait 93,1 %). pw=1 = pwl=4, mêmes coups (afcf0cce6dde1a56)."
   }
  ],
  "manualJobs": [],
@@ -876,8 +876,13 @@
   },
   {
    "when": "Maintenant",
+   "title": "Les niveaux pwl des oracles (nuit du 16/10)",
+   "text": "Oracle3 à pwl=5, 3 et 2 (20 000) et l'Oracle light à pwl=3 et à pwl=2 avec final=1 (10 000), 140 parties chacun contre la 1.2@2000 : classer les niveaux par budget avant de confirmer le meilleur. L'Oracle light à pwl=1 (51,4 % sur l'offset 12) reste à rejouer sur un second jeu de donnes."
+  },
+  {
+   "when": "Fait",
    "title": "Les rangs 4 à 8 : le choix entre candidats",
-   "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8, donc parmi ses 8 candidats) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). Le bon coup est cherché mais pas retenu : c'est le choix final qu'il faut affiner, avec les trois options qui suivent, mesurées en duels contre la 1.2."
+   "text": "La piste d'Oracle3 (+2,5 ± 2,4 points quand la 1.2 voit le bon coup et en joue un autre) a été suivie par le choix final : FinalLcb1 51,5 % sur 1 500 parties, FinalMean 51,9 % sur 1 000. Le bruit du choix final ne se réduit qu'avec plus de simulations."
   },
   {
    "when": "Fait",
@@ -913,6 +918,11 @@
    "when": "Plus tard",
    "title": "Omniscient 1.0 : le juge de la donne",
    "text": "Un moteur qui voit les deux mains et l'ordre de la pioche (MCTS à information parfaite, puis le solveur exact bien avant 12 cartes). Il ne juge pas les coups de la 1.2 (son meilleur coup exploite la pioche qu'il voit : la fusion de stratégies de PIMC), il juge la donne : la part des parties décidées par la chance, des duels plus précis en repérant les donnes gagnées d'avance, la valeur de l'information (contre Oracle3, avec openHands en étape). Voir docs/1.3-to-oracle-shift.md. Usage prévu (Sami) : un pool de 1 000 donnes équilibrées (40-60 % pour l'Omniscient) pour valider les idées en moins de parties, avec un second pool de réserve pour les verdicts et la promotion confirmée sur les donnes ordinaires. Il tranchera aussi l'avantage du premier ou du second joueur, vu plusieurs fois dans les duels : la part structurelle (règles, rythme), qui existe entre omniscients, contre la part d'information (le second voit avant de jouer)."
+  },
+  {
+   "when": "Plus tard",
+   "title": "La qualité des simulations",
+   "text": "Remarque de Sami (15/10) : chaque visite est une partie jouée jusqu'au bout par la politique de simulation ; si elle voit mal le long terme (joker gaspillé, bornes ouvertes en trop), tous les taux de l'arbre sont biaisés dans le même sens, et plus de visites ne corrigent pas le biais. Le choix final (FinalLcb1) en dépend directement. Piste : des simulations plus justes sans ralentir (elles prennent 93 % du temps ; sim-certain et trunc ont perdu), jugées d'abord avec npm run policy."
   }
  ]
 }

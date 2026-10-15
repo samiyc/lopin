@@ -361,8 +361,9 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
   tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
-  reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 4
-  the deepest (7 replies at 16 / 25 / 31 / 36 visits); `+pw=k` is obsolete, kept for old engine ids (`pw=1` =
+  reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 5
+  the deepest (7 replies at 16 / 25 / 31 / 36 / 40 visits; the 5th level reached in 20.0 / 28.6 / 40.1 / 55.7 /
+  67.6 % of the moves at 2 000); `+pw=k` is obsolete, kept for old engine ids (`pw=1` =
   `pwl=4`, `pw=2` = `pwl=2`, `pw=3` = `pwl=1`, same moves: `afcf0cce6dde1a56` with
   `"ismcts+widen=7+depth=5+core=stfig6+exact=12+pwl=4@150,greedy" 20`). `+pw=k` offers k + √visits replies: at 2 000 iterations no
   formula changes the 1.2's level (`pw=1` 51.1 %, `pw=2` 47.8 %, `Pw3-ExactEnd12` 51.2 % over 1 180 games,
@@ -374,8 +375,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   most visited (off by default, fingerprints unchanged): noise at 800 (49.8 / 51.7 %); at 2 000 `FinalLcb1`
   (`final=1`) passed the 1k@2k by a hair (52.7 %, 50.1 – 55.3) and fell on its confirmation (50.4, 48.0 %):
   **51.5 % (49.4 – 53.7) over 1 500 games, no 1.3**; `FinalMean` (`final=0`) 51.9 % (49.3 – 54.5). An idea that
-  changes how the tree reads its visits is judged at 2 000, never on a 400-800 screen. Next: an **Oracle light** (`pw=2-3` at 10 000) playable in
-  the page, the oracle's Elo in the Stats tab; the 1.3 changelog turns into the oracle's.
+  changes how the tree reads its visits is judged at 2 000, never on a 400-800 screen. The **Oracle light**
+  (`OracleLight-Pw2` = Oracle3's tree with `pwl=2` at 10 000) beats the 1.2@2000: 54.5 % (50.6 – 58.4) over 420
+  games, ~5 s a move a thread. Next: its speed in the page's worker, then playing it in the page with its Elo in the
+  Stats tab; the 1.3 changelog turns into the oracle's. Later: **Omniscient 1.0** (both hands and the pile seen), a
+  judge of the deal, not of the moves.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

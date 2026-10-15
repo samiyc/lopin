@@ -3587,3 +3587,17 @@ un pas entre 28,6 % et 55,7 %, visé à 42,5 %) ; mesuré sur un duel de 40 part
 | 2 | 25 visites | 28,6 % |
 | **3** | 31 visites | **40,1 %** |
 | 4 | 36 visites | 55,7 % |
+
+**Le niveau 5** (Sami, 16/10 : pousser plus loin, viser 65 % au 5e niveau, pour Oracle3 à 20 000) : k < 1, donc au moins
+une réponse par nœud (sans effet pour k ≥ 1 : empreintes inchangées). k = 0,5 dépassait la cible (93,1 % au 5e niveau,
+37,5 % sur 40 parties) ; **k = 0,75** (7 réponses à 40 visites) donne **67,6 %**, neutre sur 40 parties (52,5 %).
+
+| `pwl` | 5 |
+| --- | --- |
+| 7 réponses dès | 40 visites |
+| 5e niveau atteint à 2 000 | 67,6 % |
+
+**La nuit du 16/10** (file lancée à 1 h 09, 140 parties chacun contre la 1.2@2000, pour classer, pas pour valider) :
+Oracle3 à `pwl=5`, `3` et `2` (20 000, offset 12, où Oracle3 = `pwl=4` faisait 61,4 %), puis l'Oracle light à
+`pwl=3` et à `pwl=2` avec `final=1` (10 000, offsets 12 et 13 ; `pwl=2` seul : 57,9 et 47,1 %). L'Oracle light à
+`pwl=1` (l'ancien `pw=3`, 51,4 % sur l'offset 12) reste à rejouer sur un second jeu de donnes.
