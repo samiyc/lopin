@@ -3532,3 +3532,36 @@ commençant, 52,4 % en second. **La borne basse repasse sous 50 % : `FinalLcb1` 
 qu'Ensemble (52,5 % sur les offsets 0 à 3, 51,0 % sur six) : une tendance d'un point et demi, peut-être réelle,
 trop petite pour la règle. L'option `+final=1` reste ; la 1.2 reste la version à battre, et le constat de
 `docs/1.3-to-oracle-shift.md` (la 1.2 comme plafond à 2 000) tient toujours.
+
+## La soirée du 15/10 : les « dernière chance » et l'Oracle light
+
+**Quatre idées vues seulement au tri à 400**, un duel long chacune à 2 000 contre la 1.2 (`VALIDATE_LONG_1_*`,
+`--long --games 125 --page --offset 0`, 250 parties ; à temps égal, 2 s par coup des deux côtés, pour celles qui
+changent le coût d'une itération) :
+
+| Version | Tri à 400 | Duel long à 2 000 | Verdict |
+| --- | --- | --- | --- |
+| `PUCT-2` (`puct=2`) | 51,5 % | 47,2 % (41,8 – 52,6) | écarté |
+| `Implicit2` (`implicit=0.2`, `@t2000`) | 48,6 % | 50,8 % (45,7 – 55,9) | écarté |
+| `ForkCut1` (`forkCut=1`, `@t2000`) | 51,5 % | 45,2 % (39,5 – 50,9) | écarté |
+| `MarginBackup05` (`margin=0.05`) | 51,4 % | 46,0 % (40,5 – 51,5) | écarté |
+
+Aucune ne gagne à 2 000 ce qu'elle ne gagnait pas à 400 : le tri les avait bien jugées, et ces pistes sont closes
+pour de bon.
+
+**Le tri de l'Oracle light** (`LIGHT_DUEL_1_OracleLight-Pw1/2/3`, l'arbre d'Oracle3 à 10 000 itérations contre la
+1.2@2000, `--long --games 70 --page --offset 12`, 140 parties chacun, les donnes du premier duel de Depth10Pw) :
+
+| Version | Score | Fourchette par paires | En commençant / en second |
+| --- | --- | --- | --- |
+| `OracleLight-Pw1` (`pw=1`) | 50,7 % | 44,0 – 57,5 % | 48,6 / 52,9 % |
+| **`OracleLight-Pw2`** (`pw=2`) | **57,9 %** | 51,4 – 64,4 % | 55,7 / 60,0 % |
+| `OracleLight-Pw3` (`pw=3`) | 51,4 % | 44,2 – 58,6 % | 52,9 / 50,0 % |
+
+Sur ces mêmes donnes, Depth10Pw à 20 000 faisait 61,4 % et Budget20000 55,7 %.
+- **`pw=2` se détache**, mais l'ordre 1 < 2 > 3 n'a rien de régulier : à 140 parties (± 6,5 points), le bruit
+  peut faire une partie de l'écart. Depth10Pw était passé de 61,4 % à 52,9 % sur un deuxième jeu de donnes.
+- **C'est le bon ordre de grandeur pour un oracle jouable** : environ 58 % pour la moitié du budget d'Oracle3, et
+  36 min pour 140 parties sur 18 fils (environ 5 s par coup et par fil, deux fois moins que prévu).
+- **La suite** : confirmer `OracleLight-Pw2` sur des donnes neuves (offsets 13 et suivants, 140 parties chacun),
+  puis mesurer sa vitesse dans le worker de la page.

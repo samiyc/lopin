@@ -2919,7 +2919,10 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "Dernière chance à 2 000 (Sami, 15/10) : PUCT-2 (puct=2) a fait 51,5 % au tri à 400 ; PUCT-1 a fait 49,8 % en 1k@2k. À itérations égales. Une idée qui touche la lecture des visites se juge à 2 000 (FinalLcb1 : 51,7 % à 800, 52,7 % sur la 1k@2k). Au-dessus de ~54 %, la 1k@2k suivra ; sinon mis de côté pour de bon.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T19:46",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-15-19-23_VALIDATE_LONG_1_PUCT-2.txt"
     },
     {
       "id": "VALIDATE_LONG_1_Implicit2",
@@ -2927,7 +2930,10 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "Dernière chance à 2 000 (Sami, 15/10) : Implicit2 (implicit=0.2) a fait 48,6 % au tri à 400 à temps égal ; 11 % plus cher par itération, donc à temps égal des deux côtés (2 s par coup). Une idée qui touche la lecture des visites se juge à 2 000 (FinalLcb1 : 51,7 % à 800, 52,7 % sur la 1k@2k). Au-dessus de ~54 %, la 1k@2k suivra ; sinon mis de côté pour de bon.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T20:02",
+      "minutes": 16,
+      "output": "backlog-runs/2026-10-15-19-46_VALIDATE_LONG_1_Implicit2.txt"
     },
     {
       "id": "VALIDATE_LONG_1_ForkCut1",
@@ -2935,7 +2941,10 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "Dernière chance à 2 000 (Sami, 15/10) : ForkCut1 (forkCut=1) a fait 51,5 % au tri à 400 à temps égal ; il coupe des simulations, donc à temps égal des deux côtés (2 s par coup). Une idée qui touche la lecture des visites se juge à 2 000 (FinalLcb1 : 51,7 % à 800, 52,7 % sur la 1k@2k). Au-dessus de ~54 %, la 1k@2k suivra ; sinon mis de côté pour de bon.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T20:18",
+      "minutes": 16,
+      "output": "backlog-runs/2026-10-15-20-02_VALIDATE_LONG_1_ForkCut1.txt"
     },
     {
       "id": "VALIDATE_LONG_1_MarginBackup05",
@@ -2943,7 +2952,10 @@
       "estimate": "25 min",
       "limit": 60,
       "why": "Dernière chance à 2 000 (Sami, 15/10) : MarginBackup05 (margin=0.05) a fait 51,4 % au tri à 400, gardé en réserve ; MarginBackup15 a perdu à 2 000 (45,6 %). À itérations égales. Une idée qui touche la lecture des visites se juge à 2 000 (FinalLcb1 : 51,7 % à 800, 52,7 % sur la 1k@2k). Au-dessus de ~54 %, la 1k@2k suivra ; sinon mis de côté pour de bon.",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T20:40",
+      "minutes": 22,
+      "output": "backlog-runs/2026-10-15-20-18_VALIDATE_LONG_1_MarginBackup05.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pw1",
@@ -2951,7 +2963,10 @@
       "estimate": "70 min",
       "limit": 110,
       "why": "L'Oracle light (docs/1.3-to-oracle-shift.md) : l'arbre d'Oracle3 à 10 000 itérations avec pw=1, contre la 1.2@2000, 140 parties sur les donnes du premier duel de Depth10Pw (offset 12 : 61,4 % à 20 000). Lequel des trois pw va avec 10 000, et l'Oracle light approche-t-il 55 % ?",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T21:16",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-15-20-40_LIGHT_DUEL_1_OracleLight-Pw1.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pw2",
@@ -2959,7 +2974,10 @@
       "estimate": "70 min",
       "limit": 110,
       "why": "L'Oracle light (docs/1.3-to-oracle-shift.md) : l'arbre d'Oracle3 à 10 000 itérations avec pw=2, contre la 1.2@2000, 140 parties sur les donnes du premier duel de Depth10Pw (offset 12 : 61,4 % à 20 000). Lequel des trois pw va avec 10 000, et l'Oracle light approche-t-il 55 % ?",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T21:52",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-15-21-16_LIGHT_DUEL_1_OracleLight-Pw2.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pw3",
@@ -2967,7 +2985,10 @@
       "estimate": "70 min",
       "limit": 110,
       "why": "L'Oracle light (docs/1.3-to-oracle-shift.md) : l'arbre d'Oracle3 à 10 000 itérations avec pw=3, contre la 1.2@2000, 140 parties sur les donnes du premier duel de Depth10Pw (offset 12 : 61,4 % à 20 000). Lequel des trois pw va avec 10 000, et l'Oracle light approche-t-il 55 % ?",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-15T22:30",
+      "minutes": 38,
+      "output": "backlog-runs/2026-10-15-21-52_LIGHT_DUEL_1_OracleLight-Pw3.txt"
     }
   ]
 }

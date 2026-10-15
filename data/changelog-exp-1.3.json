@@ -554,6 +554,97 @@
    "hi": 53.7,
    "verdict": "tendance",
    "note": "Tri à 800 : 51,7 %. La 1k@2k (offsets 0 à 3) : 55,2 / 54,4 / 49,6 / 51,6 %, 52,7 % (50,1 – 55,3), tout juste au-dessus de la règle. La confirmation (offsets 4 et 5) : 50,4 puis 48,0 %. Réunis sur 1 500 parties : 51,5 % (49,4 – 53,7), 50,7 / 52,4 % en commençant / en second. Ne passe pas : pas de 1.3, comme Ensemble."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Une idée qui touche la lecture des visites se juge à 2 000 : un duel long « dernière chance » avant de la mettre de côté pour de bon.",
+   "id": "puct-2-2000",
+   "name": "PUCT-2 à 2 000 : dernière chance",
+   "score": 47.2,
+   "lo": 41.8,
+   "hi": 52.6,
+   "verdict": "perd",
+   "note": "VALIDATE_LONG_1_PUCT-2, 250 parties contre la 1.2@2000 (offset 0) : 47,2 %, 45,6 / 48,8 %. Tri à 400 : 51,5 %. Écarté pour de bon."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Une idée qui touche la lecture des visites se juge à 2 000 : un duel long « dernière chance » avant de la mettre de côté pour de bon.",
+   "id": "implicit-2-2000",
+   "name": "Implicit2 à 2 000 (à temps égal) : dernière chance",
+   "score": 50.8,
+   "lo": 45.7,
+   "hi": 55.9,
+   "verdict": "neutre",
+   "note": "VALIDATE_LONG_1_Implicit2, @t2000 des deux côtés, 250 parties : 50,8 %, 53,6 / 48,0 %. Tri à 400 : 48,6 %. Écarté pour de bon."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Une idée qui touche la lecture des visites se juge à 2 000 : un duel long « dernière chance » avant de la mettre de côté pour de bon.",
+   "id": "fork-cut-1-2000",
+   "name": "ForkCut1 à 2 000 (à temps égal) : dernière chance",
+   "score": 45.2,
+   "lo": 39.5,
+   "hi": 50.9,
+   "verdict": "perd",
+   "note": "VALIDATE_LONG_1_ForkCut1, @t2000 des deux côtés, 250 parties : 45,2 %, 46,4 / 44,0 %. Tri à 400 : 51,5 %. Écarté pour de bon."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Une idée qui touche la lecture des visites se juge à 2 000 : un duel long « dernière chance » avant de la mettre de côté pour de bon.",
+   "id": "margin-05-2000",
+   "name": "MarginBackup05 à 2 000 : dernière chance",
+   "score": 46,
+   "lo": 40.5,
+   "hi": 51.5,
+   "verdict": "perd",
+   "note": "VALIDATE_LONG_1_MarginBackup05, 250 parties : 46,0 %, 48,0 / 44,0 %. Tri à 400 : 51,4 %. Écarté pour de bon, comme MarginBackup15."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw1",
+   "name": "OracleLight-Pw1 : l'arbre d'Oracle3 à 10 000, pw=1",
+   "score": 50.7,
+   "lo": 44,
+   "hi": 57.5,
+   "verdict": "neutre",
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12, les donnes du 61,4 % de Depth10Pw) : 50,7 %, 48,6 / 52,9 %. 36 min sur 18 fils."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw2",
+   "name": "OracleLight-Pw2 : l'arbre d'Oracle3 à 10 000, pw=2",
+   "score": 57.9,
+   "lo": 51.4,
+   "hi": 64.4,
+   "verdict": "tendance",
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12) : 57,9 %, 55,7 / 60,0 %. Se détache de pw=1 et pw=3, mais à ± 6,5 points : à confirmer sur des donnes neuves."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw3",
+   "name": "OracleLight-Pw3 : l'arbre d'Oracle3 à 10 000, pw=3",
+   "score": 51.4,
+   "lo": 44.2,
+   "hi": 58.6,
+   "verdict": "neutre",
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12) : 51,4 %, 52,9 / 50,0 %."
   }
  ],
  "manualJobs": [],
@@ -771,7 +862,7 @@
   {
    "when": "Maintenant",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
+   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md. Premier tri de l'Oracle light (10 000 contre la 1.2@2000, 140 parties) : pw=1 50,7 %, pw=2 57,9 % (51,4 – 64,4), pw=3 51,4 % ; OracleLight-Pw2 à confirmer sur des donnes neuves."
   },
   {
    "when": "Maintenant",
@@ -794,9 +885,9 @@
    "text": "Déjà mesuré le 12/10 : Ensemble (+trees=2, deux arbres de 1 000, visites additionnées) fait 51,0 % sur 1 500 parties, neutre ; trois et quatre arbres perdent (42,0 % et 46,2 %). Chaque arbre perd en profondeur ce que la moyenne gagne en stabilité. Ne se reprendrait qu'avec un budget plus grand (ex. 2 × 2 000 dans la page)."
   },
   {
-   "when": "Ensuite",
+   "when": "Fait",
    "title": "Dernière chance à 2 000 : quatre idées vues seulement à 400",
-   "text": "Ce qui touche la lecture des visites dépend du budget (le choix final : 49,8-51,7 % à 800, 54,8-55,2 % à 2 000). Quatre essais du 1.3 n'ont été vus qu'au tri à 400 ; chacun aura un duel long de 250 parties à 2 000 contre la 1.2 (--long --games 125 --page --offset 0) avant d'être mis de côté pour de bon : PUCT-2 (puct=2 : 51,5 % au tri ; puct=1 fait 49,8 % en 1k@2k, 0,5 et 2 jamais à 2 000), Implicit 0,2 (implicit=0.2 : 48,6 % à temps égal, 11 % plus cher par itération, donc à temps égal aussi à 2 000), ForkCut1 (forkCut=1 : 51,5 % à temps égal) et MarginBackup05 (margin=0.05 : 51,4 %, gardé en réserve ; MarginBackup15 a perdu à 2 000). Au-dessus de ~54 %, la 1k@2k suit."
+   "text": "Les quatre duels du 15/10 au soir, 250 parties à 2 000 contre la 1.2 : PUCT-2 47,2 %, Implicit2 50,8 % (à temps égal), ForkCut1 45,2 % (à temps égal), MarginBackup05 46,0 %. Tous écartés pour de bon : le tri à 400 les avait bien jugés."
   },
   {
    "when": "Maintenant",
