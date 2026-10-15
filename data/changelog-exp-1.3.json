@@ -549,11 +549,11 @@
    "idea": "Oracle3 : la 1.2 cherche le bon coup (rangs 4 à 8) et en joue un autre. Jouer le meilleur taux de victoire (moins c / √visites) plutôt que le plus visité.",
    "id": "final-lcb1",
    "name": "FinalLcb1 : le taux moins 1 / √visites (+final=1)",
-   "score": 52.7,
-   "lo": 50.1,
-   "hi": 55.3,
-   "verdict": "gagne",
-   "note": "Tri à 800 : 51,7 %. La 1k@2k (offsets 0 à 3, 15/10) : 55,2 / 54,4 / 49,6 / 51,6 %, réunis 52,7 % (50,1 – 55,3) sur 1 000 parties ; 52,2 / 53,2 % en commençant / en second. Passe la règle, sans coût par itération : candidat à l'Expérimental 1.3. Série de confirmation (offsets 4 et 5) en cours."
+   "score": 51.5,
+   "lo": 49.4,
+   "hi": 53.7,
+   "verdict": "tendance",
+   "note": "Tri à 800 : 51,7 %. La 1k@2k (offsets 0 à 3) : 55,2 / 54,4 / 49,6 / 51,6 %, 52,7 % (50,1 – 55,3), tout juste au-dessus de la règle. La confirmation (offsets 4 et 5) : 50,4 puis 48,0 %. Réunis sur 1 500 parties : 51,5 % (49,4 – 53,7), 50,7 / 52,4 % en commençant / en second. Ne passe pas : pas de 1.3, comme Ensemble."
   }
  ],
  "manualJobs": [],
@@ -771,7 +771,7 @@
   {
    "when": "Maintenant",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 était prise pour le plafond à 2 000 simulations, à une exception près en cours de validation : le choix final (FinalLcb1, FinalMean). Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
+   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
   },
   {
    "when": "Maintenant",
@@ -779,9 +779,9 @@
    "text": "La seule piste qui tient chez les deux juges : quand la 1.2 voit le coup de l'oracle (rangs 4 à 8, donc parmi ses 8 candidats) et en joue un autre, il tient +2,5 ± 2,4 points de plus sur 472 cas avec Oracle3 (Oracle1 : +3,6 ± 4,7 sur 153). Le bon coup est cherché mais pas retenu : c'est le choix final qu'il faut affiner, avec les trois options qui suivent, mesurées en duels contre la 1.2."
   },
   {
-   "when": "Maintenant",
+   "when": "Fait",
    "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
-   "text": "FinalLcb1 (le taux moins 1 / √visites) passe la 1k@2k : 52,7 % (50,1 – 55,3) ; FinalMean (le taux brut) non : 51,9 % (49,3 – 54,5). À 800, les deux étaient dans le bruit : un taux de victoire n'est fiable qu'avec assez de visites. FinalLcb1 est le candidat à l'Expérimental 1.3 (règle de Sami : borne basse > 50 % sur 1 000 parties à 2 000) ; sa série de confirmation (offsets 4 et 5) tourne avant de le nommer."
+   "text": "FinalLcb1 (le taux moins 1 / √visites) passait tout juste la 1k@2k (52,7 %, 50,1 – 55,3) mais retombe sur la confirmation (50,4 puis 48,0 %) : 51,5 % (49,4 – 53,7) sur 1 500 parties. FinalMean : 51,9 % (49,3 – 54,5) sur 1 000. Pas de 1.3 ; une tendance d'un point et demi, l'option +final=c reste. Leçon : ce qui touche la lecture des visites se juge à 2 000."
   },
   {
    "when": "Plus tard",

@@ -368,9 +368,9 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   ceiling at 2 000 simulations — no variant passed the 1k@2k against it, only budget pays (Budget4000, Oracle3).
   Oracle3 reread the 1.2 (1 367 gaps confirmed): nothing outside its 8 candidates, +2.5 ± 2.4 points on ranks 4-8.
   `+final=c` (`final-choice.js`) plays the root candidate with the best win rate minus c / √visits instead of the
-  most visited (off by default, fingerprints unchanged): noise at 800 (49.8 / 51.7 %), but at 2 000 **`FinalLcb1`
-  (`final=1`) passes the 1k@2k: 52.7 % (50.1 – 55.3)**; `FinalMean` (`final=0`) does not (51.9 %, 49.3 – 54.5).
-  `FinalLcb1` is the candidate for the Expérimental 1.3, its confirmation (offsets 4-5) pending. An idea that
+  most visited (off by default, fingerprints unchanged): noise at 800 (49.8 / 51.7 %); at 2 000 `FinalLcb1`
+  (`final=1`) passed the 1k@2k by a hair (52.7 %, 50.1 – 55.3) and fell on its confirmation (50.4, 48.0 %):
+  **51.5 % (49.4 – 53.7) over 1 500 games, no 1.3**; `FinalMean` (`final=0`) 51.9 % (49.3 – 54.5). An idea that
   changes how the tree reads its visits is judged at 2 000, never on a 400-800 screen. Next: an **Oracle light** (`pw=2-3` at 10 000) playable in
   the page, the oracle's Elo in the Stats tab; the 1.3 changelog turns into the oracle's.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border

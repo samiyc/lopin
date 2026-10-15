@@ -3525,3 +3525,10 @@ avec `npm run versus` :
   parties) tourne avant de nommer la 1.3.
 - **La leçon de méthode** : une idée qui touche la lecture des visites se juge à 2 000, pas au tri à 400-800 (49,8
   et 51,7 % à 800). D'où les quatre « dernière chance » à 2 000 (PUCT-2, Implicit 0,2, ForkCut1, MarginBackup05).
+
+**La confirmation** (`VALIDATE_LONG_5/6_FinalLcb1`, offsets 4 et 5, 15/10 de 18 h 34 à 19 h 22) : **50,4 % puis
+48,0 %**. Réunis sur les six duels (`npm run versus`) : **51,5 % (49,4 – 53,7) sur 1 500 parties**, 50,7 % en
+commençant, 52,4 % en second. **La borne basse repasse sous 50 % : `FinalLcb1` n'est pas la 1.3.** Même histoire
+qu'Ensemble (52,5 % sur les offsets 0 à 3, 51,0 % sur six) : une tendance d'un point et demi, peut-être réelle,
+trop petite pour la règle. L'option `+final=1` reste ; la 1.2 reste la version à battre, et le constat de
+`docs/1.3-to-oracle-shift.md` (la 1.2 comme plafond à 2 000) tient toujours.
