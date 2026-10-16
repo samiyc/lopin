@@ -404,6 +404,14 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **Open hands** (`openHands` in `createGame`, `--open` in `npm run duel`, the « Mains
   découvertes » box of the page): both hands visible, the pile hidden; `determinize` then deals only
   the pile. Written into the log's rules, so the replay shows both hands.
+- **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/seat-rules.js`, named in
+  `src/config/seats.js`, off by default) deals other hand sizes or lets the first player look at the top of the pile
+  (`src/sim/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts
+  its next draw as a hand card (`coreCounts`) — and claims never do. Fingerprints unchanged. The second player's edge
+  shrinks with skill (same bot both seats, 40 000 deals: Basique 46.1 %, `strategist` 47.2 %, the core 49.2 %; the
+  1.2's family 49.3 % in kept duels); `PeekAll` brings the three fast bots to 50 ± 1 %, a whole extra card (+14 points)
+  is ten times too much. Measure with `npm run deals -- --engine E --plays 1 --seat X --paired base.json`; the
+  kept duels with `npm run seats`.
 - **Bornage in a terminal** (`npm run cli`, Sami 12/10, `docs/cli.md`): the base game at the claim
   rule against a line-up bot, a move typed « card border » (« 7h4 », Sami's screen of 14/10: suits
   P H T C, so `c` is carreau, or S H C D with `--gb`; cards right-aligned on 3 characters and a
@@ -491,7 +499,8 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   optimum where the bots reach ~77 %. All his jokers went into trips.
 - **How games end at the page's rule** (35 178 kept games of trees @2000+, 16/10):
   never by running out of cards; 48.5 % by three adjacent borders, 51.5 % by
-  a majority. The first player wins 48.5 %, the gap sitting in majority wins
+  a majority. The first player wins 48.5 % (46.9 – 50.1 % counted by deal: the
+  duels replay 1 951 decks; it depends on skill, `docs/sieges.md`), the gap sitting in majority wins
   (24.9 against 26.9 %); ties broken by first completion settle 0.2 % of
   borders, split evenly (`docs/agents/revue-2026-10-16.md`).
 - "One joker per player" leaves a second joker stuck in hand: ~12 % of games
