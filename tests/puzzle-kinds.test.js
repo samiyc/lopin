@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buttonsFor, countIn, favoritesOnly, hintOf, isFork, isImmediate, kindLabel, namesOf, openingMessage, puzzleStatus, statusLine, toggleFavorite, unsolvedOnly } from "../web/app/puzzle-kinds.js";
+import { buttonsFor, countIn, favoritesOnly, hintOf, isDoubleTurn, isFork, isImmediate, kindLabel, namesOf, openingMessage, puzzleStatus, statusLine, toggleFavorite, unsolvedOnly } from "../web/app/puzzle-kinds.js";
 
 describe("the double-threat puzzles (kind fork)", () => {
   it("play out like an endgame, with their own words", () => {
@@ -14,6 +14,31 @@ describe("the double-threat puzzles (kind fork)", () => {
     assert.equal(kindLabel({ ...fork, turn: 33 }), "double menace, tour 33");
     assert.equal(kindLabel({ turn: 33 }), "tour 33");
     assert.equal(kindLabel({ kind: "immediate", cardsLeft: 12 }), "gain immédiat, pioche 12");
+  });
+});
+
+describe("the double-turn puzzles (kind pass)", () => {
+  it("play out like an endgame, with their own words", () => {
+    const pass = { kind: "pass", solutions: ["9♠→1"], moves: 15, turn: 33 };
+    assert.ok(isDoubleTurn(pass) && !isFork(pass) && !isImmediate(pass));
+    assert.match(openingMessage(pass), /^Double tour/);
+    assert.match(hintOf(pass), /adversaire/);
+    assert.equal(kindLabel(pass), "double tour, tour 33");
+  });
+
+  it("are found by the move that leaves the opponent no move: puzzle #313's 9♠→1", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const { stateAt } = await import("../src/replay/log.js");
+    const { legalMoves } = await import("../src/sim/game.js");
+    const { formatCard } = await import("../src/core/notation.js");
+    const { forcesPass } = await import("../src/sim/double-turn.js");
+    const puzzles = JSON.parse(await readFile(new URL("../web/data/puzzles.json", import.meta.url), "utf8")).puzzles;
+    const puzzle = puzzles.find((p) => p.id === 313);
+    const state = stateAt(puzzle.log, puzzle.turn);
+    const text = (move) => `${formatCard(state.spec, move.card)}→${move.border + 1}`;
+    const passing = legalMoves(state).filter((move) => forcesPass(state, move)).map(text);
+    assert.ok(passing.includes("9♠→1"));
+    assert.ok(!passing.includes(puzzle.coreMove), "the core's move lets the opponent play");
   });
 });
 

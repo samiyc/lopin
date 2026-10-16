@@ -5,6 +5,9 @@ import { runPool, workerCount } from "./lib/pool.js";
 import { STATUS, borderStatus } from "../src/sim/certainty.js";
 import { isForkBorder } from "../src/sim/fork.js";
 import { stateAt } from "../src/replay/log.js";
+import { formatCard } from "../src/core/notation.js";
+import { forcesPass } from "../src/sim/double-turn.js";
+import { legalMoves } from "../src/sim/game.js";
 
 /**
  * `npm run puzzles -- [--minutes N] [--count 50] [--source duels] [--add]`:
@@ -35,8 +38,11 @@ import { stateAt } from "../src/replay/log.js";
  * `--fork` (Sami, 11/10, Connect Four's « fourchette »): only the endgames
  * whose every winning move plays on a border whose win would leave a double
  * threat (src/sim/fork.js); they carry `kind: "fork"` and, with
- * numbered from 401 at least; `--fork` always adds. Without `--add`, every
- * puzzle of another kind (immediate, fork) is kept as it is.
+ * numbered from 401 at least; `--fork` always adds. `--pass` (Sami, 16/10, the
+ * double turn of #313): a winning move leaves the opponent no legal move, they
+ * pass and the mover plays again (src/sim/double-turn.js); `kind: "pass"`, from
+ * 501, always added. Without `--add`, every puzzle of another kind (immediate,
+ * fork, pass) is kept as it is.
  */
 const SHARE = 0.5;
 const PER_GAME = 2;
@@ -62,6 +68,15 @@ function playsTheFork(p, logs) {
   const owners = state.borders.map((border, index) => border.owner ?? provenFor(index) ?? null);
   return p.solutions.every((solution) => isForkBorder(owners, state.current, state.spec, Number(solution.split("→")[1]) - 1));
 }
+/** `--pass` (Sami, 16/10, puzzle #313: « on joue deux fois de suite »): a winning move leaves the opponent no move (double-turn.js). */
+const passOnly = args.includes("--pass");
+function playsThePass(p, logs) {
+  const state = stateAt(logs[p.index], p.turn);
+  const text = (move) => `${formatCard(state.spec, move.card)}→${move.border + 1}`;
+  return legalMoves(state).some((move) => p.solutions.includes(text(move)) && forcesPass(state, move));
+}
+const kindOnly = forkOnly || passOnly;
+const kindOf = () => (forkOnly ? "fork" : "pass");
 const wanted = (p) => p.moves >= minMoves && (!coreFailsOnly || p.coreFails) && (!uniqueOnly || p.solutions.length === 1);
 // Under the claim rule the pile runs out after move 30; under the final rule a little later in these games.
 const TURNS = fromDuels ? [31, 32, 33, 34, 35, 36, 37] : [33, 34, 35, 36, 37];
@@ -93,8 +108,8 @@ function choose(found) {
 
 const started = Date.now();
 const previous = await readFile(`${DIR}puzzles.json`, "utf8").then((text) => JSON.parse(text).puzzles, () => []);
-// `--fork` always adds: its puzzles join the file, they never replace the endgames.
-const carried = adding || forkOnly ? previous : previous.filter((puzzle) => puzzle.kind !== undefined);
+// `--fork` and `--pass` always add: their puzzles join the file, they never replace the endgames.
+const carried = adding || kindOnly ? previous : previous.filter((puzzle) => puzzle.kind !== undefined);
 const kept = keepIds ? carried.filter((puzzle) => keepIds.has(puzzle.id)) : carried;
 // Every position the file had, dropped ones included: a puzzle taken out is not brought back.
 const taken = new Set(previous.map((puzzle) => keyOf(puzzle.log, puzzle.turn)));
@@ -103,16 +118,16 @@ const items = logs.flatMap((log, index) => TURNS.filter((turn) => turn <= log.tu
 const threads = workerCount();
 const tasks = Array.from({ length: threads }, (_, t) => ({ items: items.filter((_, i) => i % threads === t), share: SHARE, seconds: minutes * 60 }));
 const found = (await runPool(new URL("./lib/puzzle-worker.js", import.meta.url), tasks)).flat();
-const chosen = choose(found.filter((p) => wanted(p) && (!forkOnly || playsTheFork(p, logs))));
+const chosen = choose(found.filter((p) => wanted(p) && (!forkOnly || playsTheFork(p, logs)) && (!passOnly || playsThePass(p, logs))));
 
 const strip = (log, turn) => ({ format: log.format, rules: log.rules, deck: log.deck, turns: log.turns.slice(0, turn - 1).map(({ turn: t, player, move, pass, drew }) => ({ turn: t, player, move, pass, drew })) });
-// Fork puzzles start at 401 at least, after every id the file had.
-const floorId = forkOnly ? 400 : 0;
-const firstId = adding || forkOnly ? Math.max(floorId, ...previous.map((puzzle) => puzzle.id)) + 1 : 1;
-const puzzles = chosen.map((p, i) => ({ id: firstId + i, ...(forkOnly ? { kind: "fork" } : {}), turn: p.turn, cardsLeft: p.cardsLeft, moves: p.moves, solutions: p.solutions, coreMove: p.coreMove, coreFails: p.coreFails, log: strip(logs[p.index], p.turn) }));
+// Fork puzzles start at 401 at least, double turns at 501, after every id the file had.
+const floorId = { fork: 400, pass: 500 }[kindOnly ? kindOf() : ""] ?? 0;
+const firstId = adding || kindOnly ? Math.max(floorId, ...previous.map((puzzle) => puzzle.id)) + 1 : 1;
+const puzzles = chosen.map((p, i) => ({ id: firstId + i, ...(kindOnly ? { kind: kindOf() } : {}), turn: p.turn, cardsLeft: p.cardsLeft, moves: p.moves, solutions: p.solutions, coreMove: p.coreMove, coreFails: p.coreFails, log: strip(logs[p.index], p.turn) }));
 await mkdir(DIR, { recursive: true });
 // Without --add the puzzles of another kind ("gain immédiat", `npm run puzzles:immediate`; fork) are kept as they are; with it, everything is.
-const endgamesKept = kept.filter((puzzle) => puzzle.kind === undefined || puzzle.kind === "fork");
+const endgamesKept = kept.filter((puzzle) => puzzle.kind === undefined || puzzle.kind === "fork" || puzzle.kind === "pass");
 const immediate = kept.filter((puzzle) => puzzle.kind === "immediate");
 await writeFile(`${DIR}puzzles.json`, `${JSON.stringify({ generatedAt: new Date().toISOString(), puzzles: [...endgamesKept, ...puzzles, ...immediate] })}\n`);
 const unique = puzzles.filter((p) => p.solutions.length === 1).length;

@@ -15,10 +15,18 @@ export const isImmediate = (current) => current.kind === "immediate";
  */
 export const isFork = (current) => current.kind === "fork";
 
-/** What the title says of the puzzle: "gain immédiat, pioche 12", "double menace, tour 33" or "tour 33". */
+/**
+ * A "double tour" (`kind: "pass"`, `npm run puzzles -- --pass`, Sami 16/10, after #313): a winning move
+ * leaves the opponent without a legal move; they pass, and the side to move plays twice in a row.
+ */
+export const isDoubleTurn = (current) => current.kind === "pass";
+
+const ENDGAME_LABELS = { fork: "double menace, ", pass: "double tour, " };
+
+/** What the title says of the puzzle: "gain immédiat, pioche 12", "double menace, tour 33", "double tour, tour 33" or "tour 33". */
 export function kindLabel(current) {
   if (isImmediate(current)) return `gain immédiat, pioche ${current.cardsLeft}`;
-  return `${isFork(current) ? "double menace, " : ""}tour ${current.turn}`;
+  return `${ENDGAME_LABELS[current.kind] ?? ""}tour ${current.turn}`;
 }
 
 /** Every legal move with its value for the side to move: 1 for a solution, -1 otherwise. */
@@ -32,6 +40,7 @@ export function openingMessage(current) {
   const count = current.solutions.length;
   const found = `${count} coup${count > 1 ? "s gagnent" : " gagne"} sur ${current.moves}`;
   if (isFork(current)) return `Double menace : joue pour la borne qui te laisse deux façons de gagner — l'adversaire ne peut pas parer les deux (${found}).`;
+  if (isDoubleTurn(current)) return `Double tour : trouve le coup qui laisse l'adversaire sans coup possible — il passe, et tu rejoues (${found}).`;
   if (!isImmediate(current)) return `Trouve le coup gagnant : ${found}.`;
   return `Gain immédiat : trouve le coup qui te fait revendiquer la victoire tout de suite, quoi que tienne l'adversaire (${found}).`;
 }
@@ -45,6 +54,7 @@ export function immediateMessage(slip, helped) {
 export function hintOf(current) {
   if (isImmediate(current)) return "La main adverse et la pioche restent cachées. Une borne se revendique quand tes 3 cartes battent tout ce que l'adversaire pourrait encore y poser, preuve faite avec les seules cartes de la table.";
   if (isFork(current)) return "Comme au Puissance 4 : autour de deux bornes gagnées, chacune des bornes voisines fait trois à la suite. Pioche vide, toutes les cartes sont connues, l'adversaire joue parfaitement.";
+  if (isDoubleTurn(current)) return "Regarde où l'adversaire peut encore poser : une borne qu'il pourrait revendiquer ne lui sert que s'il a une carte à y jouer. Pioche vide, toutes les cartes sont connues, l'adversaire joue parfaitement.";
   return "Pioche vide : toutes les cartes sont connues. Joue le camp du bas contre un adversaire parfait.";
 }
 
