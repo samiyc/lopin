@@ -740,12 +740,12 @@
    "when": "16/10",
    "id": "oracle-light-pwl5",
    "name": "OracleLight-Pwl5 : 10 000, pwl=5",
-   "score": 58.6,
-   "lo": 52.6,
-   "hi": 64.5,
+   "score": 55.4,
+   "lo": 51.2,
+   "hi": 59.5,
    "verdict": "tendance",
    "idea": "Le niveau 5 (Sami, 16/10) à 10 000.",
-   "note": "LIGHT_DUEL_1, offset 12 : 58,6 %, 58,6 / 58,6 %. Un seul duel ; entre 3 et 5, le niveau 4 retombe (50 %) : le bruit domine à 140 parties."
+   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 52,1 %, 55,4 % (51,2 – 59,5) sur 280 parties. Au niveau de pwl=3 (56,0 % sur 420) : de 2 à 5, les niveaux se valent à 10 000 ; pwl=3 reste retenu."
   }
  ],
  "manualJobs": [],
@@ -966,11 +966,6 @@
    "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. L'Oracle light (l'arbre d'Oracle3 à 10 000, pwl=3) bat la 1.2@2000 : 56,0 % (52,0 – 59,9) sur 420 parties, environ 5 s par coup et par fil en Node. Étape suivante : sa vitesse dans le worker de la page, puis le jouer dans la page avec son Elo dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
   },
   {
-   "when": "En cours",
-   "title": "L'Oracle light à pwl=5, second jeu de donnes",
-   "text": "pwl=5 n'a qu'un duel (58,6 % sur l'offset 12, 140 parties) ; l'offset 13 (LIGHT_DUEL_2_OracleLight-Pwl5, ~40 min) dira s'il rejoint pwl=3 (56,0 % sur 420 parties) ou retombe comme pwl=4. pwl=3 reste retenu tant que pwl=5 n'a pas ses 420 parties."
-  },
-  {
    "when": "Ensuite",
    "title": "L'Oracle light dans la page",
    "text": "Mesurer ses itérations par seconde dans think-worker.js (Chrome, pondération pendant le tour du joueur comprise) : à 10 000 il faut ~5 s par coup en Node, le budget de la page se règle en temps (@t) sur ce qu'un joueur accepte d'attendre. Puis l'ajouter aux adversaires (un nom, une version, bots.js) et faire entrer ses parties dans l'Elo de l'onglet Stats."
@@ -1008,7 +1003,7 @@
   {
    "when": "Fait",
    "title": "Les niveaux pwl des oracles (nuit du 16/10)",
-   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : pwl=1 ~52,1 %, pwl=2 54,5 % (420 parties), pwl=3 56,0 % (52,0 – 59,9, 420 parties), pwl=4 ~50,0 %, pwl=5 58,6 % (un duel, le second en cours) ; le bruit domine, pwl=3 est retenu. final=1 n'ajoute rien."
+   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : pwl=1 ~52,1 %, pwl=2 54,5 % (420 parties), pwl=3 56,0 % (52,0 – 59,9, 420 parties), pwl=4 ~50,0 %, pwl=5 55,4 % (51,2 – 59,5, 280 parties) ; de 2 à 5 les niveaux se valent, le bruit domine, pwl=3 est retenu. final=1 n'ajoute rien."
   },
   {
    "when": "Fait",

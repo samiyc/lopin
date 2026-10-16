@@ -3638,9 +3638,11 @@ sur le 12 ; 10 000 contre la 1.2@2000, en %) :
 | 2 (`OracleLight-Pw2`) | 57,9 | 47,1 | 58,6 | 54,5 (420, 50,6 – 58,4) |
 | **3** | 59,3 | 55,0 | 53,6 | **56,0 (420, 52,0 – 59,9)** |
 | 4 (l'ancien `pw=1`) | 50,7 | 49,3 | — | ~50,0 (280) |
-| 5 | 58,6 | — | — | 58,6 (140, 52,6 – 64,5) |
+| 5 | 58,6 | 52,1 | — | 55,4 (280, 51,2 – 59,5) |
 
 - **Le bruit domine** : le niveau 4 retombe entre 3 et 5, ce qui n'a rien de physique ; à 140 parties, ± 6,5 points.
+  Le second duel de `pwl=5` (Sami, 16/10 en fin de matinée, offset 13 : 52,1 %, 46,4 – 57,9) le ramène au niveau de
+  `pwl=3` : de 2 à 5, les niveaux se valent à 10 000.
 - **`pwl=3` est le choix de l'Oracle light** : le plus de parties (420) et la borne basse la plus haute (52,0 %),
-  +1,5 point sur `pwl=2` sur les mêmes donnes. `pwl=5` ne compte qu'un duel. `npm run versus` regroupe par nom de
+  +1,5 point sur `pwl=2` sur les mêmes donnes ; `pwl=5` fait 55,4 % sur 280. `npm run versus` regroupe par nom de
   moteur exact : les parties jouées sous `pw=k` restent à part de celles sous `pwl=n`, il faut les réunir à la main.

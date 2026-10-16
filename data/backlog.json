@@ -3139,7 +3139,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 5 : 58,6 % sur l'offset 12 ; un second jeu de donnes pour le comparer à pwl=3 (56,0 % sur 420 parties) (Sami, 16/10).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T10:53",
+      "minutes": 41,
+      "output": "backlog-runs/2026-10-16-10-13_LIGHT_DUEL_2_OracleLight-Pwl5.txt"
     }
   ]
 }
