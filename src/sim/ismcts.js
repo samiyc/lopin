@@ -1,6 +1,7 @@
 import { createRng } from "../core/random.js";
 import { createBudget } from "./budget.js";
 import { createEnsemble, explorationBonus, pointsFor, pointsOf } from "./choice.js";
+import { visitRng } from "./common-deals.js";
 import { finalChoice } from "./final-choice.js";
 import { breadthOf, wideningOf } from "./widening.js";
 import { reuseOf } from "./reuse.js";
@@ -111,14 +112,14 @@ function choiceAt(node, ply, game, ctx) {
   return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave, puct: ctx.puct, implicit: ctx.implicit }, game.current);
 }
 
-/** The walk down the tree: the path taken, and the moves made on it (`rave`). */
-function descend(root, game, ctx) {
+/** The walk down the tree: the path taken, and the moves made on it (`rave`). `first`: the root's choice, made before the deal (`crn`). */
+function descend(root, game, ctx, first) {
   const path = [];
   const played = [];
   let node = root;
   for (let ply = 0; ply < ctx.depth && !game.over; ply += 1) {
     const mover = game.current;
-    const { move, child } = choiceAt(node, ply, game, ctx);
+    const { move, child } = ply === 0 && first ? first : choiceAt(node, ply, game, ctx);
     path.push({ child, mover });
     if (move) played.push(`${mover}|${moveKey(move)}`);
     applyMove(game, move);
@@ -157,12 +158,19 @@ function ratingOf(root, scored, ctx) {
 }
 
 /** An iteration's game: a deal of the unseen cards, or (`omniscient`, Omniscient 1.0) the true one. */
-const dealFor = (ctx) => (ctx.omniscient ? seeAll(ctx.state, ctx.deals) : determinize(ctx.state, ctx.player, ctx.deals, ctx.hands && pickHand(ctx.hands, ctx.deals)));
+const dealFor = (ctx, rng = ctx.deals) => (ctx.omniscient ? seeAll(ctx.state, rng) : determinize(ctx.state, ctx.player, rng, ctx.hands && pickHand(ctx.hands, rng)));
+
+/** An iteration's deal — with `crn` (common-deals.js), the root move chosen first and the deal its visit number's. */
+function begin(root, ctx) {
+  if (!ctx.crn) return { game: dealFor(ctx), first: null };
+  const first = choiceAt(root, 0, ctx.state, ctx);
+  return { game: dealFor(ctx, visitRng(ctx, first.child.visits)), first };
+}
 
 /** One iteration: a deal, a walk down the tree, a rollout, and the result carried back up. */
 function iterate(root, ctx) {
-  const game = dealFor(ctx);
-  const { path, played } = descend(root, game, ctx);
+  const { game, first } = begin(root, ctx);
+  const { path, played } = descend(root, game, ctx, first);
   // `implicit`: the new node's estimate, from its position before the rollout plays it on.
   if (ctx.implicit > 0) estimateLeaf(path, game, ctx.oddsOf);
   const winner = game.over ? game.winner : rolloutOf(game, ctx, played);
@@ -184,9 +192,10 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
   const rootMoves = pickCandidates(scored, cfg.candidates, rootCap);
   const judge = (treePolicy ?? policy)(createRng(1));
   const phases = parseHalving(settings.halving);
+  const rolloutRng = createRng(deals.int(2 ** 31));
   return {
     state, player: state.current, deals, rootMoves, judge,
-    rollout: policy(createRng(deals.int(2 ** 31))),
+    rollout: policy(rolloutRng), rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
     pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0,
     amaf: cfg.rave > 0 ? new Map() : null,
@@ -288,7 +297,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+pwl=0..3` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+pwl=0..3` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -299,7 +308,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );
