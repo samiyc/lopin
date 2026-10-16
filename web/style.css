@@ -281,7 +281,8 @@ dialog:focus, dialog:focus-visible { outline: none; }
   .dialog-cols { grid-template-columns: 1fr; }
   .dialog-col .name-field input { max-width: none; }
 }
-dialog .opponent { display: grid; grid-template-columns: auto 1fr; column-gap: 6px; align-items: baseline; }
+/* align-content: the fieldset stretches each bot to the right column's height; the slack goes below it, not between its name and facts. */
+dialog .opponent { display: grid; grid-template-columns: auto 1fr; column-gap: 6px; row-gap: 2px; align-items: baseline; align-content: start; }
 dialog .opponent .facts { grid-column: 2; color: var(--ink-2); line-height: 1.35; }
 dialog h2 { margin-top: 0; font: 700 1.3rem var(--display); }
 dialog fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 0 0 10px; display: grid; gap: 4px; }
