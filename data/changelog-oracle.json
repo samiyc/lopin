@@ -329,33 +329,33 @@
    "hi": null,
    "verdict": "attente",
    "idea": "L'Oracle light partagé entre 2 arbres, un par worker dans la page (Sami, 16/10).",
-   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees2, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees2, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique : la version de la page doit faire au moins autant. À 2 000, deux arbres tenaient (51,0 %)."
   },
   {
-   "family": "light",
    "bench": "duel",
    "when": "16/10",
-   "id": "oracle-light-pwl3-trees3",
-   "name": "OracleLight-Pwl3-Trees3 : 3 arbres de 3 334",
    "score": null,
    "lo": null,
    "hi": null,
    "verdict": "attente",
-   "idea": "L'Oracle light partagé entre 3 arbres, un par worker dans la page (Sami, 16/10).",
-   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees3, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+   "family": "profond",
+   "id": "oracle3-pwl3-trees2",
+   "name": "Oracle3-Pwl3-Trees2 : 2 arbres de 10 000",
+   "idea": "Oracle3 partagé en deux arbres de 10 000 au niveau pwl=3 : moins de bruit dans le choix du coup sans perdre la profondeur ? (Sami, 16/10)",
+   "note": "DEEP_DUEL_1 et 2_Oracle3-Pwl3-Trees2, nuit du 16-17/10, offsets 12 et 13 : les donnes d'Oracle3 en un arbre (61,4 puis 52,9 %, 57,1 % sur 280 parties)."
   },
   {
-   "family": "light",
    "bench": "duel",
    "when": "16/10",
-   "id": "oracle-light-pwl3-trees4",
-   "name": "OracleLight-Pwl3-Trees4 : 4 arbres de 2 500",
    "score": null,
    "lo": null,
    "hi": null,
    "verdict": "attente",
-   "idea": "L'Oracle light partagé entre 4 arbres, un par worker dans la page (Sami, 16/10).",
-   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees4, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+   "family": "light",
+   "id": "oracle-light-pwl2-trees2",
+   "name": "OracleLight-Pwl2-Trees2 : 2 arbres de 5 000, pwl=2",
+   "idea": "Des arbres plus petits demandent peut-être un niveau plus bas (Sami, 16/10).",
+   "note": "LIGHT_DUEL_1 et 2_OracleLight-Pwl2-Trees2, offsets 12 et 13, à comparer à OracleLight-Pwl3-Trees2 et à l'arbre unique sur les mêmes donnes."
   }
  ],
  "manualJobs": [],
@@ -492,8 +492,8 @@
  "next": [
   {
    "when": "Cette nuit",
-   "title": "L'Oracle light sur 2, 3 ou 4 arbres",
-   "text": "OracleLight-Pwl3-Trees2, -Trees3 et -Trees4 contre la 1.2@2000, offsets 12 à 14 (9 duels d'environ 40 min, npm run backlog). Si trees=2 tient, l'Oracle light 1.0 reste tel quel ; si trees=4 tient aussi, la page peut passer à 4 workers (2 à 4 s au premier coup), et Oracle3 devient jouable sur 4 workers à 20 000."
+   "title": "Deux arbres : l'Oracle light de la page, et Oracle3",
+   "text": "OracleLight-Pwl3-Trees2 (la version de la page) sur les offsets 12 à 14 : il doit faire au moins les 56,0 % de l'arbre unique sur les mêmes donnes. Oracle3-Pwl3-Trees2 (2 × 10 000) sur les offsets 12 et 13 : moins de bruit sans perdre la profondeur, face aux 57,1 % d'Oracle3 en un arbre. OracleLight-Pwl2-Trees2 sur les offsets 12 et 13 : des arbres de 5 000 veulent peut-être un niveau plus bas. 7 duels, environ 6 h (npm run backlog). Trois et quatre arbres sont retirés : deux suffisent en vitesse."
   },
   {
    "when": "Ensuite",

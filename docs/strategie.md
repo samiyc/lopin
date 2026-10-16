@@ -3664,5 +3664,8 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
   (`trees=2`), un par worker, les scores additionnés comme `createEnsemble` (`web/app/think-join.js`) : les mêmes coups
   qu'en Node (tests, et 4 coups de la partie gardée comparés dans Chrome). 8,5 s au premier coup au lieu de 13,6, puis
   7,5 / 4,4 / 1,7 s aux tours 3, 13 et 25 : sous les 10 s de la page. L'Observer passe lui aussi par les workers.
-  Sa force à deux arbres se mesure la nuit : `OracleLight-Pwl3-Trees2`, `-Trees3`, `-Trees4` contre la 1.2@2000 sur
-  les offsets 12 à 14 (à 2 000, deux arbres tenaient à 51,0 %, trois et quatre perdaient).
+  Sa force à deux arbres se mesure la nuit du 16-17/10 : `OracleLight-Pwl3-Trees2` contre la 1.2@2000 sur les
+  offsets 12 à 14, qui doit faire au moins les 56,0 % de l'arbre unique sur les mêmes donnes (à 2 000, deux arbres
+  tenaient à 51,0 %, trois et quatre perdaient). Avec lui, `OracleLight-Pwl2-Trees2` (des arbres plus petits veulent
+  peut-être un niveau plus bas) et `Oracle3-Pwl3-Trees2` (2 × 10 000 : moins de bruit sans perdre la profondeur ?),
+  sur les offsets 12 et 13. Trois et quatre arbres sont retirés de la file (Sami : deux suffisent en vitesse).
