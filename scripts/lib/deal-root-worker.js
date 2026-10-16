@@ -24,10 +24,12 @@ function rootValue(state, engine, seed) {
   return best.visits > 0 ? best.wins / best.visits : 0.5;
 }
 
-parentPort.on("message", ({ row, endMode, engine, dealSeeds, seeds }) => {
+// `decks` (the cards in order, a kept game's `deck`) judges given deals instead of `dealSeeds`.
+parentPort.on("message", ({ row, endMode, engine, dealSeeds = null, decks = null, seeds }) => {
   const spec = DECKS[row.deck];
-  const values = dealSeeds.map((dealSeed) => {
-    const fresh = () => createGame(spec, { order: ORDERS[row.order], jokerRule: JOKER_RULES[row.jokerRule], rng: createRng(dealSeed), endMode, deck: createRng(dealSeed).shuffle(buildDeck(spec)) });
+  const deals = decks ?? dealSeeds.map((dealSeed) => createRng(dealSeed).shuffle(buildDeck(spec)));
+  const values = deals.map((deck, d) => {
+    const fresh = () => createGame(spec, { order: ORDERS[row.order], jokerRule: JOKER_RULES[row.jokerRule], rng: createRng(dealSeeds?.[d] ?? d + 1), endMode, deck: [...deck] });
     const total = seeds.reduce((sum, seed) => sum + rootValue(fresh(), engine, seed), 0);
     return total / seeds.length;
   });
