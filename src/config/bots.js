@@ -42,6 +42,19 @@ export const BOT_LINEUP = Object.freeze({
     // In the page: a worker, the engine's 2 000 iterations a move (10 s at most), pondering during the human's turn (web/app/thinker.js).
     think: Object.freeze({ limitMs: 10000, minMs: 400 }),
   }),
+  "oracle-light": Object.freeze({
+    // Oracle light 1.0 (Sami, 16/10): Oracle3's tree at 10 000 iterations, pwl=3 (56.0 %, 52.0-59.9, over 420 games
+    // against the Expérimental 1.2 as a single tree), shared between two trees (`trees=2`), one per worker in the page:
+    // the opening's 13.6 s a move on one thread back under 10 s. The two trees are measured by the night duels
+    // (LIGHT_DUEL_*_OracleLight-Pwl3-Trees2).
+    engine: "ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000",
+    version: "1.0",
+    label: "Oracle light",
+    description: "L'oracle de l'atelier, allégé",
+    examines: "10 coups d'avance, deux arbres de 5 000 itérations",
+    pace: "10 000 itérations (2 à 7 s, sur deux fils)",
+    think: Object.freeze({ limitMs: 10000, minMs: 400, workers: 2 }),
+  }),
 });
 // Le Borné 1.0 (`borne`, `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000`) left the
 // line-up on 11/10: 45.9 % (43.3-48.5) against the 1.2 over 1 000 games. Its replays still read back.
@@ -65,6 +78,7 @@ export const KEPT_VERSIONS = Object.freeze({
   basique: Object.freeze(["1.0"]),
   stratege: Object.freeze(["2.1", "2.0", "1.1"]),
   experimental: Object.freeze(["1.2", "1.1", "1.0"]),
+  "oracle-light": Object.freeze(["1.0"]),
 });
 
 /** "2.1.0" → "2.1": the version a game saved with three numbers stands for. */

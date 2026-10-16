@@ -48,16 +48,24 @@ const yieldToPage = () => new Promise((resolve) => setTimeout(resolve, 0));
  * A whole bot-against-bot game, resolved as a finished log. It hands the page
  * back between moves: a Stratège looking ahead thinks for a fraction of a
  * second per move, and a whole game in one go would freeze the page.
- * `onTurn(turn)` reports progress.
+ * `onTurn(turn)` reports progress. `thinkerFor(id, player, seed)` (the page's
+ * `createThinker`) lets a bot that thinks in workers do so here too: the
+ * Oracle light searched on the page's thread froze it for seconds a move.
  */
-export async function generateBotGame(bottomId, topId, seed, onTurn = () => {}) {
+export async function generateBotGame(bottomId, topId, seed, { onTurn = () => {}, thinkerFor = null } = {}) {
   const state = newGame(seed);
   const players = [botPlayer(bottomId, seed + 1), botPlayer(topId, seed + 2)];
+  const thinkers = thinkerFor ? [thinkerFor(bottomId, players[0], seed + 1), thinkerFor(topId, players[1], seed + 2)] : null;
   const log = startLog(state, { rules: RULES, players: [botEntry(0, bottomId), botEntry(1, topId)], seed });
-  while (!state.over) {
-    playBot(log, state, players[state.current]);
-    onTurn(state.turn);
-    await yieldToPage();
+  try {
+    while (!state.over) {
+      const { move, scored } = thinkers ? await thinkers[state.current].decide(state, log) : botChoice(state, players[state.current]);
+      playLogged(log, state, move, scored);
+      onTurn(state.turn);
+      await yieldToPage();
+    }
+  } finally {
+    thinkers?.forEach((thinker) => thinker.stop());
   }
   return finishLog(log, state);
 }

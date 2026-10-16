@@ -3,6 +3,7 @@ import { $, el, freshSeed, toast } from "./dom.js";
 import { keepReplay, listReplays, loadReplay, saveReplay } from "./replays-api.js";
 import { generateBotGame, playerName } from "./runner.js";
 import { clearTable } from "./table.js";
+import { createThinker } from "./thinker.js";
 import { replayLabel } from "./view.js";
 import { currentLog, load, loaded, pause } from "./viewer.js";
 
@@ -30,9 +31,11 @@ export function wireObserve() {
     pause();
     clearTable("Les robots jouent…");
     try {
-      const log = await generateBotGame($("observe-bottom").value, $("observe-top").value, seedFromInput(), (turn) => {
+      const onTurn = (turn) => {
         $("status").textContent = `Les robots jouent… tour ${turn} / 42`;
-      });
+      };
+      const thinkerFor = (id, player, seed) => createThinker(player, BOT_LINEUP[id].think, seed);
+      const log = await generateBotGame($("observe-bottom").value, $("observe-top").value, seedFromInput(), { onTurn, thinkerFor });
       load(log, { autoplay: true });
     } finally {
       button.disabled = false;

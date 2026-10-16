@@ -239,7 +239,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   bot cannot see), then warm-starts the real search and credits half the time.
   Only the flat search reads that head start (`bot.warms`): an ISMCTS does not
   ponder (16/10: crediting its time cut the page's 1.2 to 1 178 of its 2 000
-  iterations after 20 s of human thought).
+  iterations after 20 s of human thought). **The Oracle light 1.0**
+  (`oracle-light`, 16/10) is an ensemble (`+trees=2`) searched one tree per
+  worker (`think.workers`, `part` in `createEnsemble`), the scores added up by
+  `web/app/think-join.js` as in Node, so it plays the duels' moves
+  (`tests/think-join.test.js`); the Observer goes through the same thinkers.
 - **Certainties are theorems** (`src/sim/certainty.js`): a border is `won` /
   `lost` for a player when no finish of the other side (enumerated over every
   card they cannot see) changes it. Tested over whole games. The experimental

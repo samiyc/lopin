@@ -53,21 +53,27 @@ export function explorationBonus({ exploration, puct }, count) {
   return (child, rank) => (puct * priors[rank] * Math.sqrt(child.avail)) / (1 + child.visits);
 }
 
+/** The ensemble's scores: each tree's `scored()` (same moves, same order), the gains added up in tree order. */
+export const addScores = (ratings) => ratings[0].map((entry, index) => ({ ...entry, gain: ratings.reduce((sum, rating) => sum + rating[index].gain, 0) }));
+
+/** How many of an ensemble's `budget` iterations tree `part` of `trees` plays: they are stepped in turn. */
+export const partBudget = (budget, trees, part) => Math.ceil((budget - part) / trees);
+
 /**
  * `trees` (Ensemble): the budget shared between `trees` searches of their own
  * seeds, stepped in turn, the root's visits added up, to take the noise out of
  * the move played. The first tree keeps the plain search's seed.
  * `createSearch` is `createIsmcts`, passed in so that the two modules do not
- * import each other.
+ * import each other. `part` builds tree `part` alone, with the seed it has in
+ * the ensemble: the page runs each tree in its own worker and adds their
+ * scores up with `addScores`, so it plays the moves of the duels.
  */
-export function createEnsemble(createSearch, state, scored, { trees, ...options }) {
+export function createEnsemble(createSearch, state, scored, { trees, part, ...options }) {
   const seedOf = (index) => (index === 0 ? options.seed : (options.seed ^ Math.imul(index, 0x9e3779b1)) >>> 0);
+  if (part !== undefined) return createSearch(state, scored, { ...options, trees: 1, seed: seedOf(part) });
   const searches = Array.from({ length: trees }, (_, index) => createSearch(state, scored, { ...options, trees: 1, seed: seedOf(index) }));
   let iterations = 0;
-  const rated = () => {
-    const ratings = searches.map((search) => search.scored());
-    return ratings[0].map((entry, index) => ({ ...entry, gain: ratings.reduce((sum, rating) => sum + rating[index].gain, 0) }));
-  };
+  const rated = () => addScores(searches.map((search) => search.scored()));
   return {
     step() {
       searches[iterations % trees].step();

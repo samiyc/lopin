@@ -9,9 +9,17 @@ import { createGame, legalMoves } from "../src/sim/game.js";
 
 describe("the bot line-up", () => {
   it("has the lineup bots, each on an existing engine", () => {
-    assert.deepEqual(BOT_IDS, ["basique", "stratege", "experimental"]);
+    assert.deepEqual(BOT_IDS, ["basique", "stratege", "experimental", "oracle-light"]);
     for (const id of BOT_IDS) assert.doesNotThrow(() => engineFor(engineOf(id)), id);
     assert.ok(BOT_IDS.includes(DEFAULT_OPPONENT));
+  });
+
+  it("gives a bot thinking on several workers one tree per worker", () => {
+    for (const id of BOT_IDS) {
+      const workers = BOT_LINEUP[id].think?.workers ?? 1;
+      const trees = Number(/\+trees=(\d+)/.exec(engineOf(id))?.[1] ?? 1);
+      assert.equal(workers, trees, id);
+    }
   });
 
   it("gives every bot a two-number version and a tag for the replays", () => {

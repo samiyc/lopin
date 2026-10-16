@@ -1,6 +1,7 @@
 import { createRng } from "../../src/core/random.js";
 import { stateAt } from "../../src/replay/log.js";
 import { engineFor } from "../../src/sim/bots.js";
+import { partBudget } from "../../src/sim/choice.js";
 import { budgetOf } from "../../src/sim/experimental.js";
 import { legalMoves } from "../../src/sim/game.js";
 import { CREDIT, createPonder } from "../../src/sim/ponder.js";
@@ -17,13 +18,18 @@ import { CREDIT, createPonder } from "../../src/sim/ponder.js";
  * search) ponders: an ISMCTS ignores `warm`, and crediting its time cut the
  * 1.2 to 1 178 of its 2 000 iterations after 20 s of human thought (16/10).
  *
- * Messages in: `init { engine, seed, limitMs, minMs }`, `ponder { log }` (the
+ * An ensemble (`+trees=k`, the Oracle light) runs one tree per worker: `part`
+ * of `workers` searches its share of the iterations with the seed it has in
+ * Node, and `thinker.js` adds the trees' scores up (`addScores`).
+ *
+ * Messages in: `init { engine, seed, limitMs, minMs, part, workers }`, `ponder { log }` (the
  * human is to move), `decide { log }` (the bot is to move), `stop`.
  * Message out: `move { move, scored, pondered, rollouts, thoughtMs }`.
  */
 const SLICE_MS = 25;
 let bot = null;
 let limits = { limitMs: 10000, minMs: 400, iterations: Infinity };
+let share = {};
 let ponder = null;
 
 const now = () => performance.now();
@@ -38,7 +44,7 @@ async function keepPondering(mine) {
 /** Searches the reply, starting from what pondering learned (`taken`: `{ warm, spentMs }`). */
 function searchReply(state, moves, { warm, spentMs }) {
   const started = now();
-  const search = bot.searchFor(state, moves, {}, { warm });
+  const search = bot.searchFor(state, moves, {}, { warm, ...share });
   const budget = Math.max(limits.minMs, limits.limitMs - CREDIT * spentMs);
   while (!search.done() && search.rollouts() < limits.iterations && now() - started < budget) search.step();
   return { move: search.best(), scored: search.scored(), pondered: Math.round(spentMs), rollouts: search.rollouts(), thoughtMs: Math.round(now() - started) };
@@ -63,9 +69,11 @@ function decide(log) {
 }
 
 const HANDLERS = {
-  init({ engine, seed, limitMs, minMs }) {
+  init({ engine, seed, limitMs, minMs, part = 0, workers = 1 }) {
     bot = engineFor(engine)(createRng(seed));
-    limits = { limitMs, minMs, iterations: budgetOf(engine.split("@")[1]).budget ?? Infinity };
+    const budget = budgetOf(engine.split("@")[1]).budget ?? Infinity;
+    share = workers > 1 ? { part } : {};
+    limits = { limitMs, minMs, iterations: workers > 1 ? partBudget(budget, workers, part) : budget };
   },
   ponder({ log }) {
     if (!bot.warms) return;

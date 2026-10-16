@@ -3660,3 +3660,9 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
   light ne faisait plus que 4 634 à 5 772 itérations ; après 20 s, **la 1.2 de la page tombait à 1 178 de ses 2 000**,
   plus faible que la version de son Elo. Corrigé : le worker ne pondère plus que pour un robot qui lit `warm`
   (`bot.warms`) ; la 1.2 refait ses 2 000 itérations (2,6 s au tour 3) quel que soit le temps du joueur.
+- **L'Oracle light 1.0 de la page** (`oracle-light`, Sami, 16/10) : le même arbre partagé entre deux arbres de 5 000
+  (`trees=2`), un par worker, les scores additionnés comme `createEnsemble` (`web/app/think-join.js`) : les mêmes coups
+  qu'en Node (tests, et 4 coups de la partie gardée comparés dans Chrome). 8,5 s au premier coup au lieu de 13,6, puis
+  7,5 / 4,4 / 1,7 s aux tours 3, 13 et 25 : sous les 10 s de la page. L'Observer passe lui aussi par les workers.
+  Sa force à deux arbres se mesure la nuit : `OracleLight-Pwl3-Trees2`, `-Trees3`, `-Trees4` contre la 1.2@2000 sur
+  les offsets 12 à 14 (à 2 000, deux arbres tenaient à 51,0 %, trois et quatre perdaient).

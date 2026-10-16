@@ -3143,6 +3143,78 @@
       "doneAt": "2026-10-16T10:53",
       "minutes": 41,
       "output": "backlog-runs/2026-10-16-10-13_LIGHT_DUEL_2_OracleLight-Pwl5.txt"
+    },
+    {
+      "id": "LIGHT_DUEL_1_OracleLight-Pwl3-Trees2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 12",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 2 arbres de 5 000 itérations (un par worker dans la page, Sami 16/10) ; offset 12, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl3-Trees2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 2 arbres de 5 000 itérations (un par worker dans la page, Sami 16/10) ; offset 13, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pwl3-Trees2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 2 arbres de 5 000 itérations (un par worker dans la page, Sami 16/10) ; offset 14, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_1_OracleLight-Pwl3-Trees4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=4@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 12",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 4 arbres de 2 500 itérations (un par worker dans la page, Sami 16/10) ; offset 12, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl3-Trees4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=4@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 4 arbres de 2 500 itérations (un par worker dans la page, Sami 16/10) ; offset 13, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pwl3-Trees4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=4@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 4 arbres de 2 500 itérations (un par worker dans la page, Sami 16/10) ; offset 14, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_1_OracleLight-Pwl3-Trees3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=3@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 12",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 3 arbres de 3 334 itérations (un par worker dans la page, Sami 16/10) ; offset 12, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl3-Trees3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=3@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 3 arbres de 3 334 itérations (un par worker dans la page, Sami 16/10) ; offset 13, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pwl3-Trees3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=3@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light partagé entre 3 arbres de 3 334 itérations (un par worker dans la page, Sami 16/10) ; offset 14, les donnes de pwl=3 en un arbre (59,3 / 55,0 / 53,6 %, 56,0 % sur 420 parties). À 2 000, 2 arbres tenaient (51,0 %), 3 et 4 perdaient.",
+      "status": "todo"
     }
   ]
 }

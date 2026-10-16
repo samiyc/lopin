@@ -1,10 +1,13 @@
 import { botChoice } from "./runner.js";
+import { joinReplies } from "./think-join.js";
 
 /**
  * How the page asks a bot for its move. Most bots answer on the spot. A bot
  * of the line-up with a `think` setting (`src/config/bots.js`) — the
- * experimental one — thinks in a worker (`think-worker.js`): up to
- * `think.limitMs` a move, and during the human's turn too.
+ * experimental one, the Oracle light — thinks in a worker (`think-worker.js`):
+ * up to `think.limitMs` a move, and during the human's turn too when its
+ * search takes a head start. `think.workers` > 1 runs an ensemble
+ * (`+trees=k`) one tree per worker, their scores added up (`think-join.js`).
  *
  * `{ ponder(log), decide(state, log) → Promise<{ move, scored }>, stop() }`.
  */
@@ -15,30 +18,41 @@ const fallback = (thinker, player, state) => {
 
 export function createThinker(player, think, seed) {
   if (!think) return { ponder() {}, stop() {}, decide: async (state) => botChoice(state, player) };
-  const worker = new Worker(new URL("./think-worker.js", import.meta.url), { type: "module" });
-  worker.postMessage({ type: "init", engine: player.engine, seed, ...think });
+  const count = think.workers ?? 1;
+  const workers = Array.from({ length: count }, (_, part) => {
+    const worker = new Worker(new URL("./think-worker.js", import.meta.url), { type: "module" });
+    worker.postMessage({ type: "init", engine: player.engine, seed, ...think, part, workers: count });
+    return worker;
+  });
   let answer = null;
+  let replies = [];
   const thinker = { last: null };
-  worker.onmessage = ({ data }) => {
-    if (data.type === "move") {
-      thinker.last = { pondered: data.pondered, rollouts: data.rollouts, thoughtMs: data.thoughtMs };
-      answer?.(data);
-    } else if (data.type === "error") answer?.(null);
-  };
-  worker.onerror = () => answer?.(null);
+  workers.forEach((worker, part) => {
+    worker.onmessage = ({ data }) => {
+      if (data.type === "error") return answer?.(null);
+      if (data.type !== "move") return undefined;
+      replies[part] = data;
+      if (replies.filter(Boolean).length < count) return undefined;
+      const joined = joinReplies(replies);
+      thinker.last = { pondered: joined.pondered, rollouts: joined.rollouts, thoughtMs: joined.thoughtMs };
+      return answer?.(joined);
+    };
+    worker.onerror = () => answer?.(null);
+  });
   const decide = (state, log) =>
     new Promise((resolve) => {
       const timer = setTimeout(() => answer?.(null), (think.limitMs ?? 10000) + 2000);
+      replies = [];
       answer = (res) => {
         clearTimeout(timer);
         answer = null;
         resolve(res ?? fallback(thinker, player, state));
       };
-      worker.postMessage({ type: "decide", log });
+      for (const worker of workers) worker.postMessage({ type: "decide", log });
     });
   return Object.assign(thinker, {
-    ponder: (log) => worker.postMessage({ type: "ponder", log }),
+    ponder: (log) => workers.forEach((worker) => worker.postMessage({ type: "ponder", log })),
     decide,
-    stop: () => worker.terminate(),
+    stop: () => workers.forEach((worker) => worker.terminate()),
   });
 }
