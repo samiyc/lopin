@@ -130,15 +130,18 @@ if (!ROOT) {
   const jokers = sum((result) => result.jokerEdge.won) / sum((result) => result.jokerEdge.games);
   console.log(`- Parties : ${(sum((result) => result.turns) / games).toFixed(1).replace(".", ",")} coups en moyenne · trois bornes à la suite ${pct(sum((result) => result.endings.adjacent) / games)} · majorité ${pct(sum((result) => result.endings.majority) / games)} · qui a posé plus de jokers gagne ${pct(jokers)}`);
 }
+// The run is saved before it is compared: a base run missing (a night job that failed) must not lose this one.
 const seeds = judged.shares.map((_, d) => seedOf(d));
-if (PAIRED) {
-  const { deals, gap, interval } = pairedDifference({ shares: judged.shares, seeds }, JSON.parse(await readFile(PAIRED, "utf8")));
-  console.log(`- Contre ${PAIRED}, donne par donne : ${signed(gap)} points (${signed(interval[0])} – ${signed(interval[1])}), ${deals} donnes en commun`);
-}
-console.log(`\nDurée : ${Math.round((Date.now() - started) / 1000)} s`);
 const seatTag = seat ? "-" + seat.id.replace(/[^a-z0-9]+/gi, "_") : "";
 const out = args.includes("--out") ? pathToFileURL(valueOf("--out")) : tmpFile(`deals-${OFFSET}${seatTag}.json`);
 await writeFile(out, `${JSON.stringify({ engine: ENGINE, seat: seat?.id ?? null, root: ROOT || null, plays: ROOT ? null : PLAYS, offset: OFFSET, ...judged, seeds }, null, 1)}\n`);
+if (PAIRED) {
+  const base = await readFile(PAIRED, "utf8").catch(() => null);
+  const effect = base && pairedDifference({ shares: judged.shares, seeds }, JSON.parse(base));
+  const line = effect ? `${signed(effect.gap)} points (${signed(effect.interval[0])} – ${signed(effect.interval[1])}), ${effect.deals} donnes en commun` : "fichier introuvable, à refaire avec --compare";
+  console.log(`- Contre ${PAIRED}, donne par donne : ${line}`);
+}
+console.log(`\nDurée : ${Math.round((Date.now() - started) / 1000)} s`);
 console.log(`→ ${decodeURIComponent(out.pathname)}`);
 if (POOL) {
   const { picked, band } = SIZE ? nearestMedian(judged.shares, SIZE) : { picked: judged.shares.map((_, d) => d).filter((d) => judged.shares[d] >= BALANCED[0] && judged.shares[d] <= BALANCED[1]), band: BALANCED };
