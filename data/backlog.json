@@ -3132,6 +3132,14 @@
       "doneAt": "2026-10-16T09:36",
       "minutes": 41,
       "output": "backlog-runs/2026-10-16-08-55_LIGHT_DUEL_1_OracleLight-Pwl5.txt"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl5",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=5@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light au niveau 5 : 58,6 % sur l'offset 12 ; un second jeu de donnes pour le comparer à pwl=3 (56,0 % sur 420 parties) (Sami, 16/10).",
+      "status": "todo"
     }
   ]
 }
