@@ -428,7 +428,12 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   #271-290). **On 06/10 Sami kept only his 45 favourites** (`--keep`) and got
   100 endgames like them, #291-390: his favourites have twice the legal
   moves and a strategist move that loses, hence `--min-moves 12 --core-fails`.
-  A dropped id is never reused: the browser still counts it as solved.
+  A dropped id is never reused: the browser still counts it as solved. On
+  16/10 (Sami nearly through them) more like his favourites joined from #422,
+  and the **double turn** (`--pass`, `kind: "pass"`, from #501, after #313: a
+  winning move leaves the opponent no legal move, so they pass and the mover
+  plays again; `src/sim/double-turn.js`). The core does not know it; the
+  solver does (a pass is a move to it), so the 1.2 plays it at 12 cards.
 - **Anything that runs a look-ahead bot in the page yields between moves**
   (`generateBotGame` is async): a whole observer game computed in one go
   froze the page for several seconds.
