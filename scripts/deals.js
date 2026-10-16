@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
 import { parseSeat } from "../src/sim/seat-rules.js";
-import { BALANCED, judgeDeals, nearestMedian, pairedDifference } from "./lib/deal-judge.js";
+import { BALANCED, judgeDeals, nearestMedian, pairedDifference, poolRuns } from "./lib/deal-judge.js";
 import { applyThreadsOption, runPool } from "./lib/pool.js";
 import { tmpFile } from "./lib/tmp.js";
 
@@ -36,10 +36,28 @@ import { tmpFile } from "./lib/tmp.js";
  * `--paired <file>` gives its effect against an earlier run on the same deals
  * (same `--offset`): the difference deal by deal, the deal's luck cancelled.
  * `--out <file>` names the output (default tmp/deals-<offset>[-<seat>].json).
+ * `--compare a.json[,a2.json] b.json[,b2.json]` plays nothing: the runs of
+ * each side pooled, their first player's shares and the paired effect.
  */
 const args = process.argv.slice(2);
 applyThreadsOption(args);
 const valueOf = (flag, fallback) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : fallback);
+const pct = (share) => `${(100 * share).toFixed(1).replace(".", ",")} %`;
+const signed = (share) => `${share >= 0 ? "+" : ""}${(100 * share).toFixed(1).replace(".", ",")}`;
+
+/** `--compare`: earlier runs read back, nothing played. */
+async function compareRuns(after, before) {
+  const read = async (list) => poolRuns(await Promise.all(list.split(",").map(async (file) => JSON.parse(await readFile(file, "utf8")))));
+  const [a, b] = [await read(after), await read(before)];
+  console.log(`- ${after} : premier joueur ${pct(a.first)} (${pct(a.interval[0])} – ${pct(a.interval[1])}), ${a.deals} donnes`);
+  console.log(`- ${before} : premier joueur ${pct(b.first)} (${pct(b.interval[0])} – ${pct(b.interval[1])}), ${b.deals} donnes`);
+  const { deals, gap, interval } = pairedDifference(a, b);
+  console.log(`- Différence donne par donne : ${signed(gap)} points (${signed(interval[0])} – ${signed(interval[1])}), ${deals} donnes en commun`);
+}
+if (args.includes("--compare")) {
+  await compareRuns(valueOf("--compare"), args[args.indexOf("--compare") + 2]);
+  process.exit(0);
+}
 const DEALS = Number(valueOf("--deals", 100));
 const PLAYS = Number(valueOf("--plays", 10));
 const ROOT = Number(valueOf("--root", 0));
@@ -95,7 +113,6 @@ const points = (winner) => (winner === null ? 0.5 : Number(winner === 0));
 if (ROOT) results.forEach((result, i) => result.values.forEach((value, g) => (firsts[tasks[i].from + g] = value)));
 else results.forEach((result, i) => result.winners.forEach((winner, g) => (firsts[tasks[i].from + g] += points(winner))));
 const judged = judgeDeals(firsts, ROOT ? 1 : PLAYS);
-const pct = (share) => `${(100 * share).toFixed(1).replace(".", ",")} %`;
 const how = ROOT ? `racine du tour 1 à ${ROOT} itérations, 2 graines` : `${PLAYS} parties par donne`;
 
 const who = ENGINE.includes("+omniscient=1") ? "Omniscient contre Omniscient" : `${ENGINE} contre lui-même`;
@@ -110,13 +127,13 @@ if (!ROOT) {
   // What else the rules move (docs/sieges.md): the games' length, how they are won.
   const sum = (field) => results.reduce((total, result) => total + field(result), 0);
   const games = sum((result) => result.games);
-  console.log(`- Parties : ${(sum((result) => result.turns) / games).toFixed(1).replace(".", ",")} coups en moyenne · trois bornes à la suite ${pct(sum((result) => result.endings.adjacent) / games)} · majorité ${pct(sum((result) => result.endings.majority) / games)}`);
+  const jokers = sum((result) => result.jokerEdge.won) / sum((result) => result.jokerEdge.games);
+  console.log(`- Parties : ${(sum((result) => result.turns) / games).toFixed(1).replace(".", ",")} coups en moyenne · trois bornes à la suite ${pct(sum((result) => result.endings.adjacent) / games)} · majorité ${pct(sum((result) => result.endings.majority) / games)} · qui a posé plus de jokers gagne ${pct(jokers)}`);
 }
 const seeds = judged.shares.map((_, d) => seedOf(d));
 if (PAIRED) {
   const { deals, gap, interval } = pairedDifference({ shares: judged.shares, seeds }, JSON.parse(await readFile(PAIRED, "utf8")));
-  const points = (share) => `${share >= 0 ? "+" : ""}${(100 * share).toFixed(1).replace(".", ",")}`;
-  console.log(`- Contre ${PAIRED}, donne par donne : ${points(gap)} points (${points(interval[0])} – ${points(interval[1])}), ${deals} donnes en commun`);
+  console.log(`- Contre ${PAIRED}, donne par donne : ${signed(gap)} points (${signed(interval[0])} – ${signed(interval[1])}), ${deals} donnes en commun`);
 }
 console.log(`\nDurée : ${Math.round((Date.now() - started) / 1000)} s`);
 const seatTag = seat ? "-" + seat.id.replace(/[^a-z0-9]+/gi, "_") : "";

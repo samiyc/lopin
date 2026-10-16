@@ -29,6 +29,15 @@ export function pairedDifference({ shares, seeds }, base) {
   return { deals: gaps.length, gap: mean(gaps), interval: meanInterval(gaps) };
 }
 
+/**
+ * Several `npm run deals` files read as one (`--compare`): their deals put together, the first player's share and
+ * its interval from the spread between deals — Wilson's for one game a deal, wider when deals were replayed.
+ */
+export function poolRuns(runs) {
+  const shares = runs.flatMap((run) => run.shares);
+  return { shares, seeds: runs.flatMap((run) => run.seeds), first: mean(shares), interval: meanInterval(shares), deals: shares.length };
+}
+
 /** Deals by tenth of the first player's share: `[0, 0.1)`, … , `[0.9, 1]`. */
 const tenths = (shares) => {
   const counts = Array.from({ length: 10 }, () => 0);

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { judgeDeals, nearestMedian, pairedDifference } from "../scripts/lib/deal-judge.js";
+import { judgeDeals, nearestMedian, pairedDifference, poolRuns } from "../scripts/lib/deal-judge.js";
 
 describe("a pool of the most disputed deals", () => {
   it("keeps the deals nearest the median share, in deal order, whatever the estimate's bias", () => {
@@ -50,5 +50,11 @@ describe("the first player's share when deals are replayed", () => {
     assert.equal(effect.deals, 3, "seed 5 was not in the base run");
     assert.ok(Math.abs(effect.gap - 1 / 3) < 1e-12);
     assert.ok(effect.interval[0] < effect.gap && effect.gap < effect.interval[1]);
+  });
+
+  it("reads two runs on two offsets as one, deals put together", () => {
+    const pooled = poolRuns([{ seeds: [1, 2], shares: [1, 0] }, { seeds: [7, 8, 9], shares: [1, 1, 0] }]);
+    assert.deepEqual([pooled.deals, pooled.first], [5, 3 / 5]);
+    assert.deepEqual(pooled.seeds, [1, 2, 7, 8, 9]);
   });
 });
