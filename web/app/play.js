@@ -73,6 +73,7 @@ function afterMove(player, entry) {
   game.lastMove = entry.move ? { border: entry.move.border - 1, side: player === game.human ? "bottom" : "top" } : null;
   game.selected = keepSelection(game.selected, previous, game.order, player === game.human);
   if (player === game.human) game.premove = null;
+  else if (!entry.move) toast(`${game.opponentName} passe son tour : aucun coup possible. À toi de rejouer.`); // nothing moved: it looked like a bug
   render();
 }
 
@@ -194,9 +195,7 @@ export function playCard(grip, border) {
 }
 
 /** No legal move left to the human: the turn passes, as it does for a bot. */
-function pass() {
-  if (canPass()) executeMove(null);
-}
+const pass = () => canPass() && executeMove(null);
 
 /** `{ first, opponent, name, bonus, openHands }`: the answers of "Nouvelle partie" (play-dialogs.js). */
 export function start(choices) {

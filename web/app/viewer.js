@@ -40,8 +40,12 @@ function arrangeHands() {
 /** "Tour 12": the move on show, as the log and the explain panel number it. */
 function turnText(frame) {
   if (!frame.entry) return "Distribution";
-  return frame.state.over ? `Tour ${frame.entry.turn} · partie terminée` : `Tour ${frame.entry.turn}`;
+  if (frame.state.over) return `Tour ${frame.entry.turn} · partie terminée`;
+  return frame.entry.pass ? `Tour ${frame.entry.turn} · passe` : `Tour ${frame.entry.turn}`;
 }
+
+/** A pass leaves the table as it was: say so, or the step looks like it did nothing (Sami, 16/10). */
+const passText = (log, frame) => (frame.entry?.pass ? `${playerName(log.players[frame.entry.player])} passe son tour : aucun coup possible.` : null);
 
 const last = () => viewer.frames.length - 1;
 const settledCount = () => (viewer.frames[last()] ? settledAtEnd(viewer.frames[last()].state).length : 0);
@@ -65,7 +69,7 @@ export function render() {
   const [handOrder, topOrder] = viewer.orders.map((orders) => orders[index]);
   const view = tableView(SPEC, frame.state, { bottom: 0, reveal: true, shown, lastMove, handOrder, topOrder });
   const names = { bottom: playerName(log.players[0]), top: playerName(log.players[1]) };
-  renderTable(view, { status: timer ? "Lecture…" : "En pause.", names, lastMove, showTools: true });
+  renderTable(view, { status: passText(log, frame) ?? (timer ? "Lecture…" : "En pause."), names, lastMove, showTools: true });
   $("turn").textContent = turnText(frame);
   $("frame").textContent = `Coup ${index} / ${last()}`;
   $("btn-toggle").textContent = timer ? "❚❚" : "▶";

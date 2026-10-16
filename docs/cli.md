@@ -11,6 +11,8 @@ page liste et que l'Elo compte.
 ```
 npm run cli                          # contre l'Expérimental 1.2 (2 000 itérations, ~1,5 s par coup)
 npm run cli -- --bot stratege        # ou basique
+npm run cli -- --bot oracle-light    # l'Oracle light 1.0, le moteur de la page (bots.js) : mêmes coups, mais ses deux
+                                     # arbres tournent l'un après l'autre (un fil) : ~15 s au premier coup, ~7 s en moyenne
 npm run cli -- --first bot           # le robot commence
 npm run cli -- --seed 42 --name sami # une donne choisie, ton prénom dans le replay
 npm run cli -- --gb                  # lettres anglaises S H C D au lieu de P H T C
