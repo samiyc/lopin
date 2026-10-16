@@ -2,7 +2,7 @@
  "note": "Le carnet du 1.3 : les essais depuis la sortie du 1.2 (08/10 au soir). Lu par npm run changelog -- 1.3 (scripts/changelog.js, page src/report/changelog/1.3.html).",
  "period": "depuis le 08/10 au soir",
  "since": "2026-10-08 17:15",
- "lead": "Ce qui se cherche pour le 1.3 : diversification des candidats à la racine pour éviter la saturation du Top 8 sur une seule carte, refonte d'équilibrage du Valet de Trèfle (V♣), et mode mains révélées.",
+ "lead": "Ce qui se cherche pour le 1.3 : battre la 1.2 à 2 000 simulations. La diversité, la forme de l'arbre, PUCT, les retours et le choix final n'ont pas passé la 1k@2k ; le diagnostic du 16/10 (docs/priorites-1.3.md) ne laisse que le bruit de la racine, attaqué par CommonDeals, en file pour la nuit. Le reste vient du budget, donc des oracles (Changelog Oracle).",
  "families": {
   "racine": "Diversité à la racine",
   "extension": "L'extension et équilibrage",
@@ -11,7 +11,8 @@
   "sortie": "La sortie",
   "lecteur": "La page",
   "outils": "Les outils",
-  "arbre": "La forme de l'arbre"
+  "arbre": "La forme de l'arbre",
+  "sieges": "Les sièges"
  },
  "benches": {
   "cout": "temps d'un coup",
@@ -746,6 +747,84 @@
    "verdict": "tendance",
    "idea": "Le niveau 5 (Sami, 16/10) à 10 000.",
    "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 52,1 %, 55,4 % (51,2 – 59,5) sur 280 parties. Au niveau de pwl=3 (56,0 % sur 420) : de 2 à 5, les niveaux se valent à 10 000 ; pwl=3 reste retenu."
+  },
+  {
+   "id": "mo-ismcts",
+   "name": "MO-ISMCTS : un arbre par joueur",
+   "family": "arbre",
+   "bench": "duel",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "perd",
+   "when": "16/10",
+   "idea": "Séparer les arbres des deux joueurs pour ne plus fusionner les stratégies sur les mains cachées (Cowling 2012).",
+   "note": "Écarté sur le papier (docs/priorites-1.3.md, docs/strategie.md « Tentatives écartées ») : à Bornage un coup (une carte sur une borne) est public, seules la donne et les pioches sont cachées, et elles sont tirées à la racine ; les arbres de MO-ISMCTS seraient ceux de la 1.2, et sa racine adverse fusionne aussi les mains. La fusion de stratégies n'explique d'ailleurs aucun échec du tableau."
+  },
+  {
+   "id": "jokers-control-variate",
+   "name": "Les jokers comme variable de contrôle",
+   "family": "racine",
+   "bench": "positions",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "perd",
+   "when": "16/10",
+   "idea": "Corriger le taux de victoire d'une simulation par la chance de la donne (les jokers reçus), pour réduire le bruit de la racine sans itération de plus.",
+   "note": "Écarté par la mesure : corrélation −0,04 avec les jokers de la main adverse tirée, +0,12 avec ceux de mes pioches ; au plus 1,5 % de la variance expliquée."
+  },
+  {
+   "id": "common-deals",
+   "name": "CommonDeals : les candidats de la racine sur les mêmes donnes (+crn=1)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 55.3,
+   "lo": 50.5,
+   "hi": 60,
+   "verdict": "attente",
+   "when": "16/10",
+   "idea": "La k-ième visite de chaque candidat de la racine joue la k-ième donne et le k-ième flux de simulation de la recherche : la racine compare ses candidats appariés, comme le Stratège 2 et le 0.7, sans itération de plus ni coût (1 288 contre 1 245 simulations/s).",
+   "note": "De jour : deux candidats sur une même donne corrèlent à ρ ≈ 0,34 à travers l'arbre (0,44 en simulations seules) ; regret de la racine à 400 −0,43 ± 0,34 point sur 80 positions (un doublement du budget : −0,37) ; deux graines jouent le même coup 28,5 % du temps au lieu de 19,2 %. Tri à 400 contre la 1.2@400 : 55,3 % (50,5 – 60,0) sur 360 parties — un tri rejette, il ne promeut pas. La 1k@2k (VALIDATE_LONG_1..4_CommonDeals) est en file après les 7 jobs de la nuit. Empreinte de la 1.2 inchangée (1d041613cd7bcd8d)."
+  },
+  {
+   "id": "ensemble-2x2000",
+   "name": "Ensemble2x2000 : deux arbres de 2 000, visites additionnées (une mesure)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "attente",
+   "when": "16/10",
+   "idea": "La qualité d'arbre de la 1.2 avec la moitié du bruit de son choix : ce que vaut ce bruit à 2 000, sur les donnes de Budget4000 (54,4 % sur les offsets 1 et 2).",
+   "note": "Pas une version (4 000 itérations en tout) : la borne de la famille du bruit. Autant que Budget4000 : CommonDeals a de la marge ; vers 50 % : la famille est close. NOISE_DUEL_1 et 2, en file."
+  },
+  {
+   "id": "seats-edge",
+   "name": "L'avantage du second joueur, mesuré (npm run seats, npm run deals)",
+   "family": "sieges",
+   "bench": "duel",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "neutre",
+   "when": "16/10",
+   "idea": "D'où vient l'avantage du siège à la règle de la page, et s'il dépend de la force des joueurs (docs/sieges.md).",
+   "note": "Le même robot des deux côtés, 40 000 donnes : le premier gagne 46,1 % avec Basique, 47,2 % avec strategist, 49,2 % avec le cœur de la 1.2 ; la famille de la 1.2 à 49,3 % dans les duels gardés. Le mécanisme : le second répond, il complète en dernier 54 % des bornes et les gagne alors à 74,5 %. L'écart se fait aux coups 20 à 30 ; sans revendications il grandit d'environ 2 points."
+  },
+  {
+   "id": "seats-peekall",
+   "name": "PeekAll (B) : le premier joueur voit la carte du dessus avant chaque coup",
+   "family": "sieges",
+   "bench": "duel",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "attente",
+   "when": "16/10",
+   "idea": "Rendre au premier joueur la carte d'information que le second a de plus : une phrase de règle, rien à compter.",
+   "note": "Pour les trois robots rapides, le premier revient à 50,3 / 49,5 / 50,8 % ; elle ne change ni la durée, ni la façon de gagner, ni le joker. Écartées : regarder au seul premier tour (A), 7 cartes (C, dix fois trop : +14 points). À 150 itérations la 1.2 en tire +5,3 ± 7,5 points : à confirmer sur la 1.2@400 (jobs SEATS_ et DEALS_ de docs/sieges.md §4, ~6 h 40, à mettre en file). La feuille de règles attend la décision de Sami."
   }
  ],
  "manualJobs": [],
@@ -957,13 +1036,60 @@
   "dbb4302": [
    "racine",
    "La nuit du 14/10 : Oracle1 garde la main, la racine n'est pas le goulot"
+  ],
+  "fc54d54": [
+   "sieges",
+   "npm run seats : l'avantage du second dans les duels gardés"
+  ],
+  "4b1b36e": [
+   "sieges",
+   "Les compensations du premier joueur, éteintes par défaut (seat)"
+  ],
+  "5bdd6b8": [
+   "sieges",
+   "npm run deals -- --compare : réunir et apparier des parties déjà jouées"
+  ],
+  "5bbdd15": [
+   "sieges",
+   "npm run deals garde sa partie avant de comparer"
+  ],
+  "ce81ada": [
+   "sieges",
+   "docs/sieges.md : l'avantage du second et la règle B"
+  ],
+  "cce4454": [
+   "racine",
+   "CommonDeals (+crn=1) : les candidats sur les mêmes donnes"
+  ],
+  "fa23fc8": [
+   "racine",
+   "docs/priorites-1.3.md : pourquoi les familles échouent, le plafond à 2 000"
+  ],
+  "bdecfbb": [
+   "outils",
+   "La nuit : la 1k@2k de CommonDeals et Ensemble2x2000 en file"
   ]
  },
  "next": [
   {
-   "when": "Maintenant",
+   "when": "Depuis le 15/10",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation ; seul le budget a payé. La suite se joue sur les oracles, qui ont leur propre carnet (Versions → Changelog Oracle, npm run changelog -- oracle) : l'Oracle light (56,0 % contre la 1.2@2000 sur 420 parties) est jouable dans la page depuis le 16/10. Ce carnet garde les essais faits pour faire évoluer la 1.2. Voir docs/1.3-to-oracle-shift.md."
+   "text": "La 1.2 reste le plafond à 2 000 simulations, sauf peut-être pour le bruit de la racine (CommonDeals, cette nuit) : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation ; seul le budget a payé. La suite se joue sur les oracles, qui ont leur propre carnet (Versions → Changelog Oracle, npm run changelog -- oracle) : l'Oracle light (56,0 % contre la 1.2@2000 sur 420 parties) est jouable dans la page depuis le 16/10. Ce carnet garde les essais faits pour faire évoluer la 1.2. Voir docs/1.3-to-oracle-shift.md."
+  },
+  {
+   "when": "Cette nuit",
+   "title": "CommonDeals : la 1k@2k",
+   "text": "Après les 7 duels des oracles : VALIDATE_LONG_1..4_CommonDeals (offsets 0 à 3, règle d'arrêt, ~1 h 40) puis Ensemble2x2000 (offsets 1 et 2, ~1 h 15). Prévision +1 à +2,5 points : la 1k@2k a une chance sur deux de passer même si l'idée est bonne. Lecture : npm run versus (commandes et tableau de décision dans docs/priorites-1.3.md §4). Passée (borne basse au-dessus de 50 %) : confirmation sur les offsets 4 et 5, puis la 1.3. Entre 50 et 52,7 % : CommonDeals-FinalLcb1. Sous 50 % : la famille du bruit est close, comme l'arbre."
+  },
+  {
+   "when": "Ensuite",
+   "title": "ReplyFpu : la première réponse adverse",
+   "text": "22 % des itérations de la 1.2 essaient une réponse adverse pour la première fois (444 réponses visitées par coup, 173 une seule fois). Donner à une réponse jamais essayée la valeur de son parent moins δ au lieu de l'infini (+fpu=δ, src/sim/first-play.js) : effet de signe inconnu, à coder puis trier à 400 seulement si CommonDeals tient."
+  },
+  {
+   "when": "Ensuite",
+   "title": "Les sièges : B sur la 1.2",
+   "text": "Mettre en file les 6 jobs de docs/sieges.md §4 (la 1.2@400 contre elle-même avec et sans B, et les omniscients, ~6 h 40) : B entre 49 et 51 % pour la 1.2 devient la règle proposée ; au-dessus de 51 %, le réglage B(N) (« pendant ses N premiers tours », N ≈ 12-13). La page devra montrer la carte du dessus au joueur humain qui commence."
   },
   {
    "when": "Ensuite",
@@ -1009,6 +1135,11 @@
    "when": "Fait",
    "title": "Dernière chance à 2 000 : quatre idées vues seulement à 400",
    "text": "Les quatre duels du 15/10 au soir, 250 parties à 2 000 contre la 1.2 : PUCT-2 47,2 %, Implicit2 50,8 % (à temps égal), ForkCut1 45,2 % (à temps égal), MarginBackup05 46,0 %. Tous écartés pour de bon : le tri à 400 les avait bien jugés."
+  },
+  {
+   "when": "Fait",
+   "title": "Le diagnostic : pourquoi les familles échouent (16/10)",
+   "text": "docs/priorites-1.3.md. À 2 000 la 1.2 est un bandit de 8 candidats sur un bandit d'environ 55 réponses adverses chacun, puis des simulations : 65 % des itérations s'arrêtent au 3ᵉ étage. La diversité et PUCT corrigeaient un biais qui n'était pas le bon, pw paie à 20 000 pas à 2 000, SimCertain coûte trop, le choix final relisait le même bruit, Ensemble payait sa baisse de bruit en qualité d'arbre. La fusion de stratégies n'explique aucun échec ; MO-ISMCTS serait la 1.2. Il reste le bruit de la comparaison à la racine (CommonDeals), sinon le budget."
   }
  ]
 }

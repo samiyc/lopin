@@ -567,7 +567,7 @@ document.addEventListener("pointerover", (event) => {
 document.addEventListener("pointermove", (event) => { if (!tip.hidden) moveTip(event); });
 document.addEventListener("pointerout", (event) => { if (event.target.closest?.("[data-tip]")) tip.hidden = true; });
 
-const FAMILY_COLORS = { phases: "#7a8b83", premiere: "#b07d1a", formes: "#8a5a9c", replays: "#1f7a52", jokers: "#c0761f", appats: "#9c4f6a", oracle: "#2b5f8f", fenetres: "#3f8f8a", vitesse: "#b3262f", outils: "#5d6a63", lecteur: "#6a7d2b", sortie: "#c9a227", reference: "#a0522d", racine: "#2b5f8f", extension: "#8a5a9c", mains: "#3f8f8a" };
+const FAMILY_COLORS = { phases: "#7a8b83", premiere: "#b07d1a", formes: "#8a5a9c", replays: "#1f7a52", jokers: "#c0761f", appats: "#9c4f6a", oracle: "#2b5f8f", fenetres: "#3f8f8a", vitesse: "#b3262f", outils: "#5d6a63", lecteur: "#6a7d2b", sortie: "#c9a227", reference: "#a0522d", racine: "#2b5f8f", extension: "#8a5a9c", mains: "#3f8f8a", arbre: "#1f7a52", sieges: "#b07d1a" };
 const VERDICTS = { gagne: ["gagne", "mark"], tendance: ["tendance", "brass"], neutre: ["neutre", "off-ink"], perd: ["perd", "seal"], attente: ["en attente", "off"] };
 const attempt = (name) => J.attempts.find((a) => a.name === name);
 const measured = J.attempts.filter((a) => a.score !== null);
