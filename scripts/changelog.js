@@ -3,8 +3,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import { BOT_LINEUP } from "../src/config/bots.js";
 
 /**
- * `npm run changelog -- [1.0]`: the changelog of a version of the
- * Experimental, out/changelog-exp-<version>.html (and its copy without the
+ * `npm run changelog -- [1.0 | oracle]`: the changelog of a version of the
+ * Experimental, out/changelog-exp-<version>.html, or the oracles' (out/changelog-oracle.html) (and its copy without the
  * skeleton in out/artifact/) — every attempt that led to it, the night jobs,
  * the speed passes, the oracle, with real positions to play through. One per
  * version (Sami, 03/10); the version defaults to the line-up's.
@@ -58,7 +58,8 @@ function puzzleKinds(puzzles) {
 const now = new Date();
 const pad = (n) => String(n).padStart(2, "0");
 const version = process.argv[2] ?? BOT_LINEUP.experimental.version;
-const name = `changelog-exp-${version}`;
+// `oracle` (Sami, 16/10): the oracles' own notebook, beside the Experimental's versions (data/changelog-oracle.json).
+const name = version === "oracle" ? "changelog-oracle" : `changelog-exp-${version}`;
 const journal = await read(`data/${name}.json`);
 const data = {
   version,
@@ -95,4 +96,5 @@ const cut = page.indexOf('<header class="band">');
 const head = '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n';
 await writeFile(new URL(`out/${name}.html`, ROOT), `${head}${page.slice(0, cut)}</head>\n<body>\n${page.slice(cut)}</body>\n</html>\n`);
 const measured = journal.attempts.filter((attempt) => attempt.score !== null).length;
-console.log(`Changelog Exp v${version} : ${measured} essais mesurés, ${data.commits.length} commits, ${data.jobs.length} jobs → out/${name}.html`);
+const title = version === "oracle" ? "Changelog Oracle" : `Changelog Exp v${version}`;
+console.log(`${title} : ${measured} essais mesurés, ${data.commits.length} commits, ${data.jobs.length} jobs → out/${name}.html`);

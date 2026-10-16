@@ -119,6 +119,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | `npm run build` | toutes les statistiques des rapports, à partir de zéro (environ 3 min) ; `--reports-only` refait seulement les pages | `out/data.json`, `out/deck-options.html` |
 | `npm run build:quick` | le même, sur de petits échantillons, pour travailler la mise en page | `out/` |
 | `npm run changelog -- [1.2]` | le changelog d'une version de l'Expérimental (la page `src/report/changelog/<version>.html`) | `out/changelog-exp-<version>.html` et `out/artifact/` |
+| `npm run changelog -- oracle` | le carnet des oracles (Sami, 16/10) : juges, oracle profond, Oracle light, sa place dans la page ; essais dans `data/changelog-oracle.json`, page `src/report/changelog/oracle.html` | `out/changelog-oracle.html` et `out/artifact/` |
 | `npm run retrospective` | la rétrospective du robot, archivée | `out/OLD/retrospective.html` |
 | `npm run pdf` | les règles en PDF, avec Edge ou Chrome sans fenêtre | `regles/regles.pdf` |
 | `npm run extension -- [--games 400] [--engine core:stfig6] [--threads N|max]` | l'extension (`docs/extension.md`) : des parties robot contre robot à la règle de la page, pour huit pioches (sans figure, chaque figure seule, les six) ; pour chaque figure, posée combien et quand, et combien de fois qui la pose gagne la borne et la partie (au-delà de 60 %, trop forte) | `data/extension.json`, `out/extension.html` |

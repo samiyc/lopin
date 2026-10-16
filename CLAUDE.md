@@ -384,9 +384,10 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   **51.5 % (49.4 – 53.7) over 1 500 games, no 1.3**; `FinalMean` (`final=0`) 51.9 % (49.3 – 54.5). An idea that
   changes how the tree reads its visits is judged at 2 000, never on a 400-800 screen. The **Oracle light**
   (`OracleLight-Pw2` = Oracle3's tree with `pwl=2` at 10 000) beats the 1.2@2000: 54.5 % (50.6 – 58.4) over 420
-  games, ~5 s a move a thread. Next: its speed in the page's worker, then playing it in the page with its Elo in the
-  Stats tab; the 1.3 changelog turns into the oracle's. Later: **Omniscient 1.0** (both hands and the pile seen), a
-  judge of the deal, not of the moves.
+  games, ~5 s a move a thread; `pwl=3` kept (56.0 %, 52.0 – 59.9), the page's Oracle light 1.0 on two workers. The
+  oracles have their own changelog (`npm run changelog -- oracle`, `data/changelog-oracle.json`, Sami 16/10); the
+  1.3's stays as it is, its attempts were meant to move the 1.2. Next: **Omniscient 1.0** (both hands and the pile
+  seen), a judge of the deal, not of the moves.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

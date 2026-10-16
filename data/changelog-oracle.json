@@ -1,0 +1,524 @@
+{
+ "note": "Le carnet des oracles (Sami, 16/10) : les juges, l'oracle profond, l'Oracle light et sa place dans la page. Les essais des oracles restent aussi dans le carnet du 1.3. Lu par npm run changelog -- oracle (scripts/changelog.js, page src/report/changelog/oracle.html).",
+ "period": "depuis le 14/10",
+ "since": "2026-10-14 00:00",
+ "lead": "Depuis le 15/10, la 1.2 est tenue pour le plafond à 2 000 simulations : seul le budget a payé. Ce carnet suit les oracles : les juges qui relisent la 1.2 (Oracle1 à Oracle3), l'oracle profond à 20 000, puis l'Oracle light à 10 000, jouable dans la page sur deux workers.",
+ "headline": {
+  "score": 56,
+  "text": "% pour l'Oracle light (pwl=3, 10 000) contre la 1.2@2000, sur 420 parties"
+ },
+ "families": {
+  "juge": "Les juges (Oracle1 à 3, Omniscient)",
+  "profond": "L'oracle profond (20 000)",
+  "light": "L'Oracle light (10 000)",
+  "page": "Dans la page"
+ },
+ "benches": {
+  "cout": "temps d'un coup",
+  "positions": "positions de l'oracle",
+  "jeu": "écarts rejoués au tour 30",
+  "duel": "parties entières",
+  "arbre2000": "arbre @2000, 400 parties",
+  "lineup": "contre le line-up, 300 parties"
+ },
+ "attempts": [
+  {
+   "id": "oracle2-duel",
+   "name": "Oracle2 contre Oracle1 : le juge avec le cœur, le solveur et la largeur de la 1.2",
+   "family": "juge",
+   "bench": "duel",
+   "score": 48.1,
+   "lo": 40.4,
+   "hi": 55.9,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "ORACLE_DUEL_1 et 2 (nuit du 14/10, 2 × 54 parties à 20 000 itérations, --page) : 50,0 % puis 46,3 %, 48,1 % réunis. Égalité : Oracle1 reste la référence (ORACLE.version 1) et relit les parties de la 1.2.",
+   "idea": "Un juge plus proche de la 1.2 (core=stfig6, exact=12, widen=7 ; 0,99× le temps d'une itération), pour que ses écarts ne viennent que de la racine et du budget."
+  },
+  {
+   "id": "v12-gaps-all",
+   "name": "La 1.2 relue par l'oracle : tous les écarts, contre le coup joué",
+   "family": "juge",
+   "bench": "jeu",
+   "score": 0.7,
+   "lo": -1.3,
+   "hi": 2.7,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "Oracle1 sur 1 642 positions des duels Budget4000 (tours 12-28), 851 écarts hors du top 3 de stfig6, tous rejoués (4 graines, suite par la 1.2, jugés au tour 30). Contre le favori du cœur +2,1 ± 1,7 ; contre le coup joué par la 1.2 +0,7 ± 2,0 : l'arbre rattrape ce que le cœur rate, et l'oracle ne joue pas mieux que la 1.2.",
+   "idea": "Trouver où la 1.2 se trompe en confrontant ses coups à ceux de l'oracle, confirmés par le jeu."
+  },
+  {
+   "id": "v12-gaps-root",
+   "name": "Hors du top 8 : les coups que la racine de la 1.2 ne regarde jamais",
+   "family": "juge",
+   "bench": "jeu",
+   "score": -0.2,
+   "lo": -2.4,
+   "hi": 2,
+   "verdict": "neutre",
+   "when": "14/10",
+   "note": "523 écarts sur 851 : le coup de l'oracle hors des 8 candidats ne vaut rien de plus que celui de la 1.2 (−0,2 ± 2,2 points). La sélection de la racine n'est pas le goulot, comme DistOracle1Root (49,4 %) le laissait voir.",
+   "idea": "Si la racine écartait de bons coups, régler la sélection du cœur paierait : c'était la stratégie envisagée pour le 1.3."
+  },
+  {
+   "id": "v12-gaps-top8",
+   "name": "Dans le top 8 (rangs 4 à 8) : la 1.2 voit le coup de l'oracle et en joue un autre",
+   "family": "juge",
+   "bench": "jeu",
+   "score": 3.6,
+   "lo": -1.1,
+   "hi": 8.3,
+   "verdict": "attente",
+   "when": "14/10",
+   "note": "328 écarts dans le top 8 : la 1.2 a joué le coup de l'oracle dans 175 ; dans les 153 autres, il tient +3,6 ± 4,7 points de plus. Pas significatif : à trancher avec plus de positions et 8 graines.",
+   "idea": "Le choix entre candidats, le bruit et le budget plutôt que la sélection, dans le sens de Budget4000 (+2,8 points à deux fois le temps)."
+  },
+  {
+   "family": "juge",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-all",
+   "name": "La 1.2 relue par Oracle3 : tous les écarts, contre le coup joué",
+   "score": 1.6,
+   "lo": -0.5,
+   "hi": 3.7,
+   "verdict": "neutre",
+   "note": "3 728 positions des duels Budget4000 (tours 12-28), 1 367 écarts hors du top 3 du cœur, tous rejoués (4 graines, suite par la 1.2, jugés au tour 30). Contre le favori du cœur +3,1 ± 1,5 ; contre le coup joué +1,6 ± 2,1 (643) ; la 1.2 a joué le coup de l'oracle dans 724. Bascules 29 contre 22. Même favori qu'Oracle1 dans 32 % des positions communes."
+  },
+  {
+   "family": "juge",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-root",
+   "name": "Oracle3, hors du top 8 du cœur",
+   "score": -1,
+   "lo": -5.5,
+   "hi": 3.5,
+   "verdict": "neutre",
+   "note": "171 écarts : -1,0 ± 4,5 contre le coup joué (Oracle1 : -0,2 ± 2,2). Les 8 candidats de la racine ne ratent rien qui compte, même pour un juge plus fort que la 1.2."
+  },
+  {
+   "family": "juge",
+   "bench": "jeu",
+   "when": "15/10",
+   "idea": "Refaire la relecture de la 1.2 avec Oracle3, le premier juge plus fort qu'elle (57,1 %), pour voir où ses écarts paient.",
+   "id": "v12-o3-gaps-top8",
+   "name": "Oracle3, dans le top 8 (rangs 4 à 8) : la 1.2 voit le coup et en joue un autre",
+   "score": 2.5,
+   "lo": 0.1,
+   "hi": 4.9,
+   "verdict": "tendance",
+   "note": "472 écarts : +2,5 ± 2,4 contre le coup joué, tout juste au-dessus de zéro ; Oracle1 disait +3,6 ± 4,7 (153) dans le même sens. Le choix final entre candidats coûte ~2,5 points quand la 1.2 a vu le bon coup."
+  },
+  {
+   "id": "budget-20000",
+   "name": "Budget20000 : la 1.2 à 20 000 itérations (le même arbre, dix fois le budget)",
+   "family": "profond",
+   "bench": "duel",
+   "score": 55.7,
+   "lo": 48.1,
+   "hi": 63.3,
+   "verdict": "tendance",
+   "when": "14/10",
+   "note": "Contre la 1.2@2000, 140 parties (offset 12, --page). ×2 rapportait +2,8 points (Budget4000), ×10 seulement +5,7 : 2 000 itérations sont un plafond. Mesuré : le 5e niveau de l'arbre n'est atteint qu'une fois.",
+   "idea": "Le premier candidat juge : un oracle doit battre la 1.2 nettement pour relire ses parties."
+  },
+  {
+   "id": "budget-20000-depth10-pw",
+   "name": "Budget20000-Depth10Pw : 20 000 itérations, 10 étages, élargissement progressif",
+   "family": "profond",
+   "bench": "duel",
+   "score": 57.1,
+   "lo": 52,
+   "hi": 62.3,
+   "verdict": "gagne",
+   "when": "14/10",
+   "note": "Contre la 1.2@2000, 280 parties : 61,4 % (55,1 – 67,8) sur l'offset 12, puis 52,9 % (44,9 – 60,8) sur l'offset 13 ; réunis 57,1 % (≈ 52,0 – 62,3). Le premier juge plus fort que la 1.2, sous les 60 % de la règle. Les niveaux 6 à 10 ne sont jamais atteints : le gain vient de pw, qui concentre les niveaux 3-4.",
+   "idea": "Garder la racine de la 1.2 (8 candidats) et donner le budget à la profondeur ; pw=1, qui perdait à 2 000, n'étrangle plus les plis 2-3 à 20 000."
+  },
+  {
+   "family": "profond",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl5",
+   "name": "Oracle3-Pwl5 : 20 000, pwl=5",
+   "score": 57.1,
+   "lo": 50.7,
+   "hi": 63.5,
+   "verdict": "neutre",
+   "idea": "Plus de budget, plus de profondeur ? Le niveau 5 (Sami, 16/10, 67,6 % au 5e niveau à 2 000).",
+   "note": "DEEP_DUEL_1, contre la 1.2@2000, 140 parties (offset 12, où Oracle3 = pwl=4 faisait 61,4 %) : 57,1 %, 54,3 / 60,0 %. Pas mieux qu'Oracle3."
+  },
+  {
+   "family": "profond",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl3",
+   "name": "Oracle3-Pwl3 : 20 000, pwl=3",
+   "score": 59.3,
+   "lo": 51.7,
+   "hi": 66.8,
+   "verdict": "neutre",
+   "idea": "Un niveau d'élargissement plus doux pour Oracle3.",
+   "note": "DEEP_DUEL_1, 140 parties (offset 12) : 59,3 %, 57,1 / 61,4 %. Dans le plateau d'Oracle3."
+  },
+  {
+   "family": "profond",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl2",
+   "name": "Oracle3-Pwl2 : 20 000, pwl=2",
+   "score": 57.1,
+   "lo": 49.6,
+   "hi": 64.7,
+   "verdict": "neutre",
+   "idea": "Le niveau de l'Oracle light, à 20 000.",
+   "note": "DEEP_DUEL_1, 140 parties (offset 12) : 57,1 %, 57,1 / 57,1 %. Plateau : à 20 000, le niveau compte peu, Oracle3 garde pwl=4."
+  },
+  {
+   "id": "pwl-levels",
+   "name": "pwl : l'élargissement progressif en niveaux, 0 à 5",
+   "family": "profond",
+   "bench": "jeu",
+   "when": "16/10",
+   "verdict": "neutre",
+   "idea": "Une échelle intuitive (Sami) : plus le niveau monte, plus l'arbre va en profondeur ; pw=k reste lu pour les anciens moteurs.",
+   "note": "pwl=1..5 ouvre les 7 réponses à 16, 25, 31, 36, 40 visites ; le 5e niveau à 2 000 : 20,0 / 28,6 / 40,1 / 55,7 / 67,6 % des coups (les niveaux 3 et 5, nouveaux, visés à 42,5 et 65 % ; le 5 avec k = 0,75 et au moins une réponse par nœud, k = 0,5 donnait 93,1 %). pw=1 = pwl=4, mêmes coups (afcf0cce6dde1a56)."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw1",
+   "name": "OracleLight-Pw1 : l'arbre d'Oracle3 à 10 000, pw=1",
+   "score": 50.7,
+   "lo": 44,
+   "hi": 57.5,
+   "verdict": "neutre",
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12, les donnes du 61,4 % de Depth10Pw) : 50,7 %, 48,6 / 52,9 %. 36 min sur 18 fils."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw2",
+   "name": "OracleLight-Pw2 : l'arbre d'Oracle3 à 10 000, pw=2",
+   "score": 54.5,
+   "lo": 50.6,
+   "hi": 58.4,
+   "verdict": "gagne",
+   "note": "LIGHT_DUEL_1 à 3, contre la 1.2@2000, offsets 12 à 14 : 57,9 / 47,1 / 58,6 %, réunis 54,5 % (50,6 – 58,4) sur 420 parties. Bat la 1.2 avec la moitié du budget d'Oracle3, environ 5 s par coup et par fil : le candidat pour la page. pw=2 s'écrit maintenant pwl=2."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "15/10",
+   "idea": "Un oracle jouable dans la page : l'arbre d'Oracle3 à 10 000 itérations, le pw à choisir pour ce budget.",
+   "id": "oracle-light-pw3",
+   "name": "OracleLight-Pw3 : l'arbre d'Oracle3 à 10 000, pw=3",
+   "score": 51.4,
+   "lo": 44.2,
+   "hi": 58.6,
+   "verdict": "neutre",
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12) : 51,4 %, 52,9 / 50,0 %. Rejoué le 16/10 sous le nom pwl=1, offset 13 : 52,9 % ; environ 52,1 % sur 280 parties."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl3",
+   "name": "OracleLight-Pwl3 : 10 000, pwl=3",
+   "score": 56,
+   "lo": 52,
+   "hi": 59.9,
+   "verdict": "tendance",
+   "idea": "Le niveau 3, seul pas encore essayé à 10 000.",
+   "note": "LIGHT_DUEL_1 à 3, contre la 1.2@2000, offsets 12 à 14 : 59,3 / 55,0 / 53,6 %, réunis 56,0 % (52,0 – 59,9) sur 420 parties ; pwl=2 sur les mêmes donnes : 54,5 %. Le choix de l'Oracle light : le plus de parties et la borne basse la plus haute."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl2-final1",
+   "name": "OracleLight-Pwl2-FinalLcb1 : 10 000, pwl=2 et final=1",
+   "score": 53.6,
+   "lo": 48.8,
+   "hi": 58.3,
+   "verdict": "neutre",
+   "idea": "Le choix final compterait plus quand les taux sont fiables (10 000 itérations).",
+   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 48,6 %, 53,6 % sur 280 parties ; pwl=2 seul sur les mêmes donnes : 52,5 %. Rien de plus."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl4",
+   "name": "OracleLight-Pwl4 : 10 000, pwl=4 (l'ancien pw=1)",
+   "score": 50,
+   "lo": null,
+   "hi": null,
+   "verdict": "neutre",
+   "idea": "Compléter la courbe des niveaux à 10 000.",
+   "note": "Offset 12 (sous le nom pw=1) : 50,7 % ; offset 13 : 49,3 % ; environ 50,0 % sur 280 parties."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl5",
+   "name": "OracleLight-Pwl5 : 10 000, pwl=5",
+   "score": 55.4,
+   "lo": 51.2,
+   "hi": 59.5,
+   "verdict": "tendance",
+   "idea": "Le niveau 5 (Sami, 16/10) à 10 000.",
+   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 52,1 %, 55,4 % (51,2 – 59,5) sur 280 parties. Au niveau de pwl=3 (56,0 % sur 420) : de 2 à 5, les niveaux se valent à 10 000 ; pwl=3 reste retenu."
+  },
+  {
+   "family": "page",
+   "bench": "cout",
+   "when": "16/10 11:52",
+   "id": "oracle-light-worker",
+   "name": "L'Oracle light dans le worker de Chrome (un arbre)",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "neutre",
+   "idea": "Sa vitesse dans think-worker.js avant de l'ajouter aux adversaires (Sami, 16/10).",
+   "note": "Partie gardée 2026-10-09 sami-vs-borne, un coup sur deux : 101 s de réflexion pour 15 coups (6,8 s en moyenne), 13,6 / 12,5 / 11,9 s aux trois premiers, au-dessus des 10 s de la page. Chrome un peu plus rapide que Node (10,0 contre 11,9 s au tour 6)."
+  },
+  {
+   "family": "page",
+   "bench": "cout",
+   "when": "16/10 11:52",
+   "id": "ponder-trees",
+   "name": "La pondération ne coupe plus les arbres",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "gagne",
+   "idea": "Trouvé par la mesure : le worker retirait la moitié du temps pondéré à la recherche, mais l'ISMCTS ignore warm.",
+   "note": "Après 20 s de réflexion du joueur, la 1.2 de la page tombait à 1 178 de ses 2 000 itérations (l'Oracle light à 4 634 sur 10 000 après 10 s). Seule la recherche plate pondère maintenant (bot.warms) ; la 1.2 refait ses 2 000 itérations quel que soit le temps du joueur."
+  },
+  {
+   "family": "page",
+   "bench": "cout",
+   "when": "16/10 12:23",
+   "id": "oracle-light-two-workers",
+   "name": "Oracle light 1.0 : deux arbres sur deux workers",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "gagne",
+   "idea": "trees=2, un arbre par worker, les scores additionnés comme createEnsemble (think-join.js) : les coups de Node.",
+   "note": "8,5 s au premier coup au lieu de 13,6, puis 7,5 / 4,4 / 1,7 s aux tours 3, 13 et 25 : sous les 10 s de la page. Mêmes coups qu'en Node (tests à 2 et 3 arbres, 4 coups comparés dans Chrome). Au choix de « Nouvelle partie » et d'« Observer »."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl3-trees2",
+   "name": "OracleLight-Pwl3-Trees2 : 2 arbres de 5 000",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "attente",
+   "idea": "L'Oracle light partagé entre 2 arbres, un par worker dans la page (Sami, 16/10).",
+   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees2, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl3-trees3",
+   "name": "OracleLight-Pwl3-Trees3 : 3 arbres de 3 334",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "attente",
+   "idea": "L'Oracle light partagé entre 3 arbres, un par worker dans la page (Sami, 16/10).",
+   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees3, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+  },
+  {
+   "family": "light",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl3-trees4",
+   "name": "OracleLight-Pwl3-Trees4 : 4 arbres de 2 500",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "attente",
+   "idea": "L'Oracle light partagé entre 4 arbres, un par worker dans la page (Sami, 16/10).",
+   "note": "LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees4, nuit du 16-17/10, contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique. À 2 000, deux arbres tenaient (51,0 %), trois et quatre perdaient."
+  }
+ ],
+ "manualJobs": [],
+ "commitLabels": {
+  "ed05aa5": [
+   "juge",
+   "Oracle2 (--oracle 2), la confirmation sur un autre corpus"
+  ],
+  "dbb4302": [
+   "juge",
+   "La nuit du 14/10 : Oracle1 garde la main, la racine n'est pas le goulot"
+  ],
+  "994fbcc": [
+   "profond",
+   "Budget20000 et Budget20000-Depth10Pw au backlog"
+  ],
+  "777852d": [
+   "profond",
+   "Les deux duels du soir de l'oracle profond, et sa confirmation"
+  ],
+  "47157f3": [
+   "profond",
+   "La forme de l'arbre dans chaque coup des replays (tree-stats.js)"
+  ],
+  "9f210dd": [
+   "profond",
+   "L'oracle profond : Depth10Pw 61,4 %, Budget20000 55,7 %"
+  ],
+  "18f6a68": [
+   "profond",
+   "L'oracle profond confirmé : 57,1 % sur 280 parties"
+  ],
+  "bcc6dea": [
+   "profond",
+   "pw=k : l'élargissement progressif k + √visites"
+  ],
+  "cab8d16": [
+   "profond",
+   "npm run tree-stats : la forme de l'arbre dans les duels gardés"
+  ],
+  "4ed1e8d": [
+   "juge",
+   "Oracle3 relit les parties de la 1.2 (nuit du 14/10)"
+  ],
+  "69509a8": [
+   "juge",
+   "Oracle3 relit la 1.2 : rangs 4 à 8 +2,5 ± 2,4, rien hors du top 8"
+  ],
+  "eb7f036": [
+   "light",
+   "De la 1.3 à un oracle jouable (docs/1.3-to-oracle-shift.md)"
+  ],
+  "01d5bba": [
+   "juge",
+   "Omniscient 1.0, un juge de la donne, pour plus tard"
+  ],
+  "4d9129e": [
+   "juge",
+   "Un pool de donnes équilibrées jugées par Omniscient 1.0"
+  ],
+  "338f1ce": [
+   "juge",
+   "Omniscient 1.0 sépare l'avantage du siège : règles ou information"
+  ],
+  "18c28a1": [
+   "light",
+   "Le premier tri de l'Oracle light au backlog (pw=1, 2, 3 à 10 000)"
+  ],
+  "7fb6421": [
+   "light",
+   "Premier tri de l'Oracle light : pw=2 57,9 % à 10 000"
+  ],
+  "726b8ee": [
+   "light",
+   "Le premier tri de l'Oracle light dans le plan"
+  ],
+  "2ab1617": [
+   "light",
+   "La confirmation d'OracleLight-Pw2 sur les offsets 13 et 14"
+  ],
+  "538168d": [
+   "light",
+   "OracleLight-Pw2 tient : 54,5 % (50,6 – 58,4) sur 420 parties"
+  ],
+  "71793bc": [
+   "profond",
+   "+pwl=0..4 : l'élargissement en niveaux, pw=k obsolète"
+  ],
+  "23194bc": [
+   "profond",
+   "pwl=5 ; Oracle3 aux niveaux 5, 3 et 2 au backlog"
+  ],
+  "8dc6937": [
+   "light",
+   "La nuit du 16/10 finie ; pwl=1 et pwl=3 sur d'autres donnes"
+  ],
+  "c2386c2": [
+   "light",
+   "Le plateau d'Oracle3, l'Oracle light à pwl=3 57,1 % sur 280 parties"
+  ],
+  "acec31d": [
+   "light",
+   "L'Oracle light à pwl=4 sur l'offset 13"
+  ],
+  "666237b": [
+   "light",
+   "L'Oracle light à pwl=5 sur l'offset 12"
+  ],
+  "f551196": [
+   "light",
+   "La courbe pwl de l'Oracle light à 10 000 : pwl=3 retenu"
+  ],
+  "fe30e4c": [
+   "light",
+   "L'Oracle light à pwl=5 sur l'offset 13"
+  ],
+  "d0f38e5": [
+   "light",
+   "pwl=5 : 55,4 % sur 280 parties, pwl=3 reste"
+  ],
+  "c171b12": [
+   "page",
+   "La pondération ne coupe plus les arbres ; l'Oracle light mesuré dans le worker"
+  ],
+  "4877ad2": [
+   "page",
+   "L'Oracle light 1.0 dans la page : deux arbres sur deux workers"
+  ],
+  "c7f9503": [
+   "page",
+   "Une réponse tardive d'un worker est ignorée"
+  ]
+ },
+ "next": [
+  {
+   "when": "Cette nuit",
+   "title": "L'Oracle light sur 2, 3 ou 4 arbres",
+   "text": "OracleLight-Pwl3-Trees2, -Trees3 et -Trees4 contre la 1.2@2000, offsets 12 à 14 (9 duels d'environ 40 min, npm run backlog). Si trees=2 tient, l'Oracle light 1.0 reste tel quel ; si trees=4 tient aussi, la page peut passer à 4 workers (2 à 4 s au premier coup), et Oracle3 devient jouable sur 4 workers à 20 000."
+  },
+  {
+   "when": "Ensuite",
+   "title": "L'Oracle light contre Oracle3",
+   "text": "Ce que coûte la moitié du budget : l'Oracle light (10 000) face à Oracle3 (20 000, 61,4 % contre la 1.2), en duel de nuit."
+  },
+  {
+   "when": "Ensuite",
+   "title": "Son score dans la page",
+   "text": "Son Elo est déjà dans l'onglet Stats (les parties de Sami contre lui) ; après les duels de nuit, une ligne Oracle light contre Expérimental 1.2 dans data/elo-duels.json, et son score affiché dans « Nouvelle partie » comme « 76 % vs Stratège »."
+  },
+  {
+   "when": "Maintenant",
+   "title": "Omniscient 1.0 : le juge de la donne",
+   "text": "Un moteur qui voit les deux mains et l'ordre de la pioche (MCTS à information parfaite, puis le solveur exact bien avant 12 cartes). Il ne juge pas les coups de la 1.2 (son meilleur coup exploite la pioche qu'il voit), il juge la donne : la part des parties décidées par la chance, un pool de 1 000 donnes équilibrées (40-60 %) pour valider en moins de parties, et l'avantage du premier ou du second joueur (règles ou information). Voir docs/1.3-to-oracle-shift.md."
+  },
+  {
+   "when": "Fait",
+   "title": "L'Oracle light dans la page",
+   "text": "Mesuré dans le worker (6,8 s par coup sur un fil, 13,6 s au premier), puis partagé entre deux arbres sur deux workers : 8,5 s au premier coup, les coups de Node. La mesure a corrigé la pondération, qui coupait les arbres de la page."
+  },
+  {
+   "when": "Fait",
+   "title": "Les niveaux pwl",
+   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : de pwl=2 à pwl=5 les niveaux se valent (54,5 à 56,0 %), pwl=3 est retenu (56,0 %, 52,0 – 59,9, 420 parties)."
+  }
+ ]
+}
