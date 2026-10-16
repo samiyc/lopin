@@ -963,42 +963,27 @@
   {
    "when": "Maintenant",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md. Premier tri de l'Oracle light (10 000 contre la 1.2@2000, 140 parties) : pw=1 50,7 %, pw=2 57,9 % (51,4 – 64,4), pw=3 51,4 % ; OracleLight-Pw2 confirmé : 54,5 % (50,6 – 58,4) sur 420 parties. Suite : sa vitesse dans le worker de la page."
+   "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. L'Oracle light (l'arbre d'Oracle3 à 10 000, pwl=3) bat la 1.2@2000 : 56,0 % (52,0 – 59,9) sur 420 parties, environ 5 s par coup et par fil en Node. Étape suivante : sa vitesse dans le worker de la page, puis le jouer dans la page avec son Elo dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md."
   },
   {
-   "when": "Fait",
-   "title": "Les niveaux pwl des oracles (nuit du 16/10)",
-   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : pwl=1 ~52,1 %, pwl=2 54,5 %, pwl=3 56,0 % (52,0 – 59,9, 420 parties), pwl=4 ~50,0 %, pwl=5 58,6 % (un duel) ; le bruit domine, pwl=3 est retenu. final=1 n'ajoute rien."
+   "when": "En cours",
+   "title": "L'Oracle light à pwl=5, second jeu de donnes",
+   "text": "pwl=5 n'a qu'un duel (58,6 % sur l'offset 12, 140 parties) ; l'offset 13 (LIGHT_DUEL_2_OracleLight-Pwl5, ~40 min) dira s'il rejoint pwl=3 (56,0 % sur 420 parties) ou retombe comme pwl=4. pwl=3 reste retenu tant que pwl=5 n'a pas ses 420 parties."
   },
   {
-   "when": "Fait",
-   "title": "Les rangs 4 à 8 : le choix entre candidats",
-   "text": "La piste d'Oracle3 (+2,5 ± 2,4 points quand la 1.2 voit le bon coup et en joue un autre) a été suivie par le choix final : FinalLcb1 51,5 % sur 1 500 parties, FinalMean 51,9 % sur 1 000. Le bruit du choix final ne se réduit qu'avec plus de simulations."
+   "when": "Ensuite",
+   "title": "L'Oracle light dans la page",
+   "text": "Mesurer ses itérations par seconde dans think-worker.js (Chrome, pondération pendant le tour du joueur comprise) : à 10 000 il faut ~5 s par coup en Node, le budget de la page se règle en temps (@t) sur ce qu'un joueur accepte d'attendre. Puis l'ajouter aux adversaires (un nom, une version, bots.js) et faire entrer ses parties dans l'Elo de l'onglet Stats."
   },
   {
-   "when": "Fait",
-   "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
-   "text": "FinalLcb1 (le taux moins 1 / √visites) passait tout juste la 1k@2k (52,7 %, 50,1 – 55,3) mais retombe sur la confirmation (50,4 puis 48,0 %) : 51,5 % (49,4 – 53,7) sur 1 500 parties. FinalMean : 51,9 % (49,3 – 54,5) sur 1 000. Pas de 1.3 ; une tendance d'un point et demi, l'option +final=c reste. Leçon : ce qui touche la lecture des visites se juge à 2 000."
-  },
-  {
-   "when": "Plus tard",
-   "title": "Choix final 2 : réserver des itérations aux finalistes",
-   "text": "Mis de côté avec le changement de cap du 15/10 (docs/1.3-to-oracle-shift.md) : RootHalving était neutre sur le V1, et le choix final ne s'est réglé qu'avec le budget."
-  },
-  {
-   "when": "Fait",
-   "title": "Choix final 3 : plusieurs graines (Ensemble)",
-   "text": "Déjà mesuré le 12/10 : Ensemble (+trees=2, deux arbres de 1 000, visites additionnées) fait 51,0 % sur 1 500 parties, neutre ; trois et quatre arbres perdent (42,0 % et 46,2 %). Chaque arbre perd en profondeur ce que la moyenne gagne en stabilité. Ne se reprendrait qu'avec un budget plus grand (ex. 2 × 2 000 dans la page)."
-  },
-  {
-   "when": "Fait",
-   "title": "Dernière chance à 2 000 : quatre idées vues seulement à 400",
-   "text": "Les quatre duels du 15/10 au soir, 250 parties à 2 000 contre la 1.2 : PUCT-2 47,2 %, Implicit2 50,8 % (à temps égal), ForkCut1 45,2 % (à temps égal), MarginBackup05 46,0 %. Tous écartés pour de bon : le tri à 400 les avait bien jugés."
-  },
-  {
-   "when": "Maintenant",
+   "when": "Ensuite",
    "title": "Le budget dans la page",
-   "text": "PUCT (49,8 %) et Ensemble (51,0 % sur 1 500 parties) ne rapportent rien ; le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 %). Dans la page, où le robot a jusqu'à 10 s et pondère pendant le tour du joueur, @4000 pourrait suffire : à mesurer en temps réel avant d'en faire une version. Le 12/10 : sous 2 000 itérations, le budget coûte cher (−37 % d'itérations, environ −9 points, SimCertain) ; une amélioration doit être quasi gratuite en temps."
+   "text": "Le seul gain mesuré est le budget brut (la 1.2 à 4 000 : 52,8 % ; à 20 000 : 55,7 %). La mesure dans le worker sert aussi la 1.2 : si la page tient 4 000 itérations en quelques secondes, une 1.2@4000 peut y jouer à côté de l'Oracle light. Sous 2 000 itérations le budget coûte cher (−37 % d'itérations, environ −9 points, SimCertain) : une amélioration doit être quasi gratuite en temps."
+  },
+  {
+   "when": "Ensuite",
+   "title": "L'Oracle light contre Oracle3, et trees=2 sur deux workers",
+   "text": "Où se place l'Oracle light (10 000) face à Oracle3 (20 000, 61,4 % contre la 1.2) : ce qu'on perd à moitié de budget. Ensemble (trees=2) était neutre à 2 × 1 000 ; à 2 × 10 000, deux workers de la page pourraient jouer Oracle3 dans le temps de l'Oracle light."
   },
   {
    "when": "Ensuite",
@@ -1014,6 +999,36 @@
    "when": "Plus tard",
    "title": "La qualité des simulations",
    "text": "Remarque de Sami (15/10) : chaque visite est une partie jouée jusqu'au bout par la politique de simulation ; si elle voit mal le long terme (joker gaspillé, bornes ouvertes en trop), tous les taux de l'arbre sont biaisés dans le même sens, et plus de visites ne corrigent pas le biais. Le choix final (FinalLcb1) en dépend directement. Piste : des simulations plus justes sans ralentir (elles prennent 93 % du temps ; sim-certain et trunc ont perdu), jugées d'abord avec npm run policy."
+  },
+  {
+   "when": "Plus tard",
+   "title": "Choix final 2 : réserver des itérations aux finalistes",
+   "text": "Mis de côté avec le changement de cap du 15/10 (docs/1.3-to-oracle-shift.md) : RootHalving était neutre sur le V1, et le choix final ne s'est réglé qu'avec le budget."
+  },
+  {
+   "when": "Fait",
+   "title": "Les niveaux pwl des oracles (nuit du 16/10)",
+   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : pwl=1 ~52,1 %, pwl=2 54,5 % (420 parties), pwl=3 56,0 % (52,0 – 59,9, 420 parties), pwl=4 ~50,0 %, pwl=5 58,6 % (un duel, le second en cours) ; le bruit domine, pwl=3 est retenu. final=1 n'ajoute rien."
+  },
+  {
+   "when": "Fait",
+   "title": "Les rangs 4 à 8 : le choix entre candidats",
+   "text": "La piste d'Oracle3 (+2,5 ± 2,4 points quand la 1.2 voit le bon coup et en joue un autre) a été suivie par le choix final : FinalLcb1 51,5 % sur 1 500 parties, FinalMean 51,9 % sur 1 000. Le bruit du choix final ne se réduit qu'avec plus de simulations."
+  },
+  {
+   "when": "Fait",
+   "title": "Choix final 1 : la meilleure moyenne plutôt que le plus visité",
+   "text": "FinalLcb1 (le taux moins 1 / √visites) passait tout juste la 1k@2k (52,7 %, 50,1 – 55,3) mais retombe sur la confirmation (50,4 puis 48,0 %) : 51,5 % (49,4 – 53,7) sur 1 500 parties. FinalMean : 51,9 % (49,3 – 54,5) sur 1 000. Pas de 1.3 ; une tendance d'un point et demi, l'option +final=c reste. Leçon : ce qui touche la lecture des visites se juge à 2 000."
+  },
+  {
+   "when": "Fait",
+   "title": "Choix final 3 : plusieurs graines (Ensemble)",
+   "text": "Déjà mesuré le 12/10 : Ensemble (+trees=2, deux arbres de 1 000, visites additionnées) fait 51,0 % sur 1 500 parties, neutre ; trois et quatre arbres perdent (42,0 % et 46,2 %). Chaque arbre perd en profondeur ce que la moyenne gagne en stabilité. Ne se reprendrait qu'avec un budget plus grand (ex. 2 × 2 000 dans la page)."
+  },
+  {
+   "when": "Fait",
+   "title": "Dernière chance à 2 000 : quatre idées vues seulement à 400",
+   "text": "Les quatre duels du 15/10 au soir, 250 parties à 2 000 contre la 1.2 : PUCT-2 47,2 %, Implicit2 50,8 % (à temps égal), ForkCut1 45,2 % (à temps égal), MarginBackup05 46,0 %. Tous écartés pour de bon : le tri à 400 les avait bien jugés."
   }
  ]
 }
