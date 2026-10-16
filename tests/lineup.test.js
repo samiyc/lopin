@@ -14,6 +14,12 @@ describe("the bot line-up", () => {
     assert.ok(BOT_IDS.includes(DEFAULT_OPPONENT));
   });
 
+  it("thinks in the page with no setting the worker skips, so the page plays the duels' bot", () => {
+    // think-worker.js searches with `searchFor` alone: the budget scales (late, early, smart), the pivot, tree reuse,
+    // the opponent memory and a clock budget (@t) of `scoreMoves` never run there (the review panel, 16/10).
+    for (const id of BOT_IDS.filter((bot) => BOT_LINEUP[bot].think)) assert.doesNotMatch(engineOf(id), /\+(late|early|smart|pivot|reuse|memory)=|@t\d/, id);
+  });
+
   it("gives a bot thinking on several workers one tree per worker", () => {
     for (const id of BOT_IDS) {
       const workers = BOT_LINEUP[id].think?.workers ?? 1;
