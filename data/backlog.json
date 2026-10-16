@@ -3018,7 +3018,10 @@
       "estimate": "80 min",
       "limit": 115,
       "why": "Oracle3 au niveau 5 (Sami, 16/10 : k = 0,75, 5e niveau dans 67,6 % des coups à 2 000) : plus de budget, plus de profondeur ? 140 parties contre la 1.2@2000 sur les donnes du 61,4 % d'Oracle3 (offset 12, pwl=4). Classe les niveaux, ne valide pas (± 6,5 points).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T02:20",
+      "minutes": 71,
+      "output": "backlog-runs/2026-10-16-01-09_DEEP_DUEL_1_Oracle3-Pwl5.txt"
     },
     {
       "id": "DEEP_DUEL_1_Oracle3-Pwl3",
@@ -3026,7 +3029,10 @@
       "estimate": "80 min",
       "limit": 115,
       "why": "Oracle3 au niveau 3 (31 visites) : à 10 000, le niveau 2 battait le 4. 140 parties contre la 1.2@2000 sur les donnes du 61,4 % d'Oracle3 (offset 12, pwl=4). Classe les niveaux, ne valide pas (± 6,5 points).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T03:26",
+      "minutes": 66,
+      "output": "backlog-runs/2026-10-16-02-20_DEEP_DUEL_1_Oracle3-Pwl3.txt"
     },
     {
       "id": "DEEP_DUEL_1_Oracle3-Pwl2",
@@ -3034,7 +3040,10 @@
       "estimate": "80 min",
       "limit": 115,
       "why": "Oracle3 au niveau 2 (25 visites), celui de l'Oracle light. 140 parties contre la 1.2@2000 sur les donnes du 61,4 % d'Oracle3 (offset 12, pwl=4). Classe les niveaux, ne valide pas (± 6,5 points).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T04:33",
+      "minutes": 67,
+      "output": "backlog-runs/2026-10-16-03-26_DEEP_DUEL_1_Oracle3-Pwl2.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pwl3",
@@ -3042,7 +3051,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 3, seul niveau pas encore essayé à 10 000 : 140 parties contre la 1.2@2000, offset 12 (OracleLight-Pw2 = pwl=2 : 57,9 % sur l'offset 12, 47,1 % sur le 13).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T05:09",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-16-04-33_LIGHT_DUEL_1_OracleLight-Pwl3.txt"
     },
     {
       "id": "LIGHT_DUEL_2_OracleLight-Pwl3",
@@ -3050,7 +3062,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 3, deuxième jeu de donnes : 140 parties contre la 1.2@2000, offset 13 (OracleLight-Pw2 = pwl=2 : 57,9 % sur l'offset 12, 47,1 % sur le 13).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T05:45",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-16-05-09_LIGHT_DUEL_2_OracleLight-Pwl3.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pwl2-FinalLcb1",
@@ -3058,7 +3073,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light avec le choix final final=1 (les taux de victoire sont plus fiables à 10 000 ; 51,5 % à 2 000) : 140 parties contre la 1.2@2000, offset 12 (OracleLight-Pw2 = pwl=2 : 57,9 % sur l'offset 12, 47,1 % sur le 13).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T06:21",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-16-05-45_LIGHT_DUEL_1_OracleLight-Pwl2-FinalLcb1.txt"
     },
     {
       "id": "LIGHT_DUEL_2_OracleLight-Pwl2-FinalLcb1",
@@ -3066,6 +3084,25 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light avec final=1, deuxième jeu de donnes : 140 parties contre la 1.2@2000, offset 13 (OracleLight-Pw2 = pwl=2 : 57,9 % sur l'offset 12, 47,1 % sur le 13).",
+      "status": "done",
+      "doneAt": "2026-10-16T06:58",
+      "minutes": 36,
+      "output": "backlog-runs/2026-10-16-06-21_LIGHT_DUEL_2_OracleLight-Pwl2-FinalLcb1.txt"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=1@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light au niveau 1 (l'ancien pw=3 : 51,4 % sur l'offset 12) sur un second jeu de donnes (Sami, 16/10).",
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pwl3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light au niveau 3 : 59,3 % puis 55,0 % sur les offsets 12 et 13 ; l'offset 14 le compare à pwl=2 sur les mêmes 420 parties (54,5 %).",
       "status": "todo"
     }
   ]
