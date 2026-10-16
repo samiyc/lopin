@@ -4,6 +4,7 @@ import { createRng } from "../core/random.js";
 import { engineFor } from "./bots.js";
 import { playGame } from "./game.js";
 import { dealFor } from "./hand-classes.js";
+import { parseSeat } from "./seat-rules.js";
 
 const zeroCounts = () => Object.fromEntries(FORMATIONS.map((f) => [f, 0]));
 
@@ -79,8 +80,9 @@ const deckOf = (spec, { deals = null, dealSeeds = null, handClass = null, deck =
 
 /** Game `g` of a batch: its rules, and its deck when the batch fixes one. Shared with the recorded duels (`src/replay/bot-games.js`). */
 export function gameRules(spec, options, g) {
-  const { order, jokerRule, endMode = "early", openHands = false } = options;
-  return { order, jokerRule, deck: deckOf(spec, options, g), endMode, openHands: Boolean(openHands) };
+  const { order, jokerRule, endMode = "early", openHands = false, seat = null } = options;
+  // `seat`: a compensation for the first player, by id or name (seat-rules.js); none in the printed game.
+  return { order, jokerRule, deck: deckOf(spec, options, g), endMode, openHands: Boolean(openHands), seat: parseSeat(seat) };
 }
 
 /**

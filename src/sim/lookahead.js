@@ -1,6 +1,7 @@
 import { isFigure } from "../core/figures.js";
 import { createRng } from "../core/random.js";
 import { applyMove, legalMoves } from "./game.js";
+import { dealKnowing, knowsHidden } from "./peek.js";
 import { unseenCards } from "./potential.js";
 
 /**
@@ -44,6 +45,8 @@ export function determinize(state, player, rng, hand = null) {
   // Rollouts settle borders at the end: proving claims on every simulated move
   // would cost a third of the search speed, as the certainty in 0.6 did.
   if (copy.endMode.startsWith("claim")) copy.endMode = "final";
+  // A seat compensation (peek.js): the cards the player saw stay where they are.
+  if (!hand && knowsHidden(state, player)) return dealKnowing(copy, state, player, { rng, unseen });
   if (state.openHands) {
     copy.hands[1 - player] = [...state.hands[1 - player]];
     copy.pile = rng.shuffle(withoutCards(unseen, state.hands[1 - player]));

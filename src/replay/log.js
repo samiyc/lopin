@@ -4,6 +4,7 @@ import { isJoker } from "../core/cards.js";
 import { drawsAfter } from "../core/figures.js";
 import { bySuitThenValue, formatCard, formatCards, parseCard, parseCards } from "../core/notation.js";
 import { applyMove, createGame, legalMoves } from "../sim/game.js";
+import { parseSeat } from "../sim/seat-rules.js";
 
 /**
  * Replay logs: everything that happened in a game, in plain JSON, cards
@@ -203,6 +204,12 @@ function adviceFor(state, advisor, entry) {
   return { advice, adviceGap: Math.max(0, best - played.gain), refused: false };
 }
 
+/** The game as a log was dealt: its rules, deck and seed, open hands, and a seat compensation (seat-rules.js). */
+function dealtGame(log) {
+  const { spec, order, jokerRule, endMode } = rulesOf(log.rules);
+  return createGame(spec, { order, jokerRule, endMode, deck: parseCards(spec, log.deck), rng: null, seed: log.seed, openHands: Boolean(log.rules?.openHands), seat: parseSeat(log.rules?.seat) });
+}
+
 /**
  * Every state of a logged game: `frames[0]` is the deal, `frames[i]` the
  * table after turn `i`, with the turn's log entry attached. With an
@@ -211,8 +218,7 @@ function adviceFor(state, advisor, entry) {
  */
 export function replayStates(log, { advisor = null } = {}) {
   if (log.format !== REPLAY_FORMAT) throw new Error(`Format de replay inconnu : ${log.format}`);
-  const { spec, order, jokerRule, endMode } = rulesOf(log.rules);
-  const state = createGame(spec, { order, jokerRule, endMode, deck: parseCards(spec, log.deck), rng: null, seed: log.seed, openHands: Boolean(log.rules?.openHands) });
+  const state = dealtGame(log);
   const frames = [{ state: snapshot(state), entry: null, ...NO_OPINION }];
   log.turns.forEach((entry, index) => {
     const opinion = entry.candidates ? NO_OPINION : adviceFor(state, advisor, entry);
@@ -229,8 +235,7 @@ export function replayStates(log, { advisor = null } = {}) {
  * strategy tests replay Sami's reported positions this way.
  */
 export function stateAt(log, turn) {
-  const { spec, order, jokerRule, endMode } = rulesOf(log.rules);
-  const state = createGame(spec, { order, jokerRule, endMode, deck: parseCards(spec, log.deck), rng: null, seed: log.seed, openHands: Boolean(log.rules?.openHands) });
+  const state = dealtGame(log);
   log.turns.slice(0, turn - 1).forEach((entry, index) => replayTurn(state, entry, index));
   return state;
 }

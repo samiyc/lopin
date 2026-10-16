@@ -58,7 +58,9 @@ export function playRecordedBatch(spec, { games, seed, players, labels, ids, ...
   const result = { wins: [0, 0], draws: 0, winners: [], logs: [] };
   for (let g = 0; g < games; g += 1) {
     const rules = gameRules(spec, options, g);
-    const log = recordedGame(spec, { ...rules, ids: { ...ids, endMode: rules.endMode } }, { players, seats, seed: seed + g });
+    // A seat compensation (seat-rules.js) is written into the rules, so the replay deals and peeks as played.
+    const seat = rules.seat ? { seat: rules.seat.id } : {};
+    const log = recordedGame(spec, { ...rules, ids: { ...ids, endMode: rules.endMode, ...seat } }, { players, seats, seed: seed + g });
     const { winner } = log.result;
     if (winner === null) result.draws += 1;
     else result.wins[winner] += 1;

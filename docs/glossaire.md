@@ -283,6 +283,36 @@ la main peut faire sont une grande part du jugement du cœur.
   même duel. Le score total annule ce biais (c'est le but des paires), pas le partage par siège :
   125 parties par siège et par duel, c'est **± 8,8 points**. Au décalage 1, Tree-5w, 6w et 7w
   font tous 58 à 61 % en commençant et 48 à 50 % en second ; aux décalages 3 et 4, l'inverse.
+- **L'avantage du second selon la force** (16/10, `docs/sieges.md`) : le même robot des deux côtés, à la
+  règle de la page, 40 000 donnes neuves : Basique (`greedy`) 46,1 %, `strategist` 47,2 %, le cœur de la
+  1.2 (`core:stfig6`) 49,2 % pour le premier joueur ; dans les duels gardés, la famille de la 1.2
+  (`exact=12`, @2000) 49,3 %, les arbres plus anciens 47,9 %. **L'écart fond quand le jeu s'améliore.**
+- **L'intervalle par donne** : les duels gardés rejouent les mêmes donnes (1 951 donnes pour 35 178 parties,
+  ~18 fois chacune), et une donne pèse sur toutes ses parties ; compté par donne (`npm run seats`), le
+  48,5 % des arbres @2000 et plus devient 46,9 – 50,1 %. Pour la part du premier joueur, une partie par
+  donne neuve (`npm run deals -- --plays 1`) est le plan le moins cher.
+- **Les compensations du siège** (Sami, 16/10, `src/config/seats.js`, `npm run deals -- --seat`) : ce qu'on
+  rend au premier joueur, éteint par défaut (`createGame` sans `seat` est le jeu imprimé). Les noms, et leur
+  id (`src/sim/seat-rules.js`) :
+
+  | Nom | La règle | Id |
+  | --- | --- | --- |
+  | `Peek1` (A) | il regarde la carte du dessus de la pioche avant son tout premier coup | `peek=1+turns=1` |
+  | `PeekAll` (B) | il la regarde avant chacun de ses coups | `peek=1` |
+  | `PeekTurnsN` (B(N)) | il la regarde pendant ses N premiers tours (B = B(15) : sa dernière pioche est à son 15e tour) | `peek=1+turns=N` |
+  | `PeekUntilClaim` | il la regarde tant qu'aucune borne n'est gagnée | `peek=1+claim=1` |
+  | `PeekInPlayN` | il la regarde tant qu'il y a moins de N cartes posées | `peek=1+inplay=N` |
+  | `Peek2First` (A2) | il regarde les deux cartes du dessus avant son premier coup (la seconde est la pioche du second) | `peek=2+turns=1` |
+  | `Hand7First` (C) | 7 cartes au premier joueur, 6 au second | `hands=7/6` |
+  | `Hand5Second` | 6 cartes au premier, 5 au second | `hands=6/5` |
+  | `Hand7SkipN` | 7 cartes au premier joueur, qui ne pioche pas après son N-ième coup (la carte en plus pour N tours) | `hands=7/6+skip=N` |
+
+  Les robots se servent de ce qu'il a vu (`src/sim/peek.js`) : `determinize` laisse les cartes vues à leur
+  place (sur la pioche, ou dans la main adverse quand le second les a piochées), le cœur compte la carte qu'il
+  va piocher comme une carte de sa main ; une revendication, elle, ne se prouve jamais avec ce qu'il a vu.
+- **L'effet apparié d'une règle** (`npm run deals -- … --paired fichier`) : la part du premier joueur avec la
+  compensation moins sans, donne par donne sur les mêmes donnes (même `--offset`), avec son intervalle ; la
+  chance de la donne s'annule.
 - **Comparer sur les mêmes donnes** : deux versions jouées sur le même offset se comparent partie
   par partie (même fichier de duel trié, même numéro de partie, `duels/index.json`) : leurs
   graines de recherche diffèrent, mais pas les mains. Deux largeurs de l'arbre finissent une

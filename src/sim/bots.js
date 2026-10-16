@@ -3,9 +3,10 @@ import { withEndgame } from "./end-urgency.js";
 import { handOf, withFigureMoves } from "./figure-gains.js";import { withCertainties } from "./certainty.js";
 import { EXPERIMENT, budgetOf, coreEngines, coreOf, experimentalSettings } from "./experimental.js";
 import { ismctsBot, ismctsSettings } from "./ismcts.js";
-import { PAIR_DISCOUNT, createPairMemo, createValuer, sidePotential, unseenCards } from "./potential.js";
+import { PAIR_DISCOUNT, createPairMemo, createValuer, sidePotential } from "./potential.js";
 import { IDEAS, IDEA_WEIGHTS, STRATEGIST_IDEAS, borderFactors } from "./ideas.js";
 import { lookaheadBot } from "./lookahead.js";
+import { coreCounts } from "./peek.js";
 import { phaseBot, phaseSettings } from "./phase.js";
 import { pickBest, pickSampled } from "./pick.js";
 import { searchBot } from "./search.js";
@@ -71,16 +72,17 @@ export const strategistBot = (rng, options = {}) => {
 
 function views(state, lite = false, params = undefined) {
   const player = state.current;
-  const [valuer, unseen] = [createValuer(state), unseenCards(state, player)];
+  // The counts (peek.js): the unseen cards and the draws to come — less what a seat compensation let the player see.
+  const [valuer, { unseen, draws, next, theirHand, theirDraws }] = [createValuer(state), coreCounts(state, player)];
   // Each view gets its own memo: the same pair is judged many times in one scoring. Written out field by field:
-  // built on every scoring of every rollout, a spread costs more than it reads.
-  const mine = { valuer, unseen, hand: null, draws: Math.ceil(state.pile.length / 2), jokerAllowed: jokerGate(state, player), memo: createPairMemo(), withoutCard: new Map(), params, alone: undefined, lite };
+  // built on every scoring of every rollout, a spread costs more than it reads. `next`: the cards it will draw.
+  const mine = { valuer, unseen, hand: null, draws, jokerAllowed: jokerGate(state, player), memo: createPairMemo(), withoutCard: new Map(), params, alone: undefined, lite, next };
   // The opponent's hand is unknown: treat it as more draws from the unseen.
   const theirs = {
     valuer,
     unseen,
-    hand: [],
-    draws: state.spec.handSize + Math.floor(state.pile.length / 2),
+    hand: theirHand,
+    draws: theirDraws,
     jokerAllowed: jokerGate(state, 1 - player),
     memo: createPairMemo(), lite, params,
   };
@@ -104,7 +106,7 @@ export function explainMove(state, move) {
 
 /** The bot's own odds of winning each border, as things stand. */
 function borderChances(state, player, { mine, threat }) {
-  const withHand = { ...mine, hand: handOf(state, player) };
+  const withHand = { ...mine, hand: mine.next ? [...handOf(state, player), ...mine.next] : handOf(state, player) };
   return state.borders.map((border, index) => winChance(sidePotential(border.sides[player], withHand), threat[index], mine.params));
 }
 
@@ -209,6 +211,8 @@ function withoutCard(state, context, card) {
   if (cached) return cached;
   const hand = [...handOf(state, state.current)];
   hand.splice(hand.indexOf(card), 1);
+  // The cards it will draw (a peek, `views`) weigh as cards of the hand; they cannot be played yet.
+  if (context.next) hand.push(...context.next);
   // The same fields as the view it comes from (`views`), the hand aside: written out, not spread.
   const { valuer, unseen, draws, jokerAllowed, memo, params, lite } = context;
   const view = { valuer, unseen, hand, draws, jokerAllowed, memo, withoutCard: context.withoutCard, params, alone: undefined, lite };

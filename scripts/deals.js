@@ -1,8 +1,10 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { pathToFileURL } from "node:url";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
-import { BALANCED, judgeDeals, nearestMedian } from "./lib/deal-judge.js";
+import { parseSeat } from "../src/sim/seat-rules.js";
+import { BALANCED, judgeDeals, nearestMedian, pairedDifference } from "./lib/deal-judge.js";
 import { applyThreadsOption, runPool } from "./lib/pool.js";
 import { tmpFile } from "./lib/tmp.js";
 
@@ -26,6 +28,14 @@ import { tmpFile } from "./lib/tmp.js";
  *
  * Default engine: the 1.2's tree, omniscient, at 400 iterations (the daytime
  * budget); a judgment worth keeping runs at night with `--engine`.
+ *
+ * The seat advantage (docs/sieges.md): `--engine E --plays 1` is any engine
+ * against itself, one game a deal (the cheapest way to the first player's
+ * share: replaying a deal adds less than a new one). `--seat <id | name>`
+ * plays a compensation for the first player (`src/config/seats.js`), and
+ * `--paired <file>` gives its effect against an earlier run on the same deals
+ * (same `--offset`): the difference deal by deal, the deal's luck cancelled.
+ * `--out <file>` names the output (default tmp/deals-<offset>[-<seat>].json).
  */
 const args = process.argv.slice(2);
 applyThreadsOption(args);
@@ -38,6 +48,9 @@ const OFFSET = Number(valueOf("--offset", 0));
 const POOL = valueOf("--pool", null);
 // `--size N`: the pool keeps the N deals nearest the median share, the most disputed whatever the root's bias.
 const SIZE = Number(valueOf("--size", 0));
+const seat = parseSeat(valueOf("--seat", null));
+if (seat && ROOT) throw new Error("--seat se joue en parties entières (--plays), pas avec --root");
+const PAIRED = valueOf("--paired", null);
 const DEALS_SEED = SEED + 7_000_001 * (OFFSET + 1);
 const seedOf = (deal) => DEALS_SEED + 7919 * deal;
 // Five deals a task: a game of omniscients at 400 takes half a minute a thread, so smaller tasks keep 18 threads busy.
@@ -49,7 +62,7 @@ function playTasks() {
   const tasks = [];
   for (let from = 0; from < DEALS; from += CHUNK) {
     for (let play = 0; play < PLAYS; play += 1) {
-      tasks.push({ ...DUEL_ROW, endMode, keepWinners: true, players: [ENGINE, ENGINE], games: Math.min(CHUNK, DEALS - from), seed: DEALS_SEED + 104729 * (tasks.length + 1), deals: seedOf(from), from });
+      tasks.push({ ...DUEL_ROW, endMode, seat: seat?.id ?? null, keepWinners: true, players: [ENGINE, ENGINE], games: Math.min(CHUNK, DEALS - from), seed: DEALS_SEED + 104729 * (tasks.length + 1), deals: seedOf(from), from });
     }
   }
   return tasks;
@@ -85,16 +98,30 @@ const judged = judgeDeals(firsts, ROOT ? 1 : PLAYS);
 const pct = (share) => `${(100 * share).toFixed(1).replace(".", ",")} %`;
 const how = ROOT ? `racine du tour 1 à ${ROOT} itérations, 2 graines` : `${PLAYS} parties par donne`;
 
-console.log(`# Omniscient contre Omniscient — ${DEALS} donnes, ${how}, ${ENGINE.replace(/@\d+$/, "")}, offset ${OFFSET}\n`);
+const who = ENGINE.includes("+omniscient=1") ? "Omniscient contre Omniscient" : `${ENGINE} contre lui-même`;
+const seatNote = seat ? `, compensation ${seat.id}` : "";
+console.log(`# ${who} — ${DEALS} donnes, ${how}, ${ENGINE.replace(/@\d+$/, "")}, offset ${OFFSET}${seatNote}\n`);
 const spread = ROOT ? " (estimé par la racine, qui le surestime)" : ` (${pct(judged.firstInterval[0])} – ${pct(judged.firstInterval[1])}) sur ${DEALS * PLAYS} parties`;
 console.log(`- Premier joueur : ${pct(judged.first)}${spread}`);
 console.log(`- Donnes décidées (un camp à au moins 90 %) : ${pct(judged.decided)}`);
 console.log(`- Donnes équilibrées (40 à 60 % pour le premier joueur) : ${pct(judged.balanced)}`);
 console.log(`- Par dixième de la part du premier joueur : ${judged.tenths.join(" · ")}`);
-console.log(`\nDurée : ${Math.round((Date.now() - started) / 1000)} s`);
-const out = tmpFile(`deals-${OFFSET}.json`);
+if (!ROOT) {
+  // What else the rules move (docs/sieges.md): the games' length, how they are won.
+  const sum = (field) => results.reduce((total, result) => total + field(result), 0);
+  const games = sum((result) => result.games);
+  console.log(`- Parties : ${(sum((result) => result.turns) / games).toFixed(1).replace(".", ",")} coups en moyenne · trois bornes à la suite ${pct(sum((result) => result.endings.adjacent) / games)} · majorité ${pct(sum((result) => result.endings.majority) / games)}`);
+}
 const seeds = judged.shares.map((_, d) => seedOf(d));
-await writeFile(out, `${JSON.stringify({ engine: ENGINE, root: ROOT || null, plays: ROOT ? null : PLAYS, offset: OFFSET, ...judged, seeds }, null, 1)}\n`);
+if (PAIRED) {
+  const { deals, gap, interval } = pairedDifference({ shares: judged.shares, seeds }, JSON.parse(await readFile(PAIRED, "utf8")));
+  const points = (share) => `${share >= 0 ? "+" : ""}${(100 * share).toFixed(1).replace(".", ",")}`;
+  console.log(`- Contre ${PAIRED}, donne par donne : ${points(gap)} points (${points(interval[0])} – ${points(interval[1])}), ${deals} donnes en commun`);
+}
+console.log(`\nDurée : ${Math.round((Date.now() - started) / 1000)} s`);
+const seatTag = seat ? "-" + seat.id.replace(/[^a-z0-9]+/gi, "_") : "";
+const out = args.includes("--out") ? pathToFileURL(valueOf("--out")) : tmpFile(`deals-${OFFSET}${seatTag}.json`);
+await writeFile(out, `${JSON.stringify({ engine: ENGINE, seat: seat?.id ?? null, root: ROOT || null, plays: ROOT ? null : PLAYS, offset: OFFSET, ...judged, seeds }, null, 1)}\n`);
 console.log(`→ ${decodeURIComponent(out.pathname)}`);
 if (POOL) {
   const { picked, band } = SIZE ? nearestMedian(judged.shares, SIZE) : { picked: judged.shares.map((_, d) => d).filter((d) => judged.shares[d] >= BALANCED[0] && judged.shares[d] <= BALANCED[1]), band: BALANCED };

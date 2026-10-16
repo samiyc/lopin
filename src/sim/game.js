@@ -3,6 +3,8 @@ import { isFigure } from "../core/figures.js";
 import { getEvaluator } from "../core/evaluator.js";
 import { createRng } from "../core/random.js";
 import { figureMoves, playFigure } from "./figure-moves.js";
+import { noteMove, peekIfDue, startKnowledge } from "./peek.js";
+import { skipsDraw } from "./seat-rules.js";
 import { checkVictory, claimBorders, decideByCount, isFull, resolveBorder, resolveFinal } from "./settle.js";
 
 export { resolveFinal };
@@ -48,10 +50,27 @@ const emptyBorders = (count) =>
     figures: [null, null],
   }));
 
-export function createGame(spec, { order, jokerRule, rng, endMode = "early", deck = null, figures = [], openHands = false, seed = null }) {
+/** The two starting hands, off the top of `pile`: `spec.handSize` each, or the sizes of a seat compensation. */
+function dealHands(spec, pile, seat) {
+  const [first, second] = seat?.handSizes ?? [spec.handSize, spec.handSize];
+  return [pile.splice(0, first), pile.splice(0, second)];
+}
+
+/** What each seat saw by peeking (peek.js): null in the printed game; the base game only. */
+function knowledgeOf(seat, figures) {
+  if (!seat?.peek) return null;
+  if (figures.length > 0) throw new Error("Regarder la pioche : le jeu de base seulement, sans figures");
+  return startKnowledge();
+}
+
+/**
+ * `seat` (`seat-rules.js`, off by default): a compensation for the first player — other hand sizes, or a look at
+ * the top of the pile (`peek.js`).
+ */
+export function createGame(spec, { order, jokerRule, rng, endMode = "early", deck = null, figures = [], openHands = false, seed = null, seat = null }) {
   const shuffled = buildShuffledDeck(spec, figures, deck, rng);
   const pile = [...shuffled];
-  return {
+  const state = {
     spec,
     order,
     jokerRule,
@@ -59,9 +78,11 @@ export function createGame(spec, { order, jokerRule, rng, endMode = "early", dec
     deck: shuffled,
     evaluator: getEvaluator(spec, order, jokerRule),
     pile,
-    hands: [pile.splice(0, spec.handSize), pile.splice(0, spec.handSize)],
+    hands: dealHands(spec, pile, seat),
     borders: emptyBorders(spec.borders),
     openHands: Boolean(openHands),
+    seat,
+    known: knowledgeOf(seat, figures),
     rng,
     pileRng: resolvePileRng(seed, rng),
     seed,
@@ -78,6 +99,8 @@ export function createGame(spec, { order, jokerRule, rng, endMode = "early", dec
     winType: null,
     over: false,
   };
+  if (state.known) peekIfDue(state);
+  return state;
 }
 
 const jokersOn = (side) => side.filter(isJoker).length;
@@ -125,6 +148,7 @@ export function applyMove(state, move) {
   state.turn += 1;
   state.current = 1 - player;
   if (!state.over && state.endMode !== "early") settleAfter(state, player, move);
+  if (state.known) peekIfDue(state);
 }
 
 /** What the end modes settle once a move (or a pass) is made. */
@@ -154,11 +178,18 @@ function placeCard(state, player, { card, border }) {
   if (isJoker(card)) state.jokersPlayed[player] += 1;
   state.lastMoves = state.lastMoves.map((last, seat) => (seat === player ? { card, border } : last));
   if (target.sides[player].length === 3) target.completedAt[player] = state.turn;
-  if (state.pile.length > 0) hand.push(state.pile.pop());
+  drawAfter(state, player, card);
   if (state.endMode === "early" && isFull(target)) {
     const winner = resolveBorder(state, border);
     checkVictory(state, winner);
   }
+}
+
+/** The draw after a card laid (none on a seat compensation's skipped turn); under a peek, what each seat still knows. */
+function drawAfter(state, player, card) {
+  const drawn = state.pile.length > 0 && !skipsDraw(state, player) ? state.pile.pop() : null;
+  if (drawn !== null) state.hands[player].push(drawn);
+  if (state.known) noteMove(state, player, card, drawn);
 }
 
 /** Nobody can play: settle what is left, then more borders wins, equal is a draw. */
@@ -168,8 +199,8 @@ function endOnExhaustion(state) {
 }
 
 /** Runs a match to its end; `bots[p].choose(state, moves)` picks a move. */
-export function playGame(spec, { order, jokerRule, rng, bots, endMode = "early", deck = null, openHands = false }) {
-  const state = createGame(spec, { order, jokerRule, rng, endMode, deck, openHands });
+export function playGame(spec, { order, jokerRule, rng, bots, endMode = "early", deck = null, openHands = false, seat = null }) {
+  const state = createGame(spec, { order, jokerRule, rng, endMode, deck, openHands, seat });
   const guard = spec.borders * 6 * 3;
   while (!state.over && state.turn < guard) {
     const moves = legalMoves(state);
