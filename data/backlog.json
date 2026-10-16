@@ -3095,7 +3095,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 1 (l'ancien pw=3 : 51,4 % sur l'offset 12) sur un second jeu de donnes (Sami, 16/10).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T07:36",
+      "minutes": 37,
+      "output": "backlog-runs/2026-10-16-06-59_LIGHT_DUEL_2_OracleLight-Pwl1.txt"
     },
     {
       "id": "LIGHT_DUEL_3_OracleLight-Pwl3",
@@ -3103,6 +3106,17 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 3 : 59,3 % puis 55,0 % sur les offsets 12 et 13 ; l'offset 14 le compare à pwl=2 sur les mêmes 420 parties (54,5 %).",
+      "status": "done",
+      "doneAt": "2026-10-16T08:12",
+      "minutes": 37,
+      "output": "backlog-runs/2026-10-16-07-36_LIGHT_DUEL_3_OracleLight-Pwl3.txt"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Pwl4",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=4@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 13",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light au niveau 4 (l'ancien pw=1 : 50,7 % sur l'offset 12) sur un second jeu de donnes, pour compléter la courbe (Sami, 16/10).",
       "status": "todo"
     }
   ]
