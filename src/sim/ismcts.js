@@ -9,7 +9,7 @@ import { backUpEstimates, blendedRate, estimateLeaf } from "./implicit-minimax.j
 import { applyMove, legalMoves } from "./game.js";
 import { createHalving, parseHalving } from "./halving.js";
 import { createReader, inferredHands, pickHand } from "./infer.js";
-import { determinize } from "./lookahead.js";
+import { determinize, seeAll } from "./lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
 import { withTreeStats } from "./tree-stats.js";
@@ -156,9 +156,12 @@ function ratingOf(root, scored, ctx) {
   });
 }
 
+/** An iteration's game: a deal of the unseen cards, or (`omniscient`, Omniscient 1.0) the true one. */
+const dealFor = (ctx) => (ctx.omniscient ? seeAll(ctx.state, ctx.deals) : determinize(ctx.state, ctx.player, ctx.deals, ctx.hands && pickHand(ctx.hands, ctx.deals)));
+
 /** One iteration: a deal, a walk down the tree, a rollout, and the result carried back up. */
 function iterate(root, ctx) {
-  const game = determinize(ctx.state, ctx.player, ctx.deals, ctx.hands && pickHand(ctx.hands, ctx.deals));
+  const game = dealFor(ctx);
   const { path, played } = descend(root, game, ctx);
   // `implicit`: the new node's estimate, from its position before the rollout plays it on.
   if (ctx.implicit > 0) estimateLeaf(path, game, ctx.oddsOf);
@@ -185,7 +188,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(createRng(deals.int(2 ** 31))),
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final,
+    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -295,7 +298,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

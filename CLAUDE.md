@@ -386,8 +386,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   (`OracleLight-Pw2` = Oracle3's tree with `pwl=2` at 10 000) beats the 1.2@2000: 54.5 % (50.6 – 58.4) over 420
   games, ~5 s a move a thread; `pwl=3` kept (56.0 %, 52.0 – 59.9), the page's Oracle light 1.0 on two workers. The
   oracles have their own changelog (`npm run changelog -- oracle`, `data/changelog-oracle.json`, Sami 16/10); the
-  1.3's stays as it is, its attempts were meant to move the 1.2. Next: **Omniscient 1.0** (both hands and the pile
-  seen), a judge of the deal, not of the moves.
+  1.3's stays as it is, its attempts were meant to move the 1.2. **Omniscient 1.0** (16/10): `+omniscient=1` on any
+  ISMCTS tree plays every iteration on the true deal (`seeAll`, both hands and the pile seen; off by default,
+  fingerprints unchanged) — a judge of the deal, not of the moves (it exploits the pile it sees). At 400 the
+  omniscient 1.2 beats the 1.2 73.6 % (62.9 – 84.3); `npm run deals` plays it against itself: the first seat's
+  share between omniscients, the decided and the balanced deals.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

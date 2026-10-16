@@ -94,6 +94,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | `npm run pivots` | quand viennent les tournants d'une partie | — |
 | `npm run hiding` | l'Expérimental cache-t-il son jeu ? | — |
 | `npm run policy` | que vaut le robot qui joue les simulations de la recherche ? | — |
+| `npm run deals -- [--deals N] [--plays K] [--engine E] [--offset K]` | Omniscient 1.0 (`+omniscient=1`, les deux mains et la pioche vues) contre lui-même : l'avantage du premier joueur entre omniscients (la part des règles), les donnes décidées d'avance (la chance), les donnes équilibrées (40-60 %, le pool pour juger les idées) ; `scripts/deals.js`, @400 par défaut | `tmp/deals-<offset>.json` |
 | `npm run mine -- [fichier d'auto-jeu]` | les parties d'auto-jeu suivent-elles déjà les règles prouvées ? | — |
 
 ## Puzzles

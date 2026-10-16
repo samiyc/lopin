@@ -23,6 +23,7 @@
     "llm-examples": "node scripts/llm-examples.js",
     "agent-examples": "node scripts/agent-examples.js",
     "duel": "node scripts/duel.js",
+    "deals": "node scripts/deals.js",
     "replays": "node scripts/replays.js",
     "fingerprint": "node scripts/fingerprint.js",
     "duel:long": "node scripts/duel.js --long",

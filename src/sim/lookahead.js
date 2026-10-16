@@ -61,6 +61,19 @@ export function determinize(state, player, rng, hand = null) {
   return copy;
 }
 
+/**
+ * The game as it truly is (Omniscient 1.0, `+omniscient=1`): both hands and the
+ * pile's order seen, nothing dealt. Rollouts settle borders at the end, as from
+ * `determinize`.
+ */
+export function seeAll(state, rng) {
+  const copy = cloneState(state);
+  copy.pileRng = rng;
+  copy.rng = rng;
+  if (copy.endMode.startsWith("claim")) copy.endMode = "final";
+  return copy;
+}
+
 /** The extension's figures `player` cannot see: in the deck, not in their hand, not laid. None in the base game. */
 function hiddenFigures(state, player) {
   const figures = state.deck.filter(isFigure);

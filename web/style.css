@@ -299,6 +299,10 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
   .layout.folded #panel-play { display: flex; gap: 6px; width: fit-content; }
   .layout.folded #panel-play button { width: 48px; }
   .topbar { flex-wrap: wrap; row-gap: 8px; column-gap: 16px; padding: 10px 16px; }
+  /* The opponent's six backs on one line (Sami, 16/10): smaller, they show nothing; on a phone the suit counts go below. */
+  .top-row { flex-wrap: wrap; row-gap: 8px; }
+  .hand.top { flex-wrap: nowrap; gap: 6px; }
+  .hand.top .card.back { --card-w: 34px; --card-h: 50px; }
   :root { --card-w: 44px; --card-h: 62px; --overlap: 20px; }
 }
 

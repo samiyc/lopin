@@ -369,7 +369,14 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   cartes cachées, puis le solveur exact bien avant 12 cartes). Ce n'est pas un oracle : son meilleur coup
   exploite la pioche qu'il voit (« fusion de stratégies »), il ne juge donc pas les coups de la 1.2, sauf
   en toute fin de partie. Il juge **la donne** : qui gagne avec un jeu parfait des deux côtés, et de
-  combien. Le détail : `docs/1.3-to-oracle-shift.md`.
+  combien. Le détail : `docs/1.3-to-oracle-shift.md`. **Construit le 16/10** : l'option `+omniscient=1` de
+  l'ISMCTS (`seeAll` dans `lookahead.js` : chaque itération part de la vraie donne au lieu d'en tirer une),
+  sur n'importe quel arbre, par exemple `ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@400` ; le
+  juge de la donne est `npm run deals`. Le solveur exact n'intervient encore qu'une fois la pioche vide.
+- **Juger les donnes** (`npm run deals`, `scripts/deals.js`) : Omniscient contre lui-même sur N donnes, K
+  parties chacune (seules les graines des robots changent) : la part du premier joueur entre omniscients (la
+  part des règles dans l'avantage du siège), les donnes **décidées** (un camp gagne au moins 90 % des
+  parties) et les donnes **équilibrées** (40 à 60 % pour le premier joueur), le futur pool de validation.
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6
