@@ -65,9 +65,16 @@ function dealOf(spec, deals, handClass, g) {
   return handClass ? dealFor(spec, deals + 7919 * g, handClass) : createRng(deals + 7919 * g).shuffle(buildDeck(spec));
 }
 
+/** `dealSeeds` (a pool of deals, `npm run deals -- --pool`): game g dealt from its own seed, as `dealOf` deals from `deals` + 7919 g. */
+const pooledDeal = (spec, dealSeeds, g) => (dealSeeds ? createRng(dealSeeds[g]).shuffle(buildDeck(spec)) : null);
+
+/** Game `g`'s deck: the batch's fixed one, else the pool's, else one dealt from `deals` (null: shuffled by the game). */
+const deckOf = (spec, { deals = null, dealSeeds = null, handClass = null, deck = null }, g) => deck ?? pooledDeal(spec, dealSeeds, g) ?? dealOf(spec, deals, handClass, g);
+
 /** Game `g` of a batch: its rules, and its deck when the batch fixes one. Shared with the recorded duels (`src/replay/bot-games.js`). */
-export function gameRules(spec, { order, jokerRule, deals = null, handClass = null, deck: fixed = null, endMode = "early", openHands = false }, g) {
-  return { order, jokerRule, deck: fixed ?? dealOf(spec, deals, handClass, g), endMode, openHands: Boolean(openHands) };
+export function gameRules(spec, options, g) {
+  const { order, jokerRule, endMode = "early", openHands = false } = options;
+  return { order, jokerRule, deck: deckOf(spec, options, g), endMode, openHands: Boolean(openHands) };
 }
 
 /**

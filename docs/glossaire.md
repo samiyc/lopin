@@ -381,6 +381,13 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   parties chacune (seules les graines des robots changent) : la part du premier joueur entre omniscients (la
   part des règles dans l'avantage du siège), les donnes **décidées** (un camp gagne au moins 90 % des
   parties) et les donnes **équilibrées** (40 à 60 % pour le premier joueur), le futur pool de validation.
+  Deux façons de juger une donne : **K parties** (`--plays K`, la donne rejouée K fois en entier, K parties de
+  coût) ou **la racine** (`--root I`, une seule recherche longue au tour 1, deux graines : la part que la racine
+  promet au premier joueur, quelques coups de coût ; elle le surestime, car le coup le plus visité est le meilleur
+  de plusieurs estimations bruitées, mais elle classe les donnes).
+- **Pool de donnes** (`--pool fichier`) : les graines des donnes équilibrées qu'écrit `npm run deals`, que
+  `npm run duel -- a b --pool fichier` rejoue dans l'ordre, des deux côtés. Un second pool (autre `--offset`)
+  sert de réserve pour les verdicts ; une version se promeut toujours aussi sur les donnes ordinaires.
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6

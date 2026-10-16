@@ -1,6 +1,17 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { judgeDeals } from "../scripts/lib/deal-judge.js";
+import { DECKS } from "../src/config/decks.js";
+import { gameRules } from "../src/sim/simulate.js";
+
+describe("a pool of deals", () => {
+  it("deals game g from the pool's seed g, the deck the judge saw", () => {
+    const spec = DECKS.classique;
+    // The judge's deal d is `deals` + 7919 d: seed 6 is deal 0 of a batch dealt from 6.
+    assert.deepEqual(gameRules(spec, { dealSeeds: [5, 6] }, 1).deck, gameRules(spec, { deals: 6 }, 0).deck);
+    assert.notDeepEqual(gameRules(spec, { dealSeeds: [5, 6] }, 0).deck, gameRules(spec, { deals: 6 }, 0).deck);
+  });
+});
 
 describe("judging deals between omniscients", () => {
   it("tells decided deals from balanced ones, and gives the first player's share", () => {

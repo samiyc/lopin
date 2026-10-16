@@ -94,7 +94,8 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | `npm run pivots` | quand viennent les tournants d'une partie | — |
 | `npm run hiding` | l'Expérimental cache-t-il son jeu ? | — |
 | `npm run policy` | que vaut le robot qui joue les simulations de la recherche ? | — |
-| `npm run deals -- [--deals N] [--plays K] [--engine E] [--offset K]` | Omniscient 1.0 (`+omniscient=1`, les deux mains et la pioche vues) contre lui-même : l'avantage du premier joueur entre omniscients (la part des règles), les donnes décidées d'avance (la chance), les donnes équilibrées (40-60 %, le pool pour juger les idées) ; `scripts/deals.js`, @400 par défaut | `tmp/deals-<offset>.json` |
+| `npm run deals -- [--deals N] [--plays K \| --root I] [--engine E] [--offset K] [--pool fichier]` | Omniscient 1.0 (`+omniscient=1`, les deux mains et la pioche vues) juge N donnes : l'avantage du premier joueur entre omniscients (la part des règles), les donnes décidées d'avance (la chance), les donnes équilibrées (40-60 %). `--plays K` rejoue chaque donne K fois en entier (K parties par donne) ; `--root I` lit la racine d'une recherche de I itérations au tour 1, 2 graines (quelques coups par donne : 20 donnes en 7 s à 400, mais la racine surestime le premier joueur) ; `--pool` écrit les graines des donnes équilibrées ; `scripts/deals.js`, @400 par défaut | `tmp/deals-<offset>.json`, le fichier de `--pool` |
+| `npm run duel -- a b --pool fichier` | le duel sur les donnes d'un pool (`npm run deals -- --pool`), dans l'ordre, des deux côtés ; il s'arrête au bout du pool | comme `npm run duel` |
 | `npm run mine -- [fichier d'auto-jeu]` | les parties d'auto-jeu suivent-elles déjà les règles prouvées ? | — |
 
 ## Puzzles

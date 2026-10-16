@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { BOT_IDS, BOT_LINEUP, botTag, engineOf } from "../src/config/bots.js";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
@@ -38,8 +39,8 @@ import { runPool, workerCount } from "./lib/pool.js";
  *   npm run duel -- experimental:400 stratege --long
  */
 const args = process.argv.slice(2);
-// A flag's value (`--hands weak`) is not a bot.
-const flagValue = (i) => i > 0 && args[i - 1] === "--hands";
+// A flag's value (`--hands weak`, `--pool file`) is not a bot.
+const flagValue = (i) => i > 0 && ["--hands", "--pool"].includes(args[i - 1]);
 const [a = "experimental", b = "stratege"] = args.filter((arg, i) => !arg.startsWith("--") && !/^\d+$/.test(arg) && !flagValue(i));
 const valueOf = (flag) => (args.includes(flag) ? Number(args[args.indexOf(flag) + 1]) : 0);
 const exact = valueOf("--games") || null;
@@ -57,6 +58,10 @@ const HAND_LABELS = { weak: "faibles", strong: "fortes" };
 const handsNote = handClass ? `, mains ${HAND_LABELS[handClass]} au 1er joueur` : "";
 const openHands = args.includes("--open") || args.includes("--reveal-hands");
 const openNote = openHands ? ", mains révélées" : "";
+// `--pool file` (npm run deals -- --pool): the duel plays those deals, in order, from both seats, instead of fresh ones.
+const poolFile = args.includes("--pool") ? args[args.indexOf("--pool") + 1] : null;
+const pool = poolFile ? JSON.parse(readFileSync(poolFile, "utf8")).seeds : null;
+const poolNote = pool ? `, pool ${poolFile} (${pool.length} donnes)` : "";
 
 const engine = (id) => (id in BOT_LINEUP ? engineOf(id) : id);
 const tag = (id) => (id in BOT_LINEUP ? botTag(id) : id);
@@ -76,7 +81,9 @@ const slow = isSlowEngine(engine(a)) || isSlowEngine(engine(b));
 const save = shouldSave({ asked: args.includes("--save"), profileName, engines: [engine(a), engine(b)] });
 const logs = [];
 const scale = slow ? profile.slow : profile.fast;
-const plan = exact ? { min: exact, max: exact, chunk: Math.max(1, Math.ceil(exact / 20)) } : scale;
+const planned = exact ? { min: exact, max: exact, chunk: Math.max(1, Math.ceil(exact / 20)) } : scale;
+// A pool holds so many deals: the duel stops there.
+const plan = pool ? { ...planned, min: Math.min(planned.min, pool.length), max: Math.min(planned.max, pool.length) } : planned;
 const threads = Math.max(2, workerCount());
 const pct = (share) => `${(100 * share).toFixed(1).replace(".", ",")} %`;
 
@@ -102,7 +109,9 @@ while (!verdict.stop) {
   for (const [players, labels] of [[[engine(a), engine(b)], [tag(a), tag(b)]], [[engine(b), engine(a)], [tag(b), tag(a)]]]) {
     for (let t = 0; t < tasksPerSeat; t += 1) {
       tally.tasks += 1;
-      tasks.push({ ...DUEL_ROW, endMode, handClass, openHands, keepWinners: true, keepLogs: save, labels, players, games: Math.min(plan.chunk, perSeat - t * plan.chunk), seed: base + 104729 * tally.tasks, deals: base + 7 * 104729 * (round + t) });
+      const games = Math.min(plan.chunk, perSeat - t * plan.chunk);
+      const from = tally.games + t * plan.chunk;
+      tasks.push({ ...DUEL_ROW, endMode, handClass, openHands, keepWinners: true, keepLogs: save, labels, players, games, seed: base + 104729 * tally.tasks, deals: base + 7 * 104729 * (round + t), dealSeeds: pool?.slice(from, from + games) });
     }
   }
   const results = await runPool(new URL("./lib/sim-worker.js", import.meta.url), tasks);
@@ -136,12 +145,12 @@ function conclusion() {
 }
 process.stdout.write(
   [
-    `${tag(a)} contre ${tag(b)} — ${2 * tally.games} parties (${tally.games} de chaque côté), règle ${endMode}${handsNote}${openNote}, profil ${profileLabel}, ${((Date.now() - started) / 1000).toFixed(1)} s`,
+    `${tag(a)} contre ${tag(b)} — ${2 * tally.games} parties (${tally.games} de chaque côté), règle ${endMode}${handsNote}${openNote}${poolNote}, profil ${profileLabel}, ${((Date.now() - started) / 1000).toFixed(1)} s`,
     `  ${a} gagne ${pct(share)}  (fourchette à 95 % par paires : ${pct(verdict.low)} – ${pct(verdict.high)} ; partie par partie : ${pct(verdict.wilson[0])} – ${pct(verdict.wilson[1])})`,
     `  en commençant : ${pct(tally.first / tally.games)} · en second : ${pct(tally.second / tally.games)}`,
     `  paires : ${pairStats(tally.pairs)}${offsetNote}`,
     conclusion(),
-    save ? await saveDuel({ a: tag(a), b: tag(b), engines: [engine(a), engine(b)], settings: { endMode, handClass, openHands, offset, profile: profileLabel }, logs }) : "  (parties non gardées : --save pour les garder)",
+    save ? await saveDuel({ a: tag(a), b: tag(b), engines: [engine(a), engine(b)], settings: { endMode, handClass, openHands, offset, profile: profileLabel, ...(poolFile ? { pool: poolFile } : {}) }, logs }) : "  (parties non gardées : --save pour les garder)",
     "",
   ].join("\n"),
 );
