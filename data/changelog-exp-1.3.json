@@ -655,6 +655,71 @@
    "verdict": "neutre",
    "idea": "Une échelle intuitive (Sami) : plus le niveau monte, plus l'arbre va en profondeur ; pw=k reste lu pour les anciens moteurs.",
    "note": "pwl=1..5 ouvre les 7 réponses à 16, 25, 31, 36, 40 visites ; le 5e niveau à 2 000 : 20,0 / 28,6 / 40,1 / 55,7 / 67,6 % des coups (les niveaux 3 et 5, nouveaux, visés à 42,5 et 65 % ; le 5 avec k = 0,75 et au moins une réponse par nœud, k = 0,5 donnait 93,1 %). pw=1 = pwl=4, mêmes coups (afcf0cce6dde1a56)."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl5",
+   "name": "Oracle3-Pwl5 : 20 000, pwl=5",
+   "score": 57.1,
+   "lo": 50.7,
+   "hi": 63.5,
+   "verdict": "neutre",
+   "idea": "Plus de budget, plus de profondeur ? Le niveau 5 (Sami, 16/10, 67,6 % au 5e niveau à 2 000).",
+   "note": "DEEP_DUEL_1, contre la 1.2@2000, 140 parties (offset 12, où Oracle3 = pwl=4 faisait 61,4 %) : 57,1 %, 54,3 / 60,0 %. Pas mieux qu'Oracle3."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl3",
+   "name": "Oracle3-Pwl3 : 20 000, pwl=3",
+   "score": 59.3,
+   "lo": 51.7,
+   "hi": 66.8,
+   "verdict": "neutre",
+   "idea": "Un niveau d'élargissement plus doux pour Oracle3.",
+   "note": "DEEP_DUEL_1, 140 parties (offset 12) : 59,3 %, 57,1 / 61,4 %. Dans le plateau d'Oracle3."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle3-pwl2",
+   "name": "Oracle3-Pwl2 : 20 000, pwl=2",
+   "score": 57.1,
+   "lo": 49.6,
+   "hi": 64.7,
+   "verdict": "neutre",
+   "idea": "Le niveau de l'Oracle light, à 20 000.",
+   "note": "DEEP_DUEL_1, 140 parties (offset 12) : 57,1 %, 57,1 / 57,1 %. Plateau : à 20 000, le niveau compte peu, Oracle3 garde pwl=4."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl3",
+   "name": "OracleLight-Pwl3 : 10 000, pwl=3",
+   "score": 57.1,
+   "lo": 52.4,
+   "hi": 61.9,
+   "verdict": "tendance",
+   "idea": "Le niveau 3, seul pas encore essayé à 10 000.",
+   "note": "LIGHT_DUEL_1 et 2, contre la 1.2@2000, offsets 12 et 13 : 59,3 % puis 55,0 %, 57,1 % (52,4 – 61,9) sur 280 parties ; pwl=2 sur les mêmes donnes : 52,5 %. Candidat pour l'Oracle light ; l'offset 14 en cours."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl2-final1",
+   "name": "OracleLight-Pwl2-FinalLcb1 : 10 000, pwl=2 et final=1",
+   "score": 53.6,
+   "lo": 48.8,
+   "hi": 58.3,
+   "verdict": "neutre",
+   "idea": "Le choix final compterait plus quand les taux sont fiables (10 000 itérations).",
+   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 48,6 %, 53,6 % sur 280 parties ; pwl=2 seul sur les mêmes donnes : 52,5 %. Rien de plus."
   }
  ],
  "manualJobs": [],
@@ -877,7 +942,7 @@
   {
    "when": "Maintenant",
    "title": "Les niveaux pwl des oracles (nuit du 16/10)",
-   "text": "Oracle3 à pwl=5, 3 et 2 (20 000) et l'Oracle light à pwl=3 et à pwl=2 avec final=1 (10 000), 140 parties chacun contre la 1.2@2000 : classer les niveaux par budget avant de confirmer le meilleur. L'Oracle light à pwl=1 (51,4 % sur l'offset 12) reste à rejouer sur un second jeu de donnes."
+   "text": "Nuit du 16/10 : Oracle3 à pwl=2, 3, 4, 5 (20 000) fait 57,1 / 59,3 / 61,4 / 57,1 % sur l'offset 12, un plateau, Oracle3 garde pwl=4. L'Oracle light à pwl=3 fait 57,1 % (52,4 – 61,9) sur 280 parties, contre 52,5 % pour pwl=2 sur les mêmes donnes : candidat, à finir sur l'offset 14 ; final=1 n'ajoute rien (53,6 %). pwl=1 rejoué sur l'offset 13 ce matin."
   },
   {
    "when": "Fait",

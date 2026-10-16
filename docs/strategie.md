@@ -3601,3 +3601,30 @@ une réponse par nœud (sans effet pour k ≥ 1 : empreintes inchangées). k = 0
 Oracle3 à `pwl=5`, `3` et `2` (20 000, offset 12, où Oracle3 = `pwl=4` faisait 61,4 %), puis l'Oracle light à
 `pwl=3` et à `pwl=2` avec `final=1` (10 000, offsets 12 et 13 ; `pwl=2` seul : 57,9 et 47,1 %). L'Oracle light à
 `pwl=1` (l'ancien `pw=3`, 51,4 % sur l'offset 12) reste à rejouer sur un second jeu de donnes.
+
+### Les résultats de la nuit du 16/10 (1 h 09 – 6 h 58)
+
+**Oracle3 à d'autres niveaux** (20 000 contre la 1.2@2000, offset 12, 140 parties chacun ; Oracle3 = `pwl=4`) :
+
+| `pwl` à 20 000 | Score | Fourchette par paires |
+| --- | --- | --- |
+| 2 | 57,1 % | 49,6 – 64,7 % |
+| 3 | 59,3 % | 51,7 – 66,8 % |
+| 4 (Oracle3, 14/10) | 61,4 % | 55,1 – 67,8 % |
+| 5 | 57,1 % | 50,7 – 63,5 % |
+
+Un plateau : aucun niveau ne se détache d'Oracle3, à ± 7 points. À 20 000, le niveau d'élargissement compte
+peu ; Oracle3 garde `pwl=4`. Pousser plus loin (`pwl=5`) n'apporte rien.
+
+**L'Oracle light** (10 000 contre la 1.2@2000, offsets 12 et 13, 280 parties) :
+
+| Version | Offset 12 | Offset 13 | Réunis (280) |
+| --- | --- | --- | --- |
+| `pwl=2` (`OracleLight-Pw2`) | 57,9 % | 47,1 % | 52,5 % (54,5 % sur 420 avec l'offset 14) |
+| **`pwl=3`** (`OracleLight-Pwl3`) | 59,3 % | 55,0 % | **57,1 % (52,4 – 61,9)** |
+| `pwl=2` + `final=1` | 58,6 % | 48,6 % | 53,6 % (48,8 – 58,3) |
+
+- **`pwl=3` fait mieux que `pwl=2` sur les mêmes donnes** (57,1 contre 52,5 %), autant qu'Oracle3 à 20 000 sur
+  280 parties (57,1 %), pour la moitié du budget. Candidat pour l'Oracle light ; l'offset 14 (en cours) le compare à
+  `pwl=2` sur les mêmes 420 parties.
+- **`final=1` n'apporte rien à 10 000 non plus** (53,6 contre 52,5 % sur les mêmes donnes).
