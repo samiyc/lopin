@@ -37,9 +37,9 @@ export const BOT_LINEUP = Object.freeze({
     label: "Expérimental",
     description: "Il cherche en arbre",
     examines: "5 coups d'avance, la fin de partie calculée exactement",
-    pace: "2 000 itérations (2 à 4 s), et pendant ton tour",
+    pace: "2 000 itérations (2 à 4 s)",
     vsLower: "76 % vs Stratège",
-    // In the page: a worker, the engine's 2 000 iterations a move (10 s at most), pondering during the human's turn (web/app/thinker.js).
+    // In the page: a worker, the engine's 2 000 iterations a move (10 s at most); no pondering, an ISMCTS ignores it (web/app/thinker.js).
     think: Object.freeze({ limitMs: 10000, minMs: 400 }),
   }),
   "oracle-light": Object.freeze({
