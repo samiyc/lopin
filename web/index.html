@@ -46,7 +46,7 @@
 
     <section class="panel" id="panel-play">
       <button type="button" id="btn-new" title="Nouvelle partie"><span class="glyph" aria-hidden="true">+</span><span class="label">Nouvelle partie</span></button>
-      <button type="button" id="btn-reset" class="quiet" title="Recommencer"><span class="glyph" aria-hidden="true">↻</span><span class="label">Recommencer</span></button>      <p class="hint">Glisse une carte sur une borne, ou clique la carte puis la borne (touches 1 à 7). Glisse dans ta main pour la ranger.</p>
+      <button type="button" id="btn-reset" class="quiet" title="Recommencer"><span class="glyph" aria-hidden="true">↻</span><span class="label">Recommencer</span></button>      <p class="hint">Glisse une carte sur une borne, ou clique la carte puis la borne (touches 1 à 7). Glisse dans ta main pour la ranger, C ou V pour la trier.</p>
     </section>
 
     <section class="panel" id="panel-observe" hidden>
@@ -113,8 +113,8 @@
       <p class="seat-label" id="label-bottom"></p>
       <button type="button" id="btn-pass" hidden>Passer mon tour</button>
       <span class="sorters" id="sorters">Trier :
-        <button type="button" class="quiet" id="sort-suit">par couleur</button>
-        <button type="button" class="quiet" id="sort-value">par valeur</button>
+        <button type="button" class="quiet" id="sort-suit" title="Trier par couleur (touche C)">par couleur</button>
+        <button type="button" class="quiet" id="sort-value" title="Trier par valeur (touche V)">par valeur</button>
       </span>
     </div>
     <div class="banner" id="banner" hidden></div>

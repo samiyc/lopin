@@ -95,6 +95,16 @@ function show(tab) {
 }
 
 document.querySelectorAll(".tabs [role=tab]").forEach((tab) => tab.addEventListener("click", () => show(tab.dataset.mode)));
+// C and V sort the hand by colour or by value, as the buttons do wherever they are on show (Sami, 16/10).
+const SORT_KEYS = { c: "sort-suit", v: "sort-value" };
+const typing = (event) => event.ctrlKey || event.metaKey || event.altKey || Boolean(event.target.closest?.("input, select, textarea, dialog"));
+const onShow = (button) => button !== null && button.closest("[hidden]") === null && button.offsetParent !== null;
+document.addEventListener("keydown", (event) => {
+  const id = SORT_KEYS[event.key?.toLowerCase()];
+  if (!id || typing(event) || !onShow($(id))) return;
+  event.preventDefault();
+  $(id).click();
+});
 // The Versions menu closes once a page is opened, or on a click anywhere else.
 document.addEventListener("click", (event) => {
   const menu = $("versions");
