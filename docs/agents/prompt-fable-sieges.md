@@ -68,6 +68,17 @@ prépares les jobs de nuit avec leurs commandes exactes.
      (`npm run fingerprint -- "ismcts+widen=7+depth=5+core=stfig6+exact=12@150,greedy" 20` → `1d041613cd7bcd8d`) ;
    - la commande du job qui la mesure : la même version contre elle-même, la part du premier joueur, au moins ~8 000
      parties pour ± 1 point.
+   **Les pistes de Sami (16/10), à traiter en premier** : de l'information pour le premier joueur, en miroir de celle que
+   le second a en voyant son coup.
+   - **A** : il regarde la carte du dessus de la pioche avant son tout premier coup.
+   - **B** : il la regarde à chaque tour, avant de jouer.
+   - **C** : il reçoit 7 cartes au lieu de 6.
+
+   Pour A et B, **les robots doivent se servir de l'information**, sinon la mesure vaut zéro : `determinize`
+   (`src/sim/lookahead.js`) tire aujourd'hui toutes les cartes cachées au hasard. La carte vue doit y rester en tête de
+   pioche pour ce joueur, et le cœur doit la compter comme connue (`unseenCards`). Dis ce qu'il faut changer et ce que
+   ça coûte. C se mesure sans rien adapter. **Avant toute compensation, mesure la référence sans compensation au même
+   niveau de robot** (la 1.2 à 400 ou le cœur seul contre lui-même) : l'effet du siège peut dépendre de la force.
 4. **Ta recommandation**, et ce qu'il faudrait observer pour en changer.
 
 ## Les contraintes du dépôt (dans `CLAUDE.md`)
