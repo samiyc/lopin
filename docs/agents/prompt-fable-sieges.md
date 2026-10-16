@@ -3,6 +3,16 @@
 > À coller tel quel dans une session Claude Code (modèle Fable), ouverte dans le dépôt `Lopin n°742`. Préparé le 16/10
 > (`docs/agents/revue-2026-10-16.md`). Tu réponds en français ; le code et ses commentaires restent en anglais.
 
+## Si tu es lancé pendant que le backlog tourne (la nuit du 16-17/10)
+
+- **Ne modifie pas `data/backlog.json`** : le lanceur (`npm run backlog`) y écrit les statuts de ses jobs, et ta
+  modification les effacerait. Écris tes jobs (id, commande, durée, raison) dans `docs/sieges.md` ; ils seront mis en
+  file après la nuit.
+- **Ne lance ni duel ni `npm run deals`** : ils prendraient du CPU aux duels de la nuit. Une analyse en lecture seule
+  de `duels/`, un test, `npm run check` et une empreinte (20 parties à 150 itérations) restent permis.
+- **Committe après chaque étape** (hypothèses mesurées, options de code, document) : le budget de la semaine peut
+  s'épuiser en cours de route, et ce qui est commité reste.
+
 ## Ta mission
 
 Explique **d'où vient l'avantage du second joueur** dans Bornage, à la règle de la page, et propose **une compensation
