@@ -233,7 +233,8 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **The experimental bot searches deeper** (`src/sim/search.js`): 8 candidates,
   successive halving on common deals, early stop on a clear leader; a rollout
   budget in Node (`experimental:N`), a clock in the page. There it runs in a
-  worker (`web/app/think-worker.js` via `thinker.js`) and ponders during the
+  worker (`web/app/think-worker.js` via `thinker.js`, where the page's tree bots
+  run too, without pondering) and, this flat search only, ponders during the
   human's turn (`src/sim/ponder.js`): it searches its reply averaged over the
   human's possible moves (guessing their exact move fails: it names a card the
   bot cannot see), then warm-starts the real search and credits half the time.
@@ -488,6 +489,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **Real games vs bots** (solo protocol): Sami builds far more straight flushes
   than the bots (~29 % vs ~17 %), fewer sums, and reaches ~90 % of the exact
   optimum where the bots reach ~77 %. All his jokers went into trips.
+- **How games end at the page's rule** (35 178 kept games of trees @2000+, 16/10):
+  never by running out of cards; 48.5 % by three adjacent borders, 51.5 % by
+  a majority. The first player wins 48.5 %, the gap sitting in majority wins
+  (24.9 against 26.9 %); ties broken by first completion settle 0.2 % of
+  borders, split evenly (`docs/agents/revue-2026-10-16.md`).
 - "One joker per player" leaves a second joker stuck in hand: ~12 % of games
   end without a winner.
 - In play, bots build flushes far more than straights even in the original:

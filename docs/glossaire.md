@@ -252,8 +252,10 @@ la main peut faire sont une grande part du jugement du cœur.
   séries de confirmation (Tree-7w, 06/10). **Un même offset donne les mêmes donnes, dans le même
   ordre et aux mêmes sièges, quelle que soit la version** : deux versions validées sur les
   offsets 1 à 4 se comparent partie par partie (voir « Les sièges »).
-- **La fourchette à 95 %** : l'intervalle où se trouve très probablement le vrai score. Environ
-  ±5,5 points sur 250 parties, ±4,5 sur 400, ±2,7 sur 1 000. **Une version est meilleure quand
+- **La fourchette à 95 %** : l'intervalle où se trouve très probablement le vrai score, calculé
+  **par paires** (chaque donne jouée des deux côtés, la paire comme unité : `pairedInterval`,
+  `scripts/lib/duel-plan.js`), pas partie par partie (Wilson, plus large). Environ ±5,5 points sur
+  250 parties, ±4,5 sur 400, ±2,7 sur 1 000. **Une version est meilleure quand
   la fourchette basse dépasse 50 %**, sur 1 000 parties.
 - **À temps égal** : quand une version est plus rapide ou plus lente par itération (plus de 3 %
   d'écart), les deux camps jouent au **même temps par coup** (`@t3200` : 3,2 s). Un nombre

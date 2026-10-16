@@ -25,7 +25,7 @@ mesures détaillées sont plus bas, section par section.
 | Plus de simulations pour le 0.7 (4 000 contre 400) | 30/09 | 37,5 % | sa recherche plafonne ; c'est ce qui a mené à ISMCTS | ffc7267 |
 | Simulations à la règle de revendication (0.8-early) | 30/09 | 47,9 % contre le 0.7 | écarté | 0c0f1cf |
 | Simulations qui voient une borne perdue (`certainLite`, 0.8-lite) | 30/09 | 53,1 % (47,4 – 58,8) contre le 0.7 | pas net, écarté | 975fc24 |
-| Modèle de l'adversaire (donnes pondérées par son dernier coup) | 30/09 | +4,3 % de cartes devinées seulement | écarté sans duel | f14548e |
+| Modèle de l'adversaire (donnes pondérées par son dernier coup) | 30/09 | +4,3 % de cartes devinées seulement ; repris en duel sous `infer=48` (49,5 %, 05/10) et `infer=48+memory=3`, ses 3 derniers coups (46,3 %) | écarté | f14548e |
 | Mixture d'experts par phase | 01/10 | 45,8 % (38,4 – 53,3) contre ISMCTS partout | écarté | 28c9ccb |
 | Simulations tirées au sort (TLC) | 01/10 | 51,4 % à 400, 50,0 % à 800 | écarté | 52f702a |
 | Cas difficiles comme banc d'essai | 01/10 | 5 cas nets en 20 min, sans vérité indépendante | écarté | 52f702a |
