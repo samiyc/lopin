@@ -73,6 +73,16 @@ prépares les jobs de nuit avec leurs commandes exactes.
    - **A** : il regarde la carte du dessus de la pioche avant son tout premier coup.
    - **B** : il la regarde à chaque tour, avant de jouer.
    - **C** : il reçoit 7 cartes au lieu de 6.
+   - **B(N), une compensation réglable** (Sami, 16/10) : il regarde la carte du dessus avant de jouer **jusqu'à une
+     condition**. A et B en sont les deux bouts. Conditions proposées :
+     - jusqu'au tour N (la plus simple à dire et à doser) ;
+     - jusqu'à la première borne revendiquée (s'arrête d'elle-même quand la partie se tend, mais sa durée varie) ;
+     - jusqu'à un nombre de cartes en jeu.
+
+     **Calibrage** : mesure 2 ou 3 valeurs de N, vérifie que l'effet croît avec N, et interpole celle qui ramène le
+     premier joueur à 50 %. Arrondis-la à une règle simple (« pendant ses 3 premiers tours »).
+   - **A2** : il regarde les **deux** cartes du dessus à son premier tour. La deuxième est la prochaine pioche de
+     l'adversaire : c'est une information de nature différente, à mesurer à part.
 
    Pour A et B, **les robots doivent se servir de l'information**, sinon la mesure vaut zéro : `determinize`
    (`src/sim/lookahead.js`) tire aujourd'hui toutes les cartes cachées au hasard. La carte vue doit y rester en tête de
