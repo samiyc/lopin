@@ -13,6 +13,9 @@ import { CREDIT, createPonder } from "../../src/sim/ponder.js";
  * clock before, so the page played a stronger bot than the one rated), and
  * within `limitMs` of thought minus `CREDIT` of the time pondered, but never
  * less than `minMs`: a human who thought 20 s gets an answer at once.
+ * Only a bot whose search takes that head start (`bot.warms`, the flat
+ * search) ponders: an ISMCTS ignores `warm`, and crediting its time cut the
+ * 1.2 to 1 178 of its 2 000 iterations after 20 s of human thought (16/10).
  *
  * Messages in: `init { engine, seed, limitMs, minMs }`, `ponder { log }` (the
  * human is to move), `decide { log }` (the bot is to move), `stop`.
@@ -65,6 +68,7 @@ const HANDLERS = {
     limits = { limitMs, minMs, iterations: budgetOf(engine.split("@")[1]).budget ?? Infinity };
   },
   ponder({ log }) {
+    if (!bot.warms) return;
     try {
       ponder = createPonder(current(log), bot, { limitMs: limits.limitMs / CREDIT, seed: log.turns.length + 1 });
       keepPondering(ponder);

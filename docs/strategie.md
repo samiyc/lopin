@@ -3646,3 +3646,17 @@ sur le 12 ; 10 000 contre la 1.2@2000, en %) :
 - **`pwl=3` est le choix de l'Oracle light** : le plus de parties (420) et la borne basse la plus haute (52,0 %),
   +1,5 point sur `pwl=2` sur les mêmes donnes ; `pwl=5` fait 55,4 % sur 280. `npm run versus` regroupe par nom de
   moteur exact : les parties jouées sous `pw=k` restent à part de celles sous `pwl=n`, il faut les réunir à la main.
+
+**L'Oracle light dans le worker de la page** (16/10, Chrome, `think-worker.js` ouvert à la main sur les positions de
+la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC au calme) :
+
+- **Chrome va un peu plus vite que Node** : aux tours 6 / 12 / 18 / 24, 10,0 / 7,3 / 4,8 / 2,7 s contre 11,9 / 9,0 /
+  5,7 / 3,4 s en Node (un fil), soit de 840 à 3 700 itérations par seconde selon le moment de la partie.
+- **Une partie entière** : 101 s de réflexion pour les 15 coups cherchés (6,8 s en moyenne), les fins de partie
+  résolues en moins de 5 ms. Seuls les trois premiers coups passent les 10 s de la page (13,6 / 12,5 / 11,9 s) : avec
+  la limite actuelle, il s'arrête à 8 164 itérations au tour 3. Il lui faut une limite d'environ 15 s.
+- **La pondération coupait les arbres** : le worker retirait de la recherche la moitié du temps pondéré, mais
+  l'ISMCTS ignore `warm` (seule la recherche plate du 0.7 s'en sert). Après 10 s de réflexion du joueur, l'Oracle
+  light ne faisait plus que 4 634 à 5 772 itérations ; après 20 s, **la 1.2 de la page tombait à 1 178 de ses 2 000**,
+  plus faible que la version de son Elo. Corrigé : le worker ne pondère plus que pour un robot qui lit `warm`
+  (`bot.warms`) ; la 1.2 refait ses 2 000 itérations (2,6 s au tour 3) quel que soit le temps du joueur.

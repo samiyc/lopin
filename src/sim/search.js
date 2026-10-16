@@ -168,6 +168,8 @@ export function searchBot(rng, { base, policy, budget = 400, budgetMs = Infinity
     base,
     policy,
     searchFor,
+    /** Its search starts from pondering's `warm`: the page ponders only for such bots (an ISMCTS ignores it). */
+    warms: true,
     /** Will this position be solved exactly rather than searched? The page asks, to skip its search. */
     solves: solved,
     scoreMoves,

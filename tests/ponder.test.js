@@ -17,6 +17,11 @@ function position() {
   return state;
 }
 
+it("only the flat search takes pondering's head start, so the page ponders for it alone", () => {
+  assert.equal(engineFor("experimental:50")(createRng(1)).warms, true);
+  assert.equal(engineFor("ismcts+widen=7+depth=5+core=stfig6+exact=12@2000")(createRng(1)).warms, undefined);
+});
+
 describe("thinking during the human's turn", () => {
   const state = position();
   const bot = engineFor("experimental:50")(createRng(4));
