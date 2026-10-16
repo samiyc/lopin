@@ -404,6 +404,16 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **Open hands** (`openHands` in `createGame`, `--open` in `npm run duel`, the « Mains
   découvertes » box of the page): both hands visible, the pile hidden; `determinize` then deals only
   the pile. Written into the log's rules, so the replay shows both hands.
+- **CommonDeals** (16/10, `docs/priorites-1.3.md`): `+crn=1` (`src/sim/common-deals.js`, off by default, the 1.2's
+  fingerprint unchanged) gives the k-th visit of every root candidate the search's k-th deal and rollout stream, so the
+  root compares its candidates on common deals, as the 0.7 and the Stratège 2 did; a candidate's subtree then depends
+  on its own visits only (`tests/common-deals.test.js`). Two candidates' results on one deal correlate at ρ ≈ 0.34
+  through the tree (0.44 in flat playouts): a paired comparison has 0.66 of the variance. At 400 it cut the root's
+  regret by 0.43 ± 0.34 points (more than doubling the budget) and screened at 55.3 % (50.5 – 60.0); its 1k@2k is
+  queued. Read from the replays' `tree`,
+  the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
+  reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Bornage's
+  moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.
 - **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/seat-rules.js`, named in
   `src/config/seats.js`, off by default) deals other hand sizes or lets the first player look at the top of the pile
   (`src/sim/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts

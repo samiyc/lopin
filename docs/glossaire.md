@@ -133,6 +133,21 @@ un terme ne parle pas, on le change ici d'abord. Les commandes, elles, sont dans
   différentes ne jouent le même coup que dans 19 positions sur 50 (tours 12 à 21). Les bons
   candidats sont très proches : c'est pourquoi un réglage de la racine se juge en duels, jamais
   sur le coup qu'il change.
+- **Les donnes communes** (variables aléatoires communes, `+crn=1`, `CommonDeals`, 16/10,
+  `docs/priorites-1.3.md`) : la k-ième visite de chaque candidat de la racine joue la k-ième donne de
+  la recherche, et ses simulations tirent leurs égalités dans la k-ième suite. Deux candidats sont
+  alors comparés sur les mêmes mains adverses et la même pioche, comme le Stratège 2 et le 0.7
+  comparaient les leurs (`lookahead.js`). Sans l'option, chaque itération tire sa donne, et la chance
+  des donnes entre dans la comparaison : sur une même donne, les résultats de deux finalistes de la 1.2
+  sont corrélés (ρ ≈ 0,44 en simulations seules). UCB, l'arbre sous la racine, le coup joué et le coût
+  d'une itération ne changent pas. Le sous-arbre d'un candidat ne dépend plus que de ses propres
+  visites : cherché seul, il donne le même sous-arbre (`tests/common-deals.test.js`).
+- **Le premier essai d'une réponse** : sous la racine, une réponse jamais essayée passe avant toutes
+  les autres (+∞ dans UCB). Comme la main adverse change à chaque donne, de nouvelles réponses
+  apparaissent sans cesse : à 2 000, **22 % des itérations de la 1.2 essaient une réponse adverse
+  pour la première fois** (444 réponses visitées par recherche, environ 55 par candidat, dont 173
+  une seule fois ; 1 197 coups de duels gardés), et 65 % s'arrêtent au 3e étage sur un coup jamais
+  essayé. C'est ce que viserait `ReplyFpu`.
 - **Une réponse** (un nœud) : **une carte précise sur une borne précise** (`7♠@4`) ; deux
   réponses ne se confondent que si c'est la même carte, couleur comprise, sur la même borne. Le
   paquet a 41 cartes différentes (les 2 jokers sont identiques), soit 287 coups possibles en
@@ -473,6 +488,10 @@ version :
 | Oracle light 1.0 (`oracle-light`) | le robot de la page (Sami, 16/10) : `OracleLight-Pwl3-Trees2` sur deux workers, au choix de « Nouvelle partie » et d'« Observer » | `oracle-light@1.0` |
 | `Oracle3-Pwl2` / `-Pwl3` / `-Pwl5` | Oracle3 (20 000, `pwl=4`) à un autre niveau d'élargissement ; `Pwl5` pousse le plus vers la profondeur (Sami, 16/10). Nuit du 16/10, offset 12 : `Pwl2` 57,1 %, `Pwl3` 59,3 %, `Pwl5` 57,1 % (Oracle3 = `pwl=4` : 61,4 %), un plateau | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=5@20000` |
 | `FinalMean` / `FinalLcb1` | la 1.2 qui joue, au lieu du candidat le plus visité, celui au meilleur taux de victoire moins c / √visites (Sami, 15/10 : `final=c`, `final-choice.js`) : c = 0, le meilleur taux ; c = 1, une borne basse à ~95 %. Pour les rangs 4 à 8 qu'Oracle3 trouve meilleurs (+2,5 ± 2,4) ; même coût par itération. Tri à 800 : 49,8 et 51,7 % ; premier duel long à 2 000 : 54,8 et 55,2 % ; la 1k@2k (15/10) : `FinalMean` 51,9 % (49,3 – 54,5), `FinalLcb1` 52,7 % (50,1 – 55,3), retombé à **51,5 % (49,4 – 53,7) sur 1 500 parties** avec la confirmation : pas de 1.3 | `ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000` |
+| `CommonDeals` | la 1.2 dont les candidats de la racine sont comparés sur les mêmes donnes : la k-ième visite de chacun joue la k-ième donne de la recherche et la k-ième suite de tirages des simulations (`crn=1`, `common-deals.js`, 16/10) ; UCB, l'arbre et le coup joué (le plus visité) inchangés, même coût par itération. Les « finalistes appariés » du panel du 16/10, étendus à tous les candidats (`docs/priorites-1.3.md`) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1@2000` |
+| `CommonDeals-FinalLcb1` | `CommonDeals` qui joue, au lieu du plus visité, le meilleur taux moins 1 / √visites (`final=1`) : la décision lue sur des taux que les donnes communes rendent comparables | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1+final=1@2000` |
+| `ReplyFpu0` / `ReplyFpu1` | proposé le 16/10, pas codé (`docs/priorites-1.3.md`) : sous la racine, une réponse jamais essayée vaut la moyenne des réponses déjà essayées du nœud, moins 0 ou 0,1 (le chiffre × 10), au lieu de passer avant toutes (first-play urgency) ; la racine garde son premier essai de chaque candidat | `ismcts+…+exact=12+fpu=0@2000` |
+| `Ensemble2x2000` | une mesure, pas une version : deux arbres de 2 000 (4 000 en tout), visites de la racine additionnées, contre la 1.2@2000. Ce que vaut le bruit du coup joué à qualité d'arbre égale, à comparer à `Budget4000` (un arbre de 4 000) sur les mêmes donnes | `ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000` |
 | `MarginBackup05` | `MarginBackup15` à 5 % (`margin=0.05`) : 51,4 % au tri à 400, gardé en réserve ; un duel long « dernière chance » à 2 000 (15/10) | `ismcts+…+exact=12+margin=0.05@2000` |
 | `OracleLight-Pw1` / `-Pw2` / `-Pw3` | l'Oracle light (Sami, 15/10, `docs/1.3-to-oracle-shift.md`) : l'arbre d'Oracle3 à 10 000 itérations au lieu de 20 000, avec `pw=k` (k + √visites réponses), pour un oracle jouable dans la page ; le tri dit quel `k` va avec 10 000. Premier tri (15/10, 140 parties contre la 1.2@2000) : 50,7 / **57,9** / 51,4 % ; `OracleLight-Pw2` confirmé à **54,5 % (50,6 – 58,4) sur 420 parties** (= `pwl=2`) | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000` |
 | `ForkCut1` / `ForkCut2` | la double menace dans les simulations (`fork-cut.js`, 14/10) : arrêter une simulation à la première victoire sur les bornes remplies (1, exact), ou aussi à une fourche, compté gagné (2) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+forkCut=1@2000` |

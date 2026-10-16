@@ -60,6 +60,8 @@ mesures détaillées sont plus bas, section par section.
 | Les bonus du 0.9 à partir du tour 15 ; connector à partir du tour 11, 15 ou 19 (à temps égal) | 03/10 | 49,0 – 50,9 % ; connector 48,5 – 48,9 % ; suited seulement après 15 : 41,1 % | neutres, sauf suited, qui sert au début | — |
 | Simulations tronquées à la première borne décidée (`trunc=5`, `trunc=8`, à temps égal) | 03/10 | 41,1 % ; 45,6 % | écartées : l'estimation au point d'arrêt coûte plus que le temps gagné ; l'option reste (`+trunc`) | — |
 | EPIMC (Arjonilla, Saffidine et Cazenave, 2024 : retarder la résolution en information parfaite) | 14/10 | pas codé | rejeté sur le papier : EPIMC améliore PIMC, que l'ISMCTS dépasse déjà (son arbre est fait d'ensembles d'information, ce qui limite la fusion de stratégies), et la fin de partie est en information parfaite (pioche vide : les cartes non vues sont la main adverse). Il ne resterait que les simulations, l'endroit où `trunc` a perdu | — |
+| MO-ISMCTS (un arbre par joueur, Cowling, Powley et Whitehouse 2012), retenu par le panel du 16/10 | 16/10 | pas codé | rejeté sur le papier (`docs/priorites-1.3.md`) : il sert quand un coup cache quelque chose à l'adversaire. Ici, un coup (une carte sur une borne) est public ; seuls la donne et les pioches sont cachées, et l'ISMCTS les tire à la racine. Avec des coups publics, les arbres de chaque joueur sont celui de la 1.2. Et il ne sépare pas les mains de l'adversaire à sa première réponse, là où est la fusion de stratégies : sa racine les regroupe aussi | — |
+| Retirer la chance des jokers des résultats (variable de contrôle) | 16/10 | jokers de la main adverse tirée : corrélation −0,04 avec le résultat ; jokers de mes pioches : +0,12 (30 positions, 300 donnes chacune) | écarté par la mesure : au plus 1,5 % de la variance des résultats | — |
 
 ## Comment le Stratège choisit un coup
 
@@ -3669,3 +3671,31 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
   tenaient à 51,0 %, trois et quatre perdaient). Avec lui, `OracleLight-Pwl2-Trees2` (des arbres plus petits veulent
   peut-être un niveau plus bas) et `Oracle3-Pwl3-Trees2` (2 × 10 000 : moins de bruit sans perdre la profondeur ?),
   sur les offsets 12 et 13. Trois et quatre arbres sont retirés de la file (Sami : deux suffisent en vitesse).
+
+## Les donnes communes : `CommonDeals` (16/10, `docs/priorites-1.3.md`)
+
+**La question** (prompt du 16/10, `docs/agents/prompt-fable-priorites-1.3.md`) : reste-t-il des idées qui méritent une
+1k@2k contre la 1.2, ou est-ce le plafond ? Le diagnostic complet, les idées classées et le verdict sont dans
+`docs/priorites-1.3.md`. L'essentiel :
+
+- **Ce que la 1.2 fait de ses 2 000 itérations** (le `tree` de 1 197 coups de duels gardés) : un bandit de 8 candidats
+  sur un bandit d'environ 55 réponses adverses par candidat. 22 % des itérations essaient une réponse pour la première
+  fois, 65 % s'arrêtent au 3e étage sur le coup du cœur. Les échecs s'expliquent par le biais, le coût ou un bruit
+  relu autrement ; aucun par la fusion de stratégies.
+- **L'idée** : `+crn=1` (`src/sim/common-deals.js`) donne à la k-ième visite de chaque candidat la k-ième donne de la
+  recherche et la k-ième suite de tirages des simulations, comme le 0.7 et le Stratège 2 comparaient leurs candidats.
+  UCB, l'arbre, le coup joué et le coût ne changent pas. Sans la clé, l'empreinte de la 1.2 reste `1d041613cd7bcd8d` ;
+  avec, `bef7b4df22f6c4c0`.
+- **Mesuré de jour** (80 positions à 400 itérations, jugées par chaque candidat cherché seul 400 fois) :
+  - ρ = 0,34 entre deux candidats sur une même donne (0,44 en simulations seules) ;
+  - le regret de la racine baisse de 0,43 ± 0,34 point, plus qu'un doublement du budget (−0,37) ;
+  - deux graines jouent le même coup 28,5 % du temps au lieu de 19,2 % ;
+  - `final=1` ne change rien à 400.
+- **Le tri à 400** : **55,3 % (50,5 – 60,0) sur 360 parties**. Il n'est pas écarté.
+- **En file** :
+  - `VALIDATE_LONG_1..4_CommonDeals`, offsets 0 à 3, avec la règle d'arrêt ;
+  - `NOISE_DUEL_1/2_Ensemble2x2000`, deux arbres de 2 000 contre la 1.2@2000 sur les donnes de Budget4000 : ce que vaut
+    le bruit du coup joué à 2 000, donc le plafond de toute cette famille.
+- **Écartés** :
+  - MO-ISMCTS, sur le papier : les coups sont publics, et sa racine adverse regroupe les mains elle aussi ;
+  - la chance des jokers comme variable de contrôle, par la mesure : au plus 1,5 % de la variance (tableau du début).
