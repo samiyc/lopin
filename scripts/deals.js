@@ -1,7 +1,8 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
-import { BALANCED, judgeDeals } from "./lib/deal-judge.js";
+import { BALANCED, judgeDeals, nearestMedian } from "./lib/deal-judge.js";
 import { applyThreadsOption, runPool } from "./lib/pool.js";
 import { tmpFile } from "./lib/tmp.js";
 
@@ -35,6 +36,8 @@ const ROOT = Number(valueOf("--root", 0));
 const ENGINE = valueOf("--engine", "ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@400");
 const OFFSET = Number(valueOf("--offset", 0));
 const POOL = valueOf("--pool", null);
+// `--size N`: the pool keeps the N deals nearest the median share, the most disputed whatever the root's bias.
+const SIZE = Number(valueOf("--size", 0));
 const DEALS_SEED = SEED + 7_000_001 * (OFFSET + 1);
 const seedOf = (deal) => DEALS_SEED + 7919 * deal;
 // Five deals a task: a game of omniscients at 400 takes half a minute a thread, so smaller tasks keep 18 threads busy.
@@ -94,7 +97,9 @@ const seeds = judged.shares.map((_, d) => seedOf(d));
 await writeFile(out, `${JSON.stringify({ engine: ENGINE, root: ROOT || null, plays: ROOT ? null : PLAYS, offset: OFFSET, ...judged, seeds }, null, 1)}\n`);
 console.log(`→ ${decodeURIComponent(out.pathname)}`);
 if (POOL) {
-  const balanced = seeds.filter((_, d) => judged.shares[d] >= BALANCED[0] && judged.shares[d] <= BALANCED[1]);
-  await writeFile(POOL, `${JSON.stringify({ engine: ENGINE, how, offset: OFFSET, band: BALANCED, deals: DEALS, seeds: balanced }, null, 1)}\n`);
-  console.log(`→ ${POOL} : ${balanced.length} donnes équilibrées (npm run duel -- a b --pool ${POOL})`);
+  const { picked, band } = SIZE ? nearestMedian(judged.shares, SIZE) : { picked: judged.shares.map((_, d) => d).filter((d) => judged.shares[d] >= BALANCED[0] && judged.shares[d] <= BALANCED[1]), band: BALANCED };
+  const pool = { engine: ENGINE, how, offset: OFFSET, deals: DEALS, band: band.map((x) => Number(x.toFixed(4))), seeds: picked.map((d) => seeds[d]), shares: picked.map((d) => Number(judged.shares[d].toFixed(4))) };
+  await mkdir(dirname(POOL), { recursive: true });
+  await writeFile(POOL, `${JSON.stringify(pool)}\n`);
+  console.log(`→ ${POOL} : ${picked.length} donnes, ${pct(band[0])} à ${pct(band[1])} pour le premier joueur (npm run duel -- a b --pool ${POOL})`);
 }

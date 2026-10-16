@@ -25,6 +25,20 @@ const tenths = (shares) => {
   return counts;
 };
 
+/**
+ * The pool of `size` deals (`npm run deals -- --pool f --size N`): the ones nearest the median share, in deal
+ * order. The root of a search overrates the first player, so a fixed 40-60 % band would sit off centre; the
+ * median moves with that bias. Returns the deals' indices and the band they span.
+ */
+export function nearestMedian(shares, size) {
+  const sorted = [...shares].sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  const byDistance = shares.map((share, d) => ({ d, gap: Math.abs(share - median) })).sort((a, b) => a.gap - b.gap || a.d - b.d);
+  const picked = byDistance.slice(0, size).map(({ d }) => d).sort((a, b) => a - b);
+  const kept = picked.map((d) => shares[d]);
+  return { picked, median, band: [Math.min(...kept), Math.max(...kept)] };
+}
+
 export function judgeDeals(firsts, plays) {
   const shares = firsts.map((wins) => wins / plays);
   const first = shares.reduce((sum, share) => sum + share, 0) / shares.length;

@@ -388,6 +388,11 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
 - **Pool de donnes** (`--pool fichier`) : les graines des donnes équilibrées qu'écrit `npm run deals`, que
   `npm run duel -- a b --pool fichier` rejoue dans l'ordre, des deux côtés. Un second pool (autre `--offset`)
   sert de réserve pour les verdicts ; une version se promeut toujours aussi sur les donnes ordinaires.
+- **`DealsA` et `DealsReserve`** (Sami, 16/10) : les deux pools de 1 000 donnes, `data/deal-pools/pool-a.json` (offset
+  0) et `data/deal-pools/reserve.json` (offset 1), chacun tiré de 5 000 donnes jugées par la racine de l'Omniscient
+  (la 1.2 omnisciente, 2 graines de 4 000 itérations au tour 1) : les 1 000 **les plus proches de la médiane**
+  (`--size 1000`), puisque la racine surestime le premier joueur et qu'une bande fixe 40-60 % serait décalée. Le pool A
+  sert à juger les idées, la réserve aux verdicts. Jobs `POOL_BUILD_1_DealsA`, `POOL_BUILD_2_DealsReserve`.
 - **Confirmer par le jeu** (`npm run oracle -- --confirm`) : pour chaque écart (le coup de
   l'oracle hors du top 3 du cœur), on repart de la position en forçant tour à tour le coup de
   l'oracle, le favori du cœur et le coup joué ; les robots de la partie jouent la suite avec 6

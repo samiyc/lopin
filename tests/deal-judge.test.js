@@ -1,6 +1,16 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { judgeDeals } from "../scripts/lib/deal-judge.js";
+import { judgeDeals, nearestMedian } from "../scripts/lib/deal-judge.js";
+
+describe("a pool of the most disputed deals", () => {
+  it("keeps the deals nearest the median share, in deal order, whatever the estimate's bias", () => {
+    // A judge that overrates the first player: the median is 0.65, not 0.5.
+    const { picked, median, band } = nearestMedian([0.95, 0.6, 0.66, 0.2, 0.72, 0.65, 0.1], 3);
+    assert.equal(median, 0.65);
+    assert.deepEqual(picked, [1, 2, 5]);
+    assert.deepEqual(band, [0.6, 0.66]);
+  });
+});
 import { DECKS } from "../src/config/decks.js";
 import { gameRules } from "../src/sim/simulate.js";
 

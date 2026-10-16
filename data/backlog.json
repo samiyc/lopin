@@ -3199,6 +3199,22 @@
       "limit": 90,
       "why": "L'Oracle light en deux arbres de 5 000 au niveau pwl=2 : des arbres plus petits demandent peut-être un niveau plus bas (Sami, 16/10). Offset 13, à comparer à OracleLight-Pwl3-Trees2 et à l'arbre unique sur les mêmes donnes.",
       "status": "todo"
+    },
+    {
+      "id": "POOL_BUILD_1_DealsA",
+      "command": "npm run deals -- --deals 5000 --root 4000 --engine \"ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@4000\" --offset 0 --pool data/deal-pools/pool-a.json --size 1000",
+      "estimate": "70 min",
+      "limit": 120,
+      "why": "Omniscient 1.0 juge 5 000 donnes par sa racine au tour 1 (2 graines de 4 000) et garde les 1 000 plus proches de la médiane : le pool pour juger les idées (Sami, 16/10). ~13 s par donne et par fil.",
+      "status": "todo"
+    },
+    {
+      "id": "POOL_BUILD_2_DealsReserve",
+      "command": "npm run deals -- --deals 5000 --root 4000 --engine \"ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@4000\" --offset 1 --pool data/deal-pools/reserve.json --size 1000",
+      "estimate": "70 min",
+      "limit": 120,
+      "why": "La réserve : 1 000 autres donnes disputées, sur un autre jeu de donnes (offset 1), pour les verdicts.",
+      "status": "todo"
     }
   ]
 }
