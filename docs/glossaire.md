@@ -372,7 +372,11 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   combien. Le détail : `docs/1.3-to-oracle-shift.md`. **Construit le 16/10** : l'option `+omniscient=1` de
   l'ISMCTS (`seeAll` dans `lookahead.js` : chaque itération part de la vraie donne au lieu d'en tirer une),
   sur n'importe quel arbre, par exemple `ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@400` ; le
-  juge de la donne est `npm run deals`. Le solveur exact n'intervient encore qu'une fois la pioche vide.
+  juge de la donne est `npm run deals`. Son solveur exact compte **les mains et la pioche** (`exact=N` :
+  N cartes en tout), puisqu'il connaît les tirages : à la règle de la page, 12 cartes se résolvent toujours
+  (médiane 288 ms), 14 cartes dans 10 cas sur 12 (médiane 3,7 s), 16 dans 2 sur 12 ; au-delà de 400 000
+  positions il rend la main à la recherche. Pour la 1.2, `exact` au-delà de 12 ne change rien (la pioche
+  cachée doit être vide, il reste alors 12 cartes au plus).
 - **Juger les donnes** (`npm run deals`, `scripts/deals.js`) : Omniscient contre lui-même sur N donnes, K
   parties chacune (seules les graines des robots changent) : la part du premier joueur entre omniscients (la
   part des règles dans l'avantage du siège), les donnes **décidées** (un camp gagne au moins 90 % des

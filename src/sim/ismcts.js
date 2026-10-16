@@ -257,7 +257,8 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
   const { run, usage } = createBudget({ budget, budgetMs, late, early, smart });
   const recall = memoryOf(memory);
   const reuse = reuseOf(settings.reuse);
-  const solves = (state, moves) => moves.length > 1 && exactApplies(state, exact);
+  // Omniscient 1.0 sees the pile: its solver counts the pile's cards with the hands' (exact.js).
+  const solves = (state, moves) => moves.length > 1 && exactApplies(state, exact, settings.omniscient > 0);
   const maxNodes = exact > EXACT.maxCards ? EXACT.nodes : Infinity;
   const winning = (scores) => scores && (!hope || scores.some((entry) => entry.exact && entry.gain > 0.5));
   const solved = (state, moves, options) => {

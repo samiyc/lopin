@@ -20,7 +20,13 @@ export const EXACT = Object.freeze({ maxCards: 8, nodes: 400_000 });
 
 const cardsLeft = (state) => state.hands[0].length + state.hands[1].length;
 
-export const exactApplies = (state, maxCards = EXACT.maxCards) => state.pile.length === 0 && cardsLeft(state) <= maxCards;
+/**
+ * Can the solver take over? With the pile hidden, only once it is empty — so at most 12 cards (6 + 6) are ever
+ * left and `exact` past 12 changes nothing. `seen` (Omniscient 1.0, the pile's order known): the hands and the
+ * pile together, since the solver plays the draws as the pile lies.
+ */
+export const exactApplies = (state, maxCards = EXACT.maxCards, seen = false) =>
+  seen ? cardsLeft(state) + state.pile.length <= maxCards : state.pile.length === 0 && cardsLeft(state) <= maxCards;
 
 /** The solver's verdict on `game` for its legal `moves`: the winner, or null for a draw. */
 function solvedWinner(game, moves) {

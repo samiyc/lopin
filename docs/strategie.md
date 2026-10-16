@@ -3114,7 +3114,7 @@ presque rien à garder. L'option reste.
 | `margin=0.05` | 51,4 % (360 parties) | 46,5 – 56,3 % | gardé en réserve |
 | **`MarginBackup15`** (`margin=0.15`) | **52,8 %** (324) | 48,4 – 57,2 % | 1k@2k en file |
 | **`DistOracle1Root-Exact12`** (`shortlist=dist1`) | **54,6 %** (324) | 49,3 – 60,0 % | 1k@2k en file |
-| `exact=14` (solveur à la racine jusqu'à 14 cartes) | 47,5 % (360) | 43,3 – 51,7 % | abandonné : le plus faible, et son temps de résolution ne compte pas dans le budget |
+| `exact=14` (solveur à la racine jusqu'à 14 cartes) | 47,5 % (360) | 43,3 – 51,7 % | abandonné : le plus faible, et son temps de résolution ne compte pas dans le budget. **Relu le 16/10 : identique à `exact=12`** dans le jeu de base, le solveur attend la pioche vide et il reste alors 12 cartes au plus (6 + 6) ; le 47,5 % était du bruit |
 
 **La piste 3 : tes victoires contre la 1.2** (3 parties ; celle du 11/10 à 17 h 07 se jouait avec
 l'extension et est mise à part). Chaque coup de la 1.2 avant la pioche vide, recherché à nouveau à

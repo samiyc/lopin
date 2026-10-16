@@ -390,7 +390,9 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   ISMCTS tree plays every iteration on the true deal (`seeAll`, both hands and the pile seen; off by default,
   fingerprints unchanged) — a judge of the deal, not of the moves (it exploits the pile it sees). At 400 the
   omniscient 1.2 beats the 1.2 73.6 % (62.9 – 84.3); `npm run deals` plays it against itself: the first seat's
-  share between omniscients, the decided and the balanced deals.
+  share between omniscients, the decided and the balanced deals. Its solver counts the pile with the hands
+  (`exactApplies(state, n, seen)`): 14 cards solve in 10 of 12 positions (3.7 s median). For a hidden pile `exact`
+  past 12 is `exact=12` (the pile must be empty, 6 + 6 cards at most), so `exact=14`'s 47.5 % was noise.
 - **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family

@@ -4,6 +4,7 @@ import { DECKS, JOKER_RULES } from "../src/config/decks.js";
 import { ORDERS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
 import { BOTS, engineFor } from "../src/sim/bots.js";
+import { exactApplies } from "../src/sim/exact.js";
 import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
 import { cloneState, seeAll } from "../src/sim/lookahead.js";
 
@@ -35,6 +36,14 @@ describe("Omniscient 1.0: the true deal, both hands and the pile seen", () => {
     assert.deepEqual(seen.hands, state.hands);
     assert.deepEqual(seen.pile, state.pile);
     assert.equal(seen.endMode, "final", "rollouts settle borders at the end, as from a deal");
+  });
+
+  it("hands its solver the pile too: hands and pile counted together, since the draws are known", () => {
+    const late = { hands: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]], pile: [11, 12, 13] };
+    assert.equal(exactApplies(late, 12), false, "the pile hidden, the solver waits for it to be empty");
+    assert.equal(exactApplies(late, 12, true), false, "13 cards left");
+    assert.equal(exactApplies(late, 13, true), true);
+    assert.equal(exactApplies({ ...late, pile: [] }, 12), true);
   });
 
   it("tells apart two positions the bot cannot: the opponent's hand and the pile it sees", () => {
