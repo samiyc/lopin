@@ -132,9 +132,9 @@ function sortFromHere(sort) {
 export const currentLog = () => viewer.log;
 
 const STEPS = { "btn-first": first, "btn-prev": prev, "btn-next": next, "btn-last": end };
-const KEYS = { Home: first, End: end };
+const KEYS = { Home: first, End: end, ArrowLeft: prev, ArrowRight: next };
 
-/** Home and End jump to either end while a game is loaded in the player. */
+/** Home and End jump to either end, the arrows step a move, while a game is loaded in the player. */
 function onKey(event) {
   const step = KEYS[event.key];
   if (!step || $("player").hidden || viewer.log === null || event.target.closest?.("input, select, dialog")) return;
