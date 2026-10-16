@@ -24,7 +24,9 @@ import { CREDIT, createPonder } from "../../src/sim/ponder.js";
  *
  * Messages in: `init { engine, seed, limitMs, minMs, part, workers }`, `ponder { log }` (the
  * human is to move), `decide { log }` (the bot is to move), `stop`.
- * Message out: `move { move, scored, pondered, rollouts, thoughtMs }`.
+ * `decide` carries an `id`, echoed in the answer, so that the page drops an
+ * answer that comes back after it gave up waiting (thinker.js).
+ * Message out: `move { id, move, scored, pondered, rollouts, thoughtMs }`.
  */
 const SLICE_MS = 25;
 let bot = null;
@@ -84,9 +86,9 @@ const HANDLERS = {
       console.error("Worker ponder error:", err);
     }
   },
-  decide({ log }) {
+  decide({ log, id }) {
     try {
-      postMessage({ type: "move", ...decide(log) });
+      postMessage({ type: "move", id, ...decide(log) });
     } catch (err) {
       console.error("Worker decide error:", err);
       try {
@@ -94,10 +96,10 @@ const HANDLERS = {
         const moves = legalMoves(state);
         const scored = bot.scoreMoves(state, moves);
         const best = scored.reduce((a, b) => (b.gain > a.gain ? b : a), scored[0]);
-        postMessage({ type: "move", move: best?.move ?? moves[0] ?? null, scored, pondered: 0, rollouts: 0, thoughtMs: 0 });
+        postMessage({ type: "move", id, move: best?.move ?? moves[0] ?? null, scored, pondered: 0, rollouts: 0, thoughtMs: 0 });
       } catch (recoveryErr) {
         console.error("Worker recovery error:", recoveryErr);
-        postMessage({ type: "error", error: err.message });
+        postMessage({ type: "error", id, error: err.message });
       }
     }
   },

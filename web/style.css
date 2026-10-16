@@ -294,8 +294,11 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
   :root { --ui-zoom: 1; }
   .layout, .layout.folded { grid-template-columns: 1fr; }
   .sidebar { position: static; }
-  .layout.folded #panel-play { display: flex; justify-content: flex-start; }
+  /* Folded and narrow (Sami, 16/10): the pile and the two glyph buttons on one row, each as wide as it needs. */
+  .layout.folded .sidebar { grid-auto-flow: column; justify-content: start; align-items: center; }
+  .layout.folded #panel-play { display: flex; gap: 6px; width: fit-content; }
   .layout.folded #panel-play button { width: 48px; }
+  .topbar { flex-wrap: wrap; row-gap: 8px; column-gap: 16px; padding: 10px 16px; }
   :root { --card-w: 44px; --card-h: 62px; --overlap: 20px; }
 }
 
