@@ -3117,7 +3117,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 4 (l'ancien pw=1 : 50,7 % sur l'offset 12) sur un second jeu de donnes, pour compléter la courbe (Sami, 16/10).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T08:55",
+      "minutes": 41,
+      "output": "backlog-runs/2026-10-16-08-14_LIGHT_DUEL_2_OracleLight-Pwl4.txt"
     },
     {
       "id": "LIGHT_DUEL_1_OracleLight-Pwl5",
@@ -3125,7 +3128,10 @@
       "estimate": "40 min",
       "limit": 90,
       "why": "L'Oracle light au niveau 5 (k = 0,75 ; 67,6 % au 5e niveau à 2 000 ; Oracle3-Pwl5 : 57,1 %) sur l'offset 12, où les niveaux 1 à 4 font 51,4 / 57,9 / 59,3 / 50,7 % (Sami, 16/10).",
-      "status": "todo"
+      "status": "done",
+      "doneAt": "2026-10-16T09:36",
+      "minutes": 41,
+      "output": "backlog-runs/2026-10-16-08-55_LIGHT_DUEL_1_OracleLight-Pwl5.txt"
     }
   ]
 }

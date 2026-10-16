@@ -644,7 +644,7 @@
    "lo": 44.2,
    "hi": 58.6,
    "verdict": "neutre",
-   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12) : 51,4 %, 52,9 / 50,0 %."
+   "note": "LIGHT_DUEL_1, contre la 1.2@2000, 140 parties (offset 12) : 51,4 %, 52,9 / 50,0 %. Rejoué le 16/10 sous le nom pwl=1, offset 13 : 52,9 % ; environ 52,1 % sur 280 parties."
   },
   {
    "id": "pwl-levels",
@@ -701,12 +701,12 @@
    "when": "16/10",
    "id": "oracle-light-pwl3",
    "name": "OracleLight-Pwl3 : 10 000, pwl=3",
-   "score": 57.1,
-   "lo": 52.4,
-   "hi": 61.9,
+   "score": 56,
+   "lo": 52,
+   "hi": 59.9,
    "verdict": "tendance",
    "idea": "Le niveau 3, seul pas encore essayé à 10 000.",
-   "note": "LIGHT_DUEL_1 et 2, contre la 1.2@2000, offsets 12 et 13 : 59,3 % puis 55,0 %, 57,1 % (52,4 – 61,9) sur 280 parties ; pwl=2 sur les mêmes donnes : 52,5 %. Candidat pour l'Oracle light ; l'offset 14 en cours."
+   "note": "LIGHT_DUEL_1 à 3, contre la 1.2@2000, offsets 12 à 14 : 59,3 / 55,0 / 53,6 %, réunis 56,0 % (52,0 – 59,9) sur 420 parties ; pwl=2 sur les mêmes donnes : 54,5 %. Le choix de l'Oracle light : le plus de parties et la borne basse la plus haute."
   },
   {
    "family": "outils",
@@ -720,6 +720,32 @@
    "verdict": "neutre",
    "idea": "Le choix final compterait plus quand les taux sont fiables (10 000 itérations).",
    "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 58,6 % puis 48,6 %, 53,6 % sur 280 parties ; pwl=2 seul sur les mêmes donnes : 52,5 %. Rien de plus."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl4",
+   "name": "OracleLight-Pwl4 : 10 000, pwl=4 (l'ancien pw=1)",
+   "score": 50,
+   "lo": null,
+   "hi": null,
+   "verdict": "neutre",
+   "idea": "Compléter la courbe des niveaux à 10 000.",
+   "note": "Offset 12 (sous le nom pw=1) : 50,7 % ; offset 13 : 49,3 % ; environ 50,0 % sur 280 parties."
+  },
+  {
+   "family": "outils",
+   "bench": "duel",
+   "when": "16/10",
+   "id": "oracle-light-pwl5",
+   "name": "OracleLight-Pwl5 : 10 000, pwl=5",
+   "score": 58.6,
+   "lo": 52.6,
+   "hi": 64.5,
+   "verdict": "tendance",
+   "idea": "Le niveau 5 (Sami, 16/10) à 10 000.",
+   "note": "LIGHT_DUEL_1, offset 12 : 58,6 %, 58,6 / 58,6 %. Un seul duel ; entre 3 et 5, le niveau 4 retombe (50 %) : le bruit domine à 140 parties."
   }
  ],
  "manualJobs": [],
@@ -940,9 +966,9 @@
    "text": "La 1.2 reste le plafond à 2 000 simulations : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation. Suite : un Oracle light (pw=2 ou 3 à 10 000) jouable dans la page, Oracle3 sur 2 workers si trees=2 tient, l'Elo de l'oracle dans l'onglet Stats. Ce changelog deviendra celui de l'oracle v3 et de l'Oracle light (forme à définir). Voir docs/1.3-to-oracle-shift.md. Premier tri de l'Oracle light (10 000 contre la 1.2@2000, 140 parties) : pw=1 50,7 %, pw=2 57,9 % (51,4 – 64,4), pw=3 51,4 % ; OracleLight-Pw2 confirmé : 54,5 % (50,6 – 58,4) sur 420 parties. Suite : sa vitesse dans le worker de la page."
   },
   {
-   "when": "Maintenant",
+   "when": "Fait",
    "title": "Les niveaux pwl des oracles (nuit du 16/10)",
-   "text": "Nuit du 16/10 : Oracle3 à pwl=2, 3, 4, 5 (20 000) fait 57,1 / 59,3 / 61,4 / 57,1 % sur l'offset 12, un plateau, Oracle3 garde pwl=4. L'Oracle light à pwl=3 fait 57,1 % (52,4 – 61,9) sur 280 parties, contre 52,5 % pour pwl=2 sur les mêmes donnes : candidat, à finir sur l'offset 14 ; final=1 n'ajoute rien (53,6 %). pwl=1 rejoué sur l'offset 13 ce matin."
+   "text": "Oracle3 (20 000) forme un plateau de 57 à 61 % entre pwl=2 et pwl=5 et garde pwl=4. L'Oracle light (10 000) : pwl=1 ~52,1 %, pwl=2 54,5 %, pwl=3 56,0 % (52,0 – 59,9, 420 parties), pwl=4 ~50,0 %, pwl=5 58,6 % (un duel) ; le bruit domine, pwl=3 est retenu. final=1 n'ajoute rien."
   },
   {
    "when": "Fait",

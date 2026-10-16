@@ -3628,3 +3628,19 @@ peu ; Oracle3 garde `pwl=4`. Pousser plus loin (`pwl=5`) n'apporte rien.
   280 parties (57,1 %), pour la moitié du budget. Candidat pour l'Oracle light ; l'offset 14 (en cours) le compare à
   `pwl=2` sur les mêmes 420 parties.
 - **`final=1` n'apporte rien à 10 000 non plus** (53,6 contre 52,5 % sur les mêmes donnes).
+
+**La courbe complète de l'Oracle light** (16/10 au matin : `pwl=1` et `pwl=4` sur l'offset 13, `pwl=3` sur le 14, `pwl=5`
+sur le 12 ; 10 000 contre la 1.2@2000, en %) :
+
+| `pwl` à 10 000 | Offset 12 | Offset 13 | Offset 14 | Réunis |
+| --- | --- | --- | --- | --- |
+| 1 (l'ancien `pw=3`) | 51,4 | 52,9 | — | ~52,1 (280) |
+| 2 (`OracleLight-Pw2`) | 57,9 | 47,1 | 58,6 | 54,5 (420, 50,6 – 58,4) |
+| **3** | 59,3 | 55,0 | 53,6 | **56,0 (420, 52,0 – 59,9)** |
+| 4 (l'ancien `pw=1`) | 50,7 | 49,3 | — | ~50,0 (280) |
+| 5 | 58,6 | — | — | 58,6 (140, 52,6 – 64,5) |
+
+- **Le bruit domine** : le niveau 4 retombe entre 3 et 5, ce qui n'a rien de physique ; à 140 parties, ± 6,5 points.
+- **`pwl=3` est le choix de l'Oracle light** : le plus de parties (420) et la borne basse la plus haute (52,0 %),
+  +1,5 point sur `pwl=2` sur les mêmes donnes. `pwl=5` ne compte qu'un duel. `npm run versus` regroupe par nom de
+  moteur exact : les parties jouées sous `pw=k` restent à part de celles sous `pwl=n`, il faut les réunir à la main.
