@@ -24,6 +24,7 @@
     "agent-examples": "node scripts/agent-examples.js",
     "duel": "node scripts/duel.js",
     "deals": "node scripts/deals.js",
+    "deal-pool": "node scripts/deal-pool.js",
     "replays": "node scripts/replays.js",
     "fingerprint": "node scripts/fingerprint.js",
     "duel:long": "node scripts/duel.js --long",

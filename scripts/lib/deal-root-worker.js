@@ -19,10 +19,14 @@ function rootValue(state, engine, seed) {
   const search = bot.searchFor(state, moves, {});
   const budget = budgetOf(engine.split("@")[1]).budget;
   while (!search.done() && search.rollouts() < budget) search.step();
-  let best = { visits: 0, wins: 0 };
-  for (const child of search.tree().children.values()) if (child.visits > best.visits) best = child;
-  return best.visits > 0 ? best.wins / best.visits : 0.5;
+  const children = [...search.tree().children.values()].filter((child) => child.visits > 0).sort((a, b) => b.visits - a.visits);
+  const rate = (child) => (child ? child.wins / child.visits : 0.5);
+  const total = children.reduce((sum, child) => sum + child.visits, 0);
+  // The runner-up too (Sami, 16/10): how far behind it is, and how much of the search the favourite took.
+  return { value: rate(children[0]), second: rate(children[1] ?? children[0]), topShare: total > 0 ? children[0].visits / total : 1 };
 }
+
+const meanOf = (xs) => xs.reduce((sum, x) => sum + x, 0) / xs.length;
 
 // `decks` (the cards in order, a kept game's `deck`) judges given deals instead of `dealSeeds`.
 parentPort.on("message", ({ row, endMode, engine, dealSeeds = null, decks = null, seeds }) => {
@@ -30,8 +34,11 @@ parentPort.on("message", ({ row, endMode, engine, dealSeeds = null, decks = null
   const deals = decks ?? dealSeeds.map((dealSeed) => createRng(dealSeed).shuffle(buildDeck(spec)));
   const values = deals.map((deck, d) => {
     const fresh = () => createGame(spec, { order: ORDERS[row.order], jokerRule: JOKER_RULES[row.jokerRule], rng: createRng(dealSeeds?.[d] ?? d + 1), endMode, deck: [...deck] });
-    const total = seeds.reduce((sum, seed) => sum + rootValue(fresh(), engine, seed), 0);
-    return total / seeds.length;
+    return seeds.map((seed) => rootValue(fresh(), engine, seed));
   });
-  parentPort.postMessage({ values });
+  parentPort.postMessage({
+    values: values.map((reads) => meanOf(reads.map((read) => read.value))),
+    seconds: values.map((reads) => meanOf(reads.map((read) => read.second))),
+    topShares: values.map((reads) => meanOf(reads.map((read) => read.topShare))),
+  });
 });

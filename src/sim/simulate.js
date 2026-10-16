@@ -65,8 +65,14 @@ function dealOf(spec, deals, handClass, g) {
   return handClass ? dealFor(spec, deals + 7919 * g, handClass) : createRng(deals + 7919 * g).shuffle(buildDeck(spec));
 }
 
-/** `dealSeeds` (a pool of deals, `npm run deals -- --pool`): game g dealt from its own seed, as `dealOf` deals from `deals` + 7919 g. */
-const pooledDeal = (spec, dealSeeds, g) => (dealSeeds ? createRng(dealSeeds[g]).shuffle(buildDeck(spec)) : null);
+/**
+ * `dealSeeds` (a pool of deals): game g dealt from its own seed (`npm run deals -- --pool`), as `dealOf` deals from
+ * `deals` + 7919 g, or given as a deck, the cards in order (`npm run deal-pool`, from the kept duels).
+ */
+function pooledDeal(spec, dealSeeds, g) {
+  if (!dealSeeds) return null;
+  return Array.isArray(dealSeeds[g]) ? [...dealSeeds[g]] : createRng(dealSeeds[g]).shuffle(buildDeck(spec));
+}
 
 /** Game `g`'s deck: the batch's fixed one, else the pool's, else one dealt from `deals` (null: shuffled by the game). */
 const deckOf = (spec, { deals = null, dealSeeds = null, handClass = null, deck = null }, g) => deck ?? pooledDeal(spec, dealSeeds, g) ?? dealOf(spec, deals, handClass, g);

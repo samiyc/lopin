@@ -60,7 +60,9 @@ const openHands = args.includes("--open") || args.includes("--reveal-hands");
 const openNote = openHands ? ", mains révélées" : "";
 // `--pool file` (npm run deals -- --pool): the duel plays those deals, in order, from both seats, instead of fresh ones.
 const poolFile = args.includes("--pool") ? args[args.indexOf("--pool") + 1] : null;
-const pool = poolFile ? JSON.parse(readFileSync(poolFile, "utf8")).seeds : null;
+// A pool holds seeds (npm run deals) or decks (npm run deal-pool, from the kept duels).
+const poolData = poolFile ? JSON.parse(readFileSync(poolFile, "utf8")) : null;
+const pool = poolData ? (poolData.seeds ?? poolData.decks) : null;
 const poolNote = pool ? `, pool ${poolFile} (${pool.length} donnes)` : "";
 
 const engine = (id) => (id in BOT_LINEUP ? engineOf(id) : id);
