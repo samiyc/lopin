@@ -818,13 +818,39 @@
    "name": "ReplyFpu1 : la même chose, moins 0,1 (+fpu=1)",
    "family": "arbre",
    "bench": "duel",
-   "score": 53.6,
-   "lo": 48.6,
-   "hi": 58.6,
-   "verdict": "tendance",
+   "score": 51.5,
+   "lo": 49,
+   "hi": 54,
+   "verdict": "neutre",
    "when": "17/10",
    "idea": "Sous la racine, une réponse adverse jamais essayée vaut la moyenne de ses sœurs essayées moins fpu / 10, plus le bonus d'exploration d'une visite, au lieu de passer avant toutes (+∞) : 22 % des itérations de la 1.2 essaient une réponse pour la première fois. La racine garde son premier essai de chaque candidat (src/sim/first-play.js).",
-   "note": "De jour, mêmes donnes : 53,6 % (48,6 – 58,6), 53,6 % en commençant comme en second. La 1k@2k est en file pour la nuit du 17-18/10 (VALIDATE_LONG_2..4_ReplyFpu1, offsets 1 à 3, le duel du jour comptant comme le premier). Coût +3,6 % sur un fil, à vérifier dans les replays."
+   "note": "Comparatif de jour sur les mêmes 250 parties (offset 0) : fpu=0 45,6 %, fpu=1 53,6 %, fpu=2 48,4 %, fpu=3 45,6 %. La meilleure, fpu=1, a joué sa 1k@2k de jour (Sami, 17/10) : 53,6 / 46,8 / 51,6 / 54,0 %, 51,5 % (49,0 – 54,0) sur 1 000 parties : écarté. Son pic au milieu de trois options sous 50 % était du bruit. L'option +fpu=d reste."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "verdict": "neutre",
+   "when": "17/10",
+   "idea": "Sous la racine, une réponse adverse jamais essayée vaut la moyenne de ses sœurs essayées moins fpu / 10, plus le bonus d'exploration d'une visite, au lieu de passer avant toutes (+∞) : 22 % des itérations de la 1.2 essaient une réponse pour la première fois. La racine garde son premier essai de chaque candidat (src/sim/first-play.js).",
+   "id": "reply-fpu2",
+   "name": "ReplyFpu2 : moins 0,2 (+fpu=2)",
+   "score": 48.4,
+   "lo": 43,
+   "hi": 53.8,
+   "note": "De jour, les 250 parties de fpu=0 et fpu=1 : 48,4 % (43,0 – 53,8). Écarté."
+  },
+  {
+   "family": "arbre",
+   "bench": "duel",
+   "verdict": "neutre",
+   "when": "17/10",
+   "idea": "Sous la racine, une réponse adverse jamais essayée vaut la moyenne de ses sœurs essayées moins fpu / 10, plus le bonus d'exploration d'une visite, au lieu de passer avant toutes (+∞) : 22 % des itérations de la 1.2 essaient une réponse pour la première fois. La racine garde son premier essai de chaque candidat (src/sim/first-play.js).",
+   "id": "reply-fpu3",
+   "name": "ReplyFpu3 : moins 0,3 (+fpu=3)",
+   "score": 45.6,
+   "lo": 39.8,
+   "hi": 51.4,
+   "note": "De jour, les mêmes 250 parties : 45,6 % (39,8 – 51,4). Écarté."
   },
   {
    "id": "seats-edge",
@@ -1108,11 +1134,6 @@
   },
   {
    "when": "Cette nuit",
-   "title": "ReplyFpu1 : la 1k@2k",
-   "text": "Codé le 17/10 (+fpu=d, src/sim/first-play.js) et joué de jour à 2 000 sur 250 parties : fpu=0 perd (45,6 %), fpu=1 fait 53,6 % (48,6 – 58,6). Ses offsets 1 à 3 sont en file pour la nuit du 17-18/10, avec la règle d'arrêt. Si la borne basse sur 1 000 parties reste au-dessus de 50 % : la première 1.3 à calcul égal, et fpu=2 ou 3 à essayer ensuite."
-  },
-  {
-   "when": "Cette nuit",
    "title": "La 1.2 sur deux workers : Ensemble2x2000 sur 1 000 parties",
    "text": "NOISE_DUEL_3 et 4_Ensemble2x2000, offsets 3 et 4 (Budget4000 y faisait 51,6 et 50,8 %). Si la borne basse sur 1 000 parties reste au-dessus de 50 % : une version de page, deux arbres de 2 000 sur deux workers (le chemin de l'Oracle light), au temps de la 1.2. Du calcul en plus, pas une idée, mais à temps égal pour le joueur."
   },
@@ -1140,6 +1161,11 @@
    "when": "Plus tard",
    "title": "Choix final 2 : réserver des itérations aux finalistes",
    "text": "Mis de côté avec le changement de cap du 15/10 (docs/1.3-to-oracle-shift.md) : RootHalving était neutre sur le V1, et le choix final ne s'est réglé qu'avec le budget."
+  },
+  {
+   "when": "Fait",
+   "title": "ReplyFpu : les quatre marges, puis la 1k@2k (17/10, de jour)",
+   "text": "Codé le 17/10 (+fpu=d, src/sim/first-play.js). Sur les mêmes 250 parties à 2 000 contre la 1.2 : fpu=0 45,6 %, fpu=1 53,6 %, fpu=2 48,4 %, fpu=3 45,6 %. La 1k@2k de fpu=1 : 51,5 % (49,0 – 54,0) sur 1 000 parties, écarté. La 1.2 reste au plafond pour tout ce qui ne rajoute pas de calcul ; docs/priorites-1.3.md § 2."
   },
   {
    "when": "Fait",

@@ -177,17 +177,22 @@ Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées so
 - **Le nom** : `CommonDeals` (`glossaire.md`).
 - **Les commandes** : section 4.
 
-### 2. `ReplyFpu` : le premier essai d'une réponse adverse au mérite (codé le 17/10)
+### 2. `ReplyFpu` : le premier essai d'une réponse adverse au mérite (codé et écarté le 17/10)
 
-- **Le résultat du jour (17/10, Sami : 250 parties à 2 000 contre la 1.2@2000, offset 0)** :
-  - `ReplyFpu0` (`+fpu=0`) : **45,6 % (40,0 – 51,2)**, en commençant 41,6 %, écarté ;
-  - `ReplyFpu1` (`+fpu=1`) : **53,6 % (48,6 – 58,6)**, 53,6 % des deux côtés, en file pour la nuit du 17-18/10
-    (`VALIDATE_LONG_2..4_ReplyFpu1`, offsets 1 à 3, règle d'arrêt ; le duel du jour compte comme le job 1).
+- **Le résultat (17/10, de jour, Sami)** : les quatre marges sur les mêmes 250 parties à 2 000 contre la 1.2@2000
+  (offset 0), puis la 1k@2k de la meilleure.
 
-  Sans marge (δ = 0) l'adversaire revient trop à ses premières réponses et en rate de meilleures ; avec δ = 0,1 il
-  en essaie encore la plupart, mais plus tard. Le bon δ est peut-être plus grand : `fpu=2` ou `fpu=3` après la 1k@2k.
-  Coût : empreintes à 6 601 ms la partie contre 6 372 pour la 1.2 (+3,6 % sur un fil, `fpu=0` 5 507 ms), à
-  vérifier dans les replays de la nuit (itérations par coup) avant de parler de temps égal.
+  | Variante | Offset 0 (250 parties) | 1k@2k |
+  | --- | --- | --- |
+  | `ReplyFpu0` (`+fpu=0`) | 45,6 % (40,0 – 51,2) | — |
+  | `ReplyFpu1` (`+fpu=1`) | 53,6 % (48,6 – 58,6) | 53,6 / 46,8 / 51,6 / 54,0 : **51,5 % (49,0 – 54,0)** |
+  | `ReplyFpu2` (`+fpu=2`) | 48,4 % (43,0 – 53,8) | — |
+  | `ReplyFpu3` (`+fpu=3`) | 45,6 % (39,8 – 51,4) | — |
+
+  **Écarté** : la borne basse sur 1 000 parties reste sous 50 %, comme `FinalLcb1` (51,5 % aussi). Le pic de
+  `fpu=1` entre trois marges sous 50 % était du bruit de 250 parties (± 5 points). Revenir plus tôt aux réponses
+  connues ne rend pas l'adversaire modélisé meilleur : la 1.2 reste au plafond pour tout ce qui ne rajoute pas de
+  calcul. Le coût (+3,6 % sur un fil pour `fpu=1`) n'a pas eu à être vérifié. L'option `+fpu=d` reste.
 
 - **Le mécanisme** : la « first-play urgency » sous la racine. Une réponse jamais essayée vaut la moyenne des réponses
   déjà essayées du nœud, moins δ, au lieu de passer avant toutes (+∞ dans UCB). Les 22 % d'itérations qui essaient
@@ -454,7 +459,7 @@ Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par p
    indépendants. Apparier davantage (élagage par moitiés sur donnes communes, finalistes appariés) viserait le mauvais
    bruit et n'est pas proposé.
 3. `ReplyFpu` restait une famille nouvelle, sans priorité : son effet avait un signe inconnu. Codé le 17/10 et joué
-   de jour à 2 000 (§ 2) : `fpu=0` perd (45,6 %), `fpu=1` fait 53,6 % sur 250 parties, à confirmer la nuit du 17-18/10.
+   de jour à 2 000 (§ 2) : quatre marges, la meilleure (`fpu=1`) à 51,5 % (49,0 – 54,0) sur 1 000 parties, écartée.
 
 **La suite** : la 1.3 de la page sera « la 1.2 sur deux workers » (`Ensemble2x2000`) si ses offsets 3 et 4 tiennent,
 ou la 1.2@4000. L'Oracle light reste au-dessus.

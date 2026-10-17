@@ -420,9 +420,9 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.
 - **ReplyFpu** (17/10, `src/sim/first-play.js`, `docs/priorites-1.3.md` § 2): `+fpu=d` scores an untried move below
   the root at its tried siblings' mean minus d / 10 plus one visit's UCB bonus, instead of +∞ (off by default, the
-  1.2's fingerprint unchanged; `fpu=1` → `1a42545c7dcbaeeb`). Day duels at 2 000 (250 games, offset 0): `fpu=0`
-  45.6 %, rejected; `fpu=1` 53.6 % (48.6 – 58.6), its 1k@2k queued (`VALIDATE_LONG_2..4_ReplyFpu1`, the day duel
-  counted as job 1 from `backlog-runs/`).
+  1.2's fingerprint unchanged; `fpu=1` → `1a42545c7dcbaeeb`). Day duels at 2 000 (250 games, offset 0): `fpu=0..3`
+  45.6 / 53.6 / 48.4 / 45.6 %; `fpu=1`'s 1k@2k, by day: **51.5 % (49.0 – 54.0), rejected** — like CommonDeals, a tree
+  change at equal computation does not beat the 1.2.
 - **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/seat-rules.js`, named in
   `src/config/seats.js`, off by default) deals other hand sizes or lets the first player look at the top of the pile
   (`src/sim/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts
