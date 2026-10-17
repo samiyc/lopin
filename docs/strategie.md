@@ -62,6 +62,7 @@ mesures détaillées sont plus bas, section par section.
 | EPIMC (Arjonilla, Saffidine et Cazenave, 2024 : retarder la résolution en information parfaite) | 14/10 | pas codé | rejeté sur le papier : EPIMC améliore PIMC, que l'ISMCTS dépasse déjà (son arbre est fait d'ensembles d'information, ce qui limite la fusion de stratégies), et la fin de partie est en information parfaite (pioche vide : les cartes non vues sont la main adverse). Il ne resterait que les simulations, l'endroit où `trunc` a perdu | — |
 | MO-ISMCTS (un arbre par joueur, Cowling, Powley et Whitehouse 2012), retenu par le panel du 16/10 | 16/10 | pas codé | rejeté sur le papier (`docs/priorites-1.3.md`) : il sert quand un coup cache quelque chose à l'adversaire. Ici, un coup (une carte sur une borne) est public ; seuls la donne et les pioches sont cachées, et l'ISMCTS les tire à la racine. Avec des coups publics, les arbres de chaque joueur sont celui de la 1.2. Et il ne sépare pas les mains de l'adversaire à sa première réponse, là où est la fusion de stratégies : sa racine les regroupe aussi | — |
 | Retirer la chance des jokers des résultats (variable de contrôle) | 16/10 | jokers de la main adverse tirée : corrélation −0,04 avec le résultat ; jokers de mes pioches : +0,12 (30 positions, 300 donnes chacune) | écarté par la mesure : au plus 1,5 % de la variance des résultats | — |
+| `CommonDeals` : les candidats de la racine comparés sur les mêmes donnes (`+crn=1`) | 16-17/10 | tri à 400 : 55,3 % (50,5 – 60,0) ; 1k@2k : **50,7 % (48,2 – 53,2)** sur 1 000 parties | écarté : le regret de la racine baissait à 400 (−0,43 point), rien à 2 000. Le bruit qui coûte des points est celui du chemin de chaque arbre, pas des donnes de la racine : deux arbres de 2 000 indépendants font 54,6 %, autant qu'un arbre de 4 000 (`docs/priorites-1.3.md`, § 6). L'option reste (`+crn=1`) | — |
 
 ## Comment le Stratège choisit un coup
 
@@ -3699,3 +3700,35 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
 - **Écartés** :
   - MO-ISMCTS, sur le papier : les coups sont publics, et sa racine adverse regroupe les mains elle aussi ;
   - la chance des jokers comme variable de contrôle, par la mesure : au plus 1,5 % de la variance (tableau du début).
+
+### La nuit du 17/10
+
+Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par paires de donnes) :
+
+| Série | Parties | Score contre la 1.2@2000 | Sur les mêmes donnes |
+| --- | --- | --- | --- |
+| `CommonDeals` (offsets 0 à 3) | 1 000 | **50,7 % (48,2 – 53,2)** : 49,6 / 52,8 / 52,0 / 48,4 | — |
+| `Ensemble2x2000` (offsets 1 et 2) | 500 | **54,6 % (50,8 – 58,4)** : 54,0 / 55,2 | Budget4000 : 54,4 % |
+| `OracleLight-Pwl3-Trees2` (offsets 12 à 14) | 420 | 53,6 % (49,7 – 57,4) | l'arbre unique : 56,0 % |
+| `OracleLight-Pwl2-Trees2` (offsets 12 et 13) | 280 | **57,9 % (52,3 – 63,4)** | `Pwl3-Trees2` : 53,9 % ; `pwl=2` en un arbre : 52,5 % |
+| `Oracle3-Pwl3-Trees2` (offsets 12 et 13) | 280 | 55,4 % (50,3 – 60,4) | Oracle3 en un arbre : 57,1 % |
+
+- **`CommonDeals` est écarté** : 50,7 %, sous les 51 % du tableau de décision. Le regret mesuré de jour à 400
+  (−0,43 point) ne s'est pas traduit en parties à 2 000. Une part vient sans doute de la mesure elle-même : la
+  référence (chaque candidat cherché seul 400 fois) était calculée sous `crn`, ce qui avantageait `crn`.
+  `CommonDeals-FinalLcb1` n'a plus d'objet.
+- **Mais le bruit vaut des points** : deux arbres de 2 000 indépendants font autant qu'un arbre de 4 000 sur les mêmes
+  donnes (54,6 contre 54,4 %). Le gain du budget ×2 est donc, pour l'essentiel, la baisse du bruit du coup joué, pas
+  un arbre plus profond. Ce bruit n'est pas celui des donnes de la racine (que `CommonDeals` apparie) : c'est celui du
+  chemin que prend chaque arbre (quelles réponses adverses il essaie d'abord, ses simulations), que seuls des arbres
+  indépendants moyennent. À budget égal, deux arbres de 1 000 perdaient la profondeur (`Ensemble`, 51,0 %).
+- **Ce que ça donne pour la page** : deux arbres de 2 000 sur deux workers jouent dans le temps de la 1.2 (2,6 s au
+  tour 3), comme l'Oracle light. C'est du calcul en plus, pas une idée, mais à temps égal pour le joueur. La 1k@2k
+  complète (offsets 3 et 4, les autres donnes de Budget4000) est en file pour la nuit du 17-18/10 ; si elle tient,
+  c'est la version de page la moins chère au-dessus de la 1.2.
+- **L'Oracle light en deux arbres préfère `pwl=2`** : sur les mêmes donnes, 57,9 % contre 53,9 % avec `pwl=3`, alors
+  qu'en un arbre de 10 000 `pwl=3` menait (57,1 contre 52,5 %). Des arbres de 5 000 veulent un niveau plus bas,
+  comme Sami le pensait. Dans le bruit à 280 parties (± 5,6) : l'offset 14 est en file. Au-dessus de 56 % sur 420
+  parties, l'Oracle light 1.1 passe à `pwl=2` (un moteur différent, donc une version).
+- **Oracle3 en deux arbres n'apporte rien** : 55,4 % contre 57,1 % en un arbre, pour deux fois le temps de l'Oracle
+  light. Il ne vient pas dans la page.

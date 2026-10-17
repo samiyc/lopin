@@ -409,8 +409,12 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   root compares its candidates on common deals, as the 0.7 and the Stratège 2 did; a candidate's subtree then depends
   on its own visits only (`tests/common-deals.test.js`). Two candidates' results on one deal correlate at ρ ≈ 0.34
   through the tree (0.44 in flat playouts): a paired comparison has 0.66 of the variance. At 400 it cut the root's
-  regret by 0.43 ± 0.34 points (more than doubling the budget) and screened at 55.3 % (50.5 – 60.0); its 1k@2k is
-  queued. Read from the replays' `tree`,
+  regret by 0.43 ± 0.34 points (more than doubling the budget) and screened at 55.3 % (50.5 – 60.0), but its 1k@2k
+  (17/10) gave **50.7 % (48.2 – 53.2): rejected**. Yet `Ensemble2x2000` (`+trees=2@4000`, two independent 2 000-trees)
+  scored 54.6 % (50.8 – 58.4) on Budget4000's decks (54.4 %): the noise worth points is each tree's own path, which
+  only independent trees average out, not the root's deals — more computation, at equal time on two workers in the
+  page (offsets 3-4 queued). The Oracle light in two trees prefers `pwl=2` (57.9 % against 53.9 % for `pwl=3` on the
+  same 280 games; offset 14 queued); Oracle3 in two trees adds nothing (55.4 %). Read from the replays' `tree`,
   the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
   reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Bornage's
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.

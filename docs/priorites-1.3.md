@@ -6,6 +6,10 @@
 
 ## En bref
 
+- **Le résultat de la nuit du 17/10** (§ 6) : `CommonDeals` fait **50,7 % (48,2 – 53,2)** sur sa 1k@2k, écarté.
+  Mais `Ensemble2x2000` fait **54,6 % (50,8 – 58,4)**, autant que Budget4000 sur les mêmes donnes : le bruit du coup
+  joué vaut bien 2 à 3 points à 2 000, et il vient du chemin de chaque arbre, pas des donnes de la racine. Seuls des
+  arbres indépendants le réduisent, donc du calcul en plus : à temps égal dans la page, sur deux workers.
 - **Le diagnostic.** À 2 000 itérations, la 1.2 est un bandit de 8 candidats posé sur un bandit d'environ 55 réponses
   adverses par candidat, suivi d'une simulation où le cœur joue les deux camps. Ses erreurs ont deux sources :
   - le **bruit de la comparaison** de ses candidats ;
@@ -398,3 +402,47 @@ La dernière commande relit Budget4000 ; ses offsets 1 et 2 sont les donnes d'`E
 **Et sinon, la 1.3 viendra du budget.** La page donne jusqu'à 10 s par coup, et la 1.2 y fait ses 2 000 itérations
 en 2,6 s au tour 3 : à `@4000`, elle gagnerait 2,8 points (Budget4000) en restant sous la limite. Et l'Oracle light
 (56,0 % sur 420 parties) existe déjà sur deux workers (`docs/1.3-to-oracle-shift.md`).
+
+## 6. Le résultat (nuit du 17/10)
+
+Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par paires de donnes) :
+
+| Série | Parties | Score contre la 1.2@2000 | Sur les mêmes donnes |
+| --- | --- | --- | --- |
+| `CommonDeals` (offsets 0 à 3) | 1 000 | **50,7 % (48,2 – 53,2)** : 49,6 / 52,8 / 52,0 / 48,4 | — |
+| `Ensemble2x2000` (offsets 1 et 2) | 500 | **54,6 % (50,8 – 58,4)** : 54,0 / 55,2 | Budget4000 : 54,4 % |
+| `OracleLight-Pwl3-Trees2` (offsets 12 à 14) | 420 | 53,6 % (49,7 – 57,4) | l'arbre unique : 56,0 % |
+| `OracleLight-Pwl2-Trees2` (offsets 12 et 13) | 280 | **57,9 % (52,3 – 63,4)** | `Pwl3-Trees2` : 53,9 % ; `pwl=2` en un arbre : 52,5 % |
+| `Oracle3-Pwl3-Trees2` (offsets 12 et 13) | 280 | 55,4 % (50,3 – 60,4) | Oracle3 en un arbre : 57,1 % |
+
+- **`CommonDeals` est écarté** : 50,7 %, sous les 51 % du tableau de décision. Le regret mesuré de jour à 400
+  (−0,43 point) ne s'est pas traduit en parties à 2 000. Une part vient sans doute de la mesure elle-même : la
+  référence (chaque candidat cherché seul 400 fois) était calculée sous `crn`, ce qui avantageait `crn`.
+  `CommonDeals-FinalLcb1` n'a plus d'objet.
+- **Mais le bruit vaut des points** : deux arbres de 2 000 indépendants font autant qu'un arbre de 4 000 sur les mêmes
+  donnes (54,6 contre 54,4 %). Le gain du budget ×2 est donc, pour l'essentiel, la baisse du bruit du coup joué, pas
+  un arbre plus profond. Ce bruit n'est pas celui des donnes de la racine (que `CommonDeals` apparie) : c'est celui du
+  chemin que prend chaque arbre (quelles réponses adverses il essaie d'abord, ses simulations), que seuls des arbres
+  indépendants moyennent. À budget égal, deux arbres de 1 000 perdaient la profondeur (`Ensemble`, 51,0 %).
+- **Ce que ça donne pour la page** : deux arbres de 2 000 sur deux workers jouent dans le temps de la 1.2 (2,6 s au
+  tour 3), comme l'Oracle light. C'est du calcul en plus, pas une idée, mais à temps égal pour le joueur. La 1k@2k
+  complète (offsets 3 et 4, les autres donnes de Budget4000) est en file pour la nuit du 17-18/10 ; si elle tient,
+  c'est la version de page la moins chère au-dessus de la 1.2.
+- **L'Oracle light en deux arbres préfère `pwl=2`** : sur les mêmes donnes, 57,9 % contre 53,9 % avec `pwl=3`, alors
+  qu'en un arbre de 10 000 `pwl=3` menait (57,1 contre 52,5 %). Des arbres de 5 000 veulent un niveau plus bas,
+  comme Sami le pensait. Dans le bruit à 280 parties (± 5,6) : l'offset 14 est en file. Au-dessus de 56 % sur 420
+  parties, l'Oracle light 1.1 passe à `pwl=2` (un moteur différent, donc une version).
+- **Oracle3 en deux arbres n'apporte rien** : 55,4 % contre 57,1 % en un arbre, pour deux fois le temps de l'Oracle
+  light. Il ne vient pas dans la page.
+
+**Le verdict, revu** : la 1.2 est au plafond à 2 000 pour tout ce qui ne rajoute pas de calcul. Les trois cas
+« qui feraient changer d'avis » du § 5 ont été tranchés ou déplacés :
+1. `CommonDeals` ne passe pas : la piste des donnes communes est close.
+2. `Ensemble2x2000` égale Budget4000 : le bruit vaut environ 2,5 points. Mais il ne se réduit qu'avec des arbres
+   indépendants. Apparier davantage (élagage par moitiés sur donnes communes, finalistes appariés) viserait le mauvais
+   bruit et n'est pas proposé.
+3. `ReplyFpu` reste une famille nouvelle, non codée, sans priorité : son effet a un signe inconnu, et elle viserait
+   la même trajectoire d'arbre.
+
+**La suite** : la 1.3 de la page sera « la 1.2 sur deux workers » (`Ensemble2x2000`) si ses offsets 3 et 4 tiennent,
+ou la 1.2@4000. L'Oracle light reste au-dessus.
