@@ -1,12 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { PHASES, readGame, summarize } from "../src/replay/versus.js";
-import { pairedInterval } from "./lib/duel-plan.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
+import { PHASES, readGame, summarize } from "../src/replay/oracle/versus.js";
+import { pairedInterval } from "./lib/domain/duel-plan.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
 
 /**
  * `npm run versus -- <engine A> <engine B> [--label stfig6] [--top 8]`: every
  * game A and B played against each other in duels/, pooled across files and
- * deck sets (src/replay/versus.js) — the score with its interval over the
+ * deck sets (src/replay/oracle/versus.js) — the score with its interval over the
  * deck pairs, the score by seat and by the jokers each got, and how A plays
  * differently, phase by phase, and ends the game with a different board.
  *

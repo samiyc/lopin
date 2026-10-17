@@ -3,9 +3,9 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FORMATIONS, FORMATION_LABELS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
-import { summarizeReplays } from "../src/replay/summary.js";
+import { summarizeReplays } from "../src/replay/stats/summary.js";
 import { BOTS } from "../src/sim/bots.js";
-import { REPLAY_DIRS, isSafeName } from "./lib/replay-files.js";
+import { REPLAY_DIRS, isSafeName } from "./lib/domain/replay-files.js";
 
 /**
  * `npm run replays`: what the saved games say — `replays/` and

@@ -1,13 +1,13 @@
 import { writeFile } from "node:fs/promises";
-import { replayStates, rulesOf } from "../src/replay/log.js";
-import { contextsOf, loggedMove, traitsOf } from "../src/replay/move-features.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
+import { replayStates, rulesOf } from "../src/replay/core/log.js";
+import { contextsOf, loggedMove, traitsOf } from "../src/replay/oracle/move-features.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
 
 /**
  * `npm run rules -- [--min 0.7]`: rules mined from the kept bot games
  * (duels/), for new bonuses of the core (Sami, 02/10). Every move is read as
  * a moment (`contextsOf`) and what it did (`traitsOf`,
- * src/replay/move-features.js); per game and player, each trait gets its
+ * src/replay/oracle/move-features.js); per game and player, each trait gets its
  * share of the moves played in each moment. Two readings:
  *
  * - paired: in the same game, does the winner do it more often than the

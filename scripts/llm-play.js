@@ -3,7 +3,7 @@ import { appendFileSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } 
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { RULES_LINE } from "./lib/cli-view.js";
+import { RULES_LINE } from "./lib/cli/cli-view.js";
 
 /**
  * `npm run llm-play -- [--games 10] [--model llama3.2] [--host http://127.0.0.1:11434] [--bot experimental] [--seed 50000] [--out duels/agents/llama]`:

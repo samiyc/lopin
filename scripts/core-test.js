@@ -1,5 +1,5 @@
-import { readIndex, startTurn } from "./lib/game-index.js";
-import { runPool } from "./lib/pool.js";
+import { readIndex, startTurn } from "./lib/domain/game-index.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run core-test -- <engine> [--from 23] [--games 200] [--player experimental@0.9]`:
@@ -41,7 +41,7 @@ const tasks = cases.flatMap(({ row, turn }) => [
   { row, turn, engines: [null, engine] },
   { row, turn, reseed: 1 },
 ]);
-const results = await runPool(new URL("./lib/branch-worker.js", import.meta.url), tasks);
+const results = await runPool(new URL("./lib/workers/branch-worker.js", import.meta.url), tasks);
 
 const holds = (holder, seat) => (holder === null ? 0.5 : Number(holder === seat));
 const pairs = cases.map((_, i) => {

@@ -3,7 +3,7 @@ import { DECKS, JOKER_RULES } from "../src/config/decks.js";
 import { ORDERS } from "../src/config/formations.js";
 import { createRng } from "../src/core/random.js";
 import { engineFor } from "../src/sim/bots.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
 
 /**
  * `npm run fingerprint -- <engine,engine> [games]`: plays seeded games and

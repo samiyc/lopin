@@ -4,11 +4,11 @@ import { join, relative, resolve } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { BOT_IDS, BOT_LINEUP } from "../src/config/bots.js";
-import { finishLog, playLogged, startLog, stateAt } from "../src/replay/log.js";
-import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/runner.js";
-import { isClaimable } from "../src/sim/certainty.js";
-import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, shortCard, textView } from "./lib/cli-view.js";
-import { REPLAY_DIRS, replayFileName } from "./lib/replay-files.js";
+import { finishLog, playLogged, startLog, stateAt } from "../src/replay/core/log.js";
+import { RULES, botEntry, botPlayer, humanEntry, newGame, playBot } from "../web/app/replays/runner.js";
+import { isClaimable } from "../src/sim/eval/certainty.js";
+import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView, parseInput, shortCard, textView } from "./lib/cli/cli-view.js";
+import { REPLAY_DIRS, replayFileName } from "./lib/domain/replay-files.js";
 
 /**
  * `npm run cli`: Bornage in a terminal, against a bot of the line-up (Sami,

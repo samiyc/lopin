@@ -1,12 +1,12 @@
 import { BOT_LINEUP } from "../../src/config/bots.js";
 import { FORMATIONS, FORMATION_LABELS } from "../../src/config/formations.js";
-import { $, el } from "./dom.js";
-import { fetchStats } from "./replays-api.js";
+import { $, el } from "./board/dom.js";
+import { fetchStats } from "./replays/replays-api.js";
 
 /**
  * The "Stats" tab: the Elo table, then each human's record against each bot
  * version (wins, seats, time), then wins by starting hand, then which formations won the borders — all
- * from the saved games (`/api/stats`, `src/replay/stats.js`).
+ * from the saved games (`/api/stats`, `src/replay/stats/stats.js`).
  */
 const pct = (part, whole) => (whole ? `${Math.round((100 * part) / whole)} %` : "—");
 const name = (player) => {

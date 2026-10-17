@@ -84,7 +84,7 @@ Valet de Trèfle face à un Roi de Carreau : le +10 et le -10 s'appliquent indé
 - **Le premier joueur** gagne 49,7 % sans figure, 51 à 57 % avec une figure seule, 52,8 % avec
   les six : les figures l'avantagent un peu.
 - **Les parties** passent de 35 à 41 tours avec les six figures.
-- **La limite** : le cœur ne fait qu'estimer grossièrement les figures (`src/sim/figure-gains.js`).
+- **La limite** : le cœur ne fait qu'estimer grossièrement les figures (`src/sim/eval/figure-gains.js`).
   Ce sont ses habitudes qu'on mesure. La prochaine mesure se fait avec l'arbre, qui joue les
   figures dans ses simulations.
 
@@ -115,7 +115,7 @@ la colonne « 08/10 » est la même mesure, avec l'ancien Valet (« la plus faib
 
 ## Où en est l'extension (07/10)
 
-- **Le moteur** : fait (`src/core/figures.js`, `src/sim/border-rules.js`, `figure-moves.js`,
+- **Le moteur** : fait (`src/core/figures.js`, `src/sim/engine/border-rules.js`, `figure-moves.js`,
   `figure-gains.js`), le jeu de base inchangé au bit près (empreintes identiques).
 - **L'équilibre** : mesuré avec le cœur, puis avec l'arbre du 1.1 (ci-dessus, 11/10, le nouveau
   Valet de Trèfle compris).

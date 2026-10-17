@@ -1,15 +1,15 @@
 import { writeFile } from "node:fs/promises";
-import { replayStates, rulesOf } from "../src/replay/log.js";
-import { jokerTraits, pairWithJoker } from "../src/replay/joker-features.js";
+import { replayStates, rulesOf } from "../src/replay/core/log.js";
+import { jokerTraits, pairWithJoker } from "../src/replay/oracle/joker-features.js";
 import { parseCards } from "../src/core/notation.js";
-import { jokersOf as jokersHeld } from "../src/replay/jokers-held.js";
-import { readAllLogs } from "./lib/elo-data.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
+import { jokersOf as jokersHeld } from "../src/replay/core/jokers-held.js";
+import { readAllLogs } from "./lib/domain/elo-data.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
 
 /**
  * `npm run jokers`: where the jokers of the kept bot games (duels/) went, and
  * what came of it (Sami, 02/10). Each joker put is read by `jokerTraits`
- * (src/replay/joker-features.js), alone and two by two (what it joins × what
+ * (src/replay/oracle/joker-features.js), alone and two by two (what it joins × what
  * faces it, × the border). For each: how many, how often its player won the
  * border it went on, and the game.
  *

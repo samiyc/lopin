@@ -1,10 +1,10 @@
-import { rebuildIndex } from "./lib/game-index.js";
-import { pickGames, readFilters } from "./lib/game-filters.js";
+import { rebuildIndex } from "./lib/domain/game-index.js";
+import { pickGames, readFilters } from "./lib/domain/game-filters.js";
 
 /**
  * `npm run games -- [filters]`: the kept bot games (duels/) that match, with
  * the turn each would restart from — what `npm run branch` takes. Filters:
- * `scripts/lib/game-filters.js`. `--reindex` rebuilds duels/index.json from
+ * `scripts/lib/domain/game-filters.js`. `--reindex` rebuilds duels/index.json from
  * the duel files first.
  *
  *   npm run games -- --lost-by experimental@0.9 --from first-border --limit 100

@@ -1,0 +1,1091 @@
+  <section id="reference" aria-labelledby="t-reference">
+    <div>
+      <p class="eyebrow">III · L'oracle comme étalon</p>
+      <h2 id="t-reference">La base de référence V1 + Oracle</h2>
+    </div>
+    <p>Un duel long coûte des heures et reste bruité ; l'oracle juge des positions. Chaque cœur est placé selon la part des positions où le coup de l'oracle entre dans son top 8, celles que l'arbre regarde, et selon le score de ses duels longs contre le 0.9. Si les points montent de gauche à droite, le banc trie une idée en quelques minutes avant de lui donner des duels.</p>
+    <div class="panel">
+      <div class="scroll"><svg class="chart" id="bench" viewBox="0 0 640 330" role="img" aria-label="Accord avec l'oracle et score en duels, par cœur"></svg></div>
+      <p class="small" id="bench-note"></p>
+    </div>
+  </section>
+
+  <section id="banc" aria-labelledby="t-banc">
+    <div>
+      <p class="eyebrow">IV · La nuit du banc, 18 h – 22 h 30</p>
+      <h2 id="t-banc">Le banc de similitude</h2>
+    </div>
+    <p>L'idée : juger une version en quelques minutes, sans jouer de parties, en regardant si ses coups sont ceux que l'oracle a le plus visités. Deux passes de l'oracle ont construit ses positions sur 18 fils, puis les versions au résultat connu y ont été passées, pour vérifier qu'il les classe comme les duels.</p>
+    <div class="panel">
+      <h3 class="small-title">Ce qu'il contient</h3>
+      <div class="grid2">
+        <div class="answers" id="banc-movers"></div>
+        <ul class="facts" id="banc-facts"></ul>
+      </div>
+      <div class="scroll"><svg class="chart" id="banc-turns" viewBox="0 0 640 250" role="img" aria-label="Part des positions où les deux recherches de l'oracle ont le même favori, tour par tour"></svg></div>
+      <div class="legend" id="banc-turns-legend"></div>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Classe-t-il les versions comme les duels ?</h3>
+      <div class="toggle" id="calib-toggle" role="group" aria-label="Positions lues"></div>
+      <div class="scroll"><svg class="chart" id="calib" viewBox="0 0 640 330" role="img" aria-label="Valeur oracle et score en duels, par version"></svg></div>
+      <div class="legend" id="calib-legend"></div>
+      <p class="small" id="calib-note"></p>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Les parties perdues par le 1.0, et ce que l'oracle en a lu</h3>
+      <div class="scroll"><table><thead><tr><th>Contre</th><th class="num">Parties</th><th class="num">Perdues</th><th class="num">Relues par l'oracle</th><th>Part relue</th></tr></thead><tbody id="v1-lost"></tbody></table></div>
+      <p class="small muted" id="v1-lost-note"></p>
+    </div>
+  </section>
+
+  <section id="compare" aria-labelledby="t-compare">
+    <div>
+      <p class="eyebrow">V · L'oracle et le V1</p>
+      <h2 id="t-compare">Coup pour coup</h2>
+    </div>
+    <p>Trois lectures des mêmes coups. D'abord, à chaque coup de l'oracle, ce qu'aurait joué le 1.0 : le même coup, ou au moins un coup que son arbre regarde (le top 8 de son cœur). Puis, sur l'ensemble des parties, ce que chacun joue le plus souvent, phase par phase. Enfin, là où l'oracle s'écarte vraiment du cœur du 1.0, ce qui distingue son coup.</p>
+    <div class="panel">
+      <h3 class="small-title">Le 1.0 joue-t-il le coup de l'oracle ?</h3>
+      <div class="scroll"><svg class="chart" id="agree" viewBox="0 0 640 260" role="img" aria-label="Part des coups de l'oracle que le 1.0 joue aussi, ou regarde, par tranche de tours"></svg></div>
+      <div class="legend" id="agree-legend"></div>
+      <p class="small" id="agree-note"></p>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Ce que chacun joue, phase par phase</h3>
+      <div class="chips" id="phase-chips" role="group" aria-label="Phase de la partie"></div>
+      <div class="scroll"><svg class="chart" id="traits" viewBox="0 0 640 300" role="img" aria-label="Part des coups de l'oracle et du 1.0 qui portent chaque trait"></svg></div>
+      <div class="legend" id="traits-legend"></div>
+      <div class="scroll"><table class="board-table"><thead><tr><th>Le plateau, en moyenne par partie</th><th class="num">Oracle</th><th class="num">1.0</th></tr></thead><tbody id="board"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Là où l'oracle s'écarte du cœur du 1.0</h3>
+      <div class="scroll"><svg class="chart" id="gaps" viewBox="0 0 640 300" role="img" aria-label="Traits du coup de l'oracle et du favori du cœur du 1.0 dans ses écarts"></svg></div>
+      <p class="small" id="gaps-note"></p>
+    </div>
+  </section>
+
+  <section id="arbre" aria-labelledby="t-arbre">
+    <div>
+      <p class="eyebrow">VI · L'arbre du V1, pas à pas</p>
+      <h2 id="t-arbre">Comment le robot choisit un coup</h2>
+    </div>
+    <p>Le robot Expérimental ne calcule pas toute la partie : il essaie 2 000 fois une suite possible, chaque fois dans un monde différent pour les cartes qu'il ne voit pas, et joue le coup qui a tenu le plus souvent. Le cœur note les coups ; l'arbre décide lesquels creuser et retient ce qui gagne. Les mots sont dans <code>docs/glossaire.md</code>.</p>
+    <!--__ARBRE_NOTE__-->
+    <div class="steps tree-steps">
+      <div class="step"><b>42 coups possibles</b><span>6 cartes en main × 7 bornes, au plus. Le cœur complet (certitudes comprises) les note et en garde <strong>8</strong>, les candidats. Une seule fois par coup.</span></div>
+      <div class="step"><b>Le tirage</b><span>La main adverse et la pioche, invisibles, sont redistribuées au hasard : chaque itération joue dans un monde différent (1,95 million de mains adverses possibles au premier coup).</span></div>
+      <div class="step"><b>La descente</b><span>Un seul chemin : un des 8 candidats, puis à chaque étage une des 3 réponses que le cœur propose dans ce monde-là — d'abord un coup jamais essayé, sinon le meilleur compromis gagner / peu essayé (UCB). Arrêt au premier nœud nouveau, 5 coups au plus.</span></div>
+      <div class="step"><b>La fin de partie</b><span>Le cœur des simulations joue son meilleur coup pour les deux joueurs, jusqu'au bout (une trentaine de coups) : gagné ou perdu.</span></div>
+      <div class="step"><b>Le retour</b><span>Une visite, et une victoire ou non, sur chaque nœud du chemin jusqu'au candidat. Puis on recommence au tirage : 2 000 fois.</span></div>
+      <div class="step"><b>Le coup joué</b><span>Le candidat le <strong>plus visité</strong> : l'arbre revient plus souvent sur ce qui gagne, et un coup peu visité a un taux trop incertain.</span></div>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Une itération dans l'arbre</h3>
+      <div class="scroll"><svg class="diagram tree-diagram" viewBox="0 0 760 340" role="img" aria-label="Une itération : la racine, 8 candidats, un chemin descendu jusqu'à un nœud nouveau, la fin de partie jouée, et le retour du résultat">
+        <defs><marker id="t-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="t-arrowhead" /></marker></defs>
+        <!-- The root and its 8 candidates. -->
+        <rect class="t-root" x="16" y="146" width="104" height="48" rx="8" />
+        <text class="t-strong" x="68" y="166" text-anchor="middle">la position</text>
+        <text x="68" y="182" text-anchor="middle">42 coups</text>
+        <g class="t-links">
+          <line x1="120" y1="170" x2="196" y2="40" /><line x1="120" y1="170" x2="196" y2="76" /><line x1="120" y1="170" x2="196" y2="112" /><line x1="120" y1="170" x2="196" y2="148" />
+          <line x1="120" y1="170" x2="196" y2="184" /><line x1="120" y1="170" x2="196" y2="220" /><line x1="120" y1="170" x2="196" y2="256" /><line x1="120" y1="170" x2="196" y2="292" />
+        </g>
+        <g class="t-nodes">
+          <circle cx="204" cy="40" r="8" /><circle cx="204" cy="76" r="8" /><circle cx="204" cy="112" r="8" /><circle cx="204" cy="148" r="8" />
+          <circle cx="204" cy="220" r="8" /><circle cx="204" cy="256" r="8" /><circle cx="204" cy="292" r="8" />
+        </g>
+        <text x="204" y="330" text-anchor="middle">8 candidats</text>
+        <!-- The path taken: candidate 5, then one reply of 3 at each level. -->
+        <g class="t-links">
+          <line x1="212" y1="184" x2="318" y2="150" /><line x1="212" y1="184" x2="318" y2="234" />
+          <line x1="326" y1="184" x2="432" y2="152" /><line x1="326" y1="184" x2="432" y2="232" />
+          <line x1="440" y1="184" x2="534" y2="156" /><line x1="440" y1="184" x2="534" y2="228" />
+        </g>
+        <g class="t-nodes">
+          <circle cx="326" cy="150" r="7" /><circle cx="326" cy="234" r="7" />
+          <circle cx="440" cy="152" r="7" /><circle cx="440" cy="232" r="7" />
+          <circle cx="542" cy="156" r="6" /><circle cx="542" cy="228" r="6" />
+        </g>
+        <g class="t-path">
+          <line x1="212" y1="184" x2="318" y2="184" /><line x1="334" y1="184" x2="432" y2="184" /><line x1="448" y1="184" x2="534" y2="184" />
+        </g>
+        <g class="t-picked">
+          <circle cx="204" cy="184" r="9" /><circle cx="326" cy="184" r="8" /><circle cx="440" cy="184" r="8" />
+        </g>
+        <circle class="t-new" cx="542" cy="184" r="8" />
+        <text x="326" y="270" text-anchor="middle">3 réponses</text>
+        <text x="440" y="270" text-anchor="middle">3 réponses</text>
+        <text x="542" y="270" text-anchor="middle">nœud nouveau</text>
+        <text x="380" y="300" text-anchor="middle">la descente : un chemin, 5 coups au plus</text>
+        <!-- The rollout to the end, then the result carried back. -->
+        <path class="t-rollout" d="M552 184 q 13 -14 26 0 t 26 0 t 26 0 t 26 0 t 26 0" />
+        <rect class="t-end" x="680" y="162" width="74" height="44" rx="6" />
+        <text class="t-strong" x="717" y="181" text-anchor="middle">gagné</text>
+        <text x="717" y="197" text-anchor="middle">ou perdu</text>
+        <text x="620" y="232" text-anchor="middle">la fin de partie,</text>
+        <text x="620" y="246" text-anchor="middle">jouée par le cœur</text>
+        <path class="t-back" d="M717 160 Q 630 112 548 172 Q 434 112 332 172 Q 268 120 210 172" marker-end="url(#t-arrow)" />
+        <text class="t-back-label" x="470" y="100" text-anchor="middle">le retour : +1 visite, +1 victoire ou non, sur tout le chemin</text>
+        <!-- The deal, above. -->
+        <rect class="t-deal" x="16" y="18" width="128" height="56" rx="8" />
+        <text class="t-strong" x="80" y="40" text-anchor="middle">le tirage</text>
+        <text x="80" y="56" text-anchor="middle">main adverse et</text>
+        <text x="80" y="68" text-anchor="middle">pioche imaginées</text>
+      </svg></div>
+      <p class="small">Recommencé 2 000 fois, chaque fois avec un autre tirage : les chemins qui gagnent sont redescendus plus souvent, donc creusés plus profond ; les autres restent courts. Le cœur filtre (quels coups entrent : 8, puis 3), il ne classe pas : le 1er candidat n'a aucune avance sur le 8e.</p>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Le choix des candidats : UCB, le taux de victoire plus un bonus de curiosité</h3>
+      <p class="small">À chaque itération, l'arbre note chaque candidat : <strong>son taux de victoire + 0,7 × √(ln N / n)</strong>, où N est le nombre d'itérations déjà faites et n le nombre de visites du candidat. Il prend le meilleur. Le bonus grandit doucement avec N et fond quand n monte : un candidat oublié finit par être revisité, un candidat très visité doit tenir par son taux.</p>
+      <div class="grid2">
+        <div>
+          <div class="scroll"><svg class="chart" id="ucb-bonus" viewBox="0 0 640 330" role="img" aria-label="Le bonus de curiosité en fonction du nombre d'itérations, pour plusieurs nombres de visites du candidat"></svg></div>
+          <div class="legend" id="ucb-bonus-legend"></div>
+        </div>
+        <div>
+          <div class="scroll"><svg class="chart" id="ucb-race" viewBox="0 0 640 330" role="img" aria-label="Simulation : 8 candidats aux chances de gain connues, leurs visites au fil de 2 000 itérations"></svg></div>
+          <div class="legend" id="ucb-race-legend"></div>
+        </div>
+      </div>
+      <ul class="facts" id="ucb-facts"></ul>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">La largeur de l'arbre : combien de réponses par étage</h3>
+      <p class="small">À chaque étage sous la racine, l'arbre ne regarde que les meilleures réponses du cœur : 3 pour le V1 (<code>widen=3</code>). Les validations longues du 06/10 en ont essayé 5, 6 et 7, toutes à 2 000 itérations contre le V1, sur les mêmes donnes. Garder 7 réponses au lieu de 3 ne coûte rien : le cœur note tous les coups de toute façon (745 à 756 µs par itération pour les quatre largeurs, au repos).</p>
+      <div class="scroll"><svg class="chart" id="width-curve" viewBox="0 0 640 300" role="img" aria-label="Score contre le V1 selon le nombre de réponses par étage, avec les fourchettes à 95 %"></svg></div>
+      <div class="legend" id="width-legend"></div>
+      <ul class="facts" id="width-facts"></ul>
+    </div>
+    <div class="panel">
+      <h3 class="small-title">Les sièges : qui commence, et comment comparer</h3>
+      <div class="grid2">
+        <ul class="facts">
+          <li><b>Le premier joueur</b> est toujours le joueur 0 ; dans un duel, chaque donne est jouée deux fois, chaque version commençant une fois (une paire).</li>
+          <li><b>Jouer second est un léger avantage</b> : entre deux robots proches du V1 à 2 000, le premier joueur gagne 48,1 % des parties (12 200 parties ; 44,9 % au 1.0 contre lui-même à 800). « 51,3 % en commençant, 57,5 % en second » (Tree-7w) se lit contre ≈ 48 et ≈ 52.</li>
+          <li><b>Le biais de siège des donnes</b> : une donne qui favorise le premier joueur gonfle le « en commençant » d'une version et creuse son « en second » dans le même duel. Le score total l'annule, pas le partage par siège : 125 parties par siège et par duel, c'est ± 8,8 points. Au décalage 1, Tree-5w, 6w et 7w font tous 58 à 61 % en commençant.</li>
+          <li><b>Comparer sur les mêmes donnes</b> : un même décalage donne les mêmes donnes à toutes les versions (graine + 1 000 003 × décalage). Deux versions se comparent alors partie par partie : ± 3,7 points sur 1 000 parties, ± 5 par siège, sans le bruit des donnes.</li>
+        </ul>
+        <div>
+          <div class="scroll"><table>
+            <thead><tr><th>Une erreur au hasard au tour…</th><th>Qui joue</th><th class="num">Ce qu'elle coûte</th></tr></thead>
+            <tbody>
+              <tr><td>13, 15, 17, 19, 21</td><td>le premier joueur</td><td class="num">≈ 24 points</td></tr>
+              <tr><td>14, 16, 18, 20</td><td>le second</td><td class="num">≈ 10,5 points</td></tr>
+            </tbody>
+          </table></div>
+          <p class="small">Le tour critique (<code>npm run error-impact</code>, 02/10, le 0.9 contre lui-même) : en milieu de partie, les erreurs du premier joueur coûtent deux fois plus. C'est l'idée de FirstExplo : moins d'exploration, donc plus de visites pour ses finalistes. En comparant les largeurs sur les mêmes donnes, rien ne perd nettement en commençant (Tree-7w : 0,0 point contre Tree-5w) : la largeur ne se choisit pas selon le siège.</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3 class="small-title">Où sert le cœur, par coup</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Où</th><th>Quel cœur</th><th class="num">Combien de fois</th></tr></thead>
+          <tbody>
+            <tr><td>la racine</td><td>complet, avec les certitudes</td><td class="num">1</td></tr>
+            <tr><td>les nœuds de l'arbre</td><td>celui des simulations</td><td class="num">quelques milliers</td></tr>
+            <tr><td>les fins de partie</td><td>celui des simulations, son meilleur coup</td><td class="num">≈ 60 000</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">Presque tout le temps part dans les fins de partie (section suivante) : c'est là que <code>B1Lite1</code> allège le cœur, et pourquoi un cœur plus rapide rend le robot plus fort. <code>DistOracle1Root</code> ne change que la racine : il ne coûte rien.</p>
+      </div>
+      <div class="panel">
+        <h3 class="small-title">Les ordres de grandeur</h3>
+        <ul class="facts">
+          <li><b>42 coups</b> au premier coup (6 cartes × 7 bornes), dont l'arbre regarde 8.</li>
+          <li><b>36 cartes invisibles</b> au départ (6 en main adverse, 30 en pioche) : 1,95 million de mains adverses possibles, et la pioche dans n'importe quel ordre.</li>
+          <li><b>648 chemins</b> de 5 coups au plus dans l'arbre (8 × 3⁴), un peu plus en pratique : les 3 réponses changent avec la main adverse imaginée.</li>
+          <li><b>2 000 fins de partie</b>, toutes différentes : un tirage et une fin par itération.</li>
+          <li><b>≈ 10⁵⁰ parties possibles</b> en tout (35 coups, 20 à 40 choix chacun) : d'où les deux filtres, le cœur (8, puis 3) et le tirage (2 000 mondes).</li>
+          <li><b>La profondeur 5</b> : l'arbre apprend sur 5 coups au plus (au-delà, trop peu de visites, du bruit) ; la fin de partie, jouée sans rien retenir, sert seulement à dire qui gagne. Avec 7 réponses par étage, il n'en apprend plus que 2 : le 3e étage n'est atteint que 173 fois sur 2 000.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="cout" aria-labelledby="t-cout">
+    <div>
+      <p class="eyebrow">VII · Où passe le temps</p>
+      <h2 id="t-cout">Le coût du cœur</h2>
+    </div>
+    <p>Chaque feature du cœur du 1.0, mesurée de deux façons. Son temps : un profil du processeur attribue chaque fonction appelée à sa feature. Son activité : on l'éteint, on note à nouveau les mêmes coups, et on compte combien de notes changent, et combien de fois le coup préféré change. En haut à gauche, ce qui coûte cher et sert peu : les premières pistes d'optimisation.</p>
+    <div class="toggle" id="cost-toggle" role="group" aria-label="Où le cœur est mesuré"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3 class="small-title">Les règles et les bonus : temps contre activité</h3>
+        <div class="scroll"><svg class="chart" id="cost-scatter" viewBox="0 0 640 380" role="img" aria-label="Part du temps du cœur et part des coups dont la note change, par feature"></svg></div>
+        <div class="legend" id="cost-legend"></div>
+      </div>
+      <div class="panel">
+        <h3 class="small-title">Toutes les features, par part du temps</h3>
+        <div class="scroll"><svg class="chart" id="cost-bars" viewBox="0 0 640 520" role="img" aria-label="Part du temps de chaque feature"></svg></div>
+      </div>
+    </div>
+    <p class="small" id="cost-note"></p>
+  </section>
+
+  <section id="suite" aria-labelledby="t-suite">
+    <div>
+      <p class="eyebrow">VIII · Ce soir, demain</p>
+      <h2 id="t-suite">La suite</h2>
+    </div>
+    <div class="grid3" id="next"></div>
+  </section>
+</main>
+
+<footer><div class="wrap" id="foot"></div></footer>
+<div id="tip" role="tooltip" hidden></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const J = DATA.journal;
+const NS = "http://www.w3.org/2000/svg";
+const $ = (id) => document.getElementById(id);
+const make = (tag, attrs = {}, text) => {
+  const node = document.createElementNS(NS, tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+};
+const html = (tag, attrs = {}, ...children) => {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  for (const child of children) node.append(child);
+  return node;
+};
+const fr = (x, digits = 1) => Number(x).toFixed(digits).replace(".", ",");
+const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const css = (name) => `var(--${name})`;
+
+/* One tooltip for the whole page: any node with a data-tip. */
+const tip = $("tip");
+function moveTip(event) {
+  const pad = 14;
+  let x = event.clientX + pad;
+  let y = event.clientY + pad;
+  if (x + tip.offsetWidth > innerWidth - 8) x = event.clientX - tip.offsetWidth - pad;
+  if (y + tip.offsetHeight > innerHeight - 8) y = event.clientY - tip.offsetHeight - pad;
+  tip.style.left = `${Math.max(8, x)}px`;
+  tip.style.top = `${Math.max(8, y)}px`;
+}
+document.addEventListener("pointerover", (event) => {
+  const node = event.target.closest?.("[data-tip]");
+  if (!node) return;
+  tip.textContent = node.getAttribute("data-tip");
+  tip.hidden = false;
+  moveTip(event);
+});
+document.addEventListener("pointermove", (event) => { if (!tip.hidden) moveTip(event); });
+document.addEventListener("pointerout", (event) => { if (event.target.closest?.("[data-tip]")) tip.hidden = true; });
+
+const FAMILY_COLORS = { phases: "#7a8b83", premiere: "#b07d1a", formes: "#8a5a9c", replays: "#1f7a52", jokers: "#c0761f", appats: "#9c4f6a", oracle: "#2b5f8f", fenetres: "#3f8f8a", vitesse: "#b3262f", outils: "#5d6a63", lecteur: "#6a7d2b", sortie: "#c9a227", reference: "#a0522d", racine: "#2b5f8f", extension: "#8a5a9c", mains: "#3f8f8a", arbre: "#1f7a52", sieges: "#b07d1a", profond: "#2b5f8f", light: "#1f7a52", page: "#6a7d2b", juge: "#8a5a9c" };
+const VERDICTS = { gagne: ["gagne", "mark"], tendance: ["tendance", "brass"], neutre: ["neutre", "off-ink"], perd: ["perd", "seal"], attente: ["en attente", "off"] };
+const attempt = (name) => J.attempts.find((a) => a.name === name);
+const measured = J.attempts.filter((a) => a.score !== null);
+
+/** The long stfig6 duels, pooled when the pooled row is there, else one by one. */
+function pooledText(longs) {
+  const pooled = attempt("stfig6, les quatre duels longs réunis");
+  return pooled ? `${fr(pooled.score)} % (${fr(pooled.lo)} – ${fr(pooled.hi)}) sur ${longs.length} jeux de donnes` : longs.map((a) => `${fr(a.score)} %`).join(" et ");
+}
+
+/* ── The band ──────────────────────────────────────────────── */
+$("lead").textContent = J.lead;
+{
+  const B = DATA.bench;
+  const jobs = DATA.jobs.filter((j) => j.doneAt && j.doneAt >= J.since.replace(" ", "T") && j.status === "done" && !j.manual);
+  const tiles = [
+    [measured.length, (v) => `${Math.round(v)}`, `essai${measured.length > 1 ? "s" : ""} mesuré${measured.length > 1 ? "s" : ""} sur ${J.attempts.length} au carnet`],
+    [B ? B.correlation[8] : 0, (v) => fr(v, 2), "corrélation de rang entre l'accord avec l'oracle (top 8) et les duels longs"],
+    [jobs.length, (v) => `${Math.round(v)}`, "jobs du backlog finis depuis le début du carnet"],
+    ...(DATA.banc ? [[DATA.banc.positions, (v) => thousands(Math.round(v)), "positions au banc de similitude, chacune cherchée deux fois par l'oracle"]] : []),
+  ];
+  for (const [to, format, text] of tiles) {
+    const b = html("b");
+    $("tiles").append(html("div", { class: "tile" }, b, html("span", {}, text)));
+    if (still) b.innerHTML = format(to);
+    else {
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / 1200);
+        b.innerHTML = format(to * (1 - (1 - t) ** 3));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+  }
+}
+
+/* ── I · The timeline ─────────────────────────────────────── */
+const toTime = (text) => new Date(text).getTime();
+const minutesOf = (estimate) => (/h/.test(estimate ?? "") ? 60 * Number((estimate.match(/(\d+)\s*h/) ?? [0, 2])[1]) : Number((String(estimate).match(/\d+/) ?? [20])[0]));
+// Each lane takes the ids starting with one of its prefixes: the old names, and the VALIDATE_ ones (docs/glossaire.md, 05/10).
+const JOB_FAMILIES = [[["oracle"], "l'oracle", "sky"], [["pilot"], "pilotes", "brass"], [["ref"], "base de référence", "seal"], [["screen", "VALIDATE_SHRT", "VALIDATE_CORE"], "validations courtes", "mark"], [["banc", "VALIDATE_BANC"], "le banc", "ink-2"], [["duel", "VALIDATE_LONG"], "validations longues", "plum"]];
+// Six job lanes under the commits' row, 32 apart, so the last one still clears the hour labels.
+const laneY = (family) => 100 + family * 32;
+const jobFamily = (id) => JOB_FAMILIES.findIndex(([prefixes]) => prefixes.some((prefix) => id.startsWith(prefix)));
+function placeJobs() {
+  const placed = [];
+  let cursor = 0;
+  for (const job of DATA.jobs) {
+    if (job.status === "done" || job.status === "failed" || job.status === "timeout") {
+      if (!job.doneAt || !job.minutes) continue;
+      const end = toTime(job.doneAt);
+      placed.push({ ...job, start: end - job.minutes * 60000, end, planned: false });
+      cursor = Math.max(cursor, end);
+    }
+  }
+  const built = toTime(DATA.builtAt);
+  let queue = Math.max(cursor, built - 18 * 60000);
+  let night = 0;
+  for (const job of DATA.jobs.filter((j) => j.status === "todo")) {
+    const length = minutesOf(job.estimate) * 60000;
+    placed.push({ ...job, start: queue, end: queue + length, planned: true });
+    queue += length;
+  }
+  for (const job of DATA.jobs.filter((j) => j.status === "scheduled")) {
+    const start = Math.max(toTime(job.notBefore), queue, night);
+    const length = minutesOf(job.estimate) * 60000;
+    placed.push({ ...job, start, end: start + length, planned: true });
+    night = start + length;
+  }
+  return placed;
+}
+/** Drag the timeline left and right with the mouse; a touch screen scrolls it natively. A drag never clicks a commit. */
+function dragToScroll(box) {
+  let start = null;
+  box.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") start = { x: event.clientX, left: box.scrollLeft, moved: false };
+  });
+  box.addEventListener("pointermove", (event) => {
+    if (!start) return;
+    const dx = event.clientX - start.x;
+    if (Math.abs(dx) > 4) start.moved = true;
+    if (!start.moved) return;
+    box.classList.add("dragging");
+    box.scrollLeft = start.left - dx;
+  });
+  const end = () => {
+    if (start?.moved) box.dataset.dragged = "1";
+    start = null;
+    box.classList.remove("dragging");
+  };
+  for (const type of ["pointerup", "pointerleave", "pointercancel"]) box.addEventListener(type, end);
+  box.addEventListener("click", (event) => {
+    if (box.dataset.dragged) event.stopPropagation();
+    box.dataset.dragged = "";
+  }, true);
+}
+
+// A fixed scale, so that two days are not crushed into the width of the page.
+const PX_PER_HOUR = 36;
+
+function drawTimeline() {
+  const svg = $("timeline");
+  const jobs = placeJobs();
+  const t0 = toTime(`${J.since.replace(" ", "T")}`);
+  const t1 = Math.max(toTime(DATA.builtAt), ...jobs.map((j) => j.end)) + 30 * 60000;
+  const hour = 3600000;
+  const [left, right] = [12, 12 + ((t1 - t0) / hour) * PX_PER_HOUR];
+  svg.setAttribute("width", right + 60);
+  svg.setAttribute("viewBox", `0 0 ${right + 60} 300`);
+  const x = (t) => left + ((t - t0) / (t1 - t0)) * (right - left);
+  const firstHour = Math.ceil(t0 / hour) * hour;
+  // Nights: midnight to 8 h.
+  for (let t = firstHour; t < t1; t += hour) {
+    const d = new Date(t);
+    if (d.getHours() === 0) svg.append(make("rect", { x: x(t), y: 24, width: Math.min(x(t + 8 * hour), right) - x(t), height: 250, fill: css("wash") }));
+  }
+  for (let t = firstHour; t < t1; t += hour) {
+    const d = new Date(t);
+    if (d.getHours() % 3) continue;
+    svg.append(make("line", { x1: x(t), x2: x(t), y1: 24, y2: 274, stroke: css("line") }));
+    const label = d.getHours() === 0 ? `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, "0")}` : `${d.getHours()} h`;
+    svg.append(make("text", { x: x(t), y: 290, "text-anchor": "middle", class: d.getHours() === 0 ? "strong" : "" }, label));
+  }
+  const lanes = [["le code", 52], ...JOB_FAMILIES.map(([, label], i) => [label, laneY(i)])];
+  const names = $("timeline-lanes");
+  for (const [label, y] of lanes) names.append(make("text", { x: 8, y: y + 4, class: "label" }, label));
+  names.append(make("text", { x: 8, y: 16, class: "label strong" }, "écrit, puis calculé"));
+  for (const job of jobs) {
+    const family = jobFamily(job.id);
+    // A job of the previous version (before `since`) belongs to its own page.
+    if (family < 0 || job.end <= t0) continue;
+    job.start = Math.max(job.start, t0);
+    const color = css(JOB_FAMILIES[family][2]);
+    const y = laneY(family) - 11;
+    const rect = make("rect", { x: x(job.start), y, width: Math.max(3, x(job.end) - x(job.start)), height: 22, rx: 4, fill: color, "fill-opacity": job.planned ? 0.16 : 1, stroke: color, "stroke-width": 1.5, "stroke-dasharray": job.planned ? "4 3" : "0", opacity: job.planned ? 0.9 : 0.85 });
+    // A job to come gets a pale fill of its colour, so that the whole box (not just its dashed edge) shows its tooltip.
+    // A run launched by hand, outside the backlog, is drawn lighter so it reads apart from the queue's jobs.
+    if (job.manual) rect.setAttribute("fill-opacity", "0.45");
+    const when = new Date(job.start);
+    const timeText = `${when.getDate()}/${when.getMonth() + 1} ${when.getHours()} h ${String(when.getMinutes()).padStart(2, "0")}`;
+    rect.setAttribute("data-tip", job.planned ? `${job.id} · prévu vers ${timeText} · environ ${minutesOf(job.estimate)} min (${job.status === "scheduled" ? "programmé" : "en file"})` : `${job.label ?? job.id} · ${job.minutes} min · fini le ${job.doneAt.replace("T", " à ")}${job.manual ? " · lancé à la main" : ""}`);
+    svg.append(rect);
+  }
+  const now = x(toTime(DATA.builtAt));
+  svg.append(make("line", { x1: now, x2: now, y1: 24, y2: 274, stroke: css("brass"), "stroke-width": 2 }));
+  svg.append(make("text", { x: now + 4, y: 34, fill: css("brass") }, "page construite"));
+  const legendFamilies = new Set();
+  DATA.commits.forEach((commit, i) => {
+    const [family, label] = J.commitLabels[commit.hash] ?? ["outils", commit.subject];
+    legendFamilies.add(family);
+    const dot = make("circle", { cx: x(toTime(commit.at)), cy: 52 + ((i % 3) - 1) * 9, r: 5, fill: FAMILY_COLORS[family] ?? css("ink-3"), stroke: css("card"), "stroke-width": 1.5, class: "dot", tabindex: 0, role: "button", "data-tip": `${commit.at.slice(11)} · ${label}` });
+    const pick = () => {
+      svg.querySelectorAll(".dot.pick").forEach((node) => node.classList.remove("pick"));
+      dot.classList.add("pick");
+      showCommit(commit, family, label);
+    };
+    dot.addEventListener("click", pick);
+    dot.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); pick(); } });
+    svg.append(dot);
+  });
+  for (const family of legendFamilies) $("timeline-legend").append(html("span", {}, html("i", { style: `background: ${FAMILY_COLORS[family]}; border-radius: 999px` }), J.families[family]));
+  $("timeline-legend").append(html("span", {}, html("i", { style: "background: var(--wash); border: 1px solid var(--line)" }), "la nuit"));
+  if (DATA.jobs.some((j) => j.manual)) $("timeline-legend").append(html("span", {}, html("i", { style: "background: color-mix(in srgb, var(--ink-2) 45%, transparent); border: 1.5px solid var(--ink-2)" }), "lancé à la main, hors backlog"));
+  // Open on the present: the far right.
+  const scroller = $("timeline-scroll");
+  scroller.scrollLeft = scroller.scrollWidth;
+  dragToScroll(scroller);
+  const last = DATA.commits.at(-1);
+  if (last) showCommit(last, J.commitLabels[last.hash]?.[0] ?? "outils", J.commitLabels[last.hash]?.[1] ?? last.subject);
+}
+function showCommit(commit, family, label) {
+  const box = $("commit-detail");
+  box.style.borderColor = FAMILY_COLORS[family] ?? css("mark");
+  const count = J.attempts.filter((a) => a.family === family).length;
+  const actions = html("div", { class: "actions" });
+  if (count) {
+    const go = html("button", { type: "button", class: "btn primary" }, `Voir les ${count} essais « ${J.families[family]} » dans le carnet →`);
+    go.addEventListener("click", () => { setOnly("family", family); $("carnet").scrollIntoView({ behavior: still ? "auto" : "smooth" }); });
+    actions.append(go);
+  }
+  box.replaceChildren(html("p", { class: "eyebrow" }, `${commit.at.slice(8, 10)}/${commit.at.slice(5, 7)} à ${commit.at.slice(11)} · ${J.families[family]} · ${commit.hash}`), html("b", {}, label), actions);
+}
+
+/* ── II · The notebook ───────────────────────────────────── */
+const filters = { family: new Set(), bench: new Set(), verdict: new Set() };
+let sort = { key: "order", dir: 1 };
+// Points gained at turn 30, centred on the same line as a win rate.
+const isDelta = (a) => a.bench === "jeu";
+const whenKey = (a) => (/^\d\d\/\d\d \d\d:\d\d$/.test(a.when) ? a.when.slice(3, 5) + a.when.slice(0, 2) + a.when.slice(6) : `z${a.when}`);
+function chipRow(id, key, label, entries) {
+  const row = $(id);
+  row.append(html("span", { class: "what" }, label));
+  for (const [value, text] of entries) {
+    const chip = html("button", { type: "button", class: "chip", "aria-pressed": "false", "data-key": key, "data-value": value }, text);
+    chip.addEventListener("click", () => toggle(key, value));
+    row.append(chip);
+  }
+}
+/** One filter value on or off — from its chip, the donut's legend or a verdict in the table. */
+function toggle(key, value) {
+  if (filters[key].has(value)) filters[key].delete(value);
+  else filters[key].add(value);
+  document.querySelectorAll(`.chip[data-key="${key}"][data-value="${value}"]`).forEach((chip) => chip.setAttribute("aria-pressed", String(filters[key].has(value))));
+  renderNotebook();
+}
+function resetFilters() {
+  for (const key of ["family", "bench", "verdict"]) filters[key].clear();
+  document.querySelectorAll(".chip[data-key]").forEach((chip) => chip.setAttribute("aria-pressed", "false"));
+  renderNotebook();
+}
+function setOnly(key, value) {
+  filters[key] = new Set([value]);
+  document.querySelectorAll(`.chip[data-key="${key}"]`).forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.value === value)));
+  renderNotebook();
+}
+/** A verdict in the table: clicking it keeps only that verdict. */
+function verdictButton(verdict) {
+  const button = html("button", { type: "button", class: `verdict v-${verdict} verdict-pick`, title: "Ne garder que ce verdict" }, VERDICTS[verdict][0]);
+  button.addEventListener("click", () => setOnly("verdict", verdict));
+  return button;
+}
+function forestOf(a) {
+  // No score to place (a cost, a count of positions): no axis, rather than an empty one that looks broken.
+  if (!hasScore(a)) return html("span", { class: "no-score" }, "pas un score");
+  const svg = make("svg", { class: "forest", viewBox: "0 0 170 20", "aria-hidden": "true" });
+  const scale = (v) => 5 + ((v - 35) / 30) * 160;
+  const at = (v) => scale(Math.max(35, Math.min(65, isDelta(a) ? 50 + v : v)));
+  svg.append(make("line", { x1: 5, x2: 165, y1: 10, y2: 10, stroke: css("line") }));
+  svg.append(make("line", { x1: scale(50), x2: scale(50), y1: 2, y2: 18, stroke: css("ink-3"), "stroke-dasharray": "2 2" }));
+  if (a.score === null) return svg;
+  const color = css(VERDICTS[a.verdict][1]);
+  if (a.lo !== null) svg.append(make("line", { x1: at(a.lo), x2: at(a.hi), y1: 10, y2: 10, stroke: color, "stroke-width": 3, "stroke-linecap": "round", opacity: 0.55 }));
+  svg.append(make("circle", { cx: at(a.score), cy: 10, r: 4.5, fill: color, stroke: css("card"), "stroke-width": 1 }));
+  return svg;
+}
+/** A measurement that is not a win rate or a gap in points (a cost, positions read): no score, no forest. */
+const hasScore = (a) => a.score !== null || a.verdict === "attente";
+function scoreText(a) {
+  // No score: a dash in the score column, right-aligned with the scores.
+  if (a.score === null) return "—";
+  if (isDelta(a)) return `Δ ${a.score > 0 ? "+" : ""}${fr(a.score)} pt`;
+  return `${fr(a.score)} %`;
+}
+function visibleAttempts() {
+  const list = J.attempts.map((a, order) => ({ ...a, order })).filter((a) =>
+    (!filters.family.size || filters.family.has(a.family)) &&
+    (!filters.bench.size || filters.bench.has(a.bench)) &&
+    (!filters.verdict.size || filters.verdict.has(a.verdict)));
+  const value = (a) => {
+    if (sort.key === "score") return a.score === null ? -999 : isDelta(a) ? 50 + a.score : a.score;
+    if (sort.key === "when") return whenKey(a);
+    if (sort.key === "name") return a.name.toLowerCase();
+    // Verdicts from best to worst (the order of VERDICTS), families and benches by their label.
+    if (sort.key === "verdict") return Object.keys(VERDICTS).indexOf(a.verdict);
+    if (sort.key === "family") return J.families[a.family].toLowerCase();
+    if (sort.key === "bench") return J.benches[a.bench].toLowerCase();
+    return a.order;
+  };
+  return list.sort((a, b) => (value(a) < value(b) ? -1 : value(a) > value(b) ? 1 : a.order - b.order) * sort.dir);
+}
+function renderNotebook() {
+  const list = visibleAttempts();
+  $("attempts").replaceChildren(...list.map((a) => html("tr", {},
+    html("td", {}, html("b", {}, a.name), a.note ? html("span", { class: "note" }, a.note) : ""),
+    html("td", { class: "fam" }, J.families[a.family]),
+    html("td", { class: "fam" }, J.benches[a.bench]),
+    html("td", { class: "num" }, a.lo !== null && a.score !== null ? html("span", { "data-tip": `fourchette à 95 % : ${fr(a.lo)} – ${fr(a.hi)}${isDelta(a) ? " points" : " %"}` }, scoreText(a)) : scoreText(a)),
+    html("td", {}, forestOf(a)),
+    html("td", {}, verdictButton(a.verdict)),
+    html("td", { class: "when" }, a.when))));
+  const scored = list.filter((a) => a.score !== null);
+  $("count").textContent = `${list.length} essai${list.length > 1 ? "s" : ""} affiché${list.length > 1 ? "s" : ""} sur ${J.attempts.length}, dont ${scored.length} mesuré${scored.length > 1 ? "s" : ""}.`;
+  const counts = Object.keys(VERDICTS).map((key) => [key, list.filter((a) => a.verdict === key).length]).filter(([, n]) => n > 0);
+  donut($("verdict-donut"), counts.map(([key, n]) => ({ value: n, color: css(VERDICTS[key][1]), tip: `${VERDICTS[key][0]} : ${n}` })), 65, String(list.length), "essais");
+  $("verdict-legend").replaceChildren(...counts.map(([key, n]) => {
+    const item = html("button", { type: "button", class: "legend-pick", "aria-pressed": String(filters.verdict.has(key)), title: "Ne garder que ce verdict (ou le retirer du filtre)" }, html("i", { style: `background: ${css(VERDICTS[key][1])}` }), `${VERDICTS[key][0]} · ${n}`);
+    item.addEventListener("click", () => toggle("verdict", key));
+    return item;
+  }));
+  const filtered = filters.family.size + filters.bench.size + filters.verdict.size > 0;
+  $("f-reset").hidden = !filtered;
+}
+function donut(svg, parts, size, center, sub) {
+  svg.replaceChildren();
+  const total = parts.reduce((sum, part) => sum + part.value, 0) || 1;
+  const [r, inner] = [size - 4, size * 0.58];
+  let angle = -Math.PI / 2;
+  const point = (radius, a) => `${size + radius * Math.cos(a)} ${size + radius * Math.sin(a)}`;
+  for (const part of parts) {
+    const sweep = (part.value / total) * Math.PI * 2;
+    const end = angle + Math.min(sweep, Math.PI * 2 - 1e-4);
+    const large = sweep > Math.PI ? 1 : 0;
+    const path = `M ${point(r, angle)} A ${r} ${r} 0 ${large} 1 ${point(r, end)} L ${point(inner, end)} A ${inner} ${inner} 0 ${large} 0 ${point(inner, angle)} Z`;
+    svg.append(make("path", { d: path, fill: part.color, stroke: css("card"), "stroke-width": 1.5, "data-tip": part.tip }));
+    angle += sweep;
+  }
+  svg.append(make("text", { x: size, y: size + 2, "text-anchor": "middle", style: `font: 700 ${size * 0.34}px var(--mono); fill: var(--ink)` }, center));
+  svg.append(make("text", { x: size, y: size + size * 0.28, "text-anchor": "middle", style: "font: 600 10px var(--mono); fill: var(--ink-3)" }, sub));
+}
+/** The values of a filter that some attempt carries, each with its count. */
+const usedValues = (key, entries) => entries.map(([value, text]) => [value, text, J.attempts.filter((a) => a[key] === value).length]).filter(([, , n]) => n > 0).map(([value, text, n]) => [value, `${text} · ${n}`]);
+chipRow("f-family", "family", "Famille", usedValues("family", Object.entries(J.families)));
+chipRow("f-bench", "bench", "Banc", usedValues("bench", Object.entries(J.benches)));
+chipRow("f-verdict", "verdict", "Verdict", usedValues("verdict", Object.entries(VERDICTS).map(([key, [label]]) => [key, label])));
+$("f-reset").addEventListener("click", resetFilters);
+document.querySelectorAll("[data-sort]").forEach((button) => button.addEventListener("click", () => {
+  const key = button.dataset.sort;
+  sort = sort.key === key ? { key, dir: -sort.dir } : { key, dir: key === "score" ? -1 : 1 };
+  renderNotebook();
+}));
+
+/* ── III · The oracle bench ──────────────────────────────── */
+function drawBench() {
+  const B = DATA.bench;
+  if (!B) {
+    $("reference").hidden = true;
+    return;
+  }
+  const svg = $("bench");
+  const rows = B.rows.filter((r) => r.score !== null);
+  const [x0, x1, y0, y1] = [46, 70, 36, 60];
+  const X = (v) => 70 + ((v - x0) / (x1 - x0)) * 540;
+  const Y = (v) => 290 - ((v - y0) / (y1 - y0)) * 260;
+  for (let v = x0; v <= x1; v += 4) {
+    svg.append(make("line", { x1: X(v), x2: X(v), y1: 30, y2: 290, stroke: css("line") }));
+    svg.append(make("text", { x: X(v), y: 308, "text-anchor": "middle" }, `${v} %`));
+  }
+  for (let v = y0; v <= y1; v += 4) {
+    svg.append(make("line", { x1: 70, x2: 610, y1: Y(v), y2: Y(v), stroke: v === 50 ? css("ink-3") : css("line"), "stroke-dasharray": v === 50 ? "4 3" : "0" }));
+    svg.append(make("text", { x: 62, y: Y(v) + 4, "text-anchor": "end" }, `${v} %`));
+  }
+  svg.append(make("text", { x: 340, y: 326, "text-anchor": "middle", class: "label" }, "le coup de l'oracle dans le top 8 du cœur"));
+  svg.append(make("text", { x: 8, y: 20, class: "label" }, "duels longs contre le 0.9"));
+  const labels = [];
+  for (const r of rows) {
+    const [cx, cy] = [X(100 * r.top[8]), Y(100 * r.score)];
+    if (r.low !== null && r.low !== undefined) svg.append(make("line", { x1: cx, x2: cx, y1: Y(100 * r.high), y2: Y(100 * r.low), stroke: css("sky"), "stroke-width": 3, opacity: 0.35, "stroke-linecap": "round" }));
+    svg.append(make("circle", { cx, cy, r: 6, fill: r.timed ? css("brass") : css("sky"), stroke: css("card"), "stroke-width": 1.5, "data-tip": `${r.core} : top 8 ${fr(100 * r.top[8])} %, duels ${fr(100 * r.score)} %${r.timed ? " à temps égal" : ""}` }));
+    labels.push({ x: cx + 9, y: cy + 4, text: r.core });
+  }
+  // Points close together (0.9, obex, stay4e10): each label moves down until it clears the ones already placed.
+  const placed = [];
+  for (const label of labels.sort((a, b) => a.y - b.y)) {
+    while (placed.some((p) => Math.abs(p.x - label.x) < 70 && Math.abs(p.y - label.y) < 13)) label.y += 13;
+    placed.push(label);
+    svg.append(make("text", { x: label.x, y: label.y }, label.text));
+  }
+  $("bench-note").textContent = `${thousands(B.positions)} positions des tours 14 à 26, oracle version ${B.oracle}. Corrélation de rang avec les duels : top 1 ${fr(B.correlation[1], 2)}, top 3 ${fr(B.correlation[3], 2)}, top 8 ${fr(B.correlation[8], 2)}. En doré, les duels à temps égal. Limite : rien avant le tour 14 — une idée qui agit plus tôt (stay4e10) y est invisible.`;
+}
+
+/* ── IV · The similarity bench ───────────────────────────── */
+const BANC_PHASES = [["tours 4-10", 4, 10, "sky"], ["tours 11-20", 11, 20, "mark"], ["tours 21-30", 21, 30, "brass"]];
+const bancTurns = (B) => Object.entries(B.byTurn).map(([key, row]) => ({ turn: Number(key.replace("tour ", "")), ...row, ms: B.ms[key.replace("tour ", "")]?.ms }));
+const phaseOf = (turn) => BANC_PHASES.findIndex(([, from, to]) => turn >= from && turn <= to);
+
+/** Each phase: its positions, the share where both searches agree, and the median of its turns' median times. */
+function bancPhases(B) {
+  const turns = bancTurns(B);
+  return BANC_PHASES.map(([label, , , color], i) => {
+    const rows = turns.filter((row) => phaseOf(row.turn) === i);
+    const sum = (key) => rows.reduce((n, row) => n + row[key], 0);
+    const times = rows.map((row) => row.ms).filter(Boolean).sort((a, b) => a - b);
+    return { label, color, positions: sum("positions"), stable: sum("stable") / sum("checked"), seconds: times[Math.floor(times.length / 2)] / 1000 };
+  });
+}
+
+function drawBancContents(B) {
+  const most = Math.max(...J.banc.movers.map((m) => m.positions));
+  $("banc-movers").replaceChildren(html("p", { class: "eyebrow" }, "qui avait le trait"), ...J.banc.movers.map((m) => html("div", { class: "answer" }, html("span", {}, m.label), html("div", { class: "bar", style: `width: ${(100 * m.positions) / most}%; background: ${css(m.color)}` }), html("span", {}, thousands(m.positions)))));
+  const facts = bancPhases(B).map((p) => html("li", {}, html("b", {}, `${p.label} : `), `${thousands(p.positions)} positions, ${pctText(p.stable)} où les deux recherches ont le même favori, environ ${fr(p.seconds, 0)} s par position et par fil`));
+  $("banc-facts").replaceChildren(...facts, html("li", {}, J.banc.games));
+  const svg = $("banc-turns");
+  svg.replaceChildren();
+  const turns = bancTurns(B);
+  const [left, right, bottom, height] = [56, 625, 200, 170];
+  const slot = (right - left) / turns.length;
+  const Y = (v) => bottom - v * height;
+  for (let v = 0; v <= 1.0001; v += 0.25) {
+    svg.append(make("line", { x1: left, x2: right, y1: Y(v), y2: Y(v), stroke: v === 0.5 ? css("ink-3") : css("line"), "stroke-dasharray": v === 0.5 ? "4 3" : "0" }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, `${Math.round(v * 100)} %`));
+  }
+  turns.forEach((row, i) => {
+    const x = left + i * slot;
+    const share = row.stable / row.checked;
+    svg.append(make("rect", { x: x + 3, y: Y(share), width: slot - 6, height: bottom - Y(share), rx: 2, fill: css(BANC_PHASES[phaseOf(row.turn)][3]), "data-tip": `tour ${row.turn} : ${pctText(share)} stables sur ${row.positions} positions, médiane ${fr(row.ms / 1000, 0)} s` }));
+    if (row.turn % 2 === 0) svg.append(make("text", { x: x + slot / 2, y: bottom + 16, "text-anchor": "middle" }, row.turn));
+  });
+  svg.append(make("text", { x: 340, y: 240, "text-anchor": "middle", class: "label" }, "tour de la position"));
+  svg.append(make("text", { x: 8, y: 14, class: "label" }, "les deux recherches de l'oracle ont le même favori"));
+  $("banc-turns-legend").replaceChildren(...BANC_PHASES.map(([label, , , color]) => html("span", {}, html("i", { style: `background: ${css(color)}` }), label)), html("span", { class: "muted small" }, "avant le tour 10, l'oracle hésite : son favori change d'une recherche à l'autre"));
+}
+
+function drawCalibration(C) {
+  const timed = (row) => row.engine.includes("@t");
+  const show = (key) => {
+    document.querySelectorAll("#calib-toggle button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === key)));
+    const svg = $("calib");
+    svg.replaceChildren();
+    const values = C.rows.map((r) => 100 * r[key]);
+    const [x0, x1] = [Math.floor(Math.min(...values) - 1), Math.ceil(Math.max(...values) + 1)];
+    const [y0, y1] = [38, 58];
+    const X = (v) => 70 + ((v - x0) / (x1 - x0)) * 520;
+    const Y = (v) => 290 - ((v - y0) / (y1 - y0)) * 260;
+    for (let v = x0; v <= x1; v += 2) {
+      svg.append(make("line", { x1: X(v), x2: X(v), y1: 30, y2: 290, stroke: css("line") }));
+      svg.append(make("text", { x: X(v), y: 308, "text-anchor": "middle" }, `${v} %`));
+    }
+    for (let v = y0; v <= y1; v += 4) {
+      svg.append(make("line", { x1: 70, x2: 590, y1: Y(v), y2: Y(v), stroke: v === 50 ? css("ink-3") : css("line"), "stroke-dasharray": v === 50 ? "4 3" : "0" }));
+      svg.append(make("text", { x: 62, y: Y(v) + 4, "text-anchor": "end" }, `${v} %`));
+    }
+    svg.append(make("text", { x: 330, y: 326, "text-anchor": "middle", class: "label" }, key === "early" ? "valeur oracle de ses coups, tours 4 à 10" : "valeur oracle de ses coups, tours 4 à 30"));
+    svg.append(make("text", { x: 8, y: 20, class: "label" }, "duels contre le 0.9"));
+    const labels = C.rows.map((r) => {
+      const [cx, cy] = [X(100 * r[key]), Y(100 * r.score)];
+      svg.append(make("circle", { cx, cy, r: 6, fill: timed(r) ? css("brass") : css("sky"), stroke: css("card"), "stroke-width": 1.5, "data-tip": `${r.name} : valeur ${fr(100 * r[key])} %, duels ${fr(100 * r.score)} %${timed(r) ? " (au temps)" : ""}` }));
+      return { cx, cy, text: r.name, strong: r.name.startsWith("1.0") };
+    });
+    // Each label tries the right, the left, above and below its point, keeping the first spot clear of every point and of the labels already placed.
+    const boxes = labels.map(({ cx, cy }) => ({ x0: cx - 7, x1: cx + 7, y0: cy - 7, y1: cy + 7 }));
+    const clear = (box) => box.x0 > 66 && box.x1 < 640 && !boxes.some((o) => box.x0 < o.x1 && o.x0 < box.x1 && box.y0 < o.y1 && o.y0 < box.y1);
+    for (const label of labels.sort((p, q) => p.cy - q.cy)) {
+      const width = label.text.length * 7.2;
+      const spots = [[9, 4, "start"], [-9, 4, "end"], [0, -10, "middle"], [0, 18, "middle"], [9, -10, "start"], [9, 18, "start"], [-9, -10, "end"], [-9, 18, "end"]];
+      const boxOf = ([dx, dy, anchor]) => {
+        const x = label.cx + dx;
+        const x0 = anchor === "start" ? x : anchor === "end" ? x - width : x - width / 2;
+        return { x, y: label.cy + dy, anchor, box: { x0, x1: x0 + width, y0: label.cy + dy - 10, y1: label.cy + dy + 2 } };
+      };
+      const spot = spots.map(boxOf).find((s) => clear(s.box)) ?? boxOf(spots[0]);
+      boxes.push(spot.box);
+      svg.append(make("text", { x: spot.x, y: spot.y, "text-anchor": spot.anchor, class: label.strong ? "strong" : "" }, label.text));
+    }
+  };
+  $("calib-toggle").replaceChildren(...[["value", "toute la partie"], ["early", "tours 4 à 10"]].map(([value, text]) => {
+    const button = html("button", { type: "button", "aria-pressed": "false", "data-value": value }, text);
+    button.addEventListener("click", () => show(value));
+    return button;
+  }));
+  show("value");
+  $("calib-legend").replaceChildren(html("span", {}, html("i", { style: "background: var(--sky); border-radius: 999px" }), "800 itérations par coup"), html("span", {}, html("i", { style: "background: var(--brass); border-radius: 999px" }), "au temps (@t400, @t800) : moins d'itérations sur une machine chargée"));
+  const K = C.correlation;
+  $("calib-note").textContent = `Corrélation de rang avec les duels : ${fr(K.value, 2)} sur toute la partie, ${fr(K.early, 2)} aux tours 4 à 10 (sur les ${K.iterationsOnly.versions} versions à 800 itérations : ${fr(K.iterationsOnly.value, 2)} et ${fr(K.iterationsOnly.early, 2)}). Le banc ne sépare pas le 0.9 du 1.0 alors que le 1.0 gagne 56 % : il ne trie pas, son verdict reste un indice. Seul le début de partie le place devant. ${C.rows.length} versions, sur ${thousands(C.positions)} positions. ${C.partial ?? ""}`;
+}
+
+function drawV1Lost() {
+  const rows = J.banc.v1.rows;
+  const total = (key) => rows.reduce((n, r) => n + r[key], 0);
+  const line = (r, strong) => html("tr", {}, html("td", {}, strong ? html("b", {}, r.against) : r.against), html("td", { class: "num" }, thousands(r.games)), html("td", { class: "num" }, thousands(r.lost)), html("td", { class: "num" }, thousands(r.read)), html("td", {}, html("div", { class: "costbar" }, html("i", { style: `width: ${(100 * r.read) / r.lost}%` }), html("span", { class: "num" }, pctText(r.read / r.lost)))));
+  $("v1-lost").replaceChildren(...rows.map((r) => line(r, false)), line({ against: "en tout", games: total("games"), lost: total("lost"), read: total("read") }, true));
+  $("v1-lost-note").textContent = J.banc.v1.note;
+}
+
+function drawBanc() {
+  const B = DATA.banc;
+  if (!B || !J.banc) {
+    $("banc").hidden = true;
+    return;
+  }
+  drawBancContents(B);
+  if (B.calibration) drawCalibration(B.calibration);
+  drawV1Lost();
+}
+
+/* ── V · Move for move ───────────────────────────────────── */
+const pctText = (x) => `${fr(100 * x, 0)} %`;
+
+/** Two dots per trait on one 0-70 % line: the oracle (sky) and the other side (brass), the gap drawn between them. */
+function dumbbell(svg, rows, [labelA, labelB]) {
+  svg.replaceChildren();
+  // Room on the left for the longest trait (« ouvre avec de quoi faire une suite de couleur »).
+  const [left, right, top, step] = [340, 690, 30, 32];
+  const X = (v) => left + (Math.min(v, 0.7) / 0.7) * (right - left);
+  for (let v = 0; v <= 0.7001; v += 0.1) {
+    svg.append(make("line", { x1: X(v), x2: X(v), y1: top - 12, y2: top + rows.length * step - 12, stroke: css("line") }));
+    svg.append(make("text", { x: X(v), y: top + rows.length * step + 4, "text-anchor": "middle" }, `${Math.round(v * 100)} %`));
+  }
+  rows.forEach((row, i) => {
+    const y = top + i * step;
+    svg.append(make("text", { x: left - 12, y: y + 4, "text-anchor": "end" }, row.trait));
+    svg.append(make("line", { x1: X(row.a), x2: X(row.b), y1: y, y2: y, stroke: css("ink-3"), "stroke-width": 2, opacity: 0.5 }));
+    svg.append(make("circle", { cx: X(row.b), cy: y, r: 6, fill: css("brass"), "data-tip": `${labelB} : ${pctText(row.b)}` }));
+    svg.append(make("circle", { cx: X(row.a), cy: y, r: 6, fill: css("sky"), "data-tip": `${labelA} : ${pctText(row.a)}` }));
+  });
+  svg.setAttribute("viewBox", `0 0 710 ${top + rows.length * step + 14}`);
+}
+
+function drawAgree(S) {
+  const svg = $("agree");
+  const groups = S.groups;
+  const [left, bottom, height] = [60, 210, 180];
+  const slot = (600 - left) / groups.length;
+  const Y = (v) => bottom - v * height;
+  for (let v = 0; v <= 1.0001; v += 0.25) {
+    svg.append(make("line", { x1: left, x2: 620, y1: Y(v), y2: Y(v), stroke: css("line") }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, `${Math.round(v * 100)} %`));
+  }
+  groups.forEach((g, i) => {
+    const x = left + i * slot + slot / 2;
+    const bars = [[g.agrees, css("sky"), "même coup"], [g.core8, css("mark"), "dans le top 8 de son cœur"]];
+    bars.forEach(([v, color, label], j) => svg.append(make("rect", { x: x - 22 + j * 23, y: Y(v), width: 20, height: bottom - Y(v), rx: 3, fill: color, "data-tip": `tours ${g.turns} : ${label} ${pctText(v)} (${g.moves} coups)` })));
+    svg.append(make("text", { x, y: bottom + 18, "text-anchor": "middle" }, g.turns));
+  });
+  svg.append(make("text", { x: 340, y: 252, "text-anchor": "middle", class: "label" }, "tours"));
+  $("agree-legend").replaceChildren(html("span", {}, html("i", { style: "background: var(--sky)" }), "le 1.0 joue le même coup"), html("span", {}, html("i", { style: "background: var(--mark)" }), "le coup de l'oracle est dans le top 8 de son cœur (l'arbre le regarde)"));
+  $("agree-note").textContent = `${thousands(S.all.moves)} coups de l'oracle dans ses ${S.games} parties contre le 1.0, rejoués par la recherche du 1.0 (npm run shadow). En tout, le même coup ${pctText(S.all.agrees)} du temps ; au début, l'oracle joue presque toujours un coup que le 1.0 n'aurait pas joué — et que son arbre ne regarde même pas trois fois sur quatre.`;
+}
+
+function drawTraits(V) {
+  const phases = Object.keys(V.traits);
+  const show = (phase) => {
+    document.querySelectorAll("#phase-chips .chip").forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.value === phase)));
+    const rows = [...V.traits[phase]].sort((x, y) => Math.abs(y.a - y.b) - Math.abs(x.a - x.b)).slice(0, 7);
+    dumbbell($("traits"), rows, ["l'oracle", "le 1.0"]);
+  };
+  $("phase-chips").replaceChildren(html("span", { class: "what" }, "Phase"), ...phases.map((phase) => {
+    const chip = html("button", { type: "button", class: "chip", "aria-pressed": "false", "data-value": phase }, phase);
+    chip.addEventListener("click", () => show(phase));
+    return chip;
+  }));
+  show(phases[0]);
+  $("traits-legend").replaceChildren(html("span", {}, html("i", { style: "background: var(--sky); border-radius: 999px" }), "l'oracle"), html("span", {}, html("i", { style: "background: var(--brass); border-radius: 999px" }), "le 1.0"), html("span", { class: "muted small" }, `part de leurs coups qui portent ce trait, sur ${V.games} parties ; les 7 plus grands écarts`));
+  const labels = { openedBy10: "bornes entamées au tour 10", complete: "côtés complets à la fin", noFigure: "dont sans figure", won: "bornes gagnées" };
+  $("board").replaceChildren(...Object.entries(labels).map(([key, label]) => html("tr", {}, html("td", {}, label), html("td", { class: "num" }, fr(V.end[key].a, 2)), html("td", { class: "num" }, fr(V.end[key].b, 2)))));
+}
+
+function drawGaps(G) {
+  const rows = G.traits.slice(0, 7).map((row) => ({ trait: row.trait, a: row.oracle, b: row.core }));
+  dumbbell($("gaps"), rows, ["le coup de l'oracle", "le favori du cœur du 1.0"]);
+  $("gaps-note").textContent = `${thousands(G.gaps)} écarts — le coup de l'oracle, le même sur ses deux recherches, hors du top 3 du cœur du 1.0 — sur ${thousands(G.positions)} positions des parties du 1.0, tours 12 à 28 (en bleu l'oracle, en doré le favori du cœur). Le cœur du 1.0 veut des suites de couleur ; l'oracle accepte un côté sans figure, complète, et sort ses jokers.`;
+}
+
+function drawCompare() {
+  const [S, V, G] = [DATA.shadow, DATA.versus, DATA.v1ref];
+  if (!S || !V || !G) {
+    $("compare").hidden = true;
+    return;
+  }
+  drawAgree(S);
+  drawTraits(V);
+  drawGaps(G);
+}
+
+/* ── VI · The tree: how UCB shares the visits ───────────────── */
+const UCB_C = 0.7;
+const bonusOf = (N, n) => UCB_C * Math.sqrt(Math.log(N) / n);
+const UCB_TONES = ["seal", "brass", "mark", "sky", "plum"];
+
+/** The curiosity bonus against N, one curve per number of visits n (drawn from N = n on). */
+function drawUcbBonus() {
+  const svg = $("ucb-bonus");
+  const [left, right, top, bottom] = [56, 590, 20, 280];
+  const X = (N) => left + (N / 2000) * (right - left);
+  const Y = (v) => bottom - (v / 0.8) * (bottom - top);
+  for (let v = 0; v <= 0.8001; v += 0.2) {
+    svg.append(make("line", { x1: left, x2: right, y1: Y(v), y2: Y(v), stroke: css("line") }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, fr(v, 1)));
+  }
+  for (let N = 0; N <= 2000; N += 500) svg.append(make("text", { x: X(N), y: bottom + 16, "text-anchor": "middle" }, thousands(N)));
+  // The band where the candidates' win rates usually differ: a bonus inside it can overturn a ranking.
+  svg.append(make("rect", { x: left, y: Y(0.15), width: right - left, height: Y(0.05) - Y(0.15), fill: css("brass-wash"), opacity: 0.8 }));
+  svg.append(make("text", { x: left + 6, y: Y(0.05) + 14, fill: css("brass") }, "en doré : les écarts de taux habituels entre candidats (5 à 15 points)"));
+  [25, 50, 100, 250, 500].forEach((n, i) => {
+    const points = [];
+    for (let N = n; N <= 2000; N += 10) points.push(`${X(N).toFixed(1)},${Y(bonusOf(N, n)).toFixed(1)}`);
+    const tip = `n = ${n} visites : bonus ${fr(bonusOf(2000, n), 3)} à N = 2 000`;
+    svg.append(make("polyline", { points: points.join(" "), fill: "none", stroke: css(UCB_TONES[i]), "stroke-width": 2.5, "data-tip": tip }));
+    svg.append(make("text", { x: right + 2, y: Y(bonusOf(2000, n)) + 4, fill: css(UCB_TONES[i]) }, `${n}`));
+  });
+  svg.append(make("text", { x: (left + right) / 2, y: bottom + 36, "text-anchor": "middle", class: "label" }, "N : itérations déjà faites (2 000 par coup)"));
+  svg.append(make("text", { x: 8, y: 12, class: "label" }, "le bonus de curiosité"));
+  $("ucb-bonus-legend").replaceChildren(html("span", { class: "muted small" }, "une courbe par nombre de visites n du candidat (25 à 500 : la fourchette mesurée sur une vraie recherche, 28 à 633)"));
+}
+
+/** A small seeded generator, so that the race is the same at every visit of the page. */
+function seeded(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** The race: 8 candidates with known win chances, chosen by UCB for 2 000 iterations, each fin de partie a coin with that chance. */
+function ucbRace(chances, iterations, random) {
+  const visits = chances.map(() => 0);
+  const wins = chances.map(() => 0);
+  const history = chances.map(() => []);
+  for (let N = 1; N <= iterations; N += 1) {
+    const fresh = visits.findIndex((n) => n === 0);
+    const score = (i) => wins[i] / visits[i] + bonusOf(N, visits[i]);
+    const pick = fresh >= 0 ? fresh : chances.reduce((best, _, i) => (score(i) > score(best) ? i : best), 0);
+    visits[pick] += 1;
+    if (random() < chances[pick]) wins[pick] += 1;
+    if (N % 20 === 0) chances.forEach((_, i) => history[i].push(visits[i]));
+  }
+  return { visits, wins, history };
+}
+
+function drawUcbRace() {
+  const svg = $("ucb-race");
+  const chances = [0.58, 0.56, 0.55, 0.53, 0.52, 0.5, 0.47, 0.44];
+  const { visits, wins, history } = ucbRace(chances, 2000, seeded(742));
+  const [left, right, top, bottom] = [56, 530, 20, 280];
+  const yMax = Math.ceil(Math.max(...visits) / 100) * 100;
+  const X = (N) => left + (N / 2000) * (right - left);
+  const Y = (v) => bottom - (v / yMax) * (bottom - top);
+  for (let v = 0; v <= yMax; v += yMax / 4) {
+    svg.append(make("line", { x1: left, x2: right, y1: Y(v), y2: Y(v), stroke: css("line") }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, thousands(Math.round(v))));
+  }
+  for (let N = 0; N <= 2000; N += 500) svg.append(make("text", { x: X(N), y: bottom + 16, "text-anchor": "middle" }, thousands(N)));
+  const tones = ["seal", "brass", "mark", "sky", "plum", "ink-2", "ink-3", "off-ink"];
+  const ends = [];
+  chances.forEach((chance, i) => {
+    const points = history[i].map((v, k) => `${X((k + 1) * 20).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+    const tip = `chances réelles ${pctText(chance)} : ${visits[i]} visites, taux mesuré ${pctText(wins[i] / visits[i])}`;
+    svg.append(make("polyline", { points, fill: "none", stroke: css(tones[i]), "stroke-width": 2.2, "data-tip": tip }));
+    ends.push({ y: Y(visits[i]), text: `${pctText(chance)} → ${visits[i]}`, tone: tones[i] });
+  });
+  // End labels, pushed apart so they do not overlap.
+  ends.sort((a, b) => a.y - b.y).forEach((end, k, all) => {
+    if (k > 0 && end.y - all[k - 1].y < 12) end.y = all[k - 1].y + 12;
+    svg.append(make("text", { x: right + 4, y: end.y + 4, fill: css(end.tone) }, end.text));
+  });
+  svg.append(make("text", { x: (left + right) / 2, y: bottom + 36, "text-anchor": "middle", class: "label" }, "N : itérations"));
+  svg.append(make("text", { x: 8, y: 12, class: "label" }, "visites de chaque candidat"));
+  $("ucb-race-legend").replaceChildren(html("span", { class: "muted small" }, "8 candidats aux chances de gain fixées (58 % à 44 %), chaque fin de partie tirée à pile ou face avec ces chances, et UCB qui choisit : une simulation, pas une vraie recherche"));
+  const best = visits.indexOf(Math.max(...visits));
+  const at = (n) => fr(bonusOf(2000, n), 2);
+  $("ucb-facts").replaceChildren(
+    html("li", {}, html("b", {}, "Au début : "), "les 8 candidats sont joués une fois chacun, puis le bonus est grand partout (0,7 × √(ln 10 / 1) ≈ 1,06 au 10e essai) : le choix tient plus à la curiosité qu'au taux, encore très incertain."),
+    html("li", {}, html("b", {}, "À N = 2 000 : "), `le bonus vaut ${at(500)} pour un candidat visité 500 fois, ${at(100)} pour 100 visites, ${at(25)} pour 25. Un candidat à 50 % visité 100 fois note donc 0,50 + ${at(100)} ≈ ${fr(0.5 + bonusOf(2000, 100), 2)}, autant qu'un candidat à 60 % visité 500 fois (0,60 + ${at(500)} ≈ ${fr(0.6 + bonusOf(2000, 500), 2)}) : le moins bon garde une part des visites, pour vérifier qu'on ne l'a pas sous-estimé.`),
+    html("li", {}, html("b", {}, "Le résultat : "), `dans cette simulation, le candidat à ${pctText(chances[best])} reçoit ${visits[best]} visites sur 2 000, le moins bon ${Math.min(...visits)} ; les candidats proches (52 à 58 %) se partagent l'essentiel. C'est la forme mesurée sur une vraie recherche au tour 1 : 503, 371, 287, 222, 220, 165, 134, 98.`),
+    html("li", {}, html("b", {}, "Les candidats proches : "), `le meilleur réel (${pctText(chances[0])}) reçoit ${visits[0]} visites, pas forcément le plus : sur 2 000 essais, 2 ou 3 points d'écart ne se distinguent pas du hasard des fins de partie. Le coup joué est alors l'un des bons, rarement le meilleur à coup sûr — une raison pour laquelle plus d'itérations rendent le robot plus fort.`),
+    html("li", {}, html("b", {}, "Le 0,7 : "), "il dose l'exploration. Plus grand, les visites s'étalent (plus de vérifications, moins de précision sur le meilleur) ; plus petit, l'arbre s'enferme plus vite sur son premier favori, au risque de rater un meilleur coup mal parti. Essayé : 0,5 sur le 0.9 (49,0 % en duel long), 1,0 (52,8 % au tri) — le score bouge peu avec c. Une exploration qui baisse au fil des itérations n'a pas été écrite : le coup joué étant le plus visité, elle entérinerait le favori du moment au lieu de le vérifier."),
+    html("li", {}, html("b", {}, "0,6 pour le premier joueur (FirstExplo) : "), "partout où joue le premier joueur, racine comprise. À la racine de Tree-7w, ses deux finalistes reçoivent 52,5 % des visites au lieu de 47,4 % (+11 %). Résultat : 48,2 % contre le V1, -6,2 ± 5,2 points contre Tree-7w sur les mêmes donnes, dans les deux sièges. Vérifier plus paie, se concentrer plus non."),
+    html("li", {}, html("b", {}, "Sous la racine : "), "un nœud prend toujours d'abord une réponse jamais essayée ; UCB ne départage qu'une fois toutes essayées. Part des choix faits par UCB à 2 000 itérations, étages 0 à 4 : 100, 88, 42, 7, 3 % avec 3 réponses ; 100, 82, 7, ~0, ~0 % avec 7. Au-delà, c'est un tour de rôle."),
+    html("li", {}, html("b", {}, "Le bruit du coup joué : "), "deux recherches de Tree-7w avec deux graines différentes jouent le même coup dans 19 positions sur 50 (tours 12 à 21). Les bons candidats sont si proches qu'un réglage de la racine se juge en duels, pas sur le coup qu'il change."),
+  );
+}
+
+/* ── VI bis · The width of the tree ─────────────────────────── */
+const WIDTHS = [
+  { widen: 3, name: "V1", score: 50, lo: 50, hi: 50, games: 0 },
+  { widen: 5, name: "Tree-5w", score: 53.4, lo: 50.6, hi: 56.2, games: 1000 },
+  { widen: 6, name: "Tree-6w", score: 52.5, lo: 49.9, hi: 55.1, games: 1000 },
+  { widen: 7, name: "Tree-7w", score: 54.4, lo: 52.1, hi: 56.7, games: 1500 },
+];
+const HALVING_5W = { widen: 5, name: "RootHalving-Tree-5w", score: 52.0, lo: 50.5, hi: 53.5, games: 3000 };
+
+function drawWidth() {
+  const svg = $("width-curve");
+  const [left, right, top, bottom] = [56, 540, 20, 250];
+  const X = (w) => left + ((w - 2.5) / 5) * (right - left);
+  const Y = (v) => bottom - ((v - 46) / 14) * (bottom - top);
+  for (let v = 46; v <= 60; v += 2) {
+    svg.append(make("line", { x1: left, x2: right, y1: Y(v), y2: Y(v), stroke: css(v === 50 ? "ink-3" : "line"), ...(v === 50 ? { "stroke-dasharray": "4 4" } : {}) }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, `${v} %`));
+  }
+  for (const w of [3, 4, 5, 6, 7]) svg.append(make("text", { x: X(w), y: bottom + 18, "text-anchor": "middle" }, String(w)));
+  svg.append(make("polyline", { points: WIDTHS.map((p) => `${X(p.widen)},${Y(p.score)}`).join(" "), fill: "none", stroke: css("sky"), "stroke-width": 2 }));
+  const point = (p, x, tone, [dx, dy] = [9, -10]) => {
+    const tip = p.games ? `${p.name} : ${fr(p.score)} % (${fr(p.lo)} – ${fr(p.hi)}) sur ${thousands(p.games)} parties` : "le V1 contre lui-même : 50 % par définition";
+    if (p.games) svg.append(make("line", { x1: x, x2: x, y1: Y(p.lo), y2: Y(p.hi), stroke: css(tone), "stroke-width": 2, "data-tip": tip }));
+    svg.append(make("circle", { cx: x, cy: Y(p.score), r: 5.5, fill: css(tone), "data-tip": tip }));
+    svg.append(make("text", { x: x + dx, y: Y(p.score) + dy, fill: css(tone), "text-anchor": dx > 0 ? "start" : "end" }, p.games ? `${p.name} ${fr(p.score)} %` : "V1"));
+  };
+  const LABEL_AT = { 3: [-10, -8], 5: [-9, -12], 6: [9, 20], 7: [9, -10] };
+  WIDTHS.forEach((p) => point(p, X(p.widen), p.lo > 50 ? "mark" : "sky", LABEL_AT[p.widen]));
+  point(HALVING_5W, X(5) - 16, "off-ink", [-9, 56]);
+  svg.append(make("text", { x: (left + right) / 2, y: bottom + 40, "text-anchor": "middle", class: "label" }, "réponses par étage (widen), 2 000 itérations des deux côtés"));
+  svg.append(make("text", { x: 8, y: 12, class: "label" }, "score contre le V1"));
+  $("width-legend").replaceChildren(html("span", { class: "muted small" }, "barres : fourchette à 95 % ; en vert, validé (bas de fourchette au-dessus de 50 %) ; en gris, la même largeur 5 avec l'élimination à la racine (RootHalving)"));
+  $("width-facts").replaceChildren(
+    html("li", {}, html("b", {}, "Le saut de 3 à 5 : "), "+3,4 points. Au-delà, un plateau : sur les mêmes 1 000 donnes, Tree-6w fait -0,9 ± 3,7 points contre Tree-5w, Tree-7w +1,2 ± 3,8. Les trois largeurs se valent, à la précision de 1 000 parties ; Tree-7w tient sur 500 parties de plus, sur des donnes nouvelles (54,4 % sur 1 500)."),
+    html("li", {}, html("b", {}, "Pourquoi ça paie : "), "avec 3 réponses, l'arbre ne voit pas les parades que le cœur classe 4e ou 5e. Avec 5 à 7, il les trouve : plus de brelans, moins de côtés sans figure, 2,9 bornes gagnées par partie contre 2,7."),
+    html("li", {}, html("b", {}, "Par siège : "), "le premier joueur gagne environ 48 % entre deux robots proches du V1. Le score d'un siège dans un duel dépend surtout des donnes (chacune jouée dans les deux sièges) ; comparées sur les mêmes donnes, les largeurs 6 et 7 ne perdent pas nettement en commençant (-3,4 et 0,0 point contre Tree-5w) : pas de largeur à choisir selon le siège."),
+  );
+}
+
+function drawUcb() {
+  drawUcbBonus();
+  drawUcbRace();
+}
+
+/* ── VII · What the core costs ──────────────────────────── */
+const FAMILY_TONES = { valeur: "sky", habitudes: "brass", idees: "mark", certitudes: "seal", moteur: "plum", autre: "off-ink" };
+const COST_SCOPES = [["rollout", "dans les simulations"], ["root", "à la racine"], ["iteration", "une itération entière"]];
+const pctOf = (x, digits = 1) => `${fr(100 * x, digits)} %`;
+
+/** The features of a scope: time share, and activity (the root's at the root, the rollouts' otherwise). */
+function costRows(F, scope) {
+  const acts = F.activation[scope === "root" ? "root" : "rollout"];
+  return F.features.map((f) => ({ ...f, share: F.time[scope].features[f.id]?.share ?? 0, act: acts[f.id] ?? null }));
+}
+
+/** Labels beside their points: right, left, above or below, the first spot clear of points and labels already placed. */
+function placeLabels(svg, labels, bounds) {
+  const boxes = labels.map(({ cx, cy }) => ({ x0: cx - 6, x1: cx + 6, y0: cy - 6, y1: cy + 6 }));
+  const clear = (box) => box.x0 > bounds.left && box.x1 < bounds.right && box.y0 > bounds.top && !boxes.some((o) => box.x0 < o.x1 && o.x0 < box.x1 && box.y0 < o.y1 && o.y0 < box.y1);
+  for (const label of labels) {
+    const width = label.text.length * 7.2;
+    const spots = [[12, 4, "start"], [-12, 4, "end"], [0, -14, "middle"], [0, 22, "middle"]].map(([dx, dy, anchor]) => {
+      const x = label.cx + dx;
+      const x0 = { start: x, end: x - width, middle: x - width / 2 }[anchor];
+      return { x, y: label.cy + dy, anchor, box: { x0, x1: x0 + width, y0: label.cy + dy - 10, y1: label.cy + dy + 2 } };
+    });
+    const spot = spots.find((s) => clear(s.box)) ?? spots[0];
+    boxes.push(spot.box);
+    svg.append(make("text", { x: spot.x, y: spot.y, "text-anchor": spot.anchor }, label.text));
+  }
+}
+
+function drawCostScatter(rows) {
+  const svg = $("cost-scatter");
+  svg.replaceChildren();
+  // The price of a card acts on every move by nature (each move pays its card): left out, or it flattens the axis.
+  const points = rows.filter((r) => r.act && r.id !== "price");
+  const [left, right, top, bottom] = [64, 600, 24, 330];
+  const xMax = Math.max(10, Math.ceil((100 * Math.max(...points.map((r) => r.act.moves))) / 10) * 10);
+  const yMax = Math.max(2, Math.ceil(120 * Math.max(...points.map((r) => r.share))));
+  const X = (v) => left + (v / xMax) * (right - left);
+  const Y = (v) => bottom - (v / yMax) * (bottom - top);
+  svg.append(make("rect", { x: left, y: top, width: (right - left) / 2, height: (bottom - top) / 2, fill: css("seal-wash"), opacity: 0.6 }));
+  svg.append(make("text", { x: left + 6, y: top + 14, fill: css("seal") }, "cher, et sert peu"));
+  for (let v = 0; v <= xMax; v += xMax / 5) {
+    svg.append(make("line", { x1: X(v), x2: X(v), y1: top, y2: bottom, stroke: css("line") }));
+    svg.append(make("text", { x: X(v), y: bottom + 16, "text-anchor": "middle" }, `${Math.round(v)} %`));
+  }
+  const yStep = yMax <= 5 ? 1 : Math.ceil(yMax / 5);
+  for (let v = 0; v <= yMax; v += yStep) {
+    svg.append(make("line", { x1: left, x2: right, y1: Y(v), y2: Y(v), stroke: css("line") }));
+    svg.append(make("text", { x: left - 8, y: Y(v) + 4, "text-anchor": "end" }, `${v} %`));
+  }
+  svg.append(make("text", { x: (left + right) / 2, y: bottom + 36, "text-anchor": "middle", class: "label" }, "part des coups dont la note change quand on l'éteint"));
+  svg.append(make("text", { x: 8, y: 14, class: "label" }, "part du temps du cœur"));
+  const labels = points.map((r) => {
+    const [cx, cy] = [X(100 * r.act.moves), Y(100 * r.share)];
+    const tip = `${r.label} : ${pctOf(r.share)} du temps ; la note de ${pctOf(r.act.moves)} des coups change, le coup préféré dans ${pctOf(r.act.favourite)} des positions`;
+    svg.append(make("circle", { cx, cy, r: 5 + 14 * Math.sqrt(r.act.favourite), fill: css(FAMILY_TONES[r.family]), "fill-opacity": 0.75, stroke: css("card"), "stroke-width": 1.5, "data-tip": tip }));
+    return { cx, cy, text: r.id };
+  });
+  placeLabels(svg, labels, { left, right: 636, top });
+}
+
+function drawCostBars(rows) {
+  const svg = $("cost-bars");
+  svg.replaceChildren();
+  const shown = rows.filter((r) => r.share >= 0.001).sort((a, b) => b.share - a.share);
+  const [left, right, step] = [300, 560, 22];
+  const max = Math.max(...shown.map((r) => r.share));
+  shown.forEach((r, i) => {
+    const y = 16 + i * step;
+    const width = Math.max(2, (r.share / max) * (right - left));
+    const activity = r.act ? `la note de ${pctOf(r.act.moves)} des coups change` : "toujours au travail";
+    svg.append(make("text", { x: left - 8, y: y + 4, "text-anchor": "end", class: "label" }, r.label.length > 46 ? `${r.label.slice(0, 45)}…` : r.label));
+    svg.append(make("rect", { x: left, y: y - 7, width, height: 14, rx: 3, fill: css(FAMILY_TONES[r.family]), "data-tip": `${r.label} : ${pctOf(r.share)} du temps, ${activity}` }));
+    svg.append(make("text", { x: left + width + 6, y: y + 4 }, pctOf(r.share)));
+  });
+  svg.setAttribute("viewBox", `0 0 640 ${24 + shown.length * step}`);
+}
+
+function drawCost() {
+  const F = DATA.features;
+  if (!F) {
+    $("cout").hidden = true;
+    return;
+  }
+  const show = (scope) => {
+    document.querySelectorAll("#cost-toggle button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === scope)));
+    const rows = costRows(F, scope);
+    drawCostScatter(rows);
+    drawCostBars(rows);
+  };
+  $("cost-toggle").replaceChildren(...COST_SCOPES.map(([value, text]) => {
+    const button = html("button", { type: "button", "aria-pressed": "false", "data-value": value }, text);
+    button.addEventListener("click", () => show(value));
+    return button;
+  }));
+  show("rollout");
+  const families = Object.entries(F.families).filter(([key]) => key !== "autre");
+  $("cost-legend").replaceChildren(...families.map(([key, label]) => html("span", {}, html("i", { style: `background: var(--${FAMILY_TONES[key]}); border-radius: 999px` }), label)), html("span", { class: "muted small" }, "la taille d'un point : combien de fois le coup préféré change ; le prix d'une carte, actif à chaque coup par nature, n'est pas tracé"));
+  $("cost-note").textContent = `${thousands(F.positions)} positions de parties du cœur du 1.0 contre lui-même (un tour sur deux), ${F.searches} recherches à ${F.budget} itérations, sur un fil (npm run features, ${F.built.replace("T", " à ")}). Une évaluation de tous les coups par le cœur des simulations : ${fr(F.perScoringMs, 3)} ms. Les parts tiennent sous la charge, les millisecondes moins : à refaire sur une machine au repos avant d'en tirer des chiffres absolus.`;
+}
+
+/* ── VIII · Next ─────────────────────────────────────────── */
+function drawNext() {
+  $("next").replaceChildren(...J.next.map(({ when, title, text }) => html("div", { class: "panel" }, html("p", { class: "eyebrow" }, when), html("h3", {}, title), html("p", { class: "small" }, text))));
+  $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- ${DATA.version}</code> (scripts/changelog.js) : les essais de <code>data/changelog-exp-${DATA.version}.json</code>, le banc des cœurs de <code>data/oracle-bench.json</code>, le banc de similitude de <code>data/oracle-diffs-banc.json</code> et <code>data/banc.json</code>, le coût du cœur de <code>data/core-features.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done.json</code>, et ${DATA.commits.length} commits. Le détail de chaque essai : <code>docs/strategie.md</code>.`;
+}
+
+drawTimeline();
+renderNotebook();
+drawBench();
+drawBanc();
+drawCompare();
+drawUcb();
+drawWidth();
+drawCost();
+drawNext();
+</script>

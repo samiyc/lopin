@@ -1,10 +1,10 @@
-import { pickGames, readFilters } from "./lib/game-filters.js";
-import { runPool } from "./lib/pool.js";
+import { pickGames, readFilters } from "./lib/domain/game-filters.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run branch -- [filters] [--check | --force random | --engine A]`:
- * kept bot games played again from a turn (`src/replay/branch.js`), on every
- * core. Filters and the starting turn: `scripts/lib/game-filters.js`.
+ * kept bot games played again from a turn (`src/replay/core/branch.js`), on every
+ * core. Filters and the starting turn: `scripts/lib/domain/game-filters.js`.
  *
  * - `--check`: the unchanged replay must give back every logged move;
  * - `--force random`: a random error at the starting turn;
@@ -28,7 +28,7 @@ const who = filters.lostBy ?? filters.wonBy;
 const seatOf = (row) => (who ? row.players.indexOf(who) : 0);
 const enginesFor = (row) => engine && row.players.map((_, seat) => (!who || seat === seatOf(row) ? engine : null));
 const tasks = picked.map(({ row, turn }) => ({ row, turn, check, force, engines: enginesFor(row) }));
-const results = await runPool(new URL("./lib/branch-worker.js", import.meta.url), tasks);
+const results = await runPool(new URL("./lib/workers/branch-worker.js", import.meta.url), tasks);
 const minutes = `${((Date.now() - started) / 60000).toFixed(1)} min`;
 const pct = (part, whole) => `${whole ? ((100 * part) / whole).toFixed(1).replace(".", ",") : "0"} %`;
 

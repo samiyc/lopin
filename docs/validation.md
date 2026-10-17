@@ -37,7 +37,7 @@ contexte pour chaque carte essayée.
 | `lookahead,strategist` | `9225bb33224f2147` |
 
 **2. Les duels ont deux profils, avec arrêt anticipé et plafond de temps**
-(`scripts/lib/duel-plan.js`, testé).
+(`scripts/lib/domain/duel-plan.js`, testé).
 
 | Profil | Pour quoi faire | Robots rapides | Robots qui cherchent | Plafond |
 |---|---|---|---|---|
@@ -178,8 +178,8 @@ Les identifiants de moteur se combinent :
 ## Les duels gardés en replays (`duels/`)
 
 Les parties des duels sont gardées, pour bâtir les tests suivants sur elles au
-lieu de rejouer des parties entières (`src/replay/bot-games.js`,
-`scripts/lib/duel-save.js`).
+lieu de rejouer des parties entières (`src/replay/core/bot-games.js`,
+`scripts/lib/domain/duel-save.js`).
 
 - **Quand** : avec `--save`, et d'office pour un duel long ou quand les deux
   robots jouent à pleine force. C'est le cas d'un robot qui ne cherche pas
@@ -195,7 +195,7 @@ lieu de rejouer des parties entières (`src/replay/bot-games.js`,
   - `advantage` : qui tient la partie au tour 30, la pioche vide, en jeu parfait.
     Le solveur exact le dit en moins d'une seconde en général ; aucun test
     suivant n'a à le recalculer.
-- **Rejouer à partir d'un tour** : `stateAt(log, tour)` (`src/replay/log.js`)
+- **Rejouer à partir d'un tour** : `stateAt(log, tour)` (`src/replay/core/log.js`)
   rend la position exacte, même paquet et même pioche. On n'y change qu'un
   mécanisme, sur un seul coup, et on rejoue la suite : une partie qui bascule au
   tour 30 se voit sur la même donne. Valable tant que la version des robots est
@@ -203,7 +203,7 @@ lieu de rejouer des parties entières (`src/replay/bot-games.js`,
 
 ### Retrouver une partie, et la rejouer depuis un tour (02/10)
 
-- **Ce que l'analyse note en plus** (`src/replay/game-analysis.js`) :
+- **Ce que l'analyse note en plus** (`src/replay/core/game-analysis.js`) :
   - `columns` : le tour où chaque joueur a une carte sur les 7 bornes ;
   - `firstBorder` : la première borne gagnée, par qui et à quel tour ;
   - la pioche vide n'est pas notée : c'est toujours le tour 30.

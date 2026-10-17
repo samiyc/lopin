@@ -141,7 +141,7 @@ un terme ne parle pas, on le change ici d'abord. Les commandes, elles, sont dans
   des donnes entre dans la comparaison : sur une même donne, les résultats de deux finalistes de la 1.2
   sont corrélés (ρ ≈ 0,44 en simulations seules). UCB, l'arbre sous la racine, le coup joué et le coût
   d'une itération ne changent pas. Le sous-arbre d'un candidat ne dépend plus que de ses propres
-  visites : cherché seul, il donne le même sous-arbre (`tests/common-deals.test.js`).
+  visites : cherché seul, il donne le même sous-arbre (`tests/sim-search/common-deals.test.js`).
 - **Le premier essai d'une réponse** : sous la racine, une réponse jamais essayée passe avant toutes
   les autres (+∞ dans UCB). Comme la main adverse change à chaque donne, de nouvelles réponses
   apparaissent sans cesse : à 2 000, **22 % des itérations de la 1.2 essaient une réponse adverse
@@ -200,7 +200,7 @@ un terme ne parle pas, on le change ici d'abord. Les commandes, elles, sont dans
 Le cœur note un coup par ce qu'il fait gagner à la borne jouée, face à ce que l'adversaire y
 construit. Pour ça il lui faut, pour chaque côté, ce qu'il vaudra **une fois fini** : le
 *potentiel*. C'est 45 % du temps du cœur (`npm run features`, 05/10), donc la moitié du temps de
-chaque simulation. Le code : `src/sim/potential.js`, appelé par `moveGain`, `views` (la menace
+chaque simulation. Le code : `src/sim/eval/potential.js`, appelé par `moveGain`, `views` (la menace
 adverse) et `borderChances` dans `src/sim/bots.js`.
 
 - **L'échelle** : la valeur d'un côté fini est son **rang** (0 Somme, 1 Suite, 2 Couleur,
@@ -269,7 +269,7 @@ la main peut faire sont une grande part du jugement du cœur.
   offsets 1 à 4 se comparent partie par partie (voir « Les sièges »).
 - **La fourchette à 95 %** : l'intervalle où se trouve très probablement le vrai score, calculé
   **par paires** (chaque donne jouée des deux côtés, la paire comme unité : `pairedInterval`,
-  `scripts/lib/duel-plan.js`), pas partie par partie (Wilson, plus large). Environ ±5,5 points sur
+  `scripts/lib/domain/duel-plan.js`), pas partie par partie (Wilson, plus large). Environ ±5,5 points sur
   250 parties, ±4,5 sur 400, ±2,7 sur 1 000. **Une version est meilleure quand
   la fourchette basse dépasse 50 %**, sur 1 000 parties.
 - **À temps égal** : quand une version est plus rapide ou plus lente par itération (plus de 3 %
@@ -308,7 +308,7 @@ la main peut faire sont une grande part du jugement du cœur.
   donne neuve (`npm run deals -- --plays 1`) est le plan le moins cher.
 - **Les compensations du siège** (Sami, 16/10, `src/config/seats.js`, `npm run deals -- --seat`) : ce qu'on
   rend au premier joueur, éteint par défaut (`createGame` sans `seat` est le jeu imprimé). Les noms, et leur
-  id (`src/sim/seat-rules.js`) :
+  id (`src/sim/engine/seat-rules.js`) :
 
   | Nom | La règle | Id |
   | --- | --- | --- |
@@ -322,7 +322,7 @@ la main peut faire sont une grande part du jugement du cœur.
   | `Hand5Second` | 6 cartes au premier, 5 au second | `hands=6/5` |
   | `Hand7SkipN` | 7 cartes au premier joueur, qui ne pioche pas après son N-ième coup (la carte en plus pour N tours) | `hands=7/6+skip=N` |
 
-  Les robots se servent de ce qu'il a vu (`src/sim/peek.js`) : `determinize` laisse les cartes vues à leur
+  Les robots se servent de ce qu'il a vu (`src/sim/engine/peek.js`) : `determinize` laisse les cartes vues à leur
   place (sur la pioche, ou dans la main adverse quand le second les a piochées), le cœur compte la carte qu'il
   va piocher comme une carte de sa main ; une revendication, elle, ne se prouve jamais avec ce qu'il a vu.
 - **L'effet apparié d'une règle** (`npm run deals -- … --paired fichier`) : la part du premier joueur avec la
@@ -377,7 +377,7 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   dans chaque simulation (environ 8 min par coup), pas pour le vrai coup (`ExactEnd12`).
 - **Pourquoi ça compte** : sous 9 cartes, le robot calcule la fin exactement ; mais le cœur joue
   toutes les fins de partie simulées de l'arbre, et chacun de ses pièges y fausse un résultat.
-- **Une menace** (Sami, 11/10, `src/sim/fork.js`) : une borne non décidée dont le gain donne la
+- **Une menace** (Sami, 11/10, `src/sim/eval/fork.js`) : une borne non décidée dont le gain donne la
   partie à son joueur, par 3 bornes adjacentes ou par la majorité (4 sur 7).
 - **La fourchette** (la double menace, comme au Puissance 4) : une borne dont le gain laisserait
   **deux menaces ou plus** — bornes 3 et 4 gagnées, chacune des bornes 2 et 5 fait trois à la
@@ -466,7 +466,7 @@ version :
 | `Tree-6w`, `Tree-7w` | le V1 avec 6 ou 7 réponses par étage (profondeur 5, UCB à la racine) | `ismcts+widen=6+depth=5+…` |
 | `FirstExplo6-Tree-7w` | Tree-7w, avec une exploration de 0,6 au lieu de 0,7 partout où joue le premier joueur (toujours le joueur 0), racine comprise, dans l'arbre des deux sièges ; les nœuds du second gardent 0,7. En pratique : la racine quand le robot commence, les réponses adverses attendues quand il est second. Le chiffre est c × 10 | `ismcts+widen=7+depth=5+…+firstExploration=0.6` |
 | `FirstExplo8-Tree-7w` | le même, avec 0,8 au lieu de 0,6 : plus d'exploration pour le premier joueur | `ismcts+widen=7+depth=5+…+firstExploration=0.8` |
-| `EndJoker` | le cœur du 1.2 en essai (`stfig6ej`) : une fois la pioche vide, le joker jugé par ce qu'il gagne de plus que sur sa meilleure autre borne, au lieu de son prix fixe (`src/sim/end-joker.js`). Comparé au V1.1 | `ismcts+widen=7+depth=5+core=stfig6ej@2000` |
+| `EndJoker` | le cœur du 1.2 en essai (`stfig6ej`) : une fois la pioche vide, le joker jugé par ce qu'il gagne de plus que sur sa meilleure autre borne, au lieu de son prix fixe (`src/sim/heuristics/end-joker.js`). Comparé au V1.1 | `ismcts+widen=7+depth=5+core=stfig6ej@2000` |
 | `ExactEnd12` | le V1.1 qui, pioche vide, calcule exactement son vrai coup jusqu'à 12 cartes en main (au lieu de 8), avec un plafond de positions au-delà duquel l'arbre reprend | `ismcts+widen=7+depth=5+core=stfig6+exact=12@2000` |
 | `PW-ExactEnd12` | l'Expérimental 1.2 avec l'élargissement progressif (`pw=1`) : sous la racine, un nœud propose 1 + ⌊√visites⌋ réponses du cœur, jusqu'à 7, au lieu de 7 d'emblée ; la racine garde ses 8 candidats. Dans l'analyse d'arbre : `w7_d5_pw1`. Coût +1,9 % par itération : duel à itérations égales | `ismcts+widen=7+depth=5+core=stfig6+exact=12+pw=1@2000` |
 | `Budget4000` | la 1.2 à 4 000 itérations par coup au lieu de 2 000 : une mesure, pas une version (le plafond de ce que le budget rapporte) | `ismcts+widen=7+depth=5+core=stfig6+exact=12@4000` |
@@ -490,7 +490,7 @@ version :
 | `FinalMean` / `FinalLcb1` | la 1.2 qui joue, au lieu du candidat le plus visité, celui au meilleur taux de victoire moins c / √visites (Sami, 15/10 : `final=c`, `final-choice.js`) : c = 0, le meilleur taux ; c = 1, une borne basse à ~95 %. Pour les rangs 4 à 8 qu'Oracle3 trouve meilleurs (+2,5 ± 2,4) ; même coût par itération. Tri à 800 : 49,8 et 51,7 % ; premier duel long à 2 000 : 54,8 et 55,2 % ; la 1k@2k (15/10) : `FinalMean` 51,9 % (49,3 – 54,5), `FinalLcb1` 52,7 % (50,1 – 55,3), retombé à **51,5 % (49,4 – 53,7) sur 1 500 parties** avec la confirmation : pas de 1.3 | `ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000` |
 | `CommonDeals` | la 1.2 dont les candidats de la racine sont comparés sur les mêmes donnes : la k-ième visite de chacun joue la k-ième donne de la recherche et la k-ième suite de tirages des simulations (`crn=1`, `common-deals.js`, 16/10) ; UCB, l'arbre et le coup joué (le plus visité) inchangés, même coût par itération. Les « finalistes appariés » du panel du 16/10, étendus à tous les candidats (`docs/priorites-1.3.md`). Tri à 400 : 55,3 % ; 1k@2k (17/10) : **50,7 % (48,2 – 53,2)**, écarté | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1@2000` |
 | `CommonDeals-FinalLcb1` | `CommonDeals` qui joue, au lieu du plus visité, le meilleur taux moins 1 / √visites (`final=1`) : la décision lue sur des taux que les donnes communes rendent comparables. Sans objet depuis la 1k@2k de `CommonDeals` (17/10) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1+final=1@2000` |
-| `ReplyFpu0` / `ReplyFpu1` | codé le 17/10 (`src/sim/first-play.js`, `docs/priorites-1.3.md` § 2) : sous la racine, une réponse jamais essayée vaut la moyenne des réponses déjà essayées du nœud, moins 0 ou 0,1 (le chiffre × 10), plus le bonus d'une visite, au lieu de passer avant toutes (first-play urgency) ; la racine garde son premier essai de chaque candidat. `ReplyFpu2` / `ReplyFpu3` : moins 0,2 / 0,3. De jour à 2 000 sur 250 parties : 45,6 / 53,6 / 48,4 / 45,6 % ; la 1k@2k de `ReplyFpu1` : 51,5 % (49,0 – 54,0), écarté | `ismcts+…+exact=12+fpu=1@2000` |
+| `ReplyFpu0` / `ReplyFpu1` | codé le 17/10 (`src/sim/mcts/first-play.js`, `docs/priorites-1.3.md` § 2) : sous la racine, une réponse jamais essayée vaut la moyenne des réponses déjà essayées du nœud, moins 0 ou 0,1 (le chiffre × 10), plus le bonus d'une visite, au lieu de passer avant toutes (first-play urgency) ; la racine garde son premier essai de chaque candidat. `ReplyFpu2` / `ReplyFpu3` : moins 0,2 / 0,3. De jour à 2 000 sur 250 parties : 45,6 / 53,6 / 48,4 / 45,6 % ; la 1k@2k de `ReplyFpu1` : 51,5 % (49,0 – 54,0), écarté | `ismcts+…+exact=12+fpu=1@2000` |
 | `Ensemble2x2000` | une mesure, pas une version : deux arbres de 2 000 (4 000 en tout), visites de la racine additionnées, contre la 1.2@2000. Ce que vaut le bruit du coup joué à qualité d'arbre égale, à comparer à `Budget4000` (un arbre de 4 000) sur les mêmes donnes. Nuit du 17/10, offsets 1 et 2 : **54,6 % (50,8 – 58,4) sur 500 parties**, autant que Budget4000 (54,4 %) : le bruit vaut des points, et des arbres indépendants le réduisent. Offsets 3 et 4 en file : s'il tient, la 1.2 sur deux workers dans la page | `ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000` |
 | `MarginBackup05` | `MarginBackup15` à 5 % (`margin=0.05`) : 51,4 % au tri à 400, gardé en réserve ; un duel long « dernière chance » à 2 000 (15/10) | `ismcts+…+exact=12+margin=0.05@2000` |
 | `OracleLight-Pw1` / `-Pw2` / `-Pw3` | l'Oracle light (Sami, 15/10, `docs/1.3-to-oracle-shift.md`) : l'arbre d'Oracle3 à 10 000 itérations au lieu de 20 000, avec `pw=k` (k + √visites réponses), pour un oracle jouable dans la page ; le tri dit quel `k` va avec 10 000. Premier tri (15/10, 140 parties contre la 1.2@2000) : 50,7 / **57,9** / 51,4 % ; `OracleLight-Pw2` confirmé à **54,5 % (50,6 – 58,4) sur 420 parties** (= `pwl=2`) | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000` |
@@ -499,9 +499,9 @@ version :
 | `SuitBudget3` | le budget des couleurs (Sami, 14/10, `suit-budget.js`) sur le cœur de la 1.2 : mes côtés lancés sur une couleur réclament plus de cartes de cette couleur que je n'en ai en main plus ma part des non vues ; chaque carte de manque coûte 0,3 | `ismcts+widen=7+depth=5+core=stfig6sb3+exact=12@2000` |
 | `TreeReuse` | la 1.2 qui garde son arbre d'un coup au suivant (`reuse.js`) ; mesurée : 13 visites offertes par recherche, sans duel | `ismcts+…+exact=12+reuse=1` |
 | `ForkThreat` | la 1.2 dont le cœur donne un bonus aux bornes qui gagnent la partie ou laisseraient une double menace, pour les deux camps (`fork.js`, cœurs `stfig6fork1/2/4`, le chiffre est le poids × 10) | `ismcts+…+core=stfig6fork2+exact=12@2000` |
-| `CriticalEnd` | le cœur 1.2 d'urgence tactique (`stfig6crit`, `src/sim/end-urgency.js`) : pioche vide, remboursement du cardCost, priorité de complétion et parades des 3 adjacentes | `ismcts+widen=7+depth=5+core=stfig6crit@2000` |
+| `CriticalEnd` | le cœur 1.2 d'urgence tactique (`stfig6crit`, `src/sim/heuristics/end-urgency.js`) : pioche vide, remboursement du cardCost, priorité de complétion et parades des 3 adjacentes | `ismcts+widen=7+depth=5+core=stfig6crit@2000` |
 | `CriticalEnd-Exact12` | le combo cœur tactique `stfig6crit` + solveur exact pioche vide à 12 cartes | `ismcts+widen=7+depth=5+core=stfig6crit+exact=12@2000` |
-| `Diverse1` | à la racine, le meilleur coup de chaque carte distincte d'abord, puis les meilleurs gains (`diverse=1`, `pickCandidates` dans `src/sim/pick.js`) | `ismcts+…+diverse=1@2000` |
+| `Diverse1` | à la racine, le meilleur coup de chaque carte distincte d'abord, puis les meilleurs gains (`diverse=1`, `pickCandidates` dans `src/sim/mcts/pick.js`) | `ismcts+…+diverse=1@2000` |
 | `Diverse2` | au plus 2 bornes par carte parmi les candidats, au mérite (`diverse=2`) ; complété par les gains si les cartes manquent | `ismcts+widen=7+…+diverse=2@2000` |
 | `Lead2` | 2 bornes pour la carte du meilleur coup, 1 pour les autres (`diverse=lead2`, ou `2-1`) | `ismcts+widen=4+…+diverse=lead2@2000` |
 | `Canalisé` (Le Borné 1.0) | le cap `diverse=2` à la racine **et** à chaque étage de l'arbre, avec 5 réponses par étage au lieu de 7 | `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000` |

@@ -1,13 +1,13 @@
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
-import { ORACLE, oracleOf } from "../src/replay/oracle.js";
-import { readIndex } from "./lib/game-index.js";
-import { confirmGaps, summarizeConfirm } from "./lib/oracle-confirm.js";
-import { benchCores, disagree, rerank, summarizeDisagree } from "./lib/oracle-cores.js";
-import { runPool } from "./lib/pool.js";
+import { ORACLE, oracleOf } from "../src/replay/oracle/oracle.js";
+import { readIndex } from "./lib/domain/game-index.js";
+import { confirmGaps, summarizeConfirm } from "./lib/domain/oracle-confirm.js";
+import { benchCores, disagree, rerank, summarizeDisagree } from "./lib/domain/oracle-cores.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run oracle -- [--minutes 240] [--games N] [--budget 20000] [--turns 15,16,20,21,25,26 | --at last-column] [--all] [--hands medium]`:
- * the oracle on the kept games (Sami, 03/10; src/replay/oracle.js). Each
+ * the oracle on the kept games (Sami, 03/10; src/replay/oracle/oracle.js). Each
  * position — the turns given, by default 15-16, 20-21 and 25-26, so both
  * players — gets the core's ranking and two oracle searches over every legal
  * move; a gap is the oracle's move, the same in both runs, outside the core's
@@ -15,7 +15,7 @@ import { runPool } from "./lib/pool.js";
  *
  * With `--at last-column`, the positions are instead, for each player, the
  * move that put its first card on its last empty border (`columns` in the
- * index, src/replay/game-analysis.js): does the oracle open it too, or play
+ * index, src/replay/core/game-analysis.js): does the oracle open it too, or play
  * elsewhere? (Sami, 03/10.)
  *
  * Positions come from the 0.9's games against itself in duels/, then with
@@ -25,11 +25,11 @@ import { runPool } from "./lib/pool.js";
  * taking new positions after that long. The gaps and the rates by turn and
  * by player go to data/oracle-diffs.json; `--summary` rebuilds it alone.
  *
- * `--confirm [--seeds 6] [--out <name>]`: the gaps played out instead (scripts/lib/oracle-confirm.js),
+ * `--confirm [--seeds 6] [--out <name>]`: the gaps played out instead (scripts/lib/domain/oracle-confirm.js),
  * verdict in data/oracle-confirm.json (data/oracle-confirm-<name>.json for another corpus).
  *
  * `--oracle 2` (Sami, 14/10): Oracle2 instead of the frozen one, the same search with the 1.2's core,
- * solver and width (`ORACLES` in src/replay/oracle.js); its lines carry `oracle: 2`.
+ * solver and width (`ORACLES` in src/replay/oracle/oracle.js); its lines carry `oracle: 2`.
  *
  * Another corpus (03/10, the V1 + oracle reference): `--source <A>,<B>` reads the
  * games those two engines played against each other instead, into
@@ -48,13 +48,13 @@ import { runPool } from "./lib/pool.js";
  * `--core <name>` (with `--summary`): the positions ranked again by another
  * core, to see whether it moved towards the oracle. `--disagree <name>`: the
  * oracle where that core and the 0.9's disagree, in the duels they played
- * (scripts/lib/oracle-cores.js); `--disagree <name> --summary` rebuilds its
+ * (scripts/lib/domain/oracle-cores.js); `--disagree <name> --summary` rebuilds its
  * summary alone.
  */
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const minutes = Number(option("--minutes", Infinity));
-// `--oracle 2` (Sami, 14/10): Oracle2, the search with the 1.2's core, solver and width (src/replay/oracle.js).
+// `--oracle 2` (Sami, 14/10): Oracle2, the search with the 1.2's core, solver and width (src/replay/oracle/oracle.js).
 const oracle = oracleOf(option("--oracle", "1"));
 const budget = Number(option("--budget", oracle.budget));
 /** "15,16,20" or "1-30". */
@@ -196,7 +196,7 @@ async function hunt() {
   const tally = { done: 0, gaps: 0 };
   const cap = Number.isFinite(minutes) ? `${minutes} min au plus` : "sans limite de temps";
   console.log(`${tasks.length} positions à lire (${done.size} déjà faites), oracle ${oracle.version} ${oracle.engine}@${budget}, ${cap}`);
-  await runPool(new URL("./lib/oracle-worker.js", import.meta.url), tasks, {
+  await runPool(new URL("./lib/workers/oracle-worker.js", import.meta.url), tasks, {
     shouldStop: () => Date.now() - started > minutes * 60_000,
     onResult: (result) => {
       tally.done += 1;

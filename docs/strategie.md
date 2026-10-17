@@ -70,12 +70,12 @@ mesures détaillées sont plus bas, section par section.
 Le Stratège 2 a deux étages :
 1. **Le cœur** (`strategist`, version 1.2) note chaque coup possible. Il estime ce
    que devient la borne jouée, face à ce que l'adversaire y construit.
-   - Estimation : `sidePotential` dans `src/sim/potential.js`, `moveGain` dans
+   - Estimation : `sidePotential` dans `src/sim/eval/potential.js`, `moveGain` dans
      `src/sim/bots.js`.
    - La note reçoit ensuite des bonus : les trois habitudes
-     (`src/sim/strategist.js`), les idées (`src/sim/ideas.js`) et les principes
-     (`src/sim/principles.js`).
-2. **L'anticipation** (`src/sim/lookahead.js`) prend les 4 meilleurs coups du
+     (`src/sim/heuristics/strategist.js`), les idées (`src/sim/heuristics/ideas.js`) et les principes
+     (`src/sim/heuristics/principles.js`).
+2. **L'anticipation** (`src/sim/search/lookahead.js`) prend les 4 meilleurs coups du
    cœur. Pour chacun, elle rejoue 16 fois la fin de la partie, en distribuant au
    hasard les cartes invisibles, puis garde celui qui gagne le plus souvent.
 
@@ -187,13 +187,13 @@ par exemple.
 
 ## Les tests
 
-- **`tests/strategy-cases.test.js`** : chaque cas est rejoué depuis
+- **`tests/sim-heuristics/strategy-cases.test.js`** : chaque cas est rejoué depuis
   `tests/fixtures/replays/`, et vérifié pour le cœur et pour le Stratège 2 (graine
   fixe).
   - On vérifie ce que le robot **ne doit pas** faire, pas un coup unique.
   - Un cas encore raté est `todo` : il s'affiche dans `npm test` sans le faire
     échouer.
-- **`tests/ideas.test.js`** : chaque principe sur une position construite à la
+- **`tests/sim-heuristics/ideas.test.js`** : chaque principe sur une position construite à la
   main.
 
 Les numéros de coup sont ceux des journaux. Le compteur du lecteur de replays
@@ -204,7 +204,7 @@ affichait le tour suivant ; il affiche maintenant le coup montré.
 Sami demandait des conditions **déterministes** qui disent, sans calculer toute la
 partie, qu'un coup est gagnant ou inutile sur une borne. Le sûr, ce sont les
 **certitudes** : la « revendication » de la règle officielle de Schotten Totten,
-calculée par énumération (`src/sim/certainty.js`).
+calculée par énumération (`src/sim/eval/certainty.js`).
 
 - **Borne gagnée d'avance** : mon côté est complet, et aucune façon de finir le
   côté adverse ne le bat. On essaie toutes les cartes que je ne vois pas. En cas
@@ -608,7 +608,7 @@ restent sur le disque, hors de git.
 mains les plus faibles ; de l'autre, les mains fortes que le robot a perdues
 (avec un backlog). Puis en tirer des tendances, un « Merlin des ouvertures ».
 
-**Les classes** (`src/sim/hand-classes.js`, environ 10 % à chaque bout, comptées
+**Les classes** (`src/sim/eval/hand-classes.js`, environ 10 % à chaque bout, comptées
 exactement sur les 5 245 786 mains) :
 - La version stricte des mains faibles (tout sous 6, sans paire ni cartes qui se
   suivent) ne contient **aucune main** : six cartes de cinq valeurs font toujours
@@ -891,14 +891,14 @@ meilleur coup ne peut plus être rattrapé, et l'épargne va aux coups serrés ;
 à mieux jouer sur la durée ? Les bonus (habitudes, idées) orientent-ils trop la
 recherche en amont ?
 
-**Le voisinage** (`neighbors`, `src/sim/ideas.js`) : le gain d'une borne est
+**Le voisinage** (`neighbors`, `src/sim/heuristics/ideas.js`) : le gain d'une borne est
 multiplié par 1 + λ × son enjeu, c'est-à-dire la somme, sur chaque série de
 trois bornes qui la traverse, du produit des chances sur les deux autres. Le
 centre et la borne qui complète une série bien partie comptent plus. Il coûte
 environ 12 % de vitesse (0,14 ms au lieu de 0,13 pour noter tous les coups ;
 500 itérations par seconde au lieu de 556).
 
-**Les cœurs testés** (`CORES`, `src/sim/experimental.js`) : `nb1`, `nb2` (λ = 1, 2),
+**Les cœurs testés** (`CORES`, `src/sim/heuristics/experimental.js`) : `nb1`, `nb2` (λ = 1, 2),
 `runs`, `plain` (le cœur nu, sans habitudes, idées ni certitudes). Dans l'arbre :
 `+core=X`, ou un seul rôle avec `+shortlist=X` (les coups examinés) et
 `+rollout=X` (les simulations).
@@ -936,7 +936,7 @@ borne avec ses voisines, quitte à réduire l'arbre ; ensuite, un cœur aussi
 rapide que possible pour que l'arbre aille à 6 ou 7 coups d'avance. Bascule
 testée aux tours 18, 20 et 22.
 
-**Le robot à deux phases** (`src/sim/phase.js`) : `phase:<bascule>:<début>/<fin>`,
+**Le robot à deux phases** (`src/sim/search/phase.js`) : `phase:<bascule>:<début>/<fin>`,
 chaque moitié un moteur ordinaire avec son budget. La bascule est un tour, ou
 un événement de la partie : `border` (une première borne gagnée), `board`
 (les deux joueurs ont entamé les 7 bornes), `pileN` (N cartes ou moins dans la
@@ -983,7 +983,7 @@ même figure (deux brelans, deux suites de même couleur), la somme la plus
 haute prend la borne. Et dans l'autre sens, ouvrir une borne vierge offre à
 l'adversaire cette même réponse.
 
-**Deux idées** (`src/sim/outbid.js`), qui ne jugent que la première carte de mon
+**Deux idées** (`src/sim/heuristics/outbid.js`), qui ne jugent que la première carte de mon
 côté. `counter`, plus ancienne, compare des figures et ne joue qu'à partir de
 deux cartes :
 - `outbid` : sur une borne où l'adversaire a une carte seule et moi aucune, la
@@ -1033,7 +1033,7 @@ page, fourchette par paires) :
 - Le joker se place plutôt sur un brelan du milieu : il y remplace une vraie
   carte, et le brelan ne bloque plus que deux couleurs.
 
-**Quatre idées** (`src/sim/shapes.js`). Chacune juge un côté de deux ou trois
+**Quatre idées** (`src/sim/eval/shapes.js`). Chacune juge un côté de deux ou trois
 cartes, dès que sa figure se lit ; une carte seule, avec ou sans joker, peut
 encore devenir l'une ou l'autre :
 - `plan` : la figure la plus fréquente de mes côtés complets est le plan ; un
@@ -1082,7 +1082,7 @@ ou perdue, en retard de bornes ouvertes, la main de départ) et ce qu'il fait
 jouer face à un côté plein).
 
 **L'outil** : `npm run rules` (`scripts/rules.js`, traits dans
-`src/replay/move-features.js`), 10 s sur les 3 248 parties décidées de
+`src/replay/oracle/move-features.js`), 10 s sur les 3 248 parties décidées de
 `duels/`. Deux lectures :
 - **par paires** : dans la même partie, le gagnant le fait-il plus souvent que
   le perdant ? La donne est la même pour les deux, sa chance s'annule surtout ;
@@ -1100,7 +1100,7 @@ gagnant est surtout le plus fort) sont séparées. Résultats complets :
   d'une borne gagnée (96 % des gagnées, 69 % des perdues), c'est d'abord en
   avoir gagné une ; jouer un joker en fin de partie (78 % / 48 %), c'est en avoir
   pioché un.
-- **Quatre sont des choix**, transformées en idées du cœur (`src/sim/mined.js`) :
+- **Quatre sont des choix**, transformées en idées du cœur (`src/sim/heuristics/mined.js`) :
 
 | Règle (lecture par paires) | Idée | Poids 0,1 | Poids 0,2 |
 | --- | --- | --- | --- |
@@ -1127,7 +1127,7 @@ l'on trouve dans les parties gagnées et presque pas dans les perdues. La mesure
 est donc la part des fois où celui qui joue le coup gagne la partie (50 % au
 hasard entre robots de même force). `npm run rules` l'affiche en premier.
 
-**Les jokers** (`npm run jokers`, `src/replay/joker-features.js`) : les 4 250
+**Les jokers** (`npm run jokers`, `src/replay/oracle/joker-features.js`) : les 4 250
 jokers posés dans les 3 048 parties entre robots de même force, lus par ce
 qu'ils rejoignent (brelan, suite de couleur, carte seule ; milieu 4-7 ou
 bouts), la borne (centre, bord), et ce qu'il y a en face.
@@ -1142,7 +1142,7 @@ bouts), la borne (centre, bord), et ce qu'il y a en face.
 - **Brelan du milieu ou des bouts** : 64 % contre 63 % des parties, 94 % contre
   91 % des bornes. Un léger avantage au milieu, comme le pensait Sami.
 
-**Les idées joker** (`src/sim/joker-ideas.js`) — les premiers bonus qu'un joker
+**Les idées joker** (`src/sim/heuristics/joker-ideas.js`) — les premiers bonus qu'un joker
 reçoit : `ideasBonus` ne lisait que les vraies cartes. Le volet joker de `ends`,
 testé plus haut, n'avait donc jamais joué.
 
@@ -1189,7 +1189,7 @@ Le piège arrive souvent (0,76 fois par partie) et paie un peu mieux qu'une
 paire vivante : le cœur le joue déjà, sans le savoir, puisqu'il compte le joker
 de sa main pour finir la paire.
 
-**En cœur contre cœur** (`jokerTrap`, `src/sim/joker-ideas.js` : bonus pour la
+**En cœur contre cœur** (`jokerTrap`, `src/sim/heuristics/joker-ideas.js` : bonus pour la
 2e carte d'une paire morte, joker en main) : 50,0 %, 50,3 %, 50,2 %, 49,7 % aux
 poids 0,1 à 0,8. **Neutre**, et c'est attendu : un robot ne se fait pas piéger.
 Le cœur adverse ne lit pas de signal, il compte les cartes invisibles, jokers
@@ -1252,7 +1252,7 @@ bornes qui ne comptent ni pour moi ni pour l'adversaire, pour y attirer ses
 suites de couleur puissantes — des cartes qui lui manqueront là où ça compte.
 L'arbre pourrait voir à travers ; et en cœur contre cœur ?
 
-**`bait`** (`src/sim/bait.js`) : ma zone est la série de trois bornes côte à côte
+**`bait`** (`src/sim/heuristics/bait.js`) : ma zone est la série de trois bornes côte à côte
 où mes chances additionnées sont les meilleures, celle de l'adversaire la
 série où les siennes le sont. Une borne hors des deux est un appât ; une carte
 de 1 à 3 qui y commence ou y prolonge une paire basse ou une suite de couleur
@@ -1317,7 +1317,7 @@ cœur, donc une piste d'évolution.
 (`candidates`) ; en dessous, ses **3** meilleures réponses (`widen`). Un coup
 hors du top 8 n'est jamais examiné.
 
-**L'oracle** (`npm run oracle`, `src/replay/oracle.js`) :
+**L'oracle** (`npm run oracle`, `src/replay/oracle/oracle.js`) :
 `ismcts+candidates=99+widen=6+depth=5@20000`, soit **tous** les coups légaux à
 la racine (jokers refusés par l'habitude compris), 6 réponses par nœud, 25 fois
 le budget du 0.9. Deux recherches de graines différentes ; un **écart** est leur
@@ -1396,7 +1396,7 @@ seulement quand il faut, l'arrêt anticipé.
 affichait 120 itérations par seconde au lieu de 556.
 
 **La confirmation par le jeu** (`npm run oracle -- --confirm`,
-`scripts/lib/oracle-confirm.js`) : pour chaque écart, le coup de l'oracle, le
+`scripts/lib/domain/oracle-confirm.js`) : pour chaque écart, le coup de l'oracle, le
 premier du cœur et celui du 0.9 sont forcés, puis la partie est jouée par le
 0.9 des deux côtés sur 4 graines et jugée au tour 30 par le solveur exact. Le
 verdict d'ensemble est l'avance moyenne du coup de l'oracle sur celui du cœur
@@ -1448,7 +1448,7 @@ suivante :
 testés un par un puis ensemble, en cœur contre cœur (machine libre, 3 min 30
 de calcul en tout).
 
-**Les idées** (`src/sim/oracle-ideas.js`) : `stay`, une carte sur un côté déjà
+**Les idées** (`src/sim/heuristics/oracle-ideas.js`) : `stay`, une carte sur un côté déjà
 commencé ; `noAnswer`, un malus pour répondre à une borne adverse ;
 `noBlindOpen`, un malus pour ouvrir une borne vierge sans rien en main pour y
 bâtir. Les côtés sans figure sont `junk` à poids négatif, et les jokers libres
@@ -1493,7 +1493,7 @@ tour 10, quand on choisit entre approfondir et ouvrir : une partie entière est
 la bonne mesure.
 
 **Les variantes de `stay`, cœur contre cœur** (paramètres de
-`src/sim/oracle-ideas.js`) :
+`src/sim/heuristics/oracle-ideas.js`) :
 
 | Cœur | Contre le cœur du 0.9 |
 | --- | --- |
@@ -1522,7 +1522,7 @@ la bonne mesure.
 examiner) et fort ensuite. Des bonus écartés alors qu'ils gagnaient 51 % ou plus
 pourraient aider aux tours 1 à 10 et nuire après. Chaque bonus est donc testé
 **actif seulement aux tours 1 à 10** (`earlyIdeas`, `earlyUntil`,
-`src/sim/tuning.js` : les idées s'ajoutent tant que `state.turn < 10`, dans les
+`src/sim/heuristics/tuning.js` : les idées s'ajoutent tant que `state.turn < 10`, dans les
 vrais coups comme dans les simulations de l'arbre).
 
 **Dans l'arbre, à 400 itérations, en miroir, 10 min par duel** (240 parties) :
@@ -1549,7 +1549,7 @@ vrais coups comme dans les simulations de l'arbre).
 **L'idée de Sami** : les bonus du cœur du 0.9 jouent toute la partie. Les couper
 après le tour 10, quand l'arbre voit assez loin, l'améliore-t-il ? Chacun est
 gardé pour les tours 1 à 10 seulement (`earlyIdeas`, et pour les habitudes
-`earlyHabits`, `src/sim/tuning.js`), un à la fois. `certain` n'est pas testé :
+`earlyHabits`, `src/sim/heuristics/tuning.js`), un à la fois. `certain` n'est pas testé :
 ce n'est pas un bonus, mais la connaissance exacte des bornes déjà perdues.
 
 **Dans l'arbre, 400 itérations, en miroir, 10 min par duel** :
@@ -1580,7 +1580,7 @@ ce n'est pas un bonus, mais la connaissance exacte des bornes déjà perdues.
 variante se compare à temps égal (règle écrite dans `CLAUDE.md`).
 
 **Chaque bonus actif seulement à partir du tour 15** (`lateIdeas`, `lateHabits`,
-`lateFrom`, `src/sim/tuning.js` ; arbre, 400 itérations, en miroir, 10 min) :
+`lateFrom`, `src/sim/heuristics/tuning.js` ; arbre, 400 itérations, en miroir, 10 min) :
 
 | Bonus | Seulement aux tours 1-10 | Seulement à partir du tour 15 |
 | --- | --- | --- |
@@ -1598,7 +1598,7 @@ variante se compare à temps égal (règle écrite dans `CLAUDE.md`).
   Le 54,5 % était du bruit ; le moment où on l'active ne change rien.
 - Les autres sont neutres dans les deux sens.
 
-**Les simulations tronquées** (`ismcts+trunc=N`, `src/sim/truncate.js`, l'idée de
+**Les simulations tronquées** (`ismcts+trunc=N`, `src/sim/mcts/truncate.js`, l'idée de
 Sami) : une simulation s'arrête dès qu'une borne de plus est décidée (côtés
 pleins, gagnant exact), après au moins N coups et tant que la pioche dure ; la
 chance de gagner la partie selon le cœur (4 bornes, ou 3 côte à côte, sur les 128
@@ -1637,7 +1637,7 @@ façons dont les bornes peuvent tomber) tient lieu de résultat.
 **La question de Sami** : quel taux de victoire avec deux jokers, un, aucun ?
 
 Chaque partie gardée note maintenant les jokers de chaque joueur
-(`src/replay/jokers-held.js`, dans l'analyse des duels et dans l'index) : ceux
+(`src/replay/core/jokers-held.js`, dans l'analyse des duels et dans l'index) : ceux
 de la main de départ (les 6 premières cartes du paquet pour le siège 0, les 6
 suivantes pour le siège 1) et ceux piochés ensuite. `npm run jokers` en tire
 les taux de victoire.
@@ -1665,7 +1665,7 @@ pour aller plus loin (± 20 points environ par case).
 ## Expérimental 1.0 : rester sur ses côtés tant qu'une figure y est possible (03/10)
 
 **Ce qui change** : le cœur du 0.9 plus `stfig` 0,6 (`stay` avec `stayFigure`,
-`src/sim/oracle-ideas.js`). Une carte posée sur un de mes côtés déjà commencés
+`src/sim/heuristics/oracle-ideas.js`). Une carte posée sur un de mes côtés déjà commencés
 reçoit 0,6, si ce côté peut encore devenir un brelan ou une suite de couleur.
 Moteur : `ismcts+widen=3+depth=5+core=stfig6@800`. Le 0.9 reste `ismcts+widen=3+depth=5@800`,
 et `EXPERIMENT` reste son cœur : les replays, l'oracle et les bancs qui lisent les
@@ -2013,7 +2013,7 @@ et `phase:13:…@4000/…@750` dépensent donc autant qu'à 2 000 partout.
 4. les gagnants combinés, puis les 4 duels longs.
 
 **Le cœur appris sur l'oracle** (`npm run distill`, 15 min sur 18 fils, 218 manches de SPSA) :
-les 13 poids de `src/sim/distill.js` bougent ensemble pour mettre le coup de l'oracle dans le
+les 13 poids de `src/sim/heuristics/distill.js` bougent ensemble pour mettre le coup de l'oracle dans le
 top 8 du cœur, sur ses 6 821 positions stables (`oracle/positions*.jsonl`), un quart des
 parties gardé de côté.
 
@@ -2031,7 +2031,7 @@ parties gardé de côté.
   racine seulement (`+shortlist=dist1`, le 1.0 joue les simulations), et `dist1` partout à
   temps égal (16 % plus cher par itération : 1 720 itérations contre 2 000).
 
-**La main adverse devinée** (`+infer=48`, `src/sim/infer.js`) : au début de chaque recherche,
+**La main adverse devinée** (`+infer=48`, `src/sim/search/infer.js`) : au début de chaque recherche,
 48 mains sont tirées pour l'adversaire, chacune pondérée par la vraisemblance de son dernier
 coup selon le cœur (un softmax à 0,2 : le 1er et le 8e coup du cœur sont à environ 0,4
 d'écart). Chaque itération tire une de ces mains, la pioche avec le reste. Approximations :
@@ -2078,7 +2078,7 @@ milieu du sixième. Tris de 400 parties contre le V1 à 2 000 :
 
 **La main adverse devinée, v2** (`+memory=K`, 05/10, Sami) : la v1 ne lisait que le dernier
 coup adverse (49,5 %). Le bot retient maintenant les coups de l'adversaire d'un coup à
-l'autre (`createReader`, `src/sim/infer.js`) et pondère chaque main par le produit des
+l'autre (`createReader`, `src/sim/search/infer.js`) et pondère chaque main par le produit des
 vraisemblances de ses K derniers coups. À un coup plus ancien, sa main est prise comme la
 main devinée plus toutes les cartes jouées depuis : les cartes piochées depuis comptent
 comme déjà en main, une approximation qui grandit avec K. Coût mesuré : 18,5 ms par coup
@@ -2116,7 +2116,7 @@ de 8 h 22 à 10 h 15, 26 à 30 min chacun) :
 les optimiser, les remplacer ou les retirer ? `npm run features` (sur un fil, 723 positions
 de 40 parties du cœur contre lui-même, 181 recherches à 300 itérations) mesure :
 - **le temps** : un profil CPU (`node:inspector`, un échantillon toutes les 100 µs), chaque
-  fonction rattachée à sa feature (`scripts/lib/core-features.js`) ;
+  fonction rattachée à sa feature (`scripts/lib/domain/core-features.js`) ;
 - **l'activité** : la feature éteinte, les mêmes coups notés à nouveau — la part des notes
   qui changent, et la part des positions où le coup préféré change.
 
@@ -2290,7 +2290,7 @@ compris). Il descend vite à environ 0,87 et y reste (**0,867**). Sur les 1 580 
 côté, le coup de l'oracle dans le top 1 / 3 / 8 : 9,9 / 27,5 / 59,6 % pour le 1.0, 10,1 / 27,0 /
 59,1 % réglé — **rien ne change** : 0,9 était déjà la bonne valeur pour classer les coups comme
 l'oracle. Pas de tri dans l'arbre : il n'y a pas de signal à tester. Le cœur `distpair` reste
-disponible (`src/sim/distilled-pair.js`). `distill` sait maintenant ne régler que certains poids
+disponible (`src/sim/heuristics/distilled-pair.js`). `distill` sait maintenant ne régler que certains poids
 (`--keys`) et écrire ailleurs que dans le cœur en test (`--name`).
 
 **Les validations courtes de B1** (400 parties contre le V1 à 2 000, temps égal mesuré pendant que
@@ -2370,7 +2370,7 @@ Sequential Halving (Karnin et al., 2013). En MCTS, un algorithme à « regret si
 UCB dessous (SR+CR, Tolpin et Shimony, 2012 ; H-MCTS, Pepels, Cazenave et Winands, 2014) fait
 mieux que l'arbre UCB ; Gumbel MuZero met Sequential Halving à la racine.
 
-**`+halving=1000-500-500`** (`src/sim/halving.js`) : les 8 candidats à tour de rôle pendant 1 000
+**`+halving=1000-500-500`** (`src/sim/mcts/halving.js`) : les 8 candidats à tour de rôle pendant 1 000
 itérations (125 chacun), les 4 meilleurs par taux de victoire pendant 500 (250 en tout), les 2
 meilleurs pendant les 500 dernières (500 en tout) ; le finaliste au meilleur taux est joué. Sur une
 recherche réelle : 500 / 500 / 250 / 250 / 125 × 4 visites. Sous les candidats, rien ne change
@@ -2535,7 +2535,7 @@ impairs 13 à 21, celles du premier joueur coûtent ≈ 24 points en moyenne, co
 celles du second, aux tours pairs 14 à 20. Une exploration plus basse sur ses coups
 concentrerait les itérations sur ses finalistes.
 
-**`+firstExploration=0.6`** (`src/sim/ismcts.js`, `explorationAt`) : UCB prend c = 0,6 partout
+**`+firstExploration=0.6`** (`src/sim/mcts/ismcts.js`, `explorationAt`) : UCB prend c = 0,6 partout
 où joue le premier joueur (toujours le joueur 0), racine comprise, dans l'arbre des deux sièges ;
 les nœuds du second gardent 0,7. Avec 7 réponses par étage, UCB ne choisit vraiment qu'à la
 racine et au premier étage (voir plus haut) : en pratique, l'option règle la racine quand le
@@ -2636,7 +2636,7 @@ de cartes connues, moins de réponses différentes d'un monde tiré à l'autre, 
 ## Les pièges de fin de partie (07/10, feuille de route 1.2)
 
 **La question** (Sami) : combien de puzzles faut-il pour voir les pièges qui reviennent, et
-lesquels ajouter au cœur 1.2 ? `npm run traps` (`src/sim/traps.js`) résout exactement les fins de
+lesquels ajouter au cœur 1.2 ? `npm run traps` (`src/sim/puzzles/traps.js`) résout exactement les fins de
 partie des duels gardés (pioche vide, tours 31 à 37) ; là où le joueur au trait gagne mais où le
 favori du cœur des simulations du 1.1 (`stfig6`) perd, l'erreur est rangée par famille.
 
@@ -2684,7 +2684,7 @@ et son tour : de quoi en faire des puzzles).
 (`npm run traps`). Le cœur juge un joker par un prix fixe (`jokerCost` 0,08) ; une fois la pioche
 vide, tout est connu, et garder le joker ne vaut que ce qu'il gagnerait ailleurs.
 
-**Le réglage** (`endJoker`, `src/sim/end-joker.js`, cœur `stfig6ej`) : pioche vide, le joker posé
+**Le réglage** (`endJoker`, `src/sim/heuristics/end-joker.js`, cœur `stfig6ej`) : pioche vide, le joker posé
 sur la borne b gagne ce qu'il y gagne, moins le plus qu'il gagnerait sur une autre borne (rien si
 aucune n'est meilleure). Les autres cartes ne changent pas. Éteint par défaut : l'empreinte du
 1.0 reste `152e2a9c9d66170c` ; le nouveau cœur a la sienne (`900b9e3dcf68083d`), à la même vitesse.
@@ -2703,7 +2703,7 @@ la règle d'arrêt.
 - **Un second regard sur les deux premiers coups** du cœur pioche vide : le bon coup est son 2e
   choix dans 62 % des pièges ; une résolution bornée entre les deux, à mesurer en coût d'abord.
 - **Les erreurs de placement** (60 % des pièges) : des traits plus fins à écrire dans
-  `src/sim/traps.js` (l'ordre dans lequel les côtés se complètent, ce que la carte donne à
+  `src/sim/puzzles/traps.js` (l'ordre dans lequel les côtés se complètent, ce que la carte donne à
   l'adversaire), avant d'en tirer une règle.
 - **5 000 pièges** : le corpus des duels n'en donne qu'environ 3 000 ; il faut plus de parties
   (auto-jeu du 1.1) pour lire les petites familles.
@@ -2746,7 +2746,7 @@ cartes). L'option `+exact=12` calcule le coup exactement jusqu'à 12 cartes (au 
 plafond de positions au-delà duquel l'arbre reprend : `ExactEnd12`, 4 duels longs contre le V1.1
 en file. Essayée le 01/10 sur le 0.8 (47,2 % sur trop peu de parties), jamais avec le 1.1.
 
-**Le banc de pièges** (`npm run trap-bench`, `src/sim/trap-bench.js`) : pour passer de 1 507 à
+**Le banc de pièges** (`npm run trap-bench`, `src/sim/puzzles/trap-bench.js`) : pour passer de 1 507 à
 5 000 pièges, des parties cœur contre cœur (exactement les fins de partie que jouent les
 simulations), chaque position pioche vide résolue ; un piège est gardé entier avec ses coups
 gagnants, une position saine sur trois en témoin. Premier essai, 200 parties : 527 fins gagnées,
@@ -2791,7 +2791,7 @@ en trois passes de 16 000 graines ; 6 377 pièges répertoriés entiers avec leu
 des fins gagnées), et 40 302 positions saines en contrôle.
 - **EndJoker (`stfig6ej`)** n'évite que **293 pièges sur 6 377 (4,6 %)** et 76 positions saines cassées
   (0,2 %). Son gain est presque exclusivement sur le joker (196 pièges évités) et marginal ailleurs.
-- **CriticalEnd (`stfig6crit`, `src/sim/end-urgency.js`)** : règle d'urgence pioche vide (remboursement
+- **CriticalEnd (`stfig6crit`, `src/sim/heuristics/end-urgency.js`)** : règle d'urgence pioche vide (remboursement
   du cardCost, priorité à la complétion des bornes à 2 cartes, arbitrage d'urgence face aux menaces
   adverses et parade des 3 adjacentes). Il évite **2 290 pièges sur 6 377 (35,9 %)** pour seulement
   1 158 positions saines cassées (2,9 %) : 708 pièges évités sur « mauvaise borne », 496 sur « autre »,
@@ -3103,7 +3103,7 @@ racine et les nœuds gardent le cœur de la 1.2) :
 
 ## Les quatre pistes du 12/10
 
-**TreeReuse (`+reuse=1`, `src/sim/reuse.js`)** : l'arbre gardé d'un coup au suivant (le nœud sous
+**TreeReuse (`+reuse=1`, `src/sim/mcts/reuse.js`)** : l'arbre gardé d'un coup au suivant (le nœud sous
 mon coup et la réponse adverse devient la racine). Mesuré avant tout duel, sur deux parties de la
 1.2 à 2 000 contre elle-même : **13 visites offertes en moyenne par recherche** (moins de 1 % du
 budget ; 26 recherches sur 30 en reçoivent, une seule plus de 50 : 173 au tour 26). Sous mon coup,
@@ -3165,7 +3165,7 @@ plus de temps quand les 18 fils travaillent : 64 s contre 29 s au tour 1).
 | **réunis** (108 parties) | **48,1 %** | ≈ 40,4 – 55,9 % |
 
 Égalité dans les marges : le cœur, le solveur et la largeur de la 1.2 ne font pas un meilleur juge.
-Le `stopIf` (nouveau seuil `atLeast`, `scripts/lib/backlog-stop.js`) a gardé **Oracle1** ; l'oracle
+Le `stopIf` (nouveau seuil `atLeast`, `scripts/lib/domain/backlog-stop.js`) a gardé **Oracle1** ; l'oracle
 reste en version 1.
 
 **La relecture** (`READ_V12_Oracle1`, 55 min) : les parties 1.2@4000 contre 1.2@2000 (les duels
@@ -3249,7 +3249,7 @@ Sources : [Pepels, Cazenave, Winands 2015, H-MCTS](https://www.lamsade.dauphine.
 **L'idée** (Sami) : ouvrir une troisième borne à cœur quand 8 cœurs sur 10 sont déjà vus demande
 des cartes qui ne viendront pas. Le cœur jugeait chaque côté seul contre les cartes non vues
 (`potential.js`) : deux de mes côtés à cœur comptaient chacun tous les cœurs restants comme les leurs.
-`suitBudget` (`src/sim/suit-budget.js`) les pèse ensemble : un côté est « sur » une couleur (borne
+`suitBudget` (`src/sim/heuristics/suit-budget.js`) les pèse ensemble : un côté est « sur » une couleur (borne
 non décidée, 1 ou 2 cartes, toutes ses vraies cartes de cette couleur) et en réclame 3 − sa longueur ;
 j'attends de la couleur mes cartes en main plus ma part des non vues (mes pioches sur les non vues) ;
 le manque est ce qui dépasse, et un coup coûte `poids × la variation du manque`.
@@ -3284,7 +3284,7 @@ Pas de duel long sans nouvelle raison ; l'option reste (`suitBudget`, cœurs `st
 cœur contre cœur) ne voit pas la vraie force d'une fourche ; la chercher là où la partie se joue, dans
 les simulations. Une simulation joue à la règle `final`, où aucune borne n'a de propriétaire avant la
 fin ; pourtant une borne aux deux côtés pleins a déjà son gagnant (`pickWinner`). `+forkCut`
-(`src/sim/fork-cut.js`) tient ces propriétaires à jour quand une borne se remplit, et arrête la
+(`src/sim/mcts/fork-cut.js`) tient ces propriétaires à jour quand une borne se remplit, et arrête la
 simulation :
 - **niveau 1, exact** : à la première victoire sur les bornes remplies. Le gagnant est celui de la
   simulation entière (vérifié sur 300 parties) ;
@@ -3309,7 +3309,7 @@ contre greedy, identique) et pas plus rapide (6 807 contre 6 721 ms par partie, 
 
 **L'idée** (la littérature du 14/10 : Lanctot, Winands, Pepels et Sturtevant, 2014) : garder dans
 chaque nœud une estimation de la partie à part du taux de victoire de ses simulations, et les mêler à
-la sélection. `+implicit=α` (`src/sim/implicit-minimax.js`) : un nœud prend l'estimation du cœur
+la sélection. `+implicit=α` (`src/sim/mcts/implicit-minimax.js`) : un nœud prend l'estimation du cœur
 (`winOdds`) là où il est atteint pour la première fois, avant la simulation ; en remontant, un nœud vaut
 1 − la meilleure estimation de ses enfants (l'adversaire choisit) ; UCB lit (1 − α) × taux + α ×
 estimation. La simulation reste entière, là où `trunc` la remplaçait. Coût : 11 % par itération
@@ -3323,7 +3323,7 @@ estimation. La simulation reste entière, là où `trunc` la remplaçait. Coût 
 Plus l'estimation pèse, plus la version perd : l'estimation du cœur vaut moins que le résultat des
 simulations, et la mêler ne fait que le diluer. C'est la leçon de `trunc` sous une autre forme. Un α
 plus petit ramènerait vers la 1.2 : la piste est close, l'option reste (`+implicit`, éteinte par
-défaut, empreinte de la 1.2 inchangée). Les simulations vont dans `src/sim/rollouts.js`
+défaut, empreinte de la 1.2 inchangée). Les simulations vont dans `src/sim/mcts/rollouts.js`
 (`ismcts.js` dépassait ses 220 lignes).
 
 ## L'oracle profond : un juge plus fort que la 1.2 (14/10)
@@ -3351,7 +3351,7 @@ CPU libre) :
   le premier duel avait eu de la chance, comme souvent. Pour Sami, un juge autour de 58 % est
   utilisable : on y est presque, à ± 5 points.
 
-**La profondeur atteinte, mesurée** (`src/sim/tree-stats.js`, une position du tour 15, 42 coups
+**La profondeur atteinte, mesurée** (`src/sim/mcts/tree-stats.js`, une position du tour 15, 42 coups
 légaux ; « nœuds » : tous ceux créés à ce niveau, même jamais essayés) :
 
 | Moteur | Niveau 2 (nœuds / 0 visite / max) | Niveau 3 | Niveau 4 | Niveau 5 |
@@ -3474,7 +3474,7 @@ juger une 1.3 plus forte que la 1.2.
 ## Le choix final à la racine : `FinalMean`, `FinalLcb1` (15/10)
 
 **L'idée** : la 1.2 joue son candidat le plus visité ; Oracle3 dit qu'elle cherche le bon coup (rangs 4 à 8) et en
-joue un autre (+2,5 ± 2,4 points). `+final=c` (`src/sim/final-choice.js`) joue le candidat au meilleur taux de
+joue un autre (+2,5 ± 2,4 points). `+final=c` (`src/sim/mcts/final-choice.js`) joue le candidat au meilleur taux de
 victoire moins c / √visites : c = 0 le meilleur taux (`FinalMean`), c = 1 une borne basse à ~95 % (`FinalLcb1`).
 Même coût par itération ; sans l'option, rien ne change (empreinte de la 1.2 `1d041613cd7bcd8d`).
 
@@ -3665,7 +3665,7 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
   plus faible que la version de son Elo. Corrigé : le worker ne pondère plus que pour un robot qui lit `warm`
   (`bot.warms`) ; la 1.2 refait ses 2 000 itérations (2,6 s au tour 3) quel que soit le temps du joueur.
 - **L'Oracle light 1.0 de la page** (`oracle-light`, Sami, 16/10) : le même arbre partagé entre deux arbres de 5 000
-  (`trees=2`), un par worker, les scores additionnés comme `createEnsemble` (`web/app/think-join.js`) : les mêmes coups
+  (`trees=2`), un par worker, les scores additionnés comme `createEnsemble` (`web/app/workers/think-join.js`) : les mêmes coups
   qu'en Node (tests, et 4 coups de la partie gardée comparés dans Chrome). 8,5 s au premier coup au lieu de 13,6, puis
   7,5 / 4,4 / 1,7 s aux tours 3, 13 et 25 : sous les 10 s de la page. L'Observer passe lui aussi par les workers.
   Sa force à deux arbres se mesure la nuit du 16-17/10 : `OracleLight-Pwl3-Trees2` contre la 1.2@2000 sur les
@@ -3684,7 +3684,7 @@ la partie gardée `2026-10-09_01-51-08_sami-vs-borne_4-2`, un coup sur deux, PC 
   sur un bandit d'environ 55 réponses adverses par candidat. 22 % des itérations essaient une réponse pour la première
   fois, 65 % s'arrêtent au 3e étage sur le coup du cœur. Les échecs s'expliquent par le biais, le coût ou un bruit
   relu autrement ; aucun par la fusion de stratégies.
-- **L'idée** : `+crn=1` (`src/sim/common-deals.js`) donne à la k-ième visite de chaque candidat la k-ième donne de la
+- **L'idée** : `+crn=1` (`src/sim/mcts/common-deals.js`) donne à la k-ième visite de chaque candidat la k-ième donne de la
   recherche et la k-ième suite de tirages des simulations, comme le 0.7 et le Stratège 2 comparaient leurs candidats.
   UCB, l'arbre, le coup joué et le coût ne changent pas. Sans la clé, l'empreinte de la 1.2 reste `1d041613cd7bcd8d` ;
   avec, `bef7b4df22f6c4c0`.

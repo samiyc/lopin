@@ -1,16 +1,16 @@
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { ORACLE } from "../src/replay/oracle.js";
-import { formatJson, handOrder, jsonView, parseInput } from "./lib/cli-view.js";
-import { exchangeBefore, inputOf, oracleChoices, puzzleChoices } from "./lib/example-positions.js";
+import { ORACLE } from "../src/replay/oracle/oracle.js";
+import { formatJson, handOrder, jsonView, parseInput } from "./lib/cli/cli-view.js";
+import { exchangeBefore, inputOf, oracleChoices, puzzleChoices } from "./lib/domain/example-positions.js";
 
 /**
  * `npm run agent-examples -- [--count 6] [--puzzles 2] [--oracle a.jsonl,b.jsonl] [--duels duels] [--out docs/agents/exemples.md]`:
  * the worked examples of the agents' rules (Sami, 13/10: « pas de partie complète, quelques coups joués, avec
  * input/output »). Each is a position as the CLI's `--json` shows it (the same `jsonView`, `dernier_echange`
  * rebuilt from the game's log) and the perfect move: the oracle's clear choice, or the solver's win in a
- * puzzle where the core's move loses (scripts/lib/example-positions.js). Generated, never typed by hand.
+ * puzzle where the core's move loses (scripts/lib/domain/example-positions.js). Generated, never typed by hand.
  */
 const args = process.argv.slice(2);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);

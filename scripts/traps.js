@@ -1,13 +1,13 @@
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createRng } from "../src/core/random.js";
-import { FAMILIES } from "../src/sim/traps.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
-import { applyThreadsOption, runPool, workerCount } from "./lib/pool.js";
+import { FAMILIES } from "../src/sim/puzzles/traps.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
+import { applyThreadsOption, runPool, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run traps -- [--minutes 20] [--core stfig6] [--games N] [--threads N|max]`: the traps of the
- * endgame (Sami, 07/10, roadmap 1.2; src/sim/traps.js). The kept bot games
+ * endgame (Sami, 07/10, roadmap 1.2; src/sim/puzzles/traps.js). The kept bot games
  * (duels/) are cut where the pile is empty; each position is solved exactly,
  * and wherever it is won but the favourite of the 1.1's rollout core loses,
  * the error is filed under a family. How many errors to read the frequent
@@ -70,7 +70,7 @@ const items = gamesKept ? (await positions()).slice(0, gamesKept) : await positi
 const until = Date.now() + minutes * 60_000;
 const tasks = [];
 for (let i = 0; i < items.length; i += 200) tasks.push({ items: items.slice(i, i + 200), until, coreName });
-const results = (await runPool(new URL("./lib/trap-worker.js", import.meta.url), tasks, { shouldStop: () => Date.now() > until })).filter(Boolean);
+const results = (await runPool(new URL("./lib/workers/trap-worker.js", import.meta.url), tasks, { shouldStop: () => Date.now() > until })).filter(Boolean);
 const examined = results.reduce((sum, r) => sum + r.examined, 0);
 const won = results.reduce((sum, r) => sum + r.won, 0);
 const tooDeep = results.reduce((sum, r) => sum + r.tooDeep, 0);

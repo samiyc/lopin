@@ -1,10 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { createRng } from "../src/core/random.js";
-import { stateAt } from "../src/replay/log.js";
+import { stateAt } from "../src/replay/core/log.js";
 import { BOT_PARAMS, rolloutPolicyOf } from "../src/sim/bots.js";
-import { bestMoves, solveEndgame } from "../src/sim/endgame.js";
-import { EXPERIMENT, coreOf } from "../src/sim/experimental.js";
-import { legalMoves } from "../src/sim/game.js";
+import { bestMoves, solveEndgame } from "../src/sim/eval/endgame.js";
+import { EXPERIMENT, coreOf } from "../src/sim/heuristics/experimental.js";
+import { legalMoves } from "../src/sim/engine/game.js";
 
 /**
  * `npm run policy`: how good is the bot that plays the search's rollouts?

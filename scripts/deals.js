@@ -3,10 +3,10 @@ import { dirname } from "node:path";
 import { pathToFileURL } from "node:url";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
-import { parseSeat } from "../src/sim/seat-rules.js";
-import { BALANCED, judgeDeals, nearestMedian, pairedDifference, poolRuns } from "./lib/deal-judge.js";
-import { applyThreadsOption, runPool } from "./lib/pool.js";
-import { tmpFile } from "./lib/tmp.js";
+import { parseSeat } from "../src/sim/engine/seat-rules.js";
+import { BALANCED, judgeDeals, nearestMedian, pairedDifference, poolRuns } from "./lib/domain/deal-judge.js";
+import { applyThreadsOption, runPool } from "./lib/cli/pool.js";
+import { tmpFile } from "./lib/domain/tmp.js";
 
 /**
  * `npm run deals -- [--deals N] [--plays K | --root I] [--engine E] [--offset K] [--pool file]`:
@@ -100,7 +100,7 @@ function rootTasks() {
 const started = Date.now();
 let done = 0;
 const tasks = ROOT ? rootTasks() : playTasks();
-const worker = ROOT ? "./lib/deal-root-worker.js" : "./lib/sim-worker.js";
+const worker = ROOT ? "./lib/workers/deal-root-worker.js" : "./lib/workers/sim-worker.js";
 const results = await runPool(new URL(worker, import.meta.url), tasks, {
   onResult: () => {
     done += 1;

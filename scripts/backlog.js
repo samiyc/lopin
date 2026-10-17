@@ -3,9 +3,9 @@ import { createWriteStream, readFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { localTimestamp } from "../src/replay/log.js";
-import { stopReason } from "./lib/backlog-stop.js";
-import { applyThreadsOption, workerCount } from "./lib/pool.js";
+import { localTimestamp } from "../src/replay/core/log.js";
+import { stopReason } from "./lib/domain/backlog-stop.js";
+import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run backlog [-- --list]`: the long jobs kept for the night
@@ -26,12 +26,12 @@ import { applyThreadsOption, workerCount } from "./lib/pool.js";
  * data/backlog-done.json, the queue's history, once their results are read.
  *
  * `--threads N|max`: every job inherits `LOPIN_THREADS`, the number of worker
- * threads its pools use (scripts/lib/pool.js). Without it, the default: every
+ * threads its pools use (scripts/lib/cli/pool.js). Without it, the default: every
  * core but 3, 18 at most (Sami, 07/10), so the machine stays usable.
  *
  * `stopIf` (Sami, 05/10): a job may be cancelled before it starts — marked
  * `skipped`, with its reason — when the duels it names, done, pool under a bar:
- * a series of long duels that started badly stops there (scripts/lib/backlog-stop.js).
+ * a series of long duels that started badly stops there (scripts/lib/domain/backlog-stop.js).
  *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to

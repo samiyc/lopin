@@ -8,8 +8,8 @@ import {
   SIMULATIONS,
   SOLO_RUNS,
 } from "../config/simulations.js";
-import { mergeTallies } from "../sim/simulate.js";
-import { mergeSoloTallies } from "../sim/solo.js";
+import { mergeTallies } from "../sim/engine/simulate.js";
+import { mergeSoloTallies } from "../sim/engine/solo.js";
 
 /**
  * Work units for the thread pool, cut in chunks so threads stay balanced.

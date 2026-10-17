@@ -50,39 +50,58 @@ src/core/     cards, formations (classify, brute-force reference),
               become), combinatorics (3-card hands), starting-hand, random,
               partition (exact best split of ≤ 21 cards into trios),
               notation ("7♥" ↔ id, shared by logs, real games and the page)
-src/sim/      game (rules engine, endMode early|final|claim-end|claim), settle, bots (random, greedy,
-              strategist + one-habit and one-idea variants, experimental),
-              strategist (Sami's three habits), ideas (his later ideas),
-              principles (his rules from reading Stratège 2 replays), the
-              ones kept listed in STRATEGIST_IDEAS; lookahead (rollouts: the
-              line-up's Stratège 2), experimental (the sandbox),
-              potential (the bots'
-              estimate), simulate (two-player tallies), solo (Sami's solo test
-              protocol, same tally for bots and real games)
+src/sim/      bots.js (random, greedy, strategist + one-habit and one-idea
+              variants, experimental, every engine id) at the root, then:
+  engine/     game (rules engine, endMode early|final|claim-end|claim), settle,
+              border-rules, figure-moves, double-turn, peek, seat-rules,
+              simulate (two-player tallies), solo (Sami's solo test protocol,
+              same tally for bots and real games)
+  eval/       potential (the bots' estimate), certainty, endgame + exact
+              (solvers), immediate, fork, shapes, hand-classes, figure-gains
+  heuristics/ strategist (Sami's three habits), ideas (his later ideas),
+              principles (his rules from reading Stratège 2 replays; the ones
+              kept listed in STRATEGIST_IDEAS), experimental (the sandbox,
+              cores), and the ideas tried since (joker-*, end-*, outbid, …)
+  mcts/       ismcts and its levers (widening, pick, choice, budget, rollouts,
+              tree-stats, first-play, final-choice, common-deals, …)
+  search/     lookahead (rollouts: the line-up's Stratège 2), search (the 0.7),
+              ponder, phase, infer
+  puzzles/    traps, trap-bench
 src/irl/      cards (reads data/irl/essais.json), analysis (tallies the real
               games, Wilson intervals)
 src/report/   data (exact + starting hands), tasks (pool tasks: rows, duels,
               solo), analysis + analysis-play (findings + narrative checks),
               ascii/ + markdown.js, html/ + page/, rules-stats (the rules box)
-src/replay/   log (write a game log, replay it frame by frame), summary
-web/          index.html, style.css, app/: main (tabs), play (Jouer) + play-game (a new game), viewer +
-              panels (Observer, Replays), view + hand (PURE, tested), table
-              (DOM), drag (input), runner (games as the page plays them),
-              clock (PURE timer, paused out of focus), steps (PURE replay
-              player moves), explain, replays-api, dom
+src/replay/   core/ (log: write a game log, replay it frame by frame; bot-games,
+              branch, game-analysis), stats/ (summary, stats, elo, advice,
+              puzzle-attempts), oracle/ (oracle, banc, shadow, versus, features)
+web/          index.html, style.css, app/: main (tabs), stats, then
+              board/ (table: DOM, drag: input, hand: PURE, clock: PURE timer
+              paused out of focus, dom, figure-input), play/ (play: Jouer,
+              play-game: a new game, thinker, premove), replays/ (viewer +
+              panels: Observer, Replays; view: PURE, tested; steps: PURE replay
+              player moves; runner: games as the page plays them; explain,
+              replays-api), puzzles/, workers/ (think, solve, advice)
+tests/        one folder per area: core/, sim-engine/, sim-heuristics/,
+              sim-search/, replay/, web-cli/; fixtures/ (replays)
 data/irl/     essais.json: the 10 real games, transcribed from the photos
 data/replays/ kept replays (versioned); replays/ holds the rest (ignored)
 tmp/          working files a script can write again (ignored): raw dumps, rebuilt
-              benches, exports a report is made from — through tmpFile() (scripts/lib/tmp.js)
-scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
-              play-server.js (+ lib/replay-files.js), duel.js, replays.js
+              benches, exports a report is made from — through tmpFile() (scripts/lib/domain/tmp.js)
+scripts/      build.js (+ lib/cli/pool.js, lib/workers/sim-worker.js), pdf.js,
+              play-server.js (+ lib/domain/replay-files.js), duel.js, replays.js;
+              lib/cli/ (screen, pool), lib/domain/ (what the scripts share),
+              lib/workers/ (every pool's worker); archive/ (one-shot analyses,
+              outside package.json, kept to reproduce their figures)
+src/report/changelog/  one page per version; style.css and v1-sections.html
+              (shared by 1.1-1.3) are inlined by scripts/changelog.js
 ```
 
 ## Rules that everything follows
 
 - **`data/` is versioned, `tmp/` is not.** A file a script can regenerate goes to
   `tmp/` via `tmpFile()`; `data/` keeps facts and summaries, each under 500 KB
-  (`tests/data-budget.test.js`). Never add a `.gitignore` line for one export:
+  (`tests/web-cli/data-budget.test.js`). Never add a `.gitignore` line for one export:
   a 24 MB tree dump landed in `data/` on 10/10 and went into git.
 - **No number is typed by hand into a report.** `src/report/data.js` computes,
   `analysis.js` derives findings, renderers only format. A rule change is an
@@ -122,7 +141,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **The engine runs in Node and in the browser.** `src/core`, `src/sim`,
   `src/config` and `src/replay` must not import `node:*` (ESLint enforces it);
   the page imports them directly as ES modules, no build step.
-- **The page stays thin.** What decides — the view model (`web/app/view.js`),
+- **The page stays thin.** What decides — the view model (`web/app/replays/view.js`),
   the hand order (`hand.js`) — is pure and tested under Node; the DOM layer
   only draws and listens. Input goes through event delegation (the table is
   redrawn on every change), and only the visible tab may draw on the table.
@@ -132,7 +151,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   beats it using only cards off the table — their own hand counts as possibly
   the opponent's). A claimed border is closed; the game stops at the first
   victory; unclaimed full borders settle at the end in fill order.
-  Settlement lives in `src/sim/settle.js`. `determinize` switches rollouts to
+  Settlement lives in `src/sim/engine/settle.js`. `determinize` switches rollouts to
   `final`, since proving claims per simulated move costs speed. It can change
   the winner vs `final` (91 % agreement over 1000 games), so tests written
   against a full 42-card game pin `endMode: "final"`; old replays keep theirs.
@@ -143,7 +162,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   `tests/fixtures/replays/claim-start-of-turn.json` holds one.
 - **Bots have names and versions** (`src/config/bots.js`). Any change of
   behaviour bumps the version; replays record `id@version`. New ideas go into
-  `src/sim/experimental.js` or `src/sim/ideas.js` first and are measured with
+  `src/sim/heuristics/experimental.js` or `src/sim/heuristics/ideas.js` first and are measured with
   `npm run duel` (which also takes engine ids such as `idea:counter`). Every bot
   exposes `scoreMoves` (logged as its best candidates); `{ keepAll: true }`
   keeps the moves it refuses, marked `refused`, so the replay advisor can find a
@@ -153,7 +172,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   abandoned game, and `play.js` re-locates the card before playing it. Reading
   the index back from `dataTransfer` played the wrong card: any foreign drop
   carries text too, and `Number("")` is 0.
-- **Sami's strategy cases are tests** (`tests/strategy-cases.test.js`):
+- **Sami's strategy cases are tests** (`tests/sim-heuristics/strategy-cases.test.js`):
   positions replayed with `stateAt(log, turn)` from `tests/fixtures/replays/`,
   each asserting what the core and Stratège 2 must NOT play. A rule that lost
   in duels stays `todo` with its number; `docs/strategie.md` is the ledger.
@@ -168,7 +187,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   (`data/backlog.json`, `"status": "scheduled"`). Core-against-core duels take
   seconds and are not concerned. Night jobs stay under 2 h each.
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
-  (`scripts/lib/pool.js`) — half the logical cores up to 6, every core but 3
+  (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.
   `LOPIN_THREADS=N` or `--threads N` forces a count, `max` takes every core but
   one (to go faster, or on a server). No pause jobs between heavy jobs any more
@@ -200,7 +219,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   runner has started, it looks it up by id when it ends. Use those words in
   replies, and add a term there before using a new one.
 - **Every npm script is listed in `docs/commandes.md`** (French, by use, with the
-  path of an idea); `tests/docs.test.js` fails when a script of `package.json`
+  path of an idea); `tests/web-cli/docs.test.js` fails when a script of `package.json`
   is missing from it, so a new script comes with its line there.
 - **The similarity bench** (`npm run banc`, Sami, 04/10): an idea is sorted in under
   10 minutes by how close its moves come to the oracle's on the bench's
@@ -230,12 +249,12 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   iteration, all six 25 %. A profile (`node --cpu-prof`) often finds the cost
   is code, not idea: stfig cost 24.5 % through `shapeOf`, 2 % once
   `keepsFigure` read the side in place with the same moves.
-- **The experimental bot searches deeper** (`src/sim/search.js`): 8 candidates,
+- **The experimental bot searches deeper** (`src/sim/search/search.js`): 8 candidates,
   successive halving on common deals, early stop on a clear leader; a rollout
   budget in Node (`experimental:N`), a clock in the page. There it runs in a
-  worker (`web/app/think-worker.js` via `thinker.js`, where the page's tree bots
+  worker (`web/app/workers/think-worker.js` via `thinker.js`, where the page's tree bots
   run too, without pondering) and, this flat search only, ponders during the
-  human's turn (`src/sim/ponder.js`): it searches its reply averaged over the
+  human's turn (`src/sim/search/ponder.js`): it searches its reply averaged over the
   human's possible moves (guessing their exact move fails: it names a card the
   bot cannot see), then warm-starts the real search and credits half the time.
   Only the flat search reads that head start (`bot.warms`): an ISMCTS does not
@@ -243,19 +262,19 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   iterations after 20 s of human thought). **The Oracle light 1.0**
   (`oracle-light`, 16/10) is an ensemble (`+trees=2`) searched one tree per
   worker (`think.workers`, `part` in `createEnsemble`), the scores added up by
-  `web/app/think-join.js` as in Node, so it plays the duels' moves
-  (`tests/think-join.test.js`); the Observer goes through the same thinkers.
-- **Certainties are theorems** (`src/sim/certainty.js`): a border is `won` /
+  `web/app/workers/think-join.js` as in Node, so it plays the duels' moves
+  (`tests/web-cli/think-join.test.js`); the Observer goes through the same thinkers.
+- **Certainties are theorems** (`src/sim/eval/certainty.js`): a border is `won` /
   `lost` for a player when no finish of the other side (enumerated over every
   card they cannot see) changes it. Tested over whole games. The experimental
   core uses them (`certain`: a move onto a lost border is worth the card
   thrown away) and its search prunes on them (`prune`). `npm run selfplay`
   (20 min max, `selfplay/`, ignored) and `npm run mine` measure the patterns.
-- **Elo** (`src/replay/elo.js`, pure): Bradley-Terry fitted on human replays
+- **Elo** (`src/replay/stats/elo.js`, pure): Bradley-Terry fitted on human replays
   and `data/elo-duels.json` together, anchored on Basique = 500, one virtual
   draw per player against the anchor so a lone win stays finite. Served by
-  `/api/elo` (`scripts/lib/elo-data.js`) and shown in the Stats tab, beside
-  `/api/stats` (`src/replay/stats.js`, pure: record per opponent, formation
+  `/api/elo` (`scripts/lib/domain/elo-data.js`) and shown in the Stats tab, beside
+  `/api/stats` (`src/replay/stats/stats.js`, pure: record per opponent, formation
   shares of won borders);
   `npm run elo -- --duels` refreshes the duel lines it has engines for.
 - **Speed (0.7)**: `npm run bench` searches the 20 hardest endgame puzzles
@@ -270,7 +289,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   instead of 3 at the same speed; 55.3 % (50.7-59.9) over 432 games at equal
   time. Narrower (2 replies), RAVE, exact solving from the empty pile and ×4
   budgets on turning points all failed (`docs/strategie.md`).
-- **Expérimental 0.8 is an ISMCTS** (`src/sim/ismcts.js`, lineup engine
+- **Expérimental 0.8 is an ISMCTS** (`src/sim/mcts/ismcts.js`, lineup engine
   `ismcts@800`): every iteration deals the unseen cards, walks a 3-ply tree
   (UCB1 on availability, the core's shortlist), then rolls out with the 0.7
   policy. `createIsmcts` has `createSearch`'s interface, so the worker and
@@ -280,7 +299,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   duels); `experimental:0.7` names it explicitly.
 - **Engine ids stack**: `experimental+sample=0.05+prior=0.15`, `@N` budgets
   (`@t1400`: 1.4 s a move, for variants of unequal speed), `ismcts+depth=2`;
-  `--hands weak|strong` deals only such starting hands (`src/sim/hand-classes.js`).
+  `--hands weak|strong` deals only such starting hands (`src/sim/eval/hand-classes.js`).
 - **Kept bot games restart from any turn** (`src/replay/`: `bot-games.js`,
   `game-analysis.js`, `branch.js`; `npm run games|branch|error-impact`). Each
   game builds its bots from its own seed (`seatRng`), so a replay from turn T
@@ -288,7 +307,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   with the exact solver, and against a `reseed` control: early in a game any
   perturbation reshuffles the rest, so comparing with the kept game measures
   chaos, not the change.
-- **The search budget lives in `src/sim/budget.js`** (`+late`/`+early` by
+- **The search budget lives in `src/sim/mcts/budget.js`** (`+late`/`+early` by
   phase, `+smart` by uncertainty, at equal cost per game, with `usage` to check
   it). Neither beat the 0.9: its limit is what it evaluates, not how much.
 - **A screen only names a candidate.** Six variants screened on the same 144
@@ -299,13 +318,13 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   Do not reintroduce one without a new reason to expect a different result.
   Screen with `--screen` (10 min), confirm with `--long` (20 min), always
   `--page`; pool two runs with `--offset K` (pair statistics printed).
-- **The experimental bot solves small endgames** (0.7, `src/sim/exact.js`):
+- **The experimental bot solves small endgames** (0.7, `src/sim/eval/exact.js`):
   pile empty and at most 8 cards, it asks the solver instead of searching,
   root moves in the core's order with `keepAll` (a joker the core refuses may
   be the only win), first win kept. The page's worker goes through
   `bot.solves()`, since it calls `searchFor` itself. The solver key includes
   border owners: under the claim rule a claimed border is closed.
-- **Endgames are solved exactly** once the pile is empty (`src/sim/endgame.js`):
+- **Endgames are solved exactly** once the pile is empty (`src/sim/eval/endgame.js`):
   negamax with memory, keyed on the ORDER sides filled (only order matters),
   cut at the first win. ~0.2 s at 8 cards, seconds at 9-10: in the page it
   runs in `solve-worker.js`. `npm run puzzles` keeps self-play endgames won
@@ -313,7 +332,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   gave 19 of 4 544) into `web/data/puzzles.json`. The table's input is
   routed to the tab on show (`main.js`): play or puzzles.
 - **"Gain immédiat" puzzles** (`kind: "immediate"`, `npm run puzzles:immediate`,
-  `src/sim/immediate.js`, ids from 201): under `claim-end`, a move that wins at
+  `src/sim/eval/immediate.js`, ids from 201): under `claim-end`, a move that wins at
   once — the borders it proves already make a win, and proofs rest on the
   table alone, so the hidden hand cannot matter. The page
   hides that hand and ends the puzzle on the first move (`puzzle-kinds.js`);
@@ -326,8 +345,8 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   `state.evaluator` itself when none is laid, so **the base game must not change by
   a move** — check the 1.0 fingerprint after any change there. Hands, pools and the
   core leave figures out (`handOf`, `withoutFigures`, `unseenCards`). Balance:
-  `npm run extension`; the page: `web/app/figure-input.js`.
-- **The endgame cores under test** (`src/sim/end-urgency.js`, `withEndgame`): `stfig6ej`
+  `npm run extension`; the page: `web/app/board/figure-input.js`.
+- **The endgame cores under test** (`src/sim/heuristics/end-urgency.js`, `withEndgame`): `stfig6ej`
   (`endJoker`, `end-joker.js`: pile empty, a joker priced by its best use elsewhere) and
   `stfig6crit` (`endUrgency`: completion priority, match point, anti-overkill). Neither beat the
   plain core in duels; the 1.2 won with the solver instead. `npm run trap-bench` screens a core on
@@ -341,7 +360,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   `tests/fixtures/replays/vclub-drew-after-laying.json`). In the page: `discardMove`
   (`figure-input.js`) — a card of the hand discards, the Valet again on its border lays it alone.
 - **Le Borné 1.0** (`borne`, 09/10, **retired from the line-up on 11/10**): `ismcts+widen=5+depth=5+core=stfig6+exact=12+diverse=2@2000`.
-  `diverse` (`pickCandidates`, `src/sim/pick.js`) caps the moves a card may take among the
+  `diverse` (`pickCandidates`, `src/sim/mcts/pick.js`) caps the moves a card may take among the
   candidates (`2`, or `lead2`: 2 for the best card, 1 for the others), at the root and, since
   80d5951, in every `shortlist` of the tree. Its 81,2 % against the 1.2 (500 games, 09/10) did not
   hold: the protocol's 1k@2k (`VALIDATE_LONG_1..4_Borne10`, 10/10) gives **45,9 % (43,3 – 48,5)**.
@@ -367,7 +386,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   (55.1 – 67.8, 140 games), then 52.9 % on new decks: 57.1 % pooled over 280 games (≈ 52.0 – 62.3), the
   first judge stronger than the 1.2, short of the 60 % rule.
   Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
-  tree bot carries `tree` in the replays** (`src/sim/tree-stats.js`: iterations, and per level the nodes,
+  tree bot carries `tree` in the replays** (`src/sim/mcts/tree-stats.js`: iterations, and per level the nodes,
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
   reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 5
   the deepest (7 replies at 16 / 25 / 31 / 36 / 40 visits; the 5th level reached in 20.0 / 28.6 / 40.1 / 55.7 /
@@ -394,7 +413,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   share between omniscients, the decided and the balanced deals. Its solver counts the pile with the hands
   (`exactApplies(state, n, seen)`): 14 cards solve in 10 of 12 positions (3.7 s median). For a hidden pile `exact`
   past 12 is `exact=12` (the pile must be empty, 6 + 6 cards at most), so `exact=14`'s 47.5 % was noise.
-- **The double threat** (Sami, 11/10, `src/sim/fork.js`, pure): a threat is an undecided border
+- **The double threat** (Sami, 11/10, `src/sim/eval/fork.js`, pure): a threat is an undecided border
   that wins the game (3 adjacent or the majority); `forkValue` is 1 for a threat, ½ for a border
   whose win leaves two threats. The `fork` idea (cores `stfig6fork1/2/4`), the `fork` trap family
   and `npm run puzzles -- --fork` (`kind: "fork"`, ids from 401, always added) read it.
@@ -404,10 +423,10 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
 - **Open hands** (`openHands` in `createGame`, `--open` in `npm run duel`, the « Mains
   découvertes » box of the page): both hands visible, the pile hidden; `determinize` then deals only
   the pile. Written into the log's rules, so the replay shows both hands.
-- **CommonDeals** (16/10, `docs/priorites-1.3.md`): `+crn=1` (`src/sim/common-deals.js`, off by default, the 1.2's
+- **CommonDeals** (16/10, `docs/priorites-1.3.md`): `+crn=1` (`src/sim/mcts/common-deals.js`, off by default, the 1.2's
   fingerprint unchanged) gives the k-th visit of every root candidate the search's k-th deal and rollout stream, so the
   root compares its candidates on common deals, as the 0.7 and the Stratège 2 did; a candidate's subtree then depends
-  on its own visits only (`tests/common-deals.test.js`). Two candidates' results on one deal correlate at ρ ≈ 0.34
+  on its own visits only (`tests/sim-search/common-deals.test.js`). Two candidates' results on one deal correlate at ρ ≈ 0.34
   through the tree (0.44 in flat playouts): a paired comparison has 0.66 of the variance. At 400 it cut the root's
   regret by 0.43 ± 0.34 points (more than doubling the budget) and screened at 55.3 % (50.5 – 60.0), but its 1k@2k
   (17/10) gave **50.7 % (48.2 – 53.2): rejected**. Yet `Ensemble2x2000` (`+trees=2@4000`, two independent 2 000-trees)
@@ -418,14 +437,14 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
   reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Bornage's
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.
-- **ReplyFpu** (17/10, `src/sim/first-play.js`, `docs/priorites-1.3.md` § 2): `+fpu=d` scores an untried move below
+- **ReplyFpu** (17/10, `src/sim/mcts/first-play.js`, `docs/priorites-1.3.md` § 2): `+fpu=d` scores an untried move below
   the root at its tried siblings' mean minus d / 10 plus one visit's UCB bonus, instead of +∞ (off by default, the
   1.2's fingerprint unchanged; `fpu=1` → `1a42545c7dcbaeeb`). Day duels at 2 000 (250 games, offset 0): `fpu=0..3`
   45.6 / 53.6 / 48.4 / 45.6 %; `fpu=1`'s 1k@2k, by day: **51.5 % (49.0 – 54.0), rejected** — like CommonDeals, a tree
   change at equal computation does not beat the 1.2.
-- **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/seat-rules.js`, named in
+- **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/engine/seat-rules.js`, named in
   `src/config/seats.js`, off by default) deals other hand sizes or lets the first player look at the top of the pile
-  (`src/sim/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts
+  (`src/sim/engine/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts
   its next draw as a hand card (`coreCounts`) — and claims never do. Fingerprints unchanged. The second player's edge
   shrinks with skill (same bot both seats, 40 000 deals: Basique 46.1 %, `strategist` 47.2 %, the core 49.2 %; the
   1.2's family 49.3 % in kept duels); `PeekAll` brings the three fast bots to 50 ± 1 %, a whole extra card (+14 points)
@@ -436,15 +455,15 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   P H T C, so `c` is carreau, or S H C D with `--gb`; cards right-aligned on 3 characters and a
   fixed-width header up to the exchange; « 3 5 » by hand position still reads). `--machine` keeps the old
   board (`boardText`) so llm-play's prompt does not move. It
-  plays through `web/app/runner.js` like the page and writes the same replay to `replays/`. The
-  screen and the input are pure (`scripts/lib/cli-view.js`, tested); `--json` (Sami, 13/10) prints
+  plays through `web/app/replays/runner.js` like the page and writes the same replay to `replays/`. The
+  screen and the input are pure (`scripts/lib/cli/cli-view.js`, tested); `--json` (Sami, 13/10) prints
   the state as a real JSON object (`jsonView`: `bornes`, `main`, `bornes_jouables`, no board in a string),
   the format an agent reads; `--machine` is the flat one-line JSON kept for `llm-play`;
   `--new` / `--step` keep the game in a file (the replay itself) so an agent plays one move per
   command. No HTTP API: the command line serves a human and an agent alike.
 - **No legal move**: the human passes with « Passer mon tour » (`btn-pass`), shown only then.
-- **Puzzle attempts are tracked** (Sami, 07/10, `src/replay/puzzle-attempts.js`):
-  `web/app/puzzle-tracker.js` times each attempt with the focus-aware clock and
+- **Puzzle attempts are tracked** (Sami, 07/10, `src/replay/stats/puzzle-attempts.js`):
+  `web/app/puzzles/puzzle-tracker.js` times each attempt with the focus-aware clock and
   POSTs it on close to `/api/puzzles/attempts`, which appends one line to
   `data/puzzle-attempts.jsonl` (in git); `npm run puzzle-stats` reads it back.
   `LOPIN_ATTEMPTS_FILE` points the server elsewhere to try the page without
@@ -460,7 +479,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   16/10 (Sami nearly through them) more like his favourites joined from #422,
   and the **double turn** (`--pass`, `kind: "pass"`, from #501, after #313: a
   winning move leaves the opponent no legal move, so they pass and the mover
-  plays again; `src/sim/double-turn.js`). The core does not know it; the
+  plays again; `src/sim/engine/double-turn.js`). The core does not know it; the
   solver does (a pass is a move to it), so the 1.2 plays it at 12 cards.
 - **Anything that runs a look-ahead bot in the page yields between moves**
   (`generateBotGame` is async): a whole observer game computed in one go
@@ -484,7 +503,7 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   winner of three adjacent borders), from `scoreTag()`.
   The server writes `replays/` (ignored) and copies kept ones to
   `data/replays/`; it serves only `web/`, `src/`, the rules' fonts and PDF, on
-  127.0.0.1. Names go through `scripts/lib/replay-files.js`.
+  127.0.0.1. Names go through `scripts/lib/domain/replay-files.js`.
 - **The rules sheet has a generated block.** Between `<!-- stats:début -->` and
   `<!-- stats:fin -->` in `regles/regles.html`, `scripts/build.js` writes the
   statistics table (`src/report/rules-stats.js`). Edit the rest of the sheet by

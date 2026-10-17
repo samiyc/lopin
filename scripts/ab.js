@@ -3,8 +3,8 @@ import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
 import { wilson } from "../src/irl/analysis.js";
 import { engineFor } from "../src/sim/bots.js";
-import { pointsOf } from "./lib/duel-plan.js";
-import { runPool } from "./lib/pool.js";
+import { pointsOf } from "./lib/domain/duel-plan.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run ab -- <reference> <variant>… [--vs stratege] [--pairs 200] [--page] [--offset K]`:
@@ -69,7 +69,7 @@ function meanAndHalf(values) {
 const started = Date.now();
 const tasks = tasksOf();
 let shown = 0;
-const results = await runPool(new URL("./lib/sim-worker.js", import.meta.url), tasks, {
+const results = await runPool(new URL("./lib/workers/sim-worker.js", import.meta.url), tasks, {
   onProgress: (done, total) => {
     if (done / total < shown + 0.1) return;
     shown = Math.floor((10 * done) / total) / 10;

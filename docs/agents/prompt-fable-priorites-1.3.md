@@ -42,7 +42,7 @@ Les chiffres sont des scores contre la 1.2, au même budget sauf mention ; les f
 
 ## Ce qu'on attend de toi, dans l'ordre
 
-1. **Lis** `src/sim/ismcts.js`, `src/sim/choice.js`, `src/sim/final-choice.js`, `src/sim/widening.js`, puis les sections
+1. **Lis** `src/sim/mcts/ismcts.js`, `src/sim/mcts/choice.js`, `src/sim/mcts/final-choice.js`, `src/sim/mcts/widening.js`, puis les sections
    citées de `docs/strategie.md`. Établis **pourquoi** les familles ci-dessus échouent : bruit, coût par itération, ou
    fusion de stratégies. C'est ce qui rend une idée nouvelle crédible.
 2. **Au plus 5 idées**, nouvelles ou déjà proposées (MO-ISMCTS, finalistes appariés). Pour chacune :

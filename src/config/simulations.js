@@ -55,7 +55,7 @@ export const DUEL_CHALLENGERS = Object.freeze([
 ]);
 
 /**
- * Sami's solo test protocol (see `src/sim/solo.js`), replayed by bots: the
+ * Sami's solo test protocol (see `src/sim/engine/solo.js`), replayed by bots: the
  * plain greedy one and the one with his habits, on the recommended deck and
  * on the quick 6 × 7 version he knows.
  */

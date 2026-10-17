@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createRng } from "../src/core/random.js";
-import { runPool, workerCount } from "./lib/pool.js";
+import { runPool, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run time-study`: does more thinking time make a better move? Positions
@@ -24,7 +24,7 @@ const items = Array.from({ length: POSITIONS }, () => ({ log: logs[rng.int(logs.
 const threads = workerCount();
 const started = Date.now();
 const tasks = Array.from({ length: threads }, (_, t) => ({ items: items.filter((_, i) => i % threads === t), checkpoints, reference, seconds: MINUTES * 60 }));
-const results = (await runPool(new URL("./lib/time-study-worker.js", import.meta.url), tasks)).flat();
+const results = (await runPool(new URL("./lib/workers/time-study-worker.js", import.meta.url), tasks)).flat();
 
 const pct = (x) => `${(100 * x).toFixed(1)} %`;
 const lines = [`${results.length} positions, référence ${reference} simulations (${(reference / BROWSER_ROLLOUTS_PER_SECOND).toFixed(0)} s dans le navigateur), ${((Date.now() - started) / 60000).toFixed(1)} min`, ""];

@@ -46,7 +46,7 @@
 
 ### Ce que la 1.2 fait de ses 2 000 itérations
 
-Les replays des duels gardés portent la forme de l'arbre de chaque coup (`tree`, `src/sim/tree-stats.js`). Sur 1 197
+Les replays des duels gardés portent la forme de l'arbre de chaque coup (`tree`, `src/sim/mcts/tree-stats.js`). Sur 1 197
 coups de la 1.2@2000 (ses deux duels du 16/10 contre `pwl=3` et `pwl=5`), un « premier essai » est la visite qui crée
 un nœud. UCB joue toujours d'abord un coup jamais essayé, puis la descente s'arrête sur ce nœud neuf et la simulation
 prend la suite.
@@ -169,10 +169,10 @@ Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées so
   `Ensemble2x2000` (plus bas) disent où, dans cette fourchette.
 - **Le coût** : nul (un générateur de nombres par itération, autant de donnes qu'avant) : duel à itérations égales.
 - **Le code** :
-  - `src/sim/common-deals.js` (`visitRng`) ;
+  - `src/sim/mcts/common-deals.js` (`visitRng`) ;
   - 7 lignes dans `ismcts.js` : `begin` choisit le candidat avant la donne, `dealFor` prend le générateur de la visite,
     `descend` reçoit le choix de la racine, `resolveCtx` garde le générateur des simulations ;
-  - le test `tests/common-deals.test.js` : un candidat cherché seul retrouve son sous-arbre de la recherche complète,
+  - le test `tests/sim-search/common-deals.test.js` : un candidat cherché seul retrouve son sous-arbre de la recherche complète,
     ce qui n'est pas le cas sans l'option.
 - **Le nom** : `CommonDeals` (`glossaire.md`).
 - **Les commandes** : section 4.
@@ -211,13 +211,13 @@ Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées so
     raterait des réfutations rares, et c'est encore la fusion de stratégies.
 - **Le coût** : nul. `select` parcourt déjà les enfants du nœud, la moyenne s'y ajoute.
 - **Le code** :
-  - `src/sim/first-play.js` : `untriedScore(children, fpu, bonus)` rend +∞ sans l'option ou sans enfant visité,
+  - `src/sim/mcts/first-play.js` : `untriedScore(children, fpu, bonus)` rend +∞ sans l'option ou sans enfant visité,
     sinon la moyenne des enfants visités moins δ, plus le bonus d'exploration d'UCB pour une visite ;
   - dans `select`, `child.visits === 0 ? untried(child, rank) : …`, aux étages 1 et plus seulement ;
   - `+fpu=d` dans `ismctsSettings`, δ = d / 10 ;
   - sans la clé, mêmes coups (l'empreinte de la 1.2, `1d041613cd7bcd8d`) ; `fpu=0` `d7ea4c190e6e63c0`, `fpu=1`
     `1a42545c7dcbaeeb` ;
-  - le test (`tests/first-play.test.js`) : la racine essaie autant de candidats, les nœuds adverses ouvrent moins de
+  - le test (`tests/sim-search/first-play.test.js`) : la racine essaie autant de candidats, les nœuds adverses ouvrent moins de
     réponses.
 - **Les noms** : `ReplyFpu0` (δ = 0) et `ReplyFpu1` (δ = 0,1).
 - **Les commandes** : un tri à 400 d'abord ; il change l'évaluation, pas la lecture des visites, donc un tri peut
@@ -271,7 +271,7 @@ C'est ce qui manque pour trancher entre « plafond » et « bruit encore exploit
 
 ### Le code
 
-- **`src/sim/common-deals.js`** (`visitRng`) : la visite k d'un candidat reçoit la donne de la suite 2k ; le
+- **`src/sim/mcts/common-deals.js`** (`visitRng`) : la visite k d'un candidat reçoit la donne de la suite 2k ; le
   générateur des simulations est remis à la suite 2k + 1.
 - **`ismcts.js`, 7 lignes de code de plus** (203 sur 220) :
   - `begin` choisit le candidat de la racine avant la donne quand `crn` est là ;
@@ -280,7 +280,7 @@ C'est ce qui manque pour trancher entre « plafond » et « bruit encore exploit
   - `resolveCtx` garde le générateur des simulations.
 - **Sans l'option, rien ne change** : l'empreinte de la 1.2 reste `1d041613cd7bcd8d` (20 parties à 150 contre greedy),
   et `npm run check` passe (432 tests, 0 échec, 7 en attente). Celle de `CommonDeals` est `bef7b4df22f6c4c0`.
-- **Le test** (`tests/common-deals.test.js`) : chaque candidat cherché seul, autant de visites que dans la recherche
+- **Le test** (`tests/sim-search/common-deals.test.js`) : chaque candidat cherché seul, autant de visites que dans la recherche
   complète, retrouve exactement ses visites, ses victoires et son sous-arbre ; sans l'option, ce n'est pas le cas.
   C'est la propriété qui rend la comparaison appariée.
 - **Le coût** : aucun. Avec `npm run bench -- 400 3 <moteur>`, en deux passes alternées sur les 12 positions de

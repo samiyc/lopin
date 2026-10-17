@@ -1,19 +1,19 @@
 import { isJoker, valueOf } from "../core/cards.js";
-import { withEndgame } from "./end-urgency.js";
-import { handOf, withFigureMoves } from "./figure-gains.js";import { withCertainties } from "./certainty.js";
-import { EXPERIMENT, budgetOf, coreEngines, coreOf, experimentalSettings } from "./experimental.js";
-import { ismctsBot, ismctsSettings } from "./ismcts.js";
-import { PAIR_DISCOUNT, createPairMemo, createValuer, sidePotential } from "./potential.js";
-import { IDEAS, IDEA_WEIGHTS, STRATEGIST_IDEAS, borderFactors } from "./ideas.js";
-import { lookaheadBot } from "./lookahead.js";
-import { coreCounts } from "./peek.js";
-import { phaseBot, phaseSettings } from "./phase.js";
-import { pickBest, pickSampled } from "./pick.js";
-import { searchBot } from "./search.js";
-import { HABITS, STRATEGY, strategistMoves } from "./strategist.js";
-import { jokerGate } from "./joker-gate.js";
-import { gameOdds, settledOdds } from "./truncate.js";
-import { tuningsOf } from "./tuning.js";
+import { withEndgame } from "./heuristics/end-urgency.js";
+import { handOf, withFigureMoves } from "./eval/figure-gains.js";import { withCertainties } from "./eval/certainty.js";
+import { EXPERIMENT, budgetOf, coreEngines, coreOf, experimentalSettings } from "./heuristics/experimental.js";
+import { ismctsBot, ismctsSettings } from "./mcts/ismcts.js";
+import { PAIR_DISCOUNT, createPairMemo, createValuer, sidePotential } from "./eval/potential.js";
+import { IDEAS, IDEA_WEIGHTS, STRATEGIST_IDEAS, borderFactors } from "./heuristics/ideas.js";
+import { lookaheadBot } from "./search/lookahead.js";
+import { coreCounts } from "./engine/peek.js";
+import { phaseBot, phaseSettings } from "./search/phase.js";
+import { pickBest, pickSampled } from "./mcts/pick.js";
+import { searchBot } from "./search/search.js";
+import { HABITS, STRATEGY, strategistMoves } from "./heuristics/strategist.js";
+import { jokerGate } from "./heuristics/joker-gate.js";
+import { gameOdds, settledOdds } from "./mcts/truncate.js";
+import { tuningsOf } from "./heuristics/tuning.js";
 
 /**
  * Players for the simulation and the web game.

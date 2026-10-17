@@ -2,16 +2,16 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseCard } from "../src/core/notation.js";
-import { traitsOf } from "../src/replay/move-features.js";
-import { machineView } from "./lib/cli-view.js";
-import { inputOf, oracleChoices, puzzleChoices } from "./lib/example-positions.js";
-import { tmpFile } from "./lib/tmp.js";
+import { traitsOf } from "../src/replay/oracle/move-features.js";
+import { machineView } from "./lib/cli/cli-view.js";
+import { inputOf, oracleChoices, puzzleChoices } from "./lib/domain/example-positions.js";
+import { tmpFile } from "./lib/domain/tmp.js";
 
 /**
  * `npm run llm-examples -- [--count 12] [--puzzles 4] [--oracle oracle/positions.jsonl,oracle/positions-early.jsonl] [--duels duels]`:
  * worked examples for `llm-play --examples` (Sami, 13/10: show the model good
  * moves before its game). Two sources, both with a move that is known to be
- * good (scripts/lib/example-positions.js): the oracle's clear choices and the
+ * good (scripts/lib/domain/example-positions.js): the oracle's clear choices and the
  * puzzles' winning moves, the core's losing one named as the trap. Each
  * example is the position as the CLI shows it to the mover (`machineView`),
  * the move as the model must answer it (« 9♦ 7 ») and a reason computed from

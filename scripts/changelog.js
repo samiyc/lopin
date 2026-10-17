@@ -9,30 +9,16 @@ import { BOT_LINEUP } from "../src/config/bots.js";
  * the speed passes, the oracle, with real positions to play through. One per
  * version (Sami, 03/10); the version defaults to the line-up's.
  *
- * What was measured once and written down (the duels' scores, the example
- * positions, the commits' French labels) is data/changelog-exp-<version>.json; what a script
- * keeps up to date is read where it lives:
- * - the price of an error, turn by turn: data/error-impact.json;
- * - the oracle's gaps and traits: data/oracle-diffs.json;
- * - where the jokers went: data/jokers-mining.json;
- * - the borders won with low cards: data/weak-wins.json;
- * - the core's speed: data/core-timings.json;
- * - the night and day jobs: data/backlog.json and data/backlog-done.json;
- * - the puzzles: web/data/puzzles.json;
- * - the oracle where two cores disagree: data/oracle-disagree.json, if read;
- * - the oracle bench across cores: data/oracle-bench.json, if built;
- * - the oracle against the V1: data/versus.json (« oracle »), data/oracle-shadow.json, data/oracle-diffs-v1ref.json;
- * - the similarity bench: its positions (data/oracle-diffs-banc.json) and its calibration (data/banc.json);
- * - the core's features, their time and activity: data/core-features.json;
- * - the commits since `since`: git log.
- * Rebuilt after the night's jobs, the page picks up their times by itself;
- * their scores go into the version's data file.
+ * Shared style (`src/report/changelog/style.css`) and V1+ sections
+ * (`src/report/changelog/v1-sections.html`) are inlined at build time so each
+ * generated file in `out/` remains 100% self-contained over `file://`, while
+ * only the datasets actually used by the page are embedded in `DATA`.
  */
-// A new version: copy the previous page to src/report/changelog/<version>.html, keep the
-// sections that still apply, and start data/changelog-exp-<version>.json.
 const ROOT = new URL("../", import.meta.url);
-const read = async (path) => JSON.parse(await readFile(new URL(path, ROOT), "utf8"));
+const readText = (path) => readFile(new URL(path, ROOT), "utf8");
+const read = async (path) => JSON.parse(await readText(path));
 const MIN_JOKERS = 60;
+const ARBRE_NOTE_1_3 = '<p>Le schéma est celui du V1 (le 1.0). Depuis : <strong>7 réponses</strong> par étage au lieu de 3 (le 1.1), et la fin calculée exactement jusqu\'à 12 cartes (le 1.2). Les essais du 11/10 touchent deux étapes : <strong>PUCT</strong> (<code>+puct</code>) change « La descente », le cœur y donne une avance à ses meilleurs coups ; <strong>Ensemble</strong> (<code>+trees=2</code>) change « Le coup joué », deux arbres additionnent leurs visites.</p>';
 
 function commits(since, until) {
   // git is a developer tool found on PATH, like npm that runs this script.
@@ -55,42 +41,72 @@ function puzzleKinds(puzzles) {
   return kinds;
 }
 
+async function expandTemplate(version) {
+  const [raw, style, v1Sections] = await Promise.all([
+    readText(`src/report/changelog/${version}.html`),
+    readText("src/report/changelog/style.css"),
+    readText("src/report/changelog/v1-sections.html"),
+  ]);
+  const note = version === "1.3" ? ARBRE_NOTE_1_3 : "";
+  return raw
+    .replace("/*__STYLE__*/", () => style.trim())
+    .replace("<!--__V1_SECTIONS__-->", () => v1Sections.replace("<!--__ARBRE_NOTE__-->", note));
+}
+
+async function loadV1ZeroData() {
+  return {
+    impact: await read("data/error-impact.json"),
+    oracle: await read("data/oracle-diffs.json"),
+    jokers: placements(await read("data/jokers-mining.json")),
+    weakWins: await read("data/weak-wins.json"),
+    timings: await read("data/core-timings.json"),
+    puzzles: puzzleKinds((await read("web/data/puzzles.json")).puzzles),
+    disagree: await read("data/oracle-disagree.json").catch(() => null),
+  };
+}
+
+async function loadV1PlusData() {
+  return {
+    bench: await read("data/oracle-bench.json").catch(() => null),
+    features: await read("data/core-features.json").catch(() => null),
+    versus: await read("data/versus.json").then((file) => file.duels.oracle ?? null, () => null),
+    shadow: await read("data/oracle-shadow.json").then((file) => Object.values(file.reads)[0] ?? null, () => null),
+    v1ref: await read("data/oracle-diffs-v1ref.json").then(({ positions, gaps, traits }) => ({ positions, gaps, traits }), () => null),
+    banc: await Promise.all([read("data/oracle-diffs-banc.json"), read("data/banc.json")]).then(([{ positions, byTurn, ms }, { calibration }]) => ({ positions, byTurn, ms, calibration: calibration ?? null }), () => null),
+  };
+}
+
 const now = new Date();
 const pad = (n) => String(n).padStart(2, "0");
 const version = process.argv[2] ?? BOT_LINEUP.experimental.version;
-// `oracle` (Sami, 16/10): the oracles' own notebook, beside the Experimental's versions (data/changelog-oracle.json).
 const name = version === "oracle" ? "changelog-oracle" : `changelog-exp-${version}`;
-const journal = await read(`data/${name}.json`);
+const [journal, template, doneFile, queueFile] = await Promise.all([
+  read(`data/${name}.json`),
+  expandTemplate(version),
+  read("data/backlog-done.json"),
+  read("data/backlog.json"),
+]);
+const sinceIso = journal.since.replace(" ", "T");
+const allJobs = [...jobsOf(doneFile), ...jobsOf(queueFile), ...(journal.manualJobs ?? []).map((job) => ({ ...job, status: "done", manual: true }))];
+const jobs = version === "1.0" ? allJobs : allJobs.filter((j) => !j.doneAt || j.doneAt >= sinceIso || j.manual);
+async function loadExtraData(targetVersion, html) {
+  if (targetVersion === "1.0") return loadV1ZeroData();
+  if (html.includes('id="reference"')) return loadV1PlusData();
+  return {};
+}
+
+const extra = await loadExtraData(version, template);
 const data = {
   version,
   built: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`,
   builtAt: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`,
   journal,
-  // A released version stops at `until`: the next one's commits go to its own page.
   commits: commits(journal.since, journal.until),
-  impact: await read("data/error-impact.json"),
-  oracle: await read("data/oracle-diffs.json"),
-  jokers: placements(await read("data/jokers-mining.json")),
-  weakWins: await read("data/weak-wins.json"),
-  timings: await read("data/core-timings.json"),
-  // The runs launched by hand, outside the backlog, are written down in the version's data file.
-  jobs: [...jobsOf(await read("data/backlog-done.json")), ...jobsOf(await read("data/backlog.json")), ...(journal.manualJobs ?? []).map((job) => ({ ...job, status: "done", manual: true }))],
-  puzzles: puzzleKinds((await read("web/data/puzzles.json")).puzzles),
-  disagree: await read("data/oracle-disagree.json").catch(() => null),
-  bench: await read("data/oracle-bench.json").catch(() => null),
-  // What each feature of the 1.0's core costs and how often it acts (npm run features).
-  features: await read("data/core-features.json").catch(() => null),
-  // The oracle against the V1, move for move: its whole games (versus), the V1 replaying them (shadow), its gaps in the V1's games.
-  versus: await read("data/versus.json").then((file) => file.duels.oracle ?? null, () => null),
-  shadow: await read("data/oracle-shadow.json").then((file) => Object.values(file.reads)[0] ?? null, () => null),
-  v1ref: await read("data/oracle-diffs-v1ref.json").then(({ positions, gaps, traits }) => ({ positions, gaps, traits }), () => null),
-  banc: await Promise.all([read("data/oracle-diffs-banc.json"), read("data/banc.json")]).then(([{ positions, byTurn, ms }, { calibration }]) => ({ positions, byTurn, ms, calibration: calibration ?? null }), () => null),
+  jobs,
+  ...extra,
 };
 
-// Each version has its own page (src/report/changelog/<version>.html), started from the previous one.
-const template = await readFile(new URL(`src/report/changelog/${version}.html`, ROOT), "utf8");
-// The data lands inside a <script>: "</" is escaped so no text in it can close the tag.
-const page = template.replaceAll("__VERSION__", version).replace("/*__DATA__*/null", JSON.stringify(data).replaceAll("</", "<\\/"));
+const page = template.replaceAll("__VERSION__", version).replace("/*__DATA__*/null", () => JSON.stringify(data).replaceAll("</", "<\\/"));
 await writeFile(new URL(`out/artifact/${name}.html`, ROOT), page);
 const cut = page.indexOf('<header class="band">');
 const head = '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n';

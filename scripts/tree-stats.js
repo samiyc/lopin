@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 /**
  * `npm run tree-stats -- <duel files…> | --last N`: the shape of the tree bots' searches in kept duels, read from the
- * `tree` each of their moves carries (src/sim/tree-stats.js; Sami, 14/10). For each engine: the moves read, the mean
+ * `tree` each of their moves carries (src/sim/mcts/tree-stats.js; Sami, 14/10). For each engine: the moves read, the mean
  * iterations, then by level the share of moves whose tree reaches it (a node with a visit there), the mean nodes,
  * the share of those at 0 and 1 visit, and the mean of the most visits — the numbers that choose a `pw` formula.
  *

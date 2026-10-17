@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parseCard, parseCards } from "../src/core/notation.js";
-import { rulesOf } from "../src/replay/log.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
+import { rulesOf } from "../src/replay/core/log.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
 
 /**
  * `npm run hiding`: does the Experimental hide its game? In its self-play

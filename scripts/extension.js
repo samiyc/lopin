@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { FIGURES } from "../src/core/figures.js";
-import { applyThreadsOption, runPool } from "./lib/pool.js";
+import { applyThreadsOption, runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run extension -- [--games 400] [--engine core:stfig6] [--threads N|max]`:
@@ -70,7 +70,7 @@ const started = Date.now();
 /** The seeds of chunk `k` of pile `c`: every pile has its own deals. */
 const seedsOf = (c, k) => Array.from({ length: Math.min(CHUNK, games - k * CHUNK) }, (_, i) => 100_000 * (c + 1) + k * CHUNK + i);
 const tasks = CONFIGS.flatMap((config, c) => Array.from({ length: Math.ceil(games / CHUNK) }, (_, k) => ({ config: config.config, figures: config.figures, engine, seeds: seedsOf(c, k) })));
-const chunks = await runPool(new URL("./lib/extension-worker.js", import.meta.url), tasks);
+const chunks = await runPool(new URL("./lib/workers/extension-worker.js", import.meta.url), tasks);
 const results = CONFIGS.map((config) => ({ config: config.config, games: chunks.filter((chunk) => chunk.config === config.config).flatMap((chunk) => chunk.games) }));
 const data = {
   built: new Date().toISOString(),

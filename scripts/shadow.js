@@ -1,14 +1,14 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { V1_ENGINE } from "../src/config/bots.js";
-import { ORACLE } from "../src/replay/oracle.js";
-import { summarizeShadow } from "../src/replay/shadow.js";
-import { readIndex } from "./lib/game-index.js";
-import { runPool } from "./lib/pool.js";
+import { ORACLE } from "../src/replay/oracle/oracle.js";
+import { summarizeShadow } from "../src/replay/oracle/shadow.js";
+import { readIndex } from "./lib/domain/game-index.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run shadow -- [<oracle engine>] [--engine <bot engine>] [--minutes N]`:
  * the games the oracle played, read again by the V1 (Sami, 03/10;
- * src/replay/shadow.js). At each of the oracle's moves: does the V1's search
+ * src/replay/oracle/shadow.js). At each of the oracle's moves: does the V1's search
  * play it, is it in its core's top 1 / 3 / 8, and how much of the oracle's
  * visits the V1's move got — by group of turns, with the clearest
  * disagreements, which `npm run oracle -- --confirm` can then play out.
@@ -33,7 +33,7 @@ if (rows.length === 0) {
 }
 console.log(`${rows.length} parties de l'oracle, relues par ${engine}`);
 const started = Date.now();
-const results = await runPool(new URL("./lib/shadow-worker.js", import.meta.url), rows.map((row) => ({ row: { key: row.key, file: row.file, game: row.game }, oracle, engine })), {
+const results = await runPool(new URL("./lib/workers/shadow-worker.js", import.meta.url), rows.map((row) => ({ row: { key: row.key, file: row.file, game: row.game }, oracle, engine })), {
   shouldStop: () => Date.now() - started > minutes * 60_000,
 });
 const summary = summarizeShadow(results.filter(Boolean).flat());

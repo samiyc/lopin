@@ -1,12 +1,12 @@
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { isJoker } from "../src/core/cards.js";
 import { createRng } from "../src/core/random.js";
-import { rulesOf } from "../src/replay/log.js";
+import { rulesOf } from "../src/replay/core/log.js";
 import { strategistBot } from "../src/sim/bots.js";
-import { solveEndgame } from "../src/sim/endgame.js";
-import { EXPERIMENT } from "../src/sim/experimental.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
-import { cloneState } from "../src/sim/lookahead.js";
+import { solveEndgame } from "../src/sim/eval/endgame.js";
+import { EXPERIMENT } from "../src/sim/heuristics/experimental.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
+import { cloneState } from "../src/sim/search/lookahead.js";
 
 /**
  * `npm run pivots`: when do the game's turning points come, and can the

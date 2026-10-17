@@ -1,5 +1,5 @@
-import { readIndex, startTurn } from "./lib/game-index.js";
-import { runPool } from "./lib/pool.js";
+import { readIndex, startTurn } from "./lib/domain/game-index.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run error-impact -- [--turns 18-29 | --turns 2,6,10] [--points]
@@ -52,7 +52,7 @@ const cases = series.flatMap(({ label, from }) =>
 );
 // Three runs per case: the error, and two controls without it.
 const tasks = cases.flatMap(({ row, turn }) => [{ row, turn, force: "random", explain }, { row, turn, reseed: 1 }, { row, turn, reseed: 2 }]);
-const results = await runPool(new URL("./lib/branch-worker.js", import.meta.url), tasks);
+const results = await runPool(new URL("./lib/workers/branch-worker.js", import.meta.url), tasks);
 
 // The player to move before move T is the one who erred: seat 0 moves first.
 const done = cases.map((entry, i) => {

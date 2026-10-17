@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { FAMILIES } from "../src/sim/traps.js";
-import { applyThreadsOption, runPool } from "./lib/pool.js";
-import { tmpFile } from "./lib/tmp.js";
+import { FAMILIES } from "../src/sim/puzzles/traps.js";
+import { applyThreadsOption, runPool } from "./lib/cli/pool.js";
+import { tmpFile } from "./lib/domain/tmp.js";
 
 /**
  * `npm run trap-bench -- [<core>] [--build --games N --from S --minutes M] [--threads N|max]`:
@@ -22,7 +22,7 @@ const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name
 applyThreadsOption(args);
 const BENCH = tmpFile("trap-bench.json");
 const RESULTS = new URL("../data/trap-bench-results.json", import.meta.url);
-const WORKER = new URL("./lib/trap-bench-worker.js", import.meta.url);
+const WORKER = new URL("./lib/workers/trap-bench-worker.js", import.meta.url);
 const readJson = (url, fallback) => readFile(url, "utf8").then((text) => JSON.parse(text), () => fallback);
 const pct = (x) => `${(100 * x).toFixed(1).replace(".", ",")} %`;
 

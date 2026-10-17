@@ -1,18 +1,18 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { loadGame, readIndex } from "./lib/game-index.js";
-import { runPool, workerCount } from "./lib/pool.js";
-import { STATUS, borderStatus } from "../src/sim/certainty.js";
-import { isForkBorder } from "../src/sim/fork.js";
-import { stateAt } from "../src/replay/log.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
+import { runPool, workerCount } from "./lib/cli/pool.js";
+import { STATUS, borderStatus } from "../src/sim/eval/certainty.js";
+import { isForkBorder } from "../src/sim/eval/fork.js";
+import { stateAt } from "../src/replay/core/log.js";
 import { formatCard } from "../src/core/notation.js";
-import { forcesPass } from "../src/sim/double-turn.js";
-import { legalMoves } from "../src/sim/game.js";
+import { forcesPass } from "../src/sim/engine/double-turn.js";
+import { legalMoves } from "../src/sim/engine/game.js";
 
 /**
  * `npm run puzzles -- [--minutes N] [--count 50] [--source duels] [--add]`:
  * endgame puzzles. Once the pile is empty every card is known and
- * `src/sim/endgame.js` solves the end exactly; a puzzle is a position won for
+ * `src/sim/eval/endgame.js` solves the end exactly; a puzzle is a position won for
  * the side to move through few of its moves (at most `SHARE` of them), two per
  * game at most. Strong games are rarely delicate at the very end: 4 544
  * endgames at 30 % gave only 19.
@@ -37,10 +37,10 @@ import { legalMoves } from "../src/sim/game.js";
  *
  * `--fork` (Sami, 11/10, Connect Four's « fourchette »): only the endgames
  * whose every winning move plays on a border whose win would leave a double
- * threat (src/sim/fork.js); they carry `kind: "fork"` and, with
+ * threat (src/sim/eval/fork.js); they carry `kind: "fork"` and, with
  * numbered from 401 at least; `--fork` always adds. `--pass` (Sami, 16/10, the
  * double turn of #313): a winning move leaves the opponent no legal move, they
- * pass and the mover plays again (src/sim/double-turn.js); `kind: "pass"`, from
+ * pass and the mover plays again (src/sim/engine/double-turn.js); `kind: "pass"`, from
  * 501, always added. Without `--add`, every puzzle of another kind (immediate,
  * fork, pass) is kept as it is.
  */
@@ -117,7 +117,7 @@ const logs = await sourceLogs();
 const items = logs.flatMap((log, index) => TURNS.filter((turn) => turn <= log.turns.length && !taken.has(keyOf(log, turn))).map((turn) => ({ index, log, turn })));
 const threads = workerCount();
 const tasks = Array.from({ length: threads }, (_, t) => ({ items: items.filter((_, i) => i % threads === t), share: SHARE, seconds: minutes * 60 }));
-const found = (await runPool(new URL("./lib/puzzle-worker.js", import.meta.url), tasks)).flat();
+const found = (await runPool(new URL("./lib/workers/puzzle-worker.js", import.meta.url), tasks)).flat();
 const chosen = choose(found.filter((p) => wanted(p) && (!forkOnly || playsTheFork(p, logs)) && (!passOnly || playsThePass(p, logs))));
 
 const strip = (log, turn) => ({ format: log.format, rules: log.rules, deck: log.deck, turns: log.turns.slice(0, turn - 1).map(({ turn: t, player, move, pass, drew }) => ({ turn: t, player, move, pass, drew })) });

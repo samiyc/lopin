@@ -2,16 +2,16 @@ import { readFile, writeFile } from "node:fs/promises";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { formatCard } from "../src/core/notation.js";
 import { createRng } from "../src/core/random.js";
-import { fitElo, resultsFromLogs } from "../src/replay/elo.js";
-import { rulesOf } from "../src/replay/log.js";
+import { fitElo, resultsFromLogs } from "../src/replay/stats/elo.js";
+import { rulesOf } from "../src/replay/core/log.js";
 import { explainMove, strategistBot } from "../src/sim/bots.js";
-import { EXPERIMENT } from "../src/sim/experimental.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
-import { IDEA_WEIGHTS } from "../src/sim/ideas.js";
-import { HABITS, STRATEGY } from "../src/sim/strategist.js";
+import { EXPERIMENT } from "../src/sim/heuristics/experimental.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
+import { IDEA_WEIGHTS } from "../src/sim/heuristics/ideas.js";
+import { HABITS, STRATEGY } from "../src/sim/heuristics/strategist.js";
 import { BOT_PARAMS, VALUE_TO_CHANCE } from "../src/sim/bots.js";
-import { coreTimings } from "./lib/core-timing.js";
-import { ANCHOR, readAllLogs, readDuels } from "./lib/elo-data.js";
+import { coreTimings } from "./lib/domain/core-timing.js";
+import { ANCHOR, readAllLogs, readDuels } from "./lib/domain/elo-data.js";
 
 /**
  * `npm run retrospective`: the robot's retrospective, archived (Sami, 03/10)
@@ -25,7 +25,7 @@ import { ANCHOR, readAllLogs, readDuels } from "./lib/elo-data.js";
  * - the price of an error, turn by turn: data/error-impact.json;
  * - a move scored by the experimental core, computed now on a seeded game;
  * - what the core costs in ms: data/core-timings.json, which only
- *   `--measure` rewrites (scripts/lib/core-timing.js) — on an idle machine,
+ *   `--measure` rewrites (scripts/lib/domain/core-timing.js) — on an idle machine,
  *   since a build during the night jobs measured four times too slow;
  * - every bonus with its weights read from the code, and the core tests of
  *   data/core-tests.json when there are some.

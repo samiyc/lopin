@@ -2,11 +2,11 @@ import { createServer } from "node:http";
 import { appendFile, copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { REPLAY_FORMAT } from "../src/replay/log.js";
-import { isAttempt, summarize } from "../src/replay/puzzle-attempts.js";
-import { ATTEMPTS_FILE, readAttempts } from "./lib/puzzle-attempts-file.js";
-import { eloTable, statsPage } from "./lib/elo-data.js";
-import { REPLAY_DIRS, isReplayDir, isSafeName, replayFileName, replayHeader } from "./lib/replay-files.js";
+import { REPLAY_FORMAT } from "../src/replay/core/log.js";
+import { isAttempt, summarize } from "../src/replay/stats/puzzle-attempts.js";
+import { ATTEMPTS_FILE, readAttempts } from "./lib/domain/puzzle-attempts-file.js";
+import { eloTable, statsPage } from "./lib/domain/elo-data.js";
+import { REPLAY_DIRS, isReplayDir, isSafeName, replayFileName, replayHeader } from "./lib/domain/replay-files.js";
 
 /**
  * `npm run play`: the local server of the web game. It serves the page, the

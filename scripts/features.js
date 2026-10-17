@@ -2,12 +2,12 @@ import { writeFile } from "node:fs/promises";
 import { Session } from "node:inspector";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { createRng } from "../src/core/random.js";
-import { rulesOf } from "../src/replay/log.js";
+import { rulesOf } from "../src/replay/core/log.js";
 import { engineFor, rolloutPolicyOf, strategistBot } from "../src/sim/bots.js";
-import { coreOf } from "../src/sim/experimental.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
-import { cloneState } from "../src/sim/lookahead.js";
-import { ABLATIONS, FAMILIES, FEATURES, compareScorings, timeByFeature } from "./lib/core-features.js";
+import { coreOf } from "../src/sim/heuristics/experimental.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
+import { cloneState } from "../src/sim/search/lookahead.js";
+import { ABLATIONS, FAMILIES, FEATURES, compareScorings, timeByFeature } from "./lib/domain/core-features.js";
 
 /**
  * `npm run features -- [--games 40] [--budget 300] [--core v1nc]`: what each feature of the
@@ -18,7 +18,7 @@ import { ABLATIONS, FAMILIES, FEATURES, compareScorings, timeByFeature } from ".
  * - time: a CPU profile (node:inspector, sampled every 100 µs) of three
  *   workloads — the core as the rollouts call it (without `certain`), the
  *   core at the root (with it), and a whole tree search of the 1.0 — each
- *   function's self time given to its feature (scripts/lib/core-features.js);
+ *   function's self time given to its feature (scripts/lib/domain/core-features.js);
  * - activation: each feature switched off in turn, the same moves scored
  *   again — how many gains change, and how often the favourite does.
  *

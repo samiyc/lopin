@@ -26,7 +26,7 @@ prépares les jobs de nuit avec leurs commandes exactes.
   On gagne avec 3 bornes adjacentes ou une majorité de 4. Règle de la page (`endMode: "claim-end"`, `OFFICIAL_RULES`,
   `src/config/rules.js`) : juste après chaque coup, celui qui vient de jouer revendique les bornes prouvées, puis
   l'adversaire. Une borne revendiquée est fermée. Voir `CLAUDE.md`, « The web game plays the printed claim rule », et
-  `src/sim/settle.js`.
+  `src/sim/engine/settle.js`.
 - **Les 35 178 parties des duels gardés** (`duels/`, arbres @2000 et plus, règle de la page, mesuré le 16/10) :
 
   | Fin de partie | Gagnée par le 1er joueur | Gagnée par le 2e joueur |
@@ -44,7 +44,7 @@ prépares les jobs de nuit avec leurs commandes exactes.
   entre deux versions, mais pas l'effet du siège.
 - **Entre deux Omniscient 1.0** (`+omniscient=1` : tout est vu), un essai trop petit donne 50,0 % (41,2 – 58,8, 120
   parties, `npm run deals`). C'est la piste pour séparer la part des règles de la part de l'information.
-- **Ce qui manque** : `createGame` (`src/sim/game.js`) ne permet pas des mains de tailles différentes.
+- **Ce qui manque** : `createGame` (`src/sim/engine/game.js`) ne permet pas des mains de tailles différentes.
 
 ## Ce qu'on attend de toi, dans l'ordre
 
@@ -85,7 +85,7 @@ prépares les jobs de nuit avec leurs commandes exactes.
      l'adversaire : c'est une information de nature différente, à mesurer à part.
 
    Pour A et B, **les robots doivent se servir de l'information**, sinon la mesure vaut zéro : `determinize`
-   (`src/sim/lookahead.js`) tire aujourd'hui toutes les cartes cachées au hasard. La carte vue doit y rester en tête de
+   (`src/sim/search/lookahead.js`) tire aujourd'hui toutes les cartes cachées au hasard. La carte vue doit y rester en tête de
    pioche pour ce joueur, et le cœur doit la compter comme connue (`unseenCards`). Dis ce qu'il faut changer et ce que
    ça coûte. C se mesure sans rien adapter. **Avant toute compensation, mesure la référence sans compensation au même
    niveau de robot** (la 1.2 à 400 ou le cœur seul contre lui-même) : l'effet du siège peut dépendre de la force.

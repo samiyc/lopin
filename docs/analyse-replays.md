@@ -67,7 +67,7 @@ coups les plus longs.
 
 ## Tes idées, mesurées
 
-Chaque idée a été codée seule dans le robot (`src/sim/ideas.js`), puis opposée au
+Chaque idée a été codée seule dans le robot (`src/sim/heuristics/ideas.js`), puis opposée au
 Stratège 1.0.
 - **Protocole** : 8 000 parties par idée, 4 000 de chaque côté de la table. La
   fourchette est d'environ ±1,1 point.
@@ -192,7 +192,7 @@ trois fois plus longtemps qu'en première série (14 s par coup) : le robot est 
 dur à lire.
 
 En relisant ces parties, Sami a relevé cinq erreurs du robot. Elles sont devenues
-des tests (`tests/strategy-cases.test.js`), et chacune a été codée puis mesurée.
+des tests (`tests/sim-heuristics/strategy-cases.test.js`), et chacune a été codée puis mesurée.
 Le détail est dans **`docs/strategie.md`**.
 
 | Erreur relevée | Règle | Mesure | Décision |

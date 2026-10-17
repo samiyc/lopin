@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { runPool, workerCount } from "./lib/pool.js";
+import { runPool, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run selfplay -- [engine] [--minutes N]`: the engine plays itself on
@@ -14,7 +14,7 @@ const minutes = Math.min(20, Number(args[args.indexOf("--minutes") + 1]) || 20);
 const threads = workerCount();
 const started = Date.now();
 const tasks = Array.from({ length: threads }, (_, i) => ({ engine, seconds: minutes * 60, seed: 424242 + 104729 * i }));
-const logs = (await runPool(new URL("./lib/selfplay-worker.js", import.meta.url), tasks)).flat();
+const logs = (await runPool(new URL("./lib/workers/selfplay-worker.js", import.meta.url), tasks)).flat();
 const dir = fileURLToPath(new URL("../selfplay/", import.meta.url));
 await mkdir(dir, { recursive: true });
 const file = `${dir}${engine.replace(/[^\w-]/g, "_")}.json`;

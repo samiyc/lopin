@@ -1,14 +1,14 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { V1_ENGINE } from "../src/config/bots.js";
-import { againstBase, bancVerdict, judge, pairedDiff, rankCorrelation, summarizeBanc } from "../src/replay/banc.js";
-import { ORACLE } from "../src/replay/oracle.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
-import { stopIfFor } from "./lib/backlog-stop.js";
-import { applyThreadsOption, runPool } from "./lib/pool.js";
+import { againstBase, bancVerdict, judge, pairedDiff, rankCorrelation, summarizeBanc } from "../src/replay/oracle/banc.js";
+import { ORACLE } from "../src/replay/oracle/oracle.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
+import { stopIfFor } from "./lib/domain/backlog-stop.js";
+import { applyThreadsOption, runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run banc -- [<engine>] [--against <engine>] [--positions banc] [--threads N] [--queue [--name B1Lite1]] [--calibrate]`:
- * the similarity bench (Sami, 04/10; src/replay/banc.js). A version of the V1
+ * the similarity bench (Sami, 04/10; src/replay/oracle/banc.js). A version of the V1
  * plays one move on each of the bench's positions, and its moves are judged
  * by the oracle's visits there; against the 1.0 (or `--against`) on the same
  * positions, the gap of oracle value comes with its interval over the pairs,
@@ -78,7 +78,7 @@ async function movesOf(engine, entries, known = {}) {
   const todo = entries.filter((entry) => !known[keyOf(entry)]).sort((a, b) => a.file.localeCompare(b.file));
   const batches = [];
   for (let i = 0; i < todo.length; i += BATCH) batches.push({ entries: todo.slice(i, i + BATCH), engine });
-  const results = await runPool(new URL("./lib/banc-worker.js", import.meta.url), batches);
+  const results = await runPool(new URL("./lib/workers/banc-worker.js", import.meta.url), batches);
   const moves = { ...known };
   for (const result of results.flat()) moves[`${result.key}|${result.turn}`] = { move: result.move, coreTop: result.coreTop };
   return moves;
@@ -148,7 +148,7 @@ async function queueDuels() {
   const offset = (n) => ` --offset ${n + 1}`;
   // Fixed-width columns on the left, the version on the right (docs/glossaire.md, Sami 05/10).
   const ids = [1, 2, 3, 4].map((n) => `VALIDATE_LONG_${n}_${name}`);
-  // A series that starts badly stops there (stopIf, scripts/lib/backlog-stop.js).
+  // A series that starts badly stops there (stopIf, scripts/lib/domain/backlog-stop.js).
   const duel = (n) => ({ id: ids[n], command: `npm run duel -- "${tested}" "${against}" --long --games 125 --page${offset(n)}`, estimate: "30 min", limit: 45, why: `Passée au banc de similitude (npm run banc) : le jeu de donnes ${n + 1} sur 4 des duels longs qui décident (fourchette basse réunie au-dessus de 50 %, npm run versus).`, status: "todo", stopIf: stopIfFor(ids, n + 1) });
   const jobs = [0, 1, 2, 3].map(duel);
   backlog.jobs.push(...jobs);

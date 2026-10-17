@@ -1,11 +1,11 @@
 import { spawnSync } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { DUELS_FILE, eloTable, readDuels } from "./lib/elo-data.js";
+import { DUELS_FILE, eloTable, readDuels } from "./lib/domain/elo-data.js";
 
 /**
  * `npm run elo`: the Elo table of the human players and every bot version,
- * from the saved games and data/elo-duels.json (src/replay/elo.js).
+ * from the saved games and data/elo-duels.json (src/replay/stats/elo.js).
  * `npm run elo -- --duels` first replays, in the quick duel profile, the
  * duels it has engines for, and rewrites their lines (about 20 minutes).
  */

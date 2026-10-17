@@ -3,10 +3,10 @@ import { fileURLToPath } from "node:url";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { formatCard } from "../src/core/notation.js";
 import { createRng } from "../src/core/random.js";
-import { playLogged, rulesOf, startLog } from "../src/replay/log.js";
+import { playLogged, rulesOf, startLog } from "../src/replay/core/log.js";
 import { engineFor } from "../src/sim/bots.js";
-import { createGame, legalMoves } from "../src/sim/game.js";
-import { winsAtOnce } from "../src/sim/immediate.js";
+import { createGame, legalMoves } from "../src/sim/engine/game.js";
+import { winsAtOnce } from "../src/sim/eval/immediate.js";
 
 /**
  * `npm run puzzles:immediate`: mid-game puzzles under the claim rule. In

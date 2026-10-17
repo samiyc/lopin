@@ -39,20 +39,21 @@ export const BOT_LINEUP = Object.freeze({
     examines: "5 coups d'avance, la fin de partie calculée exactement",
     pace: "2 000 itérations (2 à 4 s)",
     vsLower: "76 % vs Stratège",
-    // In the page: a worker, the engine's 2 000 iterations a move (10 s at most); no pondering, an ISMCTS ignores it (web/app/thinker.js).
+    // In the page: a worker, the engine's 2 000 iterations a move (10 s at most); no pondering, an ISMCTS ignores it (web/app/play/thinker.js).
     think: Object.freeze({ limitMs: 10000, minMs: 400 }),
   }),
   "oracle-light": Object.freeze({
     // Oracle light 1.0 (Sami, 16/10): Oracle3's tree at 10 000 iterations, pwl=3 (56.0 %, 52.0-59.9, over 420 games
     // against the Expérimental 1.2 as a single tree), shared between two trees (`trees=2`), one per worker in the page:
-    // the opening's 13.6 s a move on one thread back under 10 s. The two trees are measured by the night duels
-    // (LIGHT_DUEL_*_OracleLight-Pwl3-Trees2).
+    // the opening's 13.6 s a move on one thread back under 10 s, and 53.6 % (49.7-57.4) over 420 games against the 1.2
+    // (LIGHT_DUEL_1 to 3_OracleLight-Pwl3-Trees2).
     engine: "ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000",
     version: "1.0",
     label: "Oracle light",
     description: "L'oracle de l'atelier, allégé",
     examines: "10 coups d'avance, deux arbres de 5 000 itérations",
     pace: "10 000 itérations (2 à 7 s, sur deux fils)",
+    vsLower: "54 % vs Expérimental",
     think: Object.freeze({ limitMs: 10000, minMs: 400, workers: 2 }),
   }),
 });

@@ -1,15 +1,15 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { parseCard, parseCards } from "../src/core/notation.js";
-import { rulesOf } from "../src/replay/log.js";
+import { rulesOf } from "../src/replay/core/log.js";
 import { cardCost } from "../src/sim/bots.js";
-import { STATUS, borderStatus, boardStatus } from "../src/sim/certainty.js";
-import { applyMove, createGame, legalMoves } from "../src/sim/game.js";
-import { cloneState } from "../src/sim/lookahead.js";
+import { STATUS, borderStatus, boardStatus } from "../src/sim/eval/certainty.js";
+import { applyMove, createGame, legalMoves } from "../src/sim/engine/game.js";
+import { cloneState } from "../src/sim/search/lookahead.js";
 
 /**
  * `npm run mine -- [selfplay file]`: how far the self-play games already
- * follow the proved patterns (src/sim/certainty.js), decision by decision.
+ * follow the proved patterns (src/sim/eval/certainty.js), decision by decision.
  *
  * - dump: the mover has a border already lost with room on its side — does it
  *   play there, and when it does, is it the cheapest card it could put there?

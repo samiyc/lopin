@@ -1,11 +1,11 @@
 import { ORDERS } from "../config/formations.js";
 import { getEvaluator } from "../core/evaluator.js";
-import { emptySoloTally, tallyLine } from "../sim/solo.js";
+import { emptySoloTally, tallyLine } from "../sim/engine/solo.js";
 import { loadEssais } from "./cards.js";
 
 /**
  * Sami's real games, tallied exactly like the bots' solo games
- * (`tallyLine` in `src/sim/solo.js`), so the two compare line for line. Every
+ * (`tallyLine` in `src/sim/engine/solo.js`), so the two compare line for line. Every
  * real line also gets its exact optimum: there are only twenty.
  */
 export function tallyEssais(essais = loadEssais()) {

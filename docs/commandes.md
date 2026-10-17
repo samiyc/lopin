@@ -3,16 +3,16 @@
 Toutes les commandes du projet (`package.json`), rangées par usage. Les mots (validation courte ou longue, noms des versions et des jobs) sont dans le [glossaire](glossaire.md). Chaque
 script décrit ses options en détail dans son en-tête (`scripts/<nom>.js`) ; les
 recettes de mesure sont dans [validation.md](validation.md). Un test
-(`tests/docs.test.js`) échoue si une commande de `package.json` manque ici.
+(`tests/web-cli/docs.test.js`) échoue si une commande de `package.json` manque ici.
 
 ## Où écrire un fichier
 
 - **`data/`** est dans git : les faits et les résumés que lisent les pages et les docs (carnets, `elo-duels.json`,
-  `backlog.json`, résultats d'un banc…). Chaque fichier y reste **sous 500 Ko** : `tests/data-budget.test.js`
+  `backlog.json`, résultats d'un banc…). Chaque fichier y reste **sous 500 Ko** : `tests/web-cli/data-budget.test.js`
   échoue sinon.
 - **`tmp/`** est hors de git, une fois pour toutes : tout ce qu'un script peut réécrire (dumps bruts d'arbres,
   bancs reconstruits, exports dont on tire un rapport). Un script y écrit par `tmpFile("nom.json")`
-  (`scripts/lib/tmp.js`), qui crée le dossier ; aucune ligne à ajouter au `.gitignore`.
+  (`scripts/lib/domain/tmp.js`), qui crée le dossier ; aucune ligne à ajouter au `.gitignore`.
 - Les autres dossiers hors git gardent leur rôle : `replays/`, `selfplay/`, `duels/`, `backlog-runs/`, `oracle/`.
 
 ## Le parcours d'une idée
@@ -29,7 +29,7 @@ recettes de mesure sont dans [validation.md](validation.md). Un test
    une version se décide sur une fourchette basse au-dessus de 50 %.
 
 Les identifiants de moteur : un robot de la gamme (`experimental`, `stratege`, `basique`), un cœur
-seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un arbre
+seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/heuristics/experimental.js`), ou un arbre
 (`ismcts+widen=3+depth=5+core=<nom>@800` : 800 itérations ; `@t800` : 800 ms par coup).
 
 ## Jouer
@@ -60,7 +60,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | --- | --- | --- |
 | `npm run duel -- <A> <B> [--quick \| --screen \| --long] [--games N] [--page] [--offset K] [--save]` | A contre B, chaque donne jouée des deux côtés, avec la fourchette à 95 % par paires ; s'arrête dès que c'est clair. `--page` : la règle du jeu (claim-end) ; `--offset` : d'autres donnes | `duels/` (les parties longues ou à pleine force) |
 | `npm run duel:long -- <A> <B>` | le même, profil long (20 min au plus) | `duels/` |
-| `npm run tree-stats -- <duels…> \| --last N` | la forme de l'arbre des robots à arbre dans des duels gardés (Sami, 14/10) : par moteur et par niveau, la part des coups qui l'atteignent, les nœuds, ceux à 0 et 1 visite, le plus visité — de quoi choisir une formule de `pw` | la console (lit le `tree` de chaque coup, `src/sim/tree-stats.js`) |
+| `npm run tree-stats -- <duels…> \| --last N` | la forme de l'arbre des robots à arbre dans des duels gardés (Sami, 14/10) : par moteur et par niveau, la part des coups qui l'atteignent, les nœuds, ceux à 0 et 1 visite, le plus visité — de quoi choisir une formule de `pw` | la console (lit le `tree` de chaque coup, `src/sim/mcts/tree-stats.js`) |
 | `npm run versus -- <A> <B> [--label nom]` | toutes les parties de A contre B gardées dans `duels/`, réunies par paires : score, par siège, par jokers, ce que A joue autrement | `data/versus.json` (avec `--label`) |
 | `npm run elo [-- --duels]` | le classement Elo des joueurs et de chaque version | — (lit `data/elo-duels.json`) |
 | `npm run bench [-- budget seeds moteur]` | l'étalon de la recherche : les puzzles les plus durs, trouvés ou non, en combien d'itérations | — |
@@ -77,7 +77,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 | `npm run oracle -- [--minutes N] [--turns 15,16 \| 1-30] [--source A,B;C,D] [--out nom] [--runs 1\|2] [--keep 12] [--spread] [--rank cœur]` | l'oracle (un arbre sur tous les coups, 20 000 itérations) sur des positions de parties gardées. Aussi : `--summary`, `--confirm` (ses écarts rejoués jusqu'au tour 30), `--disagree <cœur>`, `--bench <cœur>,…` (le banc du cœur) | `oracle/positions*.jsonl`, `data/oracle-diffs*.json`, `data/oracle-confirm.json`, `data/oracle-bench.json` |
 | `npm run banc -- [<moteur>] [--against <moteur>] [--name B1Lite1] [--positions banc \| games] [--turns 1-12] [--threads N\|max] [--queue] [--calibrate]` | le banc de similitude : une version jugée en minutes par les visites de l'oracle sur ses coups, contre le 1.0 sur les mêmes positions. `--positions games` : les coups de l'oracle dans ses parties entières | `data/banc.json`, `oracle/banc-cache.json` |
 | `npm run shadow -- [<moteur oracle>] [--engine <V1>]` | le V1 relit les parties de l'oracle : même coup, top 1/3/8 de son cœur, par tranche de tours | `data/oracle-shadow.json` |
-| `npm run distill -- [--minutes 15] [--threads N\|max] [--rebuild] [--keys pairDiscount] [--name pair]` | le cœur du 1.0 réglé sur l'oracle : tous ses poids bougent ensemble (SPSA) pour mettre le coup de l'oracle dans son top 8, jugé sur un quart des parties gardé de côté ; le résultat est le cœur `dist1` | `src/sim/distilled-core.js`, `data/distill.json`, `oracle/distill-cache.json` |
+| `npm run distill -- [--minutes 15] [--threads N\|max] [--rebuild] [--keys pairDiscount] [--name pair]` | le cœur du 1.0 réglé sur l'oracle : tous ses poids bougent ensemble (SPSA) pour mettre le coup de l'oracle dans son top 8, jugé sur un quart des parties gardé de côté ; le résultat est le cœur `dist1` | `src/sim/heuristics/distilled-core.js`, `data/distill.json`, `oracle/distill-cache.json` |
 
 ## Relire les replays
 
@@ -104,7 +104,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/experimental.js`), ou un
 
 | Commande | Ce qu'elle fait | Écrit |
 | --- | --- | --- |
-| `npm run puzzles -- [--minutes N] [--count 50] [--add] [--source duels] [--min-moves N] [--core-fails] [--unique] [--keep 2,3,…] [--fork] [--pass]` | des fins de partie résolues exactement, gagnées par peu de coups ; `--min-moves`, `--core-fails`, `--unique` choisissent le genre (les favoris de Sami : beaucoup de coups, le coup du cœur perd), `--keep` ne garde que ces numéros ; `--fork` ne garde que les « doubles menaces » (chaque coup gagnant vise une borne décisive ou de fourchette, `src/sim/fork.js`), ajoutées à partir de l'id 401 ; `--pass` les « doubles tours » (un coup gagnant laisse l'adversaire sans coup, il passe et tu rejoues, comme le #313 ; `src/sim/double-turn.js`), à partir de l'id 501 | `web/data/puzzles.json` |
+| `npm run puzzles -- [--minutes N] [--count 50] [--add] [--source duels] [--min-moves N] [--core-fails] [--unique] [--keep 2,3,…] [--fork] [--pass]` | des fins de partie résolues exactement, gagnées par peu de coups ; `--min-moves`, `--core-fails`, `--unique` choisissent le genre (les favoris de Sami : beaucoup de coups, le coup du cœur perd), `--keep` ne garde que ces numéros ; `--fork` ne garde que les « doubles menaces » (chaque coup gagnant vise une borne décisive ou de fourchette, `src/sim/eval/fork.js`), ajoutées à partir de l'id 401 ; `--pass` les « doubles tours » (un coup gagnant laisse l'adversaire sans coup, il passe et tu rejoues, comme le #313 ; `src/sim/engine/double-turn.js`), à partir de l'id 501 | `web/data/puzzles.json` |
 | `npm run puzzle-stats` | tes tentatives de puzzles, puzzle par puzzle, les plus durs d'abord : résolu du premier coup ou non, le temps, les faux pas (et s'ils tombent dans le piège du cœur), « Révéler » | `data/puzzle-stats.json` (lit `data/puzzle-attempts.jsonl`) |
 | `npm run traps -- [--minutes 20] [--threads N|max]` | les pièges de fin de partie : les fins de partie des duels gardés, résolues exactement ; là où le joueur au trait gagne mais où le favori du cœur des simulations du 1.1 perd, l'erreur est classée par famille (joker, borne perdue, côté complété, borne ouverte, bonne carte et mauvaise borne…) | `data/traps.json`, `data/traps-list.json` |
 | `npm run trap-bench -- [<cœur>] [--build --games N --from S --minutes M]` | le banc de pièges : `--build` tire des parties cœur contre cœur (les fins de partie que jouent les simulations de l'arbre) et garde entières les positions pioche vide où le cœur du 1.1 se trompe, avec leurs coups gagnants, plus des positions saines ; sans `--build`, un cœur y joue : pièges évités par famille, positions saines cassées, en secondes | `tmp/trap-bench.json`, `data/trap-bench-results.json` |

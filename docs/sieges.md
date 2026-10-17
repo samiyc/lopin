@@ -158,9 +158,9 @@ tours » est le cran du dessous.
 en a posé plus gagne 68,4 → 67,7 / 67,6 → 67,8 / 63,4 → 63,4 %).
 
 **Le code** (commits `4b1b36e`, `5bdd6b8`, `5bbdd15`) : `createGame(spec, { …, seat })`, `seat` lu par
-`parseSeat` (`src/sim/seat-rules.js`) depuis un id ou un nom de `src/config/seats.js` ; rien par défaut.
+`parseSeat` (`src/sim/engine/seat-rules.js`) depuis un id ou un nom de `src/config/seats.js` ; rien par défaut.
 - **Les mains** : `hands=a/b` distribue a et b cartes ; `skip=N` saute la pioche du premier après son N-ième coup.
-- **Le regard** (`src/sim/peek.js`) : `state.known`, pour chaque siège, combien de cartes du dessus il connaît et
+- **Le regard** (`src/sim/engine/peek.js`) : `state.known`, pour chaque siège, combien de cartes du dessus il connaît et
   quelles cartes il sait dans la main adverse. Mis à jour à chaque pioche et à chaque carte posée ; le premier regarde
   au début de ses tours tant que la condition tient (`turns`, `claim`, `inplay`).
 - **Les robots s'en servent** : `determinize` laisse les cartes vues à leur place (`dealKnowing`) pour celui qui les a
@@ -173,7 +173,7 @@ en a posé plus gagne 68,4 → 67,7 / 67,6 → 67,8 / 63,4 → 63,4 %).
   `1d041613cd7bcd8d`, `strategist,greedy 150` `abf3bc51801c81b4`, `core:stfig6,strategist 150` `067ba6d1c1f4b600` ; à
   la règle de la page, le cœur contre lui-même rejoue les mêmes 40 000 parties (49,2 %, 19 688 donnes gagnées par le
   premier).
-- **Les replays** gardent `rules.seat` et se rejouent ; `tests/seat-rules.test.js` vérifie les mains, la pioche
+- **Les replays** gardent `rules.seat` et se rejouent ; `tests/sim-engine/seat-rules.test.js` vérifie les mains, la pioche
   sautée, le regard (B, B(N), A2), `determinize` et les comptes du cœur.
 
 ## 4. Les jobs de nuit

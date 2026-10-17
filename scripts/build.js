@@ -9,7 +9,7 @@ import { tallyEssais } from "../src/irl/analysis.js";
 import { renderDocument, renderFragment } from "../src/report/html/page.js";
 import { renderMarkdown } from "../src/report/markdown.js";
 import { injectRulesStats, renderRulesStats } from "../src/report/rules-stats.js";
-import { runPool } from "./lib/pool.js";
+import { runPool } from "./lib/cli/pool.js";
 
 /**
  * `npm run build`: every number of every report, from scratch.
@@ -33,7 +33,7 @@ async function compute() {
   const startingHands = computeStartingHands(sizes.startingHands);
   log(`  mains de départ : ${sizes.startingHands} tirages par paquet (${elapsed()})`);
   const tasks = simulationTasks(sizes);
-  const results = await runPool(new URL("./lib/sim-worker.js", import.meta.url), tasks, {
+  const results = await runPool(new URL("./lib/workers/sim-worker.js", import.meta.url), tasks, {
     onProgress: (done, total) => {
       if (done % 100 === 0 || done === total) log(`  parties : ${done}/${total} lots (${elapsed()})`);
     },

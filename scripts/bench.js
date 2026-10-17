@@ -1,8 +1,8 @@
 import { createRng } from "../src/core/random.js";
 import { engineFor } from "../src/sim/bots.js";
-import { solveEndgame } from "../src/sim/endgame.js";
-import { legalMoves } from "../src/sim/game.js";
-import { hardestPuzzles, midGames, moveText } from "./lib/bench-positions.js";
+import { solveEndgame } from "../src/sim/eval/endgame.js";
+import { legalMoves } from "../src/sim/engine/game.js";
+import { hardestPuzzles, midGames, moveText } from "./lib/domain/bench-positions.js";
 
 /**
  * `npm run bench [-- budget seeds engine]`: the yardstick of the experimental

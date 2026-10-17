@@ -1,12 +1,12 @@
-import { wireDeckColors } from "./deck-colors.js";
-import { $, openDialog } from "./dom.js";
-import { setupInput } from "./drag.js";
-import { wireObserve, wireReplays } from "./panels.js";
-import { hasGame, playInput, render as renderPlay, setVisible, wirePlayControls } from "./play.js";
-import { puzzleInput, render as renderPuzzle, showPuzzles, wirePuzzles } from "./puzzles.js";
+import { wireDeckColors } from "./board/deck-colors.js";
+import { $, openDialog } from "./board/dom.js";
+import { setupInput } from "./board/drag.js";
+import { wireObserve, wireReplays } from "./replays/panels.js";
+import { hasGame, playInput, render as renderPlay, setVisible, wirePlayControls } from "./play/play.js";
+import { puzzleInput, render as renderPuzzle, showPuzzles, wirePuzzles } from "./puzzles/puzzles.js";
 import { renderStats } from "./stats.js";
-import { clearTable, wireSuitBar } from "./table.js";
-import { loaded, pause, render as renderViewer, wirePlayer } from "./viewer.js";
+import { clearTable, wireSuitBar } from "./board/table.js";
+import { loaded, pause, render as renderViewer, wirePlayer } from "./replays/viewer.js";
 
 /**
  * Boot: four tabs over one table. "Jouer" and "Puzzles" take input — routed

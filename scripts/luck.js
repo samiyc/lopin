@@ -3,9 +3,9 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DUEL_ROW } from "../src/config/simulations.js";
 import { parseCards } from "../src/core/notation.js";
-import { rulesOf } from "../src/replay/log.js";
-import { runPool } from "./lib/pool.js";
-import { REPLAY_DIRS, isSafeName } from "./lib/replay-files.js";
+import { rulesOf } from "../src/replay/core/log.js";
+import { runPool } from "./lib/cli/pool.js";
+import { REPLAY_DIRS, isSafeName } from "./lib/domain/replay-files.js";
 import { playerTag } from "../src/config/bots.js";
 
 /**
@@ -33,7 +33,7 @@ const tasks = games.flatMap(({ log }, index) => {
   const deck = parseCards(rulesOf(log.rules).spec, log.deck);
   return [0, 1].map((half) => ({ ...DUEL_ROW, players: ["lookahead", "lookahead"], games: GAMES / 2, seed: 7000 + 97 * index + half, fixedDeck: deck }));
 });
-const results = await runPool(new URL("./lib/sim-worker.js", import.meta.url), tasks);
+const results = await runPool(new URL("./lib/workers/sim-worker.js", import.meta.url), tasks);
 
 const rows = games.map(({ log }, index) => {
   const human = log.players.find((player) => player.kind === "human");

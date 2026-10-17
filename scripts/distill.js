@@ -1,13 +1,13 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { createRng } from "../src/core/random.js";
-import { BASE_CORE, DISTILLED, clampUnits, heldOut, valuesAt } from "../src/sim/distill.js";
-import { DUELS_DIR } from "./lib/game-index.js";
-import { applyThreadsOption, runPool, workerCount } from "./lib/pool.js";
+import { BASE_CORE, DISTILLED, clampUnits, heldOut, valuesAt } from "../src/sim/heuristics/distill.js";
+import { DUELS_DIR } from "./lib/domain/game-index.js";
+import { applyThreadsOption, runPool, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run distill -- [--minutes 15] [--threads N] [--rebuild] [--keys pairDiscount] [--name pair]`: the 1.0's core
  * tuned on the oracle (Sami, 04/10: a version at 55 % against the V1). Every
- * weight of src/sim/distill.js moves at once, by SPSA: each round, every
+ * weight of src/sim/heuristics/distill.js moves at once, by SPSA: each round, every
  * thread probes one random direction — the weights nudged one way, then the
  * other, on the same sample of positions — and the weights move along the
  * directions that put the oracle's move in the core's top 8 more often.
@@ -16,9 +16,9 @@ import { applyThreadsOption, runPool, workerCount } from "./lib/pool.js";
  * cached once in oracle/distill-cache.json (`--rebuild` reads them again). One
  * game in four is kept aside: the result is judged there, against the 1.0's
  * core, before any tree sees it. The mean of the run's second half goes to
- * src/sim/distilled-core.js (`ismcts+…+core=dist1`); the run to data/distill.json.
+ * src/sim/heuristics/distilled-core.js (`ismcts+…+core=dist1`); the run to data/distill.json.
  * `--keys`: only those weights move, the others stay the 1.0's (B3: `--keys
- * pairDiscount`); `--name pair`: src/sim/distilled-pair.js and
+ * pairDiscount`); `--name pair`: src/sim/heuristics/distilled-pair.js and
  * data/distill-pair.json instead, so a core under test is never overwritten.
  */
 const args = process.argv.slice(2);
@@ -27,7 +27,7 @@ const minutes = Math.min(20, Number(option("--minutes", 15)));
 applyThreadsOption(args);
 const ROOT = new URL("../", import.meta.url);
 const CACHE = new URL("oracle/distill-cache.json", ROOT);
-const WORKER = new URL("./lib/distill-worker.js", import.meta.url);
+const WORKER = new URL("./lib/workers/distill-worker.js", import.meta.url);
 const SOURCES = ["positions", "positions-v1ref", "positions-banc"];
 const SAMPLE = 1500;
 const [A0, C0, STABILITY] = [400, 1, 10];
@@ -111,7 +111,7 @@ function printTable(rows) {
 
 async function writeCore(values, stamp) {
   const body = JSON.stringify(values, null, 2);
-  await writeFile(new URL(`src/sim/distilled-${NAME}.js`, ROOT), `/** Written by \`npm run distill\` (${stamp}): the 1.0's core tuned on the oracle's moves (distill.js). */\nexport const DISTILLED_CORE = Object.freeze(${body});\n`);
+  await writeFile(new URL(`src/sim/heuristics/distilled-${NAME}.js`, ROOT), `/** Written by \`npm run distill\` (${stamp}): the 1.0's core tuned on the oracle's moves (distill.js). */\nexport const DISTILLED_CORE = Object.freeze(${body});\n`);
 }
 
 const started = Date.now();

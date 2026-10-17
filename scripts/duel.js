@@ -3,15 +3,15 @@ import { BOT_IDS, BOT_LINEUP, botTag, engineOf } from "../src/config/bots.js";
 import { OFFICIAL_RULES } from "../src/config/rules.js";
 import { DUEL_ROW, SEED } from "../src/config/simulations.js";
 import { BOTS, engineFor } from "../src/sim/bots.js";
-import { PROFILES, duelVerdict, isSlowEngine, pointsOf } from "./lib/duel-plan.js";
-import { saveDuel, shouldSave } from "./lib/duel-save.js";
-import { runPool, workerCount } from "./lib/pool.js";
+import { PROFILES, duelVerdict, isSlowEngine, pointsOf } from "./lib/domain/duel-plan.js";
+import { saveDuel, shouldSave } from "./lib/domain/duel-save.js";
+import { runPool, workerCount } from "./lib/cli/pool.js";
 
 /**
  * `npm run duel -- <bot A> <bot B> [--quick | --screen | --long] [--games N] [--page]`:
  * A against B on the recommended rules, from both seats, on every core. Prints
  * A's win rate with its 95 % interval, round after round, and stops as soon as
- * the result is clear (`scripts/lib/duel-plan.js`). `--quick` (the default)
+ * the result is clear (`scripts/lib/domain/duel-plan.js`). `--quick` (the default)
  * sorts ideas in 5 minutes at most, `--screen` in 10; `--long` decides a
  * version in 20 at most; `--games N` plays exactly N games a seat, however
  * long it takes.
@@ -21,10 +21,10 @@ import { runPool, workerCount } from "./lib/pool.js";
  * it for comparison.
  *
  * `--hands weak|strong` deals only decks whose first player starts with a
- * weak or a strong hand (src/sim/hand-classes.js), the same for both seats.
+ * weak or a strong hand (src/sim/eval/hand-classes.js), the same for both seats.
  *
  * The games are kept as replays in duels/ (`--save`, and by default for a
- * long duel or bots at full strength: `scripts/lib/duel-save.js`).
+ * long duel or bots at full strength: `scripts/lib/domain/duel-save.js`).
  *
  * Borders settle as soon as they are full (`early`), the rule every Elo line
  * was measured with. `--page` plays the page's own rule instead
@@ -52,7 +52,7 @@ const profileName = ["long", "screen"].find((name) => args.includes(`--${name}`)
 const profile = PROFILES[profileName];
 const profileLabel = exact ? `${exact} parties` : profileName;
 const endMode = args.includes("--page") ? OFFICIAL_RULES.endMode : "early";
-// `--hands weak|strong`: every deck gives the first player a hand of that class (src/sim/hand-classes.js).
+// `--hands weak|strong`: every deck gives the first player a hand of that class (src/sim/eval/hand-classes.js).
 const handClass = args.includes("--hands") ? args[args.indexOf("--hands") + 1] : null;
 const HAND_LABELS = { weak: "faibles", strong: "fortes" };
 const handsNote = handClass ? `, mains ${HAND_LABELS[handClass]} au 1er joueur` : "";
@@ -116,7 +116,7 @@ while (!verdict.stop) {
       tasks.push({ ...DUEL_ROW, endMode, handClass, openHands, keepWinners: true, keepLogs: save, labels, players, games, seed: base + 104729 * tally.tasks, deals: base + 7 * 104729 * (round + t), dealSeeds: pool?.slice(from, from + games) });
     }
   }
-  const results = await runPool(new URL("./lib/sim-worker.js", import.meta.url), tasks);
+  const results = await runPool(new URL("./lib/workers/sim-worker.js", import.meta.url), tasks);
   results.forEach((result, i) => {
     if (i < tasksPerSeat) tally.first += result.wins[0];
     else tally.second += result.wins[1];

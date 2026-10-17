@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
-import { DUELS_DIR } from "./lib/game-index.js";
-import { doubleVictory, tempoAt } from "./lib/seat-replay.js";
-import { ENGINE_GROUPS, clusteredInterval, emptyTally, endTable, phaseSplit, rowsOf, tallyGame } from "./lib/seat-tally.js";
+import { DUELS_DIR } from "./lib/domain/game-index.js";
+import { doubleVictory, tempoAt } from "./lib/domain/seat-replay.js";
+import { ENGINE_GROUPS, clusteredInterval, emptyTally, endTable, phaseSplit, rowsOf, tallyGame } from "./lib/domain/seat-tally.js";
 
 /**
  * `npm run seats -- [--dir <duels>] [--group trees|exact12|older] [--claims] [--tempo N]`: where the second

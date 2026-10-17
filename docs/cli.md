@@ -3,7 +3,7 @@
 Jouer contre les robots sans navigateur (Chrome reste libre), et laisser un programme ou un
 agent (un LLM) jouer en tour par tour. Le jeu de base seulement (pas d'extension), à la règle de
 la page : une borne se revendique dès qu'un coup la prouve. Rien du moteur n'est réécrit : la
-console joue comme la page (`web/app/runner.js`) et écrit le même replay dans `replays/`, que la
+console joue comme la page (`web/app/replays/runner.js`) et écrit le même replay dans `replays/`, que la
 page liste et que l'Elo compte.
 
 ## Jouer

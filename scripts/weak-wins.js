@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { isJoker, valueOf } from "../src/core/cards.js";
 import { parseCards } from "../src/core/notation.js";
-import { rulesOf } from "../src/replay/log.js";
-import { loadGame, readIndex } from "./lib/game-index.js";
+import { rulesOf } from "../src/replay/core/log.js";
+import { loadGame, readIndex } from "./lib/domain/game-index.js";
 
 /**
  * `npm run weak-wins`: the borders won with low cards — every real card 3 or

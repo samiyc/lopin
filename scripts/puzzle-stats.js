@@ -1,10 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { readAttempts } from "./lib/puzzle-attempts-file.js";
+import { readAttempts } from "./lib/domain/puzzle-attempts-file.js";
 
 /**
  * `npm run puzzle-stats`: Sami's puzzle attempts (data/puzzle-attempts.jsonl,
- * written by the play server; src/replay/puzzle-attempts.js), puzzle by
+ * written by the play server; src/replay/stats/puzzle-attempts.js), puzzle by
  * puzzle — solved at the first try or not, the time it took, the slips, and
  * whether a slip was the core's own favourite move (the trap the core falls
  * in too). The hardest first: a measured difficulty, to tell the simple

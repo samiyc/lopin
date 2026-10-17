@@ -109,7 +109,7 @@ reste dans la pioche. La ligne du bas voit l'autre moitié sur la table, donc
 connaît sa pioche carte par carte.
 
 **La comparaison juste.** Les robots rejouent exactement ce protocole
-(`src/sim/solo.js`), 2 000 fois chacun, sans adversaire. Les chiffres de la partie
+(`src/sim/engine/solo.js`), 2 000 fois chacun, sans adversaire. Les chiffres de la partie
 à deux ne se comparent pas directement : là, une borne déjà perdue ne vaut plus
 qu'on y mette une belle carte.
 

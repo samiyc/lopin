@@ -140,6 +140,13 @@
       "wins": 151,
       "games": 200,
       "source": "duel de 200 parties du 09/10, 2 000 itérations : Le Borné (75,5 %, 69,7 – 81,3 par paires)"
+    },
+    {
+      "a": "oracle-light@1.0",
+      "b": "experimental@1.2",
+      "wins": 225,
+      "games": 420,
+      "source": "trois duels de la nuit du 17/10 (LIGHT_DUEL_1 à 3_OracleLight-Pwl3-Trees2), 10 000 itérations en deux arbres (pwl=3, trees=2) contre 2 000, règle de la page, donnes 12 à 14 : 53,6 % (49,7 – 57,4 par paires)"
     }
   ]
 }

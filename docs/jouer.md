@@ -142,7 +142,7 @@ la main adverse, ce sont les cartes vues nulle part.
 - **Le principe** : tu joues le camp du bas contre un adversaire qui joue
   parfaitement. Seuls quelques coups gagnent, parfois un seul ; à toi de le
   trouver.
-- **Chaque coup est jugé** d'après la solution exacte (`src/sim/endgame.js`). Un
+- **Chaque coup est jugé** d'après la solution exacte (`src/sim/eval/endgame.js`). Un
   faux pas est signalé, avec le coup qu'il fallait jouer.
 - **Boutons** : « Révéler le coup gagnant », « Recommencer ce puzzle », « Puzzle
   suivant ».
@@ -189,12 +189,12 @@ la main adverse, ce sont les cartes vues nulle part.
     gagne sur quatre bornes différentes.
 
 **Stats.** Tout est tiré de tes replays, anciens compris (`/api/stats`,
-`src/replay/stats.js`).
+`src/replay/stats/stats.js`).
 - **Classement Elo** : toi et chaque version de robot, avec sa marge à 95 %.
   - Le Basique vaut 500, comme un joueur qui débute au tennis de table (1000 avant le 01/10 : tout a baissé de 500, les écarts sont les mêmes).
   - Le calcul prend toutes tes parties enregistrées (y compris `replays/OLD/`) et
     les duels entre robots de `data/elo-duels.json`, en un seul ajustement
-    (modèle de Bradley-Terry, `src/replay/elo.js`). Un robot que tu n'as pas
+    (modèle de Bradley-Terry, `src/replay/stats/elo.js`). Un robot que tu n'as pas
     affronté est donc quand même placé par rapport à toi.
   - Les Expérimental y sont mesurés à 2 000 itérations par coup, comme dans la
     page depuis le 11/10 (avant, la page les laissait chercher jusqu'à 10 s : tu
@@ -206,7 +206,7 @@ la main adverse, ce sont les cartes vues nulle part.
 - **Tes parties**, par adversaire et version : parties, victoires, en premier et
   en second, durée moyenne, réflexion moyenne par coup.
 - **Mains de départ** : pour toi et pour chaque robot, les parties gagnées selon
-  sa main de départ, faible, moyenne ou forte (`src/sim/hand-classes.js`, environ
+  sa main de départ, faible, moyenne ou forte (`src/sim/eval/hand-classes.js`, environ
   10 % de mains faibles et 9 % de fortes). Le paquet de chaque replay suffit : les
   anciennes parties comptent aussi.
 - **Les combinaisons qui gagnent les bornes** : la part de chacune des cinq dans
