@@ -246,7 +246,7 @@ lieu de rejouer des parties entières (`src/replay/core/bot-games.js`,
 | comparer deux cœurs de coût différent (plus de 3 % par itération) | à temps égal : `…@t400` contre `…@t400` (à ~1 000 itérations par seconde, `@400` ≈ `@t400`) ; sinon à itérations égales, reproductibles |
 | programmer un traitement pour la nuit | dans `data/backlog.json` : `"status": "scheduled", "notBefore": "2026-10-03T21:00"` |
 | lancer les traitements longs de la nuit (2 h au plus chacun, arrêtés au-delà) | `npm run backlog` (`--list` pour voir la file, `data/backlog.json`) |
-| ranger les traitements finis et lus (n'en garder que 3 dans la file) | `npm run backlog -- --archive` → `data/backlog-done.json` ; `--list` n'affiche que les 3 derniers finis |
+| retrouver les traitements finis (la file ne garde que ceux à venir) | rangés dès leur fin dans `data/backlog-done/AAAA-MM.json` (`scripts/lib/domain/backlog-files.js`) ; `--list` affiche les 3 derniers finis, `--archive` range ceux qu'une édition à la main a laissés dans la file |
 | le nombre de fils de calcul : par défaut tous moins 3, 18 au plus (la moitié jusqu'à 6) ; en forcer N, ou tous moins un | `LOPIN_THREADS=4 npm run …`, `LOPIN_THREADS=max npm run …`, ou `--threads N|max` (docs/cloud.md) |
 | envoyer les calculs sur un serveur loué | voir docs/cloud.md |
 | la file du portable (git pull, lancer, git push) | `npm run backlog -- --queue laptop` : 5 fils sur 8 par défaut, `LOPIN_THREADS=4` pour garder plus de marge (docs/cloud.md) |

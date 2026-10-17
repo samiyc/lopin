@@ -192,6 +192,9 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   for validation**, and those duels and simulations go to the night backlog
   (`data/backlog.json`, `"status": "scheduled"`). Core-against-core duels take
   seconds and are not concerned. Night jobs stay under 2 h each.
+  `data/backlog.json` holds only the jobs to come (Sami, 17/10): a finished one
+  moves at once to `data/backlog-done/YYYY-MM.json`; a reader of finished jobs
+  (stopIf, changelogs) goes through `backlogFiles()` (`scripts/lib/domain/backlog-files.js`).
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.

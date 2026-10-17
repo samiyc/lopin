@@ -50,7 +50,7 @@ Presque rien :
 Ce qui revient du serveur après un lot :
 - `backlog-runs/` (les sorties) ;
 - `oracle/` (les positions lues) ;
-- `data/backlog.json` (les statuts) ;
+- `data/backlog.json` (les jobs à venir) et `data/backlog-done/` (les finis) ;
 - les fichiers de `data/` que les traitements réécrivent (`error-impact.json`,
   `oracle-diffs.json`…).
 

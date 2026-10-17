@@ -1076,7 +1076,7 @@ function drawCost() {
 /* ── VIII · Next ─────────────────────────────────────────── */
 function drawNext() {
   $("next").replaceChildren(...J.next.map(({ when, title, text }) => html("div", { class: "panel" }, html("p", { class: "eyebrow" }, when), html("h3", {}, title), html("p", { class: "small" }, text))));
-  $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- ${DATA.version}</code> (scripts/changelog.js) : les essais de <code>data/changelog-exp-${DATA.version}.json</code>, le banc des cœurs de <code>data/oracle-bench.json</code>, le banc de similitude de <code>data/oracle-diffs-banc.json</code> et <code>data/banc.json</code>, le coût du cœur de <code>data/core-features.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done.json</code>, et ${DATA.commits.length} commits. Le détail de chaque essai : <code>docs/strategie.md</code>.`;
+  $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- ${DATA.version}</code> (scripts/changelog.js) : les essais de <code>data/changelog-exp-${DATA.version}.json</code>, le banc des cœurs de <code>data/oracle-bench.json</code>, le banc de similitude de <code>data/oracle-diffs-banc.json</code> et <code>data/banc.json</code>, le coût du cœur de <code>data/core-features.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done/</code>, et ${DATA.commits.length} commits. Le détail de chaque essai : <code>docs/strategie.md</code>.`;
 }
 
 drawTimeline();

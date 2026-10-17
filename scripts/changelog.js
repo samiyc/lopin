@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { BOT_LINEUP } from "../src/config/bots.js";
+import { backlogFiles } from "./lib/domain/backlog-files.js";
 
 /**
  * `npm run changelog -- [1.0 | oracle]`: the changelog of a version of the
@@ -83,7 +84,7 @@ const name = version === "oracle" ? "changelog-oracle" : `changelog-exp-${versio
 const [journal, template, doneFile, queueFile] = await Promise.all([
   read(`data/${name}.json`),
   expandTemplate(version),
-  read("data/backlog-done.json"),
+  backlogFiles().readArchive(),
   read("data/backlog.json"),
 ]);
 const sinceIso = journal.since.replace(" ", "T");

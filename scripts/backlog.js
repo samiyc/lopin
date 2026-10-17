@@ -1,9 +1,10 @@
 import { spawn } from "node:child_process";
 import { createWriteStream, readFileSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { localTimestamp } from "../src/replay/core/log.js";
+import { backlogFiles } from "./lib/domain/backlog-files.js";
 import { stopReason } from "./lib/domain/backlog-stop.js";
 import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
 
@@ -21,9 +22,11 @@ import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
  * A job `scheduled` with `notBefore` (an ISO date) waits until then: kept for
  * the night, it is not started by a run that goes on into the day.
  *
- * `--list` shows the jobs to come and the last `SHOWN_DONE` finished ones;
- * `--archive` moves the older finished ones (done, failed, timeout) to
- * data/backlog-done.json, the queue's history, once their results are read.
+ * The file holds only the jobs to come (Sami, 17/10): a finished one (done,
+ * failed, timeout, skipped) moves at once to data/backlog-done/, one file per
+ * month (scripts/lib/domain/backlog-files.js). `--list` shows the jobs to come
+ * and the last `SHOWN_DONE` finished ones; `--archive` moves the finished jobs
+ * a hand edit left in the queue (every run does it first too).
  *
  * `--threads N|max`: every job inherits `LOPIN_THREADS`, the number of worker
  * threads its pools use (scripts/lib/cli/pool.js). Without it, the default: every
@@ -47,11 +50,9 @@ applyThreadsOption(args);
 const threads = workerCount();
 if (queue !== null && !/^[a-z0-9-]+$/.test(queue)) throw new Error(`File inconnue : « ${queue} »`);
 const suffix = queue ? `-${queue}` : "";
-const FILE = `${ROOT}data/backlog${suffix}.json`;
 const RUNS_DIR = queue ? `data/runs${suffix}/` : "backlog-runs/";
 const RUNS = `${ROOT}${RUNS_DIR}`;
-const readBacklog = async () => JSON.parse(await readFile(FILE, "utf8"));
-const saveBacklog = (backlog) => writeFile(FILE, `${JSON.stringify(backlog, null, 2)}\n`);
+const { readQueue: readBacklog, saveQueue: saveBacklog, readArchive, archiveFinished } = backlogFiles({ suffix });
 
 /** Stops `child` and everything it started (on Windows the shell's children outlive it otherwise). */
 function stopTree(child) {
@@ -93,10 +94,7 @@ const statusOf = (code) => {
 /** May `job` start now? A "todo" job always; a "scheduled" one once its `notBefore` has come. */
 const ready = (job) => job.status === "todo" || (job.status === "scheduled" && Date.now() >= Date.parse(job.notBefore));
 
-const backlog = await readBacklog();
-const pending = backlog.jobs.filter(ready);
 const SHOWN_DONE = 3;
-const finished = (job) => ["done", "failed", "timeout", "skipped"].includes(job.status);
 
 function lineOf(job) {
   const done = job.doneAt ? " (fait le " + job.doneAt + ", " + job.minutes + " min)" : "";
@@ -106,22 +104,19 @@ function lineOf(job) {
 }
 
 if (args.includes("--list")) {
-  const older = backlog.jobs.filter(finished).slice(0, -SHOWN_DONE);
-  if (older.length > 0) console.log(`(${older.length} traitements finis plus anciens masqués : npm run backlog -- --archive les range dans data/backlog-done.json)`);
-  for (const job of backlog.jobs) if (!older.includes(job)) console.log(lineOf(job));
+  const archived = await readArchive();
+  if (archived.length > SHOWN_DONE) console.log(`(${archived.length - SHOWN_DONE} traitements finis plus anciens dans data/backlog-done${suffix}/)`);
+  for (const job of [...archived.slice(-SHOWN_DONE), ...(await readBacklog()).jobs]) console.log(lineOf(job));
   process.exit(0);
 }
 
+// Finished jobs a hand edit left in the queue go to the archive, before a run as on demand.
+const moved = await archiveFinished();
 if (args.includes("--archive")) {
-  const older = backlog.jobs.filter(finished).slice(0, -SHOWN_DONE);
-  const ARCHIVE = `${ROOT}data/backlog-done${suffix}.json`;
-  const history = await readFile(ARCHIVE, "utf8").then((text) => JSON.parse(text), () => ({ note: "Les traitements de nuit finis et lus, sortis de la file (npm run backlog -- --archive).", jobs: [] }));
-  await writeFile(ARCHIVE, `${JSON.stringify({ ...history, jobs: [...history.jobs, ...older] }, null, 2)}
-`);
-  await saveBacklog({ ...backlog, jobs: backlog.jobs.filter((job) => !older.includes(job)) });
-  console.log(`${older.length} traitements finis rangés dans ${ARCHIVE.slice(ROOT.length)}.`);
+  console.log(`${moved} traitement(s) fini(s) rangé(s) dans data/backlog-done${suffix}/.`);
   process.exit(0);
 }
+const pending = (await readBacklog()).jobs.filter(ready);
 await mkdir(RUNS, { recursive: true });
 const onThreads = `, sur ${threads} fils`;
 console.log(`${pending.length} traitement(s) à faire${onThreads}.`);
@@ -140,10 +135,12 @@ const outputOf = (job) => {
 /** Cancels `job` before it starts, when its `stopIf` says so; true if it did. */
 async function skipped(job) {
   const fresh = await readBacklog();
-  const reason = stopReason(job, fresh.jobs, outputOf);
+  // The duels a `stopIf` names are finished, so archived: both places are searched.
+  const reason = stopReason(job, [...(await readArchive()), ...fresh.jobs], outputOf);
   if (!reason) return false;
   Object.assign(fresh.jobs.find((candidate) => candidate.id === job.id), { status: "skipped", doneAt: localTimestamp().slice(0, 16), minutes: 0, reason });
   await saveBacklog(fresh);
+  await archiveFinished();
   console.log(`■ ${job.id} : annulé — ${reason}`);
   return true;
 }
@@ -160,5 +157,6 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   const entry = fresh.jobs.find((candidate) => candidate.id === job.id);
   Object.assign(entry, { status: statusOf(code), doneAt: localTimestamp().slice(0, 16), minutes: Math.round((Date.now() - started) / 60000), output });
   await saveBacklog(fresh);
+  await archiveFinished();
   console.log(`■ ${job.id} : ${entry.status}, ${entry.minutes} min → ${output}`);
 }

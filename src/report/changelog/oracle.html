@@ -429,7 +429,7 @@ document.querySelectorAll("[data-sort]").forEach((button) => button.addEventList
 /* ── III · Next ─────────────────────────────────────────── */
 function drawNext() {
   $("next").replaceChildren(...J.next.map(({ when, title, text }) => html("div", { class: "panel" }, html("p", { class: "eyebrow" }, when), html("h3", {}, title), html("p", { class: "small" }, text))));
-  $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- oracle</code> (scripts/changelog.js) : les essais de <code>data/changelog-oracle.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done.json</code>, et les ${COMMITS.length} commits des oracles. Le détail de chaque essai : <code>docs/strategie.md</code> ; le cap : <code>docs/1.3-to-oracle-shift.md</code>.`;
+  $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- oracle</code> (scripts/changelog.js) : les essais de <code>data/changelog-oracle.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done/</code>, et les ${COMMITS.length} commits des oracles. Le détail de chaque essai : <code>docs/strategie.md</code> ; le cap : <code>docs/1.3-to-oracle-shift.md</code>.`;
 }
 
 drawTimeline();
