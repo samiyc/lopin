@@ -15,9 +15,10 @@ import { clearTable, renderTable } from "../board/table.js";
 import { settledAtEnd, tableView } from "../replays/view.js";
 
 /**
- * "Jouer": the human against a bot of the line-up, on the official rules.
- * Borders are settled only once every card is down, then revealed one by one
- * in the order they filled. The game's log is saved when it ends — never
+ * "Jouer": the human against a bot of the line-up, on the official rules
+ * (`claim-end`): a proved border is claimed right after the move that proves
+ * it, and the borders left unclaimed are settled at the end, revealed one by
+ * one in the order they filled. The game's log is saved when it ends — never
  * after "Recommencer". One game at a time, so its state lives here.
  *
  * Each human move is timed (`thinkMs` in the log) by a clock that stops

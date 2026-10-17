@@ -30,7 +30,7 @@ npm run duel -- a b [--long] [--page]  # duel, mirrored decks, stops when clear;
 npm run policy                # rollout policy vs the solver on self-play endgames: the yardstick before a duel
 npm run fingerprint -- a,b n  # hash of every move in seeded games: optimisations must keep it
 npm run replays               # summary of replays/ + data/replays/
-npm run build                 # all statistics → out/ + rules stats box (thread pool, ~3 min)
+npm run build                 # all statistics → out/ + rules stats box (thread pool, ~1 min 20 on 18 threads)
 npm run build:quick           # small samples, for iterating on report layout
 node scripts/build.js --reports-only   # re-render reports from out/data.json
 npm run pdf                   # headless Edge/Chrome prints regles/regles.html
@@ -513,7 +513,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   were not kept (heavy, some carried GPS metadata).
 - **The rules sheet ships its fonts** (`regles/fonts/`, OFL). A headless print
   does not wait for Google Fonts: with remote fonts the PDF silently fell back
-  to Times. After editing the sheet, check both pages still fit A4 — `.page` is
+  to Times. After editing the sheet, check its three pages (the rules on two, the extension on the third) still fit A4 — `.page` is
   `overflow: hidden` in print, so overflow is cut, not flowed.
 
 ## Domain notes

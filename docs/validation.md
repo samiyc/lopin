@@ -9,7 +9,7 @@ moins de 30 minutes**.
 | Poste | Avant | Pourquoi |
 |---|---|---|
 | Tests (`npm test`) | 9 s | ce n'était pas le problème |
-| Rapport (`npm run build`) | 3,5 min | un million de parties, relancé à chaque changement du Stratège |
+| Rapport (`npm run build`) | 1 min 20 (18 fils, 17/10) | un million de parties, relancé à chaque changement du Stratège |
 | Duel entre deux robots rapides | 10 à 30 s | rien à redire |
 | **Duel avec le Stratège 2** | **10 à 25 min chacun**, 4 ou 5 par tâche | chaque partie rejoue 64 fins de partie par coup ; 800 parties d'office, même quand l'écart était net au bout de 200 |
 | Attentes navigateur | quelques minutes | onglet en arrière-plan : les minuteries sont ralenties à 1 s |

@@ -34,7 +34,7 @@ rejoue la fin de partie avant chaque coup. Voir `docs/analyse-replays.md` et
 npm run play      # puis http://127.0.0.1:4742/
 ```
 
-Dans le navigateur, contre le robot Basique, Stratège ou Expérimental, avec les
+Dans le navigateur, contre le robot Basique, Stratège, Expérimental ou Oracle light, avec les
 règles de la fiche. Deux autres onglets : regarder deux robots s'affronter, et
 relire les parties enregistrées. Chaque partie contre un robot est enregistrée
 automatiquement. Mode d'emploi : `docs/jouer.md`.
@@ -43,11 +43,13 @@ automatiquement. Mode d'emploi : `docs/jouer.md`.
 
 | Où | Quoi |
 |---|---|
-| `regles/regles.pdf` | **la fiche de règles à imprimer** (A4 recto-verso) |
+| `regles/regles.pdf` | **la fiche de règles à imprimer** (3 pages A4 : les règles sur 2, l'extension sur la 3e) |
 | `web/` | le jeu dans le navigateur (`npm run play`) |
 | `out/deck-options.html` | « Deck options » : le rapport complet, interactif (s'ouvre d'un double-clic) |
 | `out/deck-options.md` | le même rapport en ASCII art |
-| `out/changelog-exp-1.2.html` | « Changelog Exp v1.2 », en cours : les pièges de fin de partie du cœur, le suivi des puzzles, l'extension (`npm run changelog -- 1.2`) |
+| `out/changelog-oracle.html` | « Changelog Oracle », en cours : les juges, l'oracle profond, l'Oracle light de la page, les sièges (`npm run changelog -- oracle`) |
+| `out/changelog-exp-1.3.html` | « Changelog Exp v1.3 », en cours : tout ce qui a été tenté pour battre la 1.2 à 2 000 itérations (`npm run changelog -- 1.3`) |
+| `out/changelog-exp-1.2.html` | « Changelog Exp v1.2 » : les pièges de fin de partie du cœur, le suivi des puzzles, l'extension (`npm run changelog -- 1.2`) |
 | `out/changelog-exp-1.1.html` | « Changelog Exp v1.1 » : la base de référence V1 + Oracle et tout ce qui a été tenté du 1.0 au 1.1 (sorti le 06/10 : 7 réponses par étage) (`npm run changelog -- 1.1`) |
 | `out/changelog-exp-1.0.html` | « Changelog Exp v1.0 » : tout ce qui a été tenté du 0.9 au 1.0 (`npm run changelog -- 1.0`) ; aussi `changelog-exp-0.8.html` et `changelog-exp-0.6.html` |
 | `out/extension.html` | « L'extension » : les six cartes bonus et leur équilibre mesuré (`npm run extension`, règle dans `docs/extension.md`) |
@@ -59,6 +61,16 @@ automatiquement. Mode d'emploi : `docs/jouer.md`.
 | `docs/strategie.md` | la stratégie des robots, principe par principe, avec ses tests et ses mesures |
 | `docs/noms.md` | propositions de noms |
 | `docs/methode.md` | méthode, hypothèses et limites des calculs |
+| `docs/commandes.md` | toutes les commandes `npm run`, rangées par usage |
+| `docs/glossaire.md` | le vocabulaire des mesures : l'arbre, les validations, les noms de versions et de jobs |
+| `docs/validation.md` | quelle validation lancer selon la question, et ce qu'elle coûte |
+| `docs/extension.md` | l'extension : les six cartes bonus et leur équilibre |
+| `docs/cli.md` | jouer dans la console, pour un humain ou un agent |
+| `docs/sieges.md` | l'avantage du siège et sa compensation |
+| `docs/priorites-1.3.md`, `docs/1.3-to-oracle-shift.md` | la recherche d'une 1.3, puis le passage aux oracles |
+| `docs/analyse-arbre-ismcts.md` | la forme de l'arbre ISMCTS, mesurée sur 1 000 positions |
+| `docs/cloud.md` | faire tourner les calculs longs ailleurs (cloud, portable) |
+| `docs/ecarts-spec-dev-test.md` | l'audit du 17/10 : écarts entre docs, code et tests, et leur suivi |
 
 ## Commandes
 
@@ -69,7 +81,7 @@ Les mots des mesures (l'arbre, les validations, le nom des versions et des jobs)
 npm run play      # le jeu dans le navigateur, http://127.0.0.1:4742/
 npm run duel -- experimental stratege 2000   # deux robots face à face
 npm run replays   # bilan des parties enregistrées
-npm run build     # recalcule toutes les statistiques → out/ (environ 3 min)
+npm run build     # recalcule toutes les statistiques → out/ (environ 1 min 20 sur 18 fils)
 npm run pdf       # regles/regles.html → regles/regles.pdf (Edge ou Chrome)
 npm run check     # lint + tests, avant chaque commit
 npm run backlog   # les longs traitements de la nuit, l'un après l'autre (data/backlog.json)

@@ -62,7 +62,7 @@ Input exemple: 7h4 (7Coeur sur la borne 4)
 
 - L'en-tête : le tour, la pioche (`DECK`), les cartes en main du robot (`OHAND`), puis le
   dernier échange : ton coup (`U:8H1`, le 8♥ sur la borne 1) et celui du robot (`EXP:9T1`, les
-  trois premières lettres de son nom : `EXP`, `STR`, `BAS`). Jusqu'à l'échange, la largeur ne
+  trois premières lettres de son nom : `EXP`, `STR`, `BAS`, `ORA`). Jusqu'à l'échange, la largeur ne
   bouge pas : le tour et la pioche sur deux chiffres (`TURN:05`, `DECK:07`), `DECK:--` quand la
   pioche est vide ; seul l'échange s'allonge d'un caractère pour un 10 (`U:10H1`).
 - La deuxième ligne : pour chaque couleur, les cartes que tu vois (le plateau et ta main) sur 10,

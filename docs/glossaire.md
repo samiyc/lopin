@@ -253,12 +253,15 @@ la main peut faire sont une grande part du jugement du cœur.
 ## Mesurer une version
 
 - **V1.1** : l'Expérimental 1.1 (`ismcts+widen=7+depth=5+core=stfig6@2000`, Tree-7w), sorti le 06/10 :
-  la version à battre depuis. Les mesures du 04/10 au 06/10 disent « contre le V1 » : c'est le 1.0.
+  la version à battre jusqu'au 08/10. Les mesures du 04/10 au 06/10 disent « contre le V1 » : c'est le 1.0.
+- **V1.2** : l'Expérimental 1.2 (`ismcts+widen=7+depth=5+core=stfig6+exact=12@2000`, `ExactEnd12`),
+  sorti le 08/10 : la version à battre depuis, celle de la page.
 - **V1** : l'Expérimental 1.0 (`ismcts+widen=3+depth=5+core=stfig6`), dans
   le labo à 2 000 itérations par coup depuis le 04/10. On travaille toujours sur la dernière
   version : les nouvelles se nomment par ce qu'elles changent, sans numéro.
-- **Le labo** : les parties robot contre robot, hors du jeu. Dans le jeu, le robot réfléchit
-  jusqu'à 10 s par coup (environ 13 000 itérations).
+- **Le labo** : les parties robot contre robot, hors du jeu. Dans le jeu, l'Expérimental joue ses
+  2 000 itérations par coup, 10 s au plus (depuis le 11/10 ; avant, il cherchait 10 s, environ
+  13 000 itérations).
 - **Une paire** : une même donne jouée deux fois, chaque version commençant une fois. La chance
   des cartes s'y annule en grande partie ; le score d'une paire va de 0 à 1.
 - **Un jeu de donnes** (`--offset N`) : une série de donnes tirées d'une graine
@@ -411,12 +414,12 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   3`) : la racine de la 1.2 (8 candidats) avec l'élargissement progressif, 57,1 % contre la 1.2@2000 sur
   280 parties — le premier juge plus fort qu'elle. Il relit les parties de la 1.2 sur le même corpus
   qu'Oracle1, pour comparer leurs avis position par position.
-- **Omniscient 1.0** (Sami, 15/10, à construire plus tard) : un moteur qui voit tout — les deux mains et
+- **Omniscient 1.0** (Sami, 15/10 ; construit le 16/10) : un moteur qui voit tout — les deux mains et
   l'ordre de la pioche — et joue le jeu à information parfaite qui en résulte (un MCTS sans tirage des
   cartes cachées, puis le solveur exact bien avant 12 cartes). Ce n'est pas un oracle : son meilleur coup
   exploite la pioche qu'il voit (« fusion de stratégies »), il ne juge donc pas les coups de la 1.2, sauf
   en toute fin de partie. Il juge **la donne** : qui gagne avec un jeu parfait des deux côtés, et de
-  combien. Le détail : `docs/1.3-to-oracle-shift.md`. **Construit le 16/10** : l'option `+omniscient=1` de
+  combien. Le détail : `docs/1.3-to-oracle-shift.md`. **Le code** : l'option `+omniscient=1` de
   l'ISMCTS (`seeAll` dans `lookahead.js` : chaque itération part de la vraie donne au lieu d'en tirer une),
   sur n'importe quel arbre, par exemple `ismcts+widen=7+depth=5+core=stfig6+exact=12+omniscient=1@400` ; le
   juge de la donne est `npm run deals`. Son solveur exact compte **les mains et la pioche** (`exact=N` :

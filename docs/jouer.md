@@ -20,10 +20,9 @@ côte, gagne.
   les deux atteignent la victoire sur le même coup, elle va à celui qui a joué. La preuve ne s'appuie que sur les cartes de la table : sa propre
   main compte parmi ce que l'adversaire pourrait tenir. La page revendique pour
   toi, automatiquement. Une borne revendiquée ne prend plus de carte.
-  - La fiche imprimée n'en parle pas : elle règle une borne dès que ses deux
-    côtés ont 3 cartes, ce que ce mode respecte. La revendication d'une borne
-    inachevée reste une finesse du jeu en ligne. Le verso de la fiche n'a plus
-    de place, et elle est écrite en gros caractères.
+  - La fiche imprimée règle une borne dès que ses deux côtés ont 3 cartes, ce
+    que ce mode respecte, et décrit la revendication dans un encadré à part,
+    « Pour les habitués : prendre une borne plus tôt » (page 2).
 - **La partie s'arrête dès la victoire**, sans jouer les cartes restantes : 97 %
   des parties entre robots finissent avant la dernière carte, en 37 coups en
   moyenne au lieu de 42.
@@ -179,6 +178,12 @@ la main adverse, ce sont les cartes vues nulle part.
   --core-fails --keep <favoris>` ; un numéro retiré n'est jamais réutilisé.
   L'adversaire répond en quelques dizaines de millisecondes en général, jusqu'à
   7 s dans le pire des 100.
+- **Aujourd'hui** (17/10) : 212 puzzles en quatre familles (`kind` dans
+  `web/data/puzzles.json`, `web/app/puzzles/puzzle-kinds.js`) : 163 fins de
+  partie (dont #422 à #447, ajoutées le 16/10), 8 gains immédiats, 21 doubles
+  menaces (#401 à #421, `npm run puzzles -- --fork`) et 20 doubles tours (#501 à
+  #520, `--pass` : le coup gagnant laisse l'adversaire sans coup légal, il passe
+  et tu rejoues).
 - **Gain immédiat** (8 gardés, `npm run puzzles:immediate`, `-- --add` pour
   en ajouter) : il reste une
   pioche, et la main adverse est cachée. Un seul coup, parfois deux ou trois, te
@@ -198,8 +203,9 @@ la main adverse, ce sont les cartes vues nulle part.
     affronté est donc quand même placé par rapport à toi.
   - Les Expérimental y sont mesurés à 2 000 itérations par coup, comme dans la
     page depuis le 11/10 (avant, la page les laissait chercher jusqu'à 10 s : tu
-    jouais contre plus fort que la version classée). Seule différence : dans la
-    page, il réfléchit aussi pendant ton tour.
+    jouais contre plus fort que la version classée). Ils ne réfléchissent pas
+    pendant ton tour : un arbre ISMCTS n'en tirait rien et y perdait des
+    itérations (coupé le 16/10 ; seule la recherche plate du 0.7 le fait encore).
   - Seules les 3 dernières versions de chaque robot sont affichées
     (`KEPT_VERSIONS`, `src/config/bots.js`), ici comme dans les autres
     tableaux. Tes parties contre les plus anciennes comptent toujours dans ton Elo.
@@ -217,12 +223,15 @@ la main adverse, ce sont les cartes vues nulle part.
 
 ## Les robots
 
+Quatre robots, du plus faible au plus fort (`BOT_LINEUP`, `src/config/bots.js`).
+
 | Robot | Version | Ce qu'il fait |
 |---|---|---|
 | **Basique** | 1.0 | Joue la carte qui vaut le plus à l'instant T, face à ce que l'adversaire construit. |
 | **Stratège** | 2.1 | **Il anticipe.** Il prend ses 4 meilleurs coups selon son cœur, le Stratège 1.2 (plus bas). Pour chacun, il rejoue 16 fois la fin de la partie en distribuant au hasard les cartes qu'il ne voit pas. Il garde le coup qui gagne le plus souvent, en tenant un peu compte de l'avis du cœur. Le 2.0 battait le cœur 1.1 dans 74 % des parties, et le 2.1 bat le 2.0 dans 55 %. |
 | Stratège 1.2 | (cœur du 2.1) | Le Basique, plus les trois habitudes de Sami : garder le joker pour un Brelan, ouvrir au milieu une couleur à la fois, préférer une suite de même couleur à une paire. Plus trois idées tirées des parties en ligne : les trois bornes du milieu seulement pour un départ solide ; jamais la même valeur seule sur deux bornes ; ne jamais séparer deux cartes de même couleur qui se suivent (1.2). C'est lui qui joue les statistiques du rapport : le 2.1 est trop lent pour un million de parties. Le détail : `docs/strategie.md`. |
 | **Expérimental** | 1.2 | **Depuis le 1.2, il résout exactement la fin de partie à la racine dès 12 cartes restantes.** Pioche vide, si la somme de sa main et des cartes restantes est ≤ 12, le solveur exact rétrograde calcule à coup sûr le chemin gagnant (`exact=12`). Il bat le 1.1 dans 52,7 % des parties (fourchette 50,5 – 54,8 %, 1 500 parties) et franchit pour la première fois le cap symbolique des 1 000 Elo (1 003 ± 18). Il conserve la recherche en arbre ISMCTS sur 5 coups d'avance et 7 réponses par niveau (`widen=7`). |
+| **Oracle light** | 1.0 | **L'oracle de l'atelier, allégé** (16/10). Le même arbre, mais 10 coups d'avance et 10 000 itérations, partagées entre deux arbres de 5 000 : un par fil du navigateur (`think.workers`), leurs visites additionnées (`web/app/workers/think-join.js`). Il bat l'Expérimental 1.2 dans 53,6 % des parties (49,7 – 57,4 %, 420 parties), en 2 à 7 s par coup. |
 
 Le Borné 1.0 (l'arbre canalisé : 2 bornes au plus par carte, 5 réponses par étage) a quitté la
 liste le 11/10 : **45,9 %** contre l'Expérimental 1.2 sur 1 000 parties (43,3 – 48,5). Ses replays
@@ -293,7 +302,7 @@ npm run policy    # la politique de simulation face au solveur, sur les fins de 
 
 Le bilan donne tes résultats contre chaque robot, les combinaisons faites de
 chaque côté et l'usage des jokers. Il donne aussi le pourcentage de tes coups
-identiques au meilleur choix du Stratège 1.1, tes plus grands écarts avec lui, et tes
+identiques au meilleur choix du Stratège 1.2, tes plus grands écarts avec lui, et tes
 coups les plus longs à jouer.
 C'est la matière pour améliorer le robot, ou ton jeu.
 

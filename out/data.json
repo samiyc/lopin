@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-24T13:07:24.260Z",
+ "generatedAt": "2026-10-17T14:05:55.839Z",
  "seed": 20260922,
  "quick": false,
  "sizes": {
@@ -2839,7 +2839,8 @@
     "decidedBy": {
      "formation": 9734,
      "sum": 3503,
-     "first": 276
+     "first": 276,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -2872,7 +2873,8 @@
      "decidedBy": {
       "formation": 0.7203433730481759,
       "sum": 0.2592318508103308,
-      "first": 0.020424776141493378
+      "first": 0.020424776141493378,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -2909,7 +2911,8 @@
     "decidedBy": {
      "formation": 1093,
      "sum": 5280,
-     "first": 388
+     "first": 388,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -2942,7 +2945,8 @@
      "decidedBy": {
       "formation": 0.16166247596509392,
       "sum": 0.7809495636740127,
-      "first": 0.05738796036089336
+      "first": 0.05738796036089336,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -2979,7 +2983,8 @@
     "decidedBy": {
      "formation": 9285,
      "sum": 3913,
-     "first": 332
+     "first": 332,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -3012,7 +3017,8 @@
      "decidedBy": {
       "formation": 0.6862527716186253,
       "sum": 0.2892091648189209,
-      "first": 0.024538063562453808
+      "first": 0.024538063562453808,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -3054,7 +3060,8 @@
     "decidedBy": {
      "formation": 8275,
      "sum": 2474,
-     "first": 293
+     "first": 293,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -3087,7 +3094,8 @@
      "decidedBy": {
       "formation": 0.7494113385256295,
       "sum": 0.2240536134758196,
-      "first": 0.026535047998550988
+      "first": 0.026535047998550988,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -3124,7 +3132,8 @@
     "decidedBy": {
      "formation": 1236,
      "sum": 4024,
-     "first": 369
+     "first": 369,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -3157,7 +3166,8 @@
      "decidedBy": {
       "formation": 0.21957718955409486,
       "sum": 0.7148694261858234,
-      "first": 0.06555338426008173
+      "first": 0.06555338426008173,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -3194,7 +3204,8 @@
     "decidedBy": {
      "formation": 8052,
      "sum": 2769,
-     "first": 275
+     "first": 275,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 0,
@@ -3227,7 +3238,8 @@
      "decidedBy": {
       "formation": 0.7256669069935112,
       "sum": 0.2495493871665465,
-      "first": 0.02478370583994232
+      "first": 0.02478370583994232,
+      "claim": 0
      },
      "jokerEdge": null
     }
@@ -3269,7 +3281,8 @@
     "decidedBy": {
      "formation": 8215,
      "sum": 2710,
-     "first": 162
+     "first": 162,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1129,
@@ -3302,7 +3315,8 @@
      "decidedBy": {
       "formation": 0.7409578785965545,
       "sum": 0.24443041399837648,
-      "first": 0.014611707405068999
+      "first": 0.014611707405068999,
+      "claim": 0
      },
      "jokerEdge": 0.7573073516386183
     }
@@ -3339,7 +3353,8 @@
     "decidedBy": {
      "formation": 1640,
      "sum": 3687,
-     "first": 203
+     "first": 203,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 529,
@@ -3372,7 +3387,8 @@
      "decidedBy": {
       "formation": 0.2965641952983725,
       "sum": 0.6667269439421338,
-      "first": 0.03670886075949367
+      "first": 0.03670886075949367,
+      "claim": 0
      },
      "jokerEdge": 0.7145557655954632
     }
@@ -3409,7 +3425,8 @@
     "decidedBy": {
      "formation": 7261,
      "sum": 3539,
-     "first": 236
+     "first": 236,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 996,
@@ -3442,7 +3459,8 @@
      "decidedBy": {
       "formation": 0.6579376585719463,
       "sum": 0.32067778180500184,
-      "first": 0.02138455962305183
+      "first": 0.02138455962305183,
+      "claim": 0
      },
      "jokerEdge": 0.7610441767068273
     }
@@ -3484,7 +3502,8 @@
     "decidedBy": {
      "formation": 8303,
      "sum": 2685,
-     "first": 167
+     "first": 167,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1126,
@@ -3517,7 +3536,8 @@
      "decidedBy": {
       "formation": 0.7443298969072165,
       "sum": 0.24069923800986104,
-      "first": 0.014970865082922457
+      "first": 0.014970865082922457,
+      "claim": 0
      },
      "jokerEdge": 0.7131438721136767
     }
@@ -3554,7 +3574,8 @@
     "decidedBy": {
      "formation": 1605,
      "sum": 3683,
-     "first": 225
+     "first": 225,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 562,
@@ -3587,7 +3608,8 @@
      "decidedBy": {
       "formation": 0.29113005623072735,
       "sum": 0.6680573190640304,
-      "first": 0.040812624705242155
+      "first": 0.040812624705242155,
+      "claim": 0
      },
      "jokerEdge": 0.7064056939501779
     }
@@ -3624,7 +3646,8 @@
     "decidedBy": {
      "formation": 7087,
      "sum": 3623,
-     "first": 232
+     "first": 232,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 973,
@@ -3657,7 +3680,8 @@
      "decidedBy": {
       "formation": 0.6476878084445257,
       "sum": 0.3311094863827454,
-      "first": 0.021202705172728934
+      "first": 0.021202705172728934,
+      "claim": 0
      },
      "jokerEdge": 0.7615621788283659
     }
@@ -3699,7 +3723,8 @@
     "decidedBy": {
      "formation": 7996,
      "sum": 2932,
-     "first": 171
+     "first": 171,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 970,
@@ -3732,7 +3757,8 @@
      "decidedBy": {
       "formation": 0.7204252635372556,
       "sum": 0.2641679430579332,
-      "first": 0.015406793404811244
+      "first": 0.015406793404811244,
+      "claim": 0
      },
      "jokerEdge": 0.6597938144329897
     }
@@ -3769,7 +3795,8 @@
     "decidedBy": {
      "formation": 1451,
      "sum": 3866,
-     "first": 240
+     "first": 240,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 536,
@@ -3802,7 +3829,8 @@
      "decidedBy": {
       "formation": 0.2611121108511787,
       "sum": 0.6956991182292603,
-      "first": 0.043188770919560915
+      "first": 0.043188770919560915,
+      "claim": 0
      },
      "jokerEdge": 0.6828358208955224
     }
@@ -3839,7 +3867,8 @@
     "decidedBy": {
      "formation": 7480,
      "sum": 3384,
-     "first": 224
+     "first": 224,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1018,
@@ -3872,7 +3901,8 @@
      "decidedBy": {
       "formation": 0.6746031746031746,
       "sum": 0.3051948051948052,
-      "first": 0.020202020202020204
+      "first": 0.020202020202020204,
+      "claim": 0
      },
      "jokerEdge": 0.6846758349705304
     }
@@ -3914,7 +3944,8 @@
     "decidedBy": {
      "formation": 8256,
      "sum": 2552,
-     "first": 141
+     "first": 141,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1037,
@@ -3947,7 +3978,8 @@
      "decidedBy": {
       "formation": 0.7540414649739702,
       "sum": 0.23308064663439584,
-      "first": 0.01287788839163394
+      "first": 0.01287788839163394,
+      "claim": 0
      },
      "jokerEdge": 0.7791706846673095
     }
@@ -3984,7 +4016,8 @@
     "decidedBy": {
      "formation": 1679,
      "sum": 3637,
-     "first": 180
+     "first": 180,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 517,
@@ -4017,7 +4050,8 @@
      "decidedBy": {
       "formation": 0.3054949053857351,
       "sum": 0.6617540029112081,
-      "first": 0.03275109170305677
+      "first": 0.03275109170305677,
+      "claim": 0
      },
      "jokerEdge": 0.7059961315280464
     }
@@ -4059,7 +4093,8 @@
     "decidedBy": {
      "formation": 8363,
      "sum": 2540,
-     "first": 123
+     "first": 123,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1100,
@@ -4092,7 +4127,8 @@
      "decidedBy": {
       "formation": 0.7584799564665337,
       "sum": 0.23036459278070015,
-      "first": 0.011155450752766189
+      "first": 0.011155450752766189,
+      "claim": 0
      },
      "jokerEdge": 0.7572727272727273
     }
@@ -4129,7 +4165,8 @@
     "decidedBy": {
      "formation": 1670,
      "sum": 3722,
-     "first": 190
+     "first": 190,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 532,
@@ -4162,7 +4199,8 @@
      "decidedBy": {
       "formation": 0.2991759226083841,
       "sum": 0.666786098172698,
-      "first": 0.03403797921891795
+      "first": 0.03403797921891795,
+      "claim": 0
      },
      "jokerEdge": 0.6879699248120301
     }
@@ -4204,7 +4242,8 @@
     "decidedBy": {
      "formation": 8042,
      "sum": 2834,
-     "first": 154
+     "first": 154,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 959,
@@ -4237,7 +4276,8 @@
      "decidedBy": {
       "formation": 0.729102447869447,
       "sum": 0.25693563009972803,
-      "first": 0.013961922030825023
+      "first": 0.013961922030825023,
+      "claim": 0
      },
      "jokerEdge": 0.7580813347236705
     }
@@ -4274,7 +4314,8 @@
     "decidedBy": {
      "formation": 1482,
      "sum": 3789,
-     "first": 233
+     "first": 233,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 547,
@@ -4307,7 +4348,8 @@
      "decidedBy": {
       "formation": 0.26925872093023256,
       "sum": 0.6884084302325582,
-      "first": 0.0423328488372093
+      "first": 0.0423328488372093,
+      "claim": 0
      },
      "jokerEdge": 0.6709323583180987
     }
@@ -4349,7 +4391,8 @@
     "decidedBy": {
      "formation": 8443,
      "sum": 2530,
-     "first": 190
+     "first": 190,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1138,
@@ -4382,7 +4425,8 @@
      "decidedBy": {
       "formation": 0.7563379019976709,
       "sum": 0.22664158380363703,
-      "first": 0.01702051419869211
+      "first": 0.01702051419869211,
+      "claim": 0
      },
      "jokerEdge": 0.7653778558875219
     }
@@ -4419,7 +4463,8 @@
     "decidedBy": {
      "formation": 1668,
      "sum": 3721,
-     "first": 180
+     "first": 180,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 519,
@@ -4452,7 +4497,8 @@
      "decidedBy": {
       "formation": 0.2995151732806608,
       "sum": 0.6681630454300592,
-      "first": 0.03232178128927994
+      "first": 0.03232178128927994,
+      "claim": 0
      },
      "jokerEdge": 0.7167630057803468
     }
@@ -4494,7 +4540,8 @@
     "decidedBy": {
      "formation": 8459,
      "sum": 2553,
-     "first": 183
+     "first": 183,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1156,
@@ -4527,7 +4574,8 @@
      "decidedBy": {
       "formation": 0.7556051808843234,
       "sum": 0.2280482358195623,
-      "first": 0.016346583296114336
+      "first": 0.016346583296114336,
+      "claim": 0
      },
      "jokerEdge": 0.7577854671280276
     }
@@ -4564,7 +4612,8 @@
     "decidedBy": {
      "formation": 1605,
      "sum": 3695,
-     "first": 210
+     "first": 210,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 522,
@@ -4597,7 +4646,8 @@
      "decidedBy": {
       "formation": 0.2912885662431942,
       "sum": 0.6705989110707804,
-      "first": 0.038112522686025406
+      "first": 0.038112522686025406,
+      "claim": 0
      },
      "jokerEdge": 0.6992337164750958
     }
@@ -4639,7 +4689,8 @@
     "decidedBy": {
      "formation": 8695,
      "sum": 2308,
-     "first": 188
+     "first": 188,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1078,
@@ -4672,7 +4723,8 @@
      "decidedBy": {
       "formation": 0.7769636314895898,
       "sum": 0.20623715485658117,
-      "first": 0.01679921365382897
+      "first": 0.01679921365382897,
+      "claim": 0
      },
      "jokerEdge": 0.6716141001855288
     }
@@ -4709,7 +4761,8 @@
     "decidedBy": {
      "formation": 1440,
      "sum": 3854,
-     "first": 230
+     "first": 230,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 528,
@@ -4742,7 +4795,8 @@
      "decidedBy": {
       "formation": 0.2606806661839247,
       "sum": 0.6976828385228095,
-      "first": 0.04163649529326575
+      "first": 0.04163649529326575,
+      "claim": 0
      },
      "jokerEdge": 0.7310606060606061
     }
@@ -4784,7 +4838,8 @@
     "decidedBy": {
      "formation": 8707,
      "sum": 2269,
-     "first": 168
+     "first": 168,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1036,
@@ -4817,7 +4872,8 @@
      "decidedBy": {
       "formation": 0.7813173007896625,
       "sum": 0.2036073223259153,
-      "first": 0.01507537688442211
+      "first": 0.01507537688442211,
+      "claim": 0
      },
      "jokerEdge": 0.8137065637065637
     }
@@ -4854,7 +4910,8 @@
     "decidedBy": {
      "formation": 1682,
      "sum": 3657,
-     "first": 201
+     "first": 201,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 513,
@@ -4887,7 +4944,8 @@
      "decidedBy": {
       "formation": 0.3036101083032491,
       "sum": 0.6601083032490975,
-      "first": 0.03628158844765343
+      "first": 0.03628158844765343,
+      "claim": 0
      },
      "jokerEdge": 0.6861598440545809
     }
@@ -4929,7 +4987,8 @@
     "decidedBy": {
      "formation": 8688,
      "sum": 2270,
-     "first": 171
+     "first": 171,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1086,
@@ -4962,7 +5021,8 @@
      "decidedBy": {
       "formation": 0.7806631323569054,
       "sum": 0.20397160571479916,
-      "first": 0.015365261928295444
+      "first": 0.015365261928295444,
+      "claim": 0
      },
      "jokerEdge": 0.7633517495395948
     }
@@ -4999,7 +5059,8 @@
     "decidedBy": {
      "formation": 1642,
      "sum": 3641,
-     "first": 208
+     "first": 208,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 551,
@@ -5032,7 +5093,8 @@
      "decidedBy": {
       "formation": 0.2990347841923147,
       "sum": 0.6630850482607904,
-      "first": 0.03788016754689492
+      "first": 0.03788016754689492,
+      "claim": 0
      },
      "jokerEdge": 0.6860254083484574
     }
@@ -5074,7 +5136,8 @@
     "decidedBy": {
      "formation": 8503,
      "sum": 2348,
-     "first": 171
+     "first": 171,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 981,
@@ -5107,7 +5170,8 @@
      "decidedBy": {
       "formation": 0.7714570858283433,
       "sum": 0.21302848847759026,
-      "first": 0.015514425694066412
+      "first": 0.015514425694066412,
+      "claim": 0
      },
      "jokerEdge": 0.7828746177370031
     }
@@ -5144,7 +5208,8 @@
     "decidedBy": {
      "formation": 1485,
      "sum": 3820,
-     "first": 233
+     "first": 233,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 524,
@@ -5177,7 +5242,8 @@
      "decidedBy": {
       "formation": 0.2681473456121343,
       "sum": 0.689779703864211,
-      "first": 0.04207295052365475
+      "first": 0.04207295052365475,
+      "claim": 0
      },
      "jokerEdge": 0.6889312977099237
     }
@@ -5219,7 +5285,8 @@
     "decidedBy": {
      "formation": 8103,
      "sum": 2678,
-     "first": 158
+     "first": 158,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 918,
@@ -5252,7 +5319,8 @@
      "decidedBy": {
       "formation": 0.7407441265197916,
       "sum": 0.24481214004936466,
-      "first": 0.01444373343084377
+      "first": 0.01444373343084377,
+      "claim": 0
      },
      "jokerEdge": 0.6721132897603486
     }
@@ -5289,7 +5357,8 @@
     "decidedBy": {
      "formation": 1586,
      "sum": 3742,
-     "first": 209
+     "first": 209,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 390,
@@ -5322,7 +5391,8 @@
      "decidedBy": {
       "formation": 0.2864366985732346,
       "sum": 0.6758172295466859,
-      "first": 0.03774607188007947
+      "first": 0.03774607188007947,
+      "claim": 0
      },
      "jokerEdge": 0.658974358974359
     }
@@ -5364,7 +5434,8 @@
     "decidedBy": {
      "formation": 8449,
      "sum": 2566,
-     "first": 238
+     "first": 238,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1102,
@@ -5397,7 +5468,8 @@
      "decidedBy": {
       "formation": 0.7508220030214166,
       "sum": 0.22802808140051542,
-      "first": 0.02114991557806807
+      "first": 0.02114991557806807,
+      "claim": 0
      },
      "jokerEdge": 0.7304900181488203
     }
@@ -5434,7 +5506,8 @@
     "decidedBy": {
      "formation": 1748,
      "sum": 3480,
-     "first": 285
+     "first": 285,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 551,
@@ -5467,7 +5540,8 @@
      "decidedBy": {
       "formation": 0.31706874659894796,
       "sum": 0.6312352621077453,
-      "first": 0.05169599129330673
+      "first": 0.05169599129330673,
+      "claim": 0
      },
      "jokerEdge": 0.7114337568058077
     }
@@ -5504,7 +5578,8 @@
     "decidedBy": {
      "formation": 7635,
      "sum": 2996,
-     "first": 287
+     "first": 287,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 960,
@@ -5537,7 +5612,8 @@
      "decidedBy": {
       "formation": 0.699303901813519,
       "sum": 0.2744092324601575,
-      "first": 0.0262868657263235
+      "first": 0.0262868657263235,
+      "claim": 0
      },
      "jokerEdge": 0.7375
     }
@@ -5579,7 +5655,8 @@
     "decidedBy": {
      "formation": 8566,
      "sum": 2489,
-     "first": 193
+     "first": 193,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1102,
@@ -5612,7 +5689,8 @@
      "decidedBy": {
       "formation": 0.7615576102418208,
       "sum": 0.22128378378378377,
-      "first": 0.017158605974395447
+      "first": 0.017158605974395447,
+      "claim": 0
      },
      "jokerEdge": 0.691470054446461
     }
@@ -5649,7 +5727,8 @@
     "decidedBy": {
      "formation": 1785,
      "sum": 3511,
-     "first": 277
+     "first": 277,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 522,
@@ -5682,7 +5761,8 @@
      "decidedBy": {
       "formation": 0.3202942759734434,
       "sum": 0.6300017943656917,
-      "first": 0.049703929660864885
+      "first": 0.049703929660864885,
+      "claim": 0
      },
      "jokerEdge": 0.6685823754789272
     }
@@ -5724,7 +5804,8 @@
     "decidedBy": {
      "formation": 8283,
      "sum": 2439,
-     "first": 224
+     "first": 224,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 884,
@@ -5757,7 +5838,8 @@
      "decidedBy": {
       "formation": 0.7567147816553992,
       "sum": 0.2228211218710031,
-      "first": 0.020464096473597662
+      "first": 0.020464096473597662,
+      "claim": 0
      },
      "jokerEdge": 0.6470588235294118
     }
@@ -5794,7 +5876,8 @@
     "decidedBy": {
      "formation": 1585,
      "sum": 3538,
-     "first": 269
+     "first": 269,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 426,
@@ -5827,7 +5910,8 @@
      "decidedBy": {
       "formation": 0.2939540059347181,
       "sum": 0.6561572700296736,
-      "first": 0.04988872403560831
+      "first": 0.04988872403560831,
+      "claim": 0
      },
      "jokerEdge": 0.6431924882629108
     }
@@ -5869,7 +5953,8 @@
     "decidedBy": {
      "formation": 8444,
      "sum": 2472,
-     "first": 199
+     "first": 199,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 983,
@@ -5902,7 +5987,8 @@
      "decidedBy": {
       "formation": 0.7596941070625282,
       "sum": 0.2224021592442645,
-      "first": 0.01790373369320738
+      "first": 0.01790373369320738,
+      "claim": 0
      },
      "jokerEdge": 0.6622583926754833
     }
@@ -5939,7 +6025,8 @@
     "decidedBy": {
      "formation": 1561,
      "sum": 3691,
-     "first": 257
+     "first": 257,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 536,
@@ -5972,7 +6059,8 @@
      "decidedBy": {
       "formation": 0.2833545108005083,
       "sum": 0.6699945543655836,
-      "first": 0.04665093483390815
+      "first": 0.04665093483390815,
+      "claim": 0
      },
      "jokerEdge": 0.6902985074626866
     }
@@ -6009,7 +6097,8 @@
     "decidedBy": {
      "formation": 7811,
      "sum": 3009,
-     "first": 258
+     "first": 258,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 944,
@@ -6042,7 +6131,8 @@
      "decidedBy": {
       "formation": 0.705091171691641,
       "sum": 0.27161942588914967,
-      "first": 0.023289402419209244
+      "first": 0.023289402419209244,
+      "claim": 0
      },
      "jokerEdge": 0.6302966101694916
     }
@@ -6084,7 +6174,8 @@
     "decidedBy": {
      "formation": 3657,
      "sum": 447,
-     "first": 20
+     "first": 20,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 523,
@@ -6117,7 +6208,8 @@
      "decidedBy": {
       "formation": 0.8867604267701261,
       "sum": 0.10838991270611058,
-      "first": 0.004849660523763337
+      "first": 0.004849660523763337,
+      "claim": 0
      },
      "jokerEdge": 0.4875717017208413
     }
@@ -6154,7 +6246,8 @@
     "decidedBy": {
      "formation": 3617,
      "sum": 412,
-     "first": 24
+     "first": 24,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 535,
@@ -6187,7 +6280,8 @@
      "decidedBy": {
       "formation": 0.8924253639279546,
       "sum": 0.10165309647174932,
-      "first": 0.005921539600296077
+      "first": 0.005921539600296077,
+      "claim": 0
      },
      "jokerEdge": 0.4635514018691589
     }
@@ -6231,7 +6325,8 @@
     "decidedBy": {
      "formation": 7739,
      "sum": 3234,
-     "first": 174
+     "first": 174,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1017,
@@ -6264,7 +6359,8 @@
      "decidedBy": {
       "formation": 0.6942675159235668,
       "sum": 0.29012290302323496,
-      "first": 0.01560958105319817
+      "first": 0.01560958105319817,
+      "claim": 0
      },
      "jokerEdge": 0.632251720747296
     }
@@ -6301,7 +6397,8 @@
     "decidedBy": {
      "formation": 7544,
      "sum": 3067,
-     "first": 200
+     "first": 200,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1009,
@@ -6334,7 +6431,8 @@
      "decidedBy": {
       "formation": 0.6978077883637036,
       "sum": 0.28369253538063083,
-      "first": 0.018499676255665527
+      "first": 0.018499676255665527,
+      "claim": 0
      },
      "jokerEdge": 0.6590683845391476
     }
@@ -6376,7 +6474,8 @@
     "decidedBy": {
      "formation": 7405,
      "sum": 3490,
-     "first": 220
+     "first": 220,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 997,
@@ -6409,7 +6508,8 @@
      "decidedBy": {
       "formation": 0.6662168241115609,
       "sum": 0.3139901034637877,
-      "first": 0.01979307242465137
+      "first": 0.01979307242465137,
+      "claim": 0
      },
      "jokerEdge": 0.7211634904714143
     }
@@ -6446,7 +6546,8 @@
     "decidedBy": {
      "formation": 7390,
      "sum": 3433,
-     "first": 219
+     "first": 219,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1039,
@@ -6479,7 +6580,8 @@
      "decidedBy": {
       "formation": 0.6692628147074805,
       "sum": 0.31090382177141823,
-      "first": 0.01983336352110125
+      "first": 0.01983336352110125,
+      "claim": 0
      },
      "jokerEdge": 0.7016361886429259
     }
@@ -6521,7 +6623,8 @@
     "decidedBy": {
      "formation": 7287,
      "sum": 3584,
-     "first": 221
+     "first": 221,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 991,
@@ -6554,7 +6657,8 @@
      "decidedBy": {
       "formation": 0.6569599711503786,
       "sum": 0.32311575910566176,
-      "first": 0.01992426974395961
+      "first": 0.01992426974395961,
+      "claim": 0
      },
      "jokerEdge": 0.6841574167507568
     }
@@ -6591,7 +6695,8 @@
     "decidedBy": {
      "formation": 7370,
      "sum": 3518,
-     "first": 189
+     "first": 189,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1000,
@@ -6624,7 +6729,8 @@
      "decidedBy": {
       "formation": 0.6653426017874876,
       "sum": 0.3175950167012729,
-      "first": 0.017062381511239504
+      "first": 0.017062381511239504,
+      "claim": 0
      },
      "jokerEdge": 0.641
     }
@@ -6666,7 +6772,8 @@
     "decidedBy": {
      "formation": 7464,
      "sum": 3419,
-     "first": 207
+     "first": 207,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 974,
@@ -6699,7 +6806,8 @@
      "decidedBy": {
       "formation": 0.673038773669973,
       "sum": 0.30829576194770064,
-      "first": 0.01866546438232642
+      "first": 0.01866546438232642,
+      "claim": 0
      },
      "jokerEdge": 0.6498973305954825
     }
@@ -6736,7 +6844,8 @@
     "decidedBy": {
      "formation": 7394,
      "sum": 3362,
-     "first": 215
+     "first": 215,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1026,
@@ -6769,7 +6878,8 @@
      "decidedBy": {
       "formation": 0.6739586181751891,
       "sum": 0.30644426214565673,
-      "first": 0.019597119679154135
+      "first": 0.019597119679154135,
+      "claim": 0
      },
      "jokerEdge": 0.6500974658869396
     }
@@ -6811,7 +6921,8 @@
     "decidedBy": {
      "formation": 7225,
      "sum": 3623,
-     "first": 244
+     "first": 244,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1070,
@@ -6844,7 +6955,8 @@
      "decidedBy": {
       "formation": 0.6513703570140642,
       "sum": 0.32663180670753694,
-      "first": 0.021997836278398845
+      "first": 0.021997836278398845,
+      "claim": 0
      },
      "jokerEdge": 0.6616822429906543
     }
@@ -6881,7 +6993,8 @@
     "decidedBy": {
      "formation": 7396,
      "sum": 3474,
-     "first": 206
+     "first": 206,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1087,
@@ -6914,7 +7027,8 @@
      "decidedBy": {
       "formation": 0.6677500902853015,
       "sum": 0.31365113759479957,
-      "first": 0.018598772119898882
+      "first": 0.018598772119898882,
+      "claim": 0
      },
      "jokerEdge": 0.6347746090156394
     }
@@ -6956,7 +7070,8 @@
     "decidedBy": {
      "formation": 7549,
      "sum": 3364,
-     "first": 204
+     "first": 204,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 1041,
@@ -6989,7 +7104,8 @@
      "decidedBy": {
       "formation": 0.679050103445174,
       "sum": 0.3025996222002339,
-      "first": 0.018350274354592067
+      "first": 0.018350274354592067,
+      "claim": 0
      },
      "jokerEdge": 0.664745437079731
     }
@@ -7026,7 +7142,8 @@
     "decidedBy": {
      "formation": 7374,
      "sum": 3169,
-     "first": 209
+     "first": 209,
+     "claim": 0
     },
     "jokerEdge": {
      "games": 968,
@@ -7059,7 +7176,8 @@
      "decidedBy": {
       "formation": 0.6858258928571429,
       "sum": 0.2947358630952381,
-      "first": 0.019438244047619048
+      "first": 0.019438244047619048,
+      "claim": 0
      },
      "jokerEdge": 0.6632231404958677
     }

@@ -6,8 +6,9 @@ import { cloneState } from "../search/lookahead.js";
  * any more — each hand is what the other cannot see — so the rest of the game
  * is a finite game of perfect information: negamax over every legal move,
  * with memory, stopping at the first winning move since nothing beats a win.
- * The borders settle at the end in the order they filled (`endMode: final`),
- * as in the page.
+ * The game's own end mode is played: under `final` the borders settle at the
+ * end in the order they filled; under `claim-end` (the page) a claimed border
+ * is closed, so its owner is part of the memo key.
  *
  * Values are seen from the player to move: 1 a win, 0 a draw, -1 a loss.
  */

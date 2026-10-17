@@ -235,4 +235,4 @@ pioche ensuite après son coup, comme d'habitude : en pratique, il sait toujours
     commence avec B. La page ne montre pas encore la carte du dessus : il faudrait l'afficher au joueur humain quand il
     commence (les robots s'en servent déjà, par le moteur).
 - **La feuille de règles n'est pas modifiée** : la phrase attend la nuit et la décision de Sami. Pour l'imprimer, il
-  suffira de l'ajouter au déroulement du tour de `regles/regles.html` (et de vérifier que les deux pages tiennent en A4).
+  suffira de l'ajouter au déroulement du tour de `regles/regles.html` (et de vérifier que les trois pages tiennent en A4).

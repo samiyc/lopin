@@ -10,10 +10,11 @@ import { HABITS, STRATEGY } from "./strategist.js";
  * then measured with `npm run duel -- experimental stratege`. What wins moves
  * into the strategist, with a new strategist version.
  *
- * Current experiment: the same strategist 1.2 core as Stratège 2.1, with a
- * deeper search (`search.js`): 8 candidates, successive halving, stopped by
- * a rollout budget in duels (`budget`, or `experimental:N` as an engine id)
- * and by a clock in the page, where it also thinks during the human's turn.
+ * `EXPERIMENT` is the 0.7's: the same strategist 1.2 core as Stratège 2.1,
+ * with a deeper flat search (`search.js`): 8 candidates, successive halving,
+ * stopped by a rollout budget (`budget`, or `experimental:N` as an engine id).
+ * The line-up's Expérimental is an ISMCTS tree since the 0.8 (`ismcts.js`,
+ * `BOT_LINEUP` in `src/config/bots.js`); its cores are the `CORES` below.
  * The ideas it tried before (`ideas.js`, `principles.js`) and what they
  * measured are in docs/strategie.md and docs/analyse-replays.md.
  */

@@ -24,11 +24,13 @@ recettes de mesure sont dans [validation.md](validation.md). Un test
    « à pousser », « neutre » ou « à écarter ».
 3. **Les duels qui décident** (1 000 parties) : `npm run banc -- <moteur> --queue --against <V1>`, puis
    `npm run backlog` — quatre duels longs de 250 parties, avec la règle d'arrêt. Depuis le 04/10, le labo
-   joue à 2 000 itérations : le V1 à battre est `ismcts+widen=3+depth=5+core=stfig6@2000`.
+   joue à 2 000 itérations. La version à battre est l'Expérimental 1.2 depuis le 08/10
+   (`ismcts+widen=7+depth=5+core=stfig6+exact=12@2000`) ; le V1 (`ismcts+widen=3+depth=5+core=stfig6@2000`)
+   reste la référence de la base de l'oracle et du banc (`V1_ENGINE`).
 4. **Le verdict** : `npm run versus -- <moteur> <moteur du 1.0>` réunit les quatre duels par paires ;
    une version se décide sur une fourchette basse au-dessus de 50 %.
 
-Les identifiants de moteur : un robot de la gamme (`experimental`, `stratege`, `basique`), un cœur
+Les identifiants de moteur : un robot de la gamme (`oracle-light`, `experimental`, `stratege`, `basique`), un cœur
 seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/heuristics/experimental.js`), ou un arbre
 (`ismcts+widen=3+depth=5+core=<nom>@800` : 800 itérations ; `@t800` : 800 ms par coup).
 
@@ -41,7 +43,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/heuristics/experimental.
 | `npm run llm-examples -- [--count 12] [--puzzles 4] [--oracle oracle/positions.jsonl,oracle/positions-early.jsonl] [--duels duels]` | les exemples de `llm-play --examples` : des choix nets de l'oracle (30 % des visites au moins, 15 points devant le 2e), répartis entre début, milieu et fin, et des puzzles où le coup du cœur perd ; la raison est calculée (traits du coup, part de l'oracle, piège) | `tmp/llm-examples.json` |
 | `npm run agent-examples -- [--count 6] [--puzzles 2] [--oracle …] [--duels duels] [--out docs/agents/exemples.md]` | les exemples du dossier des agents (`docs/agents/`) : pour chaque position, le JSON de `--json` (INPUT) et le coup parfait (OUTPUT) — un choix net de l'oracle, ou la victoire prouvée d'un puzzle où le coup du cœur perd ; sans partie complète. Parties à la règle de revendication seulement | `docs/agents/exemples.md` |
 | `npm run agents -- [dossier]` | le bilan d'un lot de parties d'agents (`duels/agents/` par défaut) : par joueur, les victoires contre le robot, par siège, par type de victoire, la part des coups avec une raison ; puis les parties gagnées, à diagnostiquer | la sortie |
-| `npm run cli -- [--bot experimental] [--first me\|bot] [--seed N] [--name sami] [--json] [--machine]` | le jeu dans la console (`docs/cli.md`) : « 3 5 » pose la 3e carte de la main sur la borne 5 ; `--json` l'état en vrai JSON (bornes, côtés, main, coups ; le format d'un agent) ; `--machine` une ligne JSON plate, pour `llm-play` ; `--new partie.json` puis `--step partie.json "3 5"` un coup par commande, pour un agent ; `--out <dossier>`, `--why "…"`, `--model <nom>` pour un lot d'agents (`docs/agents/`) | `replays/` ou `--out` |
+| `npm run cli -- [--bot experimental] [--first me\|bot] [--seed N] [--name sami] [--json] [--machine]` | le jeu dans la console (`docs/cli.md`) : « 7h4 » (ou « 7h 4 ») pose le 7♥ sur la borne 4, couleurs P H T C (S H C D avec `--gb`) ; « 3 5 », la 3e carte de la main sur la borne 5, est encore lu ; `--json` l'état en vrai JSON (bornes, côtés, main, coups ; le format d'un agent) ; `--machine` une ligne JSON plate, pour `llm-play` ; `--new partie.json` puis `--step partie.json "7h4"` un coup par commande, pour un agent ; `--out <dossier>`, `--why "…"`, `--model <nom>` pour un lot d'agents (`docs/agents/`) | `replays/` ou `--out` |
 
 ## Vérifier
 

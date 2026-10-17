@@ -2,7 +2,7 @@
 
 Ce document explique d'où sortent les chiffres de `out/deck-options.md` et de
 `out/deck-options.html`, et ce qu'ils ne disent pas. Tout se recalcule avec
-`npm run build` (environ 1 min 30, graine fixe : même résultat à chaque fois).
+`npm run build` (environ 1 min 20 sur 18 fils, graine fixe : même résultat à chaque fois).
 
 ## Les paquets comparés
 
