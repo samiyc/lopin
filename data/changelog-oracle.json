@@ -517,9 +517,9 @@
  },
  "next": [
   {
-   "when": "Cette nuit",
+   "when": "Plus tard, sans hâte",
    "title": "L'Oracle light 1.1 à pwl=2 ?",
-   "text": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2, offset 14 : 420 parties face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique. Au-dessus de 56 % : l'Oracle light 1.1 passe à pwl=2 (un autre moteur, donc une version : bots.js, son Elo, ce carnet)."
+   "text": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2, offset 14 (en file) : 420 parties face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique. Au-dessus de 56 % : l'Oracle light 1.1 passe à pwl=2 (un autre moteur, donc une version : bots.js, son Elo, ce carnet). Retenue par Sami le 17/10 parmi les trois pistes au meilleur rendement, mais pas pressée : le Labo passe d'abord."
   },
   {
    "when": "Ensuite",

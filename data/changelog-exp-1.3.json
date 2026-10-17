@@ -1153,6 +1153,16 @@
    "text": "Remesuré avec l'arbre du 1.1 (@200, 500 parties par pioche) le 11/10 : le nouveau Valet de Trèfle n'est plus trop fort (44,0 % ± 3,3 pour qui le pose, contre 62,4 % pour l'ancien). Le Valet de Carreau (la Somme) passe à 62,4 % ± 3,7 : la seule figure au-dessus du seuil, à regarder (docs/extension.md)."
   },
   {
+   "when": "Ensuite",
+   "title": "Le Labo : l'Observer devient un outil de recherche",
+   "text": "Choisi par Sami le 17/10 parmi les pistes de l'audit (le meilleur rapport gain / effort). L'onglet Observer devient le Labo : une partie robot contre robot jouée en direct, l'arbre de chaque coup dessiné et navigable (zoom, glisser, un clic pour le détail d'un nœud ou d'un étage), les cartes de la main colorées selon la confiance du bot (vert, jaune, rouge), les 8 candidats avec leurs visites, leur taux et leur intervalle, des diagnostics de l'arbre. Puis des réglages fins des bots avec garde-fous, ce qui a déjà été mesuré en duels longs pour la config construite, un coup rejoué avec d'autres paramètres, l'avis de l'oracle, un profileur. Un outil pour trouver des idées ; elles passent ensuite le tri à 400 et la 1k@2k. Aucun coup ne change : les empreintes restent."
+  },
+  {
+   "when": "Plus tard",
+   "title": "Un article compagnon, en anglais",
+   "text": "Pour partager le dépôt avec des chercheurs ISMCTS (piste D1 de l'audit du 17/10) : le bruit des donnes contre le bruit de trajectoire (CommonDeals 50,7 % contre Ensemble2x2000 54,6 %), budget × pwl × arbres, l'avantage du second joueur et sa compensation, le protocole 1k@2k et le catalogue des résultats négatifs. Écrit comme des observations, pas comme des découvertes : plusieurs arbres additionnés sont connus depuis 2008. Un peu tôt selon Sami ; à rapprocher d'un README.en.md."
+  },
+  {
    "when": "Plus tard",
    "title": "La qualité des simulations",
    "text": "Remarque de Sami (15/10) : chaque visite est une partie jouée jusqu'au bout par la politique de simulation ; si elle voit mal le long terme (joker gaspillé, bornes ouvertes en trop), tous les taux de l'arbre sont biaisés dans le même sens, et plus de visites ne corrigent pas le biais. Le choix final (FinalLcb1) en dépend directement. Piste : des simulations plus justes sans ralentir (elles prennent 93 % du temps ; sim-certain et trunc ont perdu), jugées d'abord avec npm run policy. Premier repère (16/10, npm run policy) : sur 402 fins de partie décisives de 9 cartes ou moins, la politique de la 1.2 (stfig6) garde le coup gagnant dans 93,8 % des cas (88,3 % sur les 120 délicates), SimCertain 95,0 / 90,8 % ; ce banc ne voit que les fins de partie, pas le long terme."
