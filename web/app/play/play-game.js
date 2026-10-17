@@ -7,7 +7,7 @@ import { createThinker } from "./thinker.js";
 
 /**
  * What a "Jouer" game holds when it starts (play.js drives it): the state, the
- * seats, the bot and its thinker, the log, the hand's order and the input in
+ * seats, the bot's thinker, the log, the hand's order and the input in
  * progress. `bonus` figures of the extension join the pile; `openHands` shows
  * both hands, and is written into the log's rules so the replay shows them too.
  */
@@ -22,7 +22,6 @@ export function createPlayGame({ first, opponent, name, bonus = 0, openHands = f
     openHands: Boolean(openHands),
     name,
     opponentName: playerName(botEntry(1 - human, opponent)),
-    bot: botPlayer(opponent, seed + 1),
     thinker: createThinker(botPlayer(opponent, seed + 1), BOT_LINEUP[opponent].think, seed + 1),
     log: startLog(state, { rules, players, seed }),
     order: sortBySuit(SPEC, state.hands[human]),

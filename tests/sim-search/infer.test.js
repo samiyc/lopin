@@ -22,7 +22,7 @@ describe("guessing the opponent's hand (infer.js, ismcts+infer)", () => {
     const state = freshGame(7);
     const hidden = hiddenOf(state, 0);
     const hand = hidden.slice(3, 3 + state.hands[1].length);
-    const game = determinize(state, 0, createRng(1), hand);
+    const game = determinize(state, 0, createRng(1), { hand });
     assert.deepEqual(game.hands[1], hand);
     assert.deepEqual(sorted([...game.hands[1], ...game.pile]), sorted(hidden));
     assert.deepEqual(sorted(withoutCards([1, 2, 2, 3], [2, 3])), [1, 2]);

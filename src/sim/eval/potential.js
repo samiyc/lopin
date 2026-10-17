@@ -36,11 +36,37 @@ function buildValuer({ spec, evaluator }) {
   const cardValue = (card) => (isJoker(card) ? spec.values : valueOf(spec, card));
   return {
     value,
-    /** Two placed cards plus one more, without building an array. */
-    value3: (side, card) => toValue(evaluator.score3(side[0], side[1], card)),
+    value3: thirdValueOf(spec, evaluator, toValue),
     best3: bestThirdOf(spec, evaluator, toValue),
     empty: (3 * average) / sumScale,
     single: (card) => (cardValue(card) + 2 * average) / sumScale,
+  };
+}
+
+/**
+ * Two placed cards plus one more, without building an array: the core's
+ * hottest call (a third of a 1.2 move, 17/10). Each value is worked out the
+ * first time it is asked and kept in a table per evaluator, so the result is
+ * the same to the last bit; a card outside the table (none in play) is worked
+ * out each time.
+ */
+function thirdValueOf(spec, evaluator, toValue) {
+  const real = realCardCount(spec);
+  const size = real + 1;
+  const table = new Float64Array(size * size * size).fill(Number.NaN);
+  const indexOf = (card) => (isJoker(card) ? real : card);
+  return (side, card) => {
+    const a = indexOf(side[0]);
+    const b = indexOf(side[1]);
+    const c = indexOf(card);
+    if (a < 0 || b < 0 || c < 0 || a > real || b > real || c > real) return toValue(evaluator.score3(side[0], side[1], card));
+    const index = (a * size + b) * size + c;
+    let value = table[index];
+    if (Number.isNaN(value)) {
+      value = toValue(evaluator.score3(side[0], side[1], card));
+      table[index] = value;
+    }
+    return value;
   };
 }
 

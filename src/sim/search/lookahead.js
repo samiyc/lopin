@@ -35,16 +35,12 @@ export function cloneState(state) {
  * The game as `player` might find it: their own hand and the board as they
  * are, the cards they cannot see shuffled into the opponent's hand and the pile
  * — or, given `hand` (a guess of the opponent's, infer.js), that hand and the
- * rest shuffled into the pile.
+ * rest shuffled into the pile. `known`: `unseenList(state, player)`, worked out once
+ * by a search that deals the same position thousands of times; it is copied, not dealt.
  */
-export function determinize(state, player, rng, hand = null) {
-  const unseen = [...unseenCards(state, player).entries.flatMap(([card, count]) => Array.from({ length: count }, () => card)), ...hiddenFigures(state, player)];
-  const copy = cloneState(state);
-  copy.pileRng = rng;
-  copy.rng = rng;
-  // Rollouts settle borders at the end: proving claims on every simulated move
-  // would cost a third of the search speed, as the certainty in 0.6 did.
-  if (copy.endMode.startsWith("claim")) copy.endMode = "final";
+export function determinize(state, player, rng, { hand, known } = NO_GUESS) {
+  const unseen = known ? [...known] : unseenList(state, player);
+  const copy = playable(state, rng);
   // A seat compensation (peek.js): the cards the player saw stay where they are.
   if (!hand && knowsHidden(state, player)) return dealKnowing(copy, state, player, { rng, unseen });
   if (state.openHands) {
@@ -64,15 +60,29 @@ export function determinize(state, player, rng, hand = null) {
   return copy;
 }
 
+/** Every card `player` cannot see, one entry per copy, in deck order, the figures last: what `determinize` deals. */
+export function unseenList(state, player) {
+  return [...unseenCards(state, player).entries.flatMap(([card, count]) => Array.from({ length: count }, () => card)), ...hiddenFigures(state, player)];
+}
+
 /**
  * The game as it truly is (Omniscient 1.0, `+omniscient=1`): both hands and the
  * pile's order seen, nothing dealt. Rollouts settle borders at the end, as from
  * `determinize`.
  */
 export function seeAll(state, rng) {
+  return playable(state, rng);
+}
+
+const NO_GUESS = Object.freeze({ hand: null, known: null });
+
+/** A copy to deal and play on, its draws from `rng`. */
+function playable(state, rng) {
   const copy = cloneState(state);
   copy.pileRng = rng;
   copy.rng = rng;
+  // Rollouts settle borders at the end: proving claims on every simulated move
+  // would cost a third of the search speed, as the certainty in 0.6 did.
   if (copy.endMode.startsWith("claim")) copy.endMode = "final";
   return copy;
 }

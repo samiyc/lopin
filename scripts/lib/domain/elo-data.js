@@ -32,13 +32,14 @@ export async function readAllLogs() {
 
 /** What the "Stats" tab shows (`/api/stats`): per-opponent lines, formations, starting hands and the Elo table — kept versions only. */
 export async function statsPage() {
-  const stats = statsOf(await readAllLogs());
-  return { ...stats, lines: stats.lines.filter((line) => isShownPlayer(line.opponent)), hands: stats.hands.filter((row) => isShownPlayer(row.player)), elo: await eloTable() };
+  const logs = await readAllLogs();
+  const stats = statsOf(logs);
+  return { ...stats, lines: stats.lines.filter((line) => isShownPlayer(line.opponent)), hands: stats.hands.filter((row) => isShownPlayer(row.player)), elo: await eloTable(logs) };
 }
 
-/** `[{ player, elo, margin, games, human }]`, strongest first: the kept versions and the humans (`KEPT_VERSIONS`), fitted on every game. */
-export async function eloTable() {
-  const logs = await readAllLogs();
+/** `[{ player, elo, margin, games, human }]`, strongest first: the kept versions and the humans (`KEPT_VERSIONS`), fitted on every game (`logs`, read here when not given). */
+export async function eloTable(logs = null) {
+  logs ??= await readAllLogs();
   const humans = resultsFromLogs(logs);
   const duels = (await readDuels()).duels.map(({ a, b, wins, games }) => ({ a, b, score: wins, games }));
   const ratings = fitElo([...humans, ...duels], { anchor: ANCHOR });

@@ -10,7 +10,7 @@ import { backUpEstimates, blendedRate, estimateLeaf } from "./implicit-minimax.j
 import { applyMove, legalMoves } from "../engine/game.js";
 import { createHalving, parseHalving } from "./halving.js";
 import { createReader, inferredHands, pickHand } from "../search/infer.js";
-import { determinize, seeAll } from "../search/lookahead.js";
+import { determinize, seeAll, unseenList } from "../search/lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
 import { untriedScore } from "./first-play.js";
@@ -160,7 +160,7 @@ function ratingOf(root, scored, ctx) {
 }
 
 /** An iteration's game: a deal of the unseen cards, or (`omniscient`, Omniscient 1.0) the true one. */
-const dealFor = (ctx, rng = ctx.deals) => (ctx.omniscient ? seeAll(ctx.state, rng) : determinize(ctx.state, ctx.player, rng, ctx.hands && pickHand(ctx.hands, rng)));
+const dealFor = (ctx, rng = ctx.deals) => (ctx.omniscient ? seeAll(ctx.state, rng) : determinize(ctx.state, ctx.player, rng, { hand: ctx.hands && pickHand(ctx.hands, rng), known: ctx.unseen }));
 
 /** An iteration's deal — with `crn` (common-deals.js), the root move chosen first and the deal its visit number's. */
 function begin(root, ctx) {
@@ -196,7 +196,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
   const phases = parseHalving(settings.halving);
   const rolloutRng = createRng(deals.int(2 ** 31));
   return {
-    state, player: state.current, deals, rootMoves, judge,
+    state, player: state.current, unseen: unseenList(state, state.current), deals, rootMoves, judge,
     rollout: policy(rolloutRng), rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
     pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0, fpu: cfg.fpu,

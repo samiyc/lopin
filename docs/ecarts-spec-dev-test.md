@@ -23,8 +23,25 @@ Les chemins cités plus bas sont ceux d'après la réorganisation en sous-dossie
   `scripts/lib/`, `tests/` ; les 10 scripts ponctuels dans `scripts/archive/` ; les changelogs 1.1 à
   1.3 partagent `src/report/changelog/style.css` et `v1-sections.html`, et chaque page n'embarque
   plus que les données qu'elle lit. Empreintes inchangées.
-- **Restent ouverts** : P1-1, P1-2, P1-3, P1-5, P1-7, P2-1 à P2-7, P3-2, P3-3 ; les optimisations
-  de vitesse (§ 3 du rapport) et la réorganisation des `.md` n'ont pas commencé.
+- **Corrigés ensuite** (17/10 après-midi) : P1-1, P1-2, P1-3, P1-5, P1-7, P2-1 à P2-7, P3-2 ; P3-3
+  (`tests/web-cli/docs.test.js` vérifie la gamme de `jouer.md`, les `vsLower` et les noms de sièges
+  des docs). `npm run build` mesuré à 77 s sur 18 fils, `out/data.json` inchangé au chiffre près.
+- **Vitesse (§ 3 du rapport), mesurée** : un profil de la 1.2 à 2 000 itérations (`node --cpu-prof`)
+  met le temps dans le cœur des simulations : `drawPotentialOf` 19 %, `pairPotential` 15 %,
+  `ideasBonus` 8 % ; les points A1 à A3 du rapport (`determinize`, `ideasContext`, `placeCard`,
+  `cloneState`) pèsent ensemble environ 4 %. Faits : `valuer.value3` lu dans une table par évaluateur
+  (remplie à la demande, mêmes valeurs au bit près) et la liste des cartes invisibles construite une
+  fois par recherche au lieu d'une fois par itération : **25,9 → 24,9 s par partie à 2 000
+  (≈ −4,5 %)**. Neuf empreintes inchangées (strategist, 1.0, 1.2, `pwl=4`, `fpu=1`, Oracle v1,
+  Omniscient, `lookahead`, `experimental:200`). `/api/stats` ne lit plus les replays deux fois
+  (réponses identiques) ; le `bot` jamais lu de `play-game.js` est retiré. Écartés après mesure :
+  `advice-worker` (rejouer depuis le début coûte 111 ms sur une relecture d'environ 6 s), le
+  `solve-worker` (déjà créé à l'ouverture des puzzles seulement).
+- **Non faits, à décider** : le code des idées écartées et `ponder.js` restent (les anciens moteurs
+  doivent rejouer leurs replays ; la recherche plate du 0.7 réfléchit encore pendant le tour humain) ;
+  la réorganisation des `.md` en documents numérotés (§ 4A du rapport) change les liens de tous les
+  documents et des prompts : à valider avant. Les pages `out/changelog-exp-0.6.html` et `0.8.html`
+  sont des sorties figées, sans source : gardées telles quelles.
 
 ---
 
