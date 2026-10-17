@@ -801,6 +801,32 @@
    "note": "Offsets 1 et 2 (nuit du 17/10) : 54,0 puis 55,2 %, 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 sur les mêmes donnes (54,4 %). Le gain du budget ×2 est la baisse du bruit du coup joué, et ce bruit vient du chemin de chaque arbre : seuls des arbres indépendants le moyennent. Deux workers dans la page le donnent au temps de la 1.2. Offsets 3 et 4 en file (nuit du 17-18/10) pour la 1k@2k."
   },
   {
+   "id": "reply-fpu0",
+   "name": "ReplyFpu0 : une réponse nouvelle à la moyenne de ses sœurs (+fpu=0)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 45.6,
+   "lo": 40,
+   "hi": 51.2,
+   "verdict": "perd",
+   "when": "17/10",
+   "idea": "Sous la racine, une réponse adverse jamais essayée vaut la moyenne de ses sœurs essayées moins fpu / 10, plus le bonus d'exploration d'une visite, au lieu de passer avant toutes (+∞) : 22 % des itérations de la 1.2 essaient une réponse pour la première fois. La racine garde son premier essai de chaque candidat (src/sim/first-play.js).",
+   "note": "De jour (Sami : 250 parties à 2 000 contre la 1.2@2000, offset 0) : 45,6 % (40,0 – 51,2), 41,6 % en commençant. Sans marge, l'adversaire modélisé revient trop tôt à ses premières réponses et rate les meilleures."
+  },
+  {
+   "id": "reply-fpu1",
+   "name": "ReplyFpu1 : la même chose, moins 0,1 (+fpu=1)",
+   "family": "arbre",
+   "bench": "duel",
+   "score": 53.6,
+   "lo": 48.6,
+   "hi": 58.6,
+   "verdict": "tendance",
+   "when": "17/10",
+   "idea": "Sous la racine, une réponse adverse jamais essayée vaut la moyenne de ses sœurs essayées moins fpu / 10, plus le bonus d'exploration d'une visite, au lieu de passer avant toutes (+∞) : 22 % des itérations de la 1.2 essaient une réponse pour la première fois. La racine garde son premier essai de chaque candidat (src/sim/first-play.js).",
+   "note": "De jour, mêmes donnes : 53,6 % (48,6 – 58,6), 53,6 % en commençant comme en second. La 1k@2k est en file pour la nuit du 17-18/10 (VALIDATE_LONG_2..4_ReplyFpu1, offsets 1 à 3, le duel du jour comptant comme le premier). Coût +3,6 % sur un fil, à vérifier dans les replays."
+  },
+  {
    "id": "seats-edge",
    "name": "L'avantage du second joueur, mesuré (npm run seats, npm run deals)",
    "family": "sieges",
@@ -1082,6 +1108,11 @@
   },
   {
    "when": "Cette nuit",
+   "title": "ReplyFpu1 : la 1k@2k",
+   "text": "Codé le 17/10 (+fpu=d, src/sim/first-play.js) et joué de jour à 2 000 sur 250 parties : fpu=0 perd (45,6 %), fpu=1 fait 53,6 % (48,6 – 58,6). Ses offsets 1 à 3 sont en file pour la nuit du 17-18/10, avec la règle d'arrêt. Si la borne basse sur 1 000 parties reste au-dessus de 50 % : la première 1.3 à calcul égal, et fpu=2 ou 3 à essayer ensuite."
+  },
+  {
+   "when": "Cette nuit",
    "title": "La 1.2 sur deux workers : Ensemble2x2000 sur 1 000 parties",
    "text": "NOISE_DUEL_3 et 4_Ensemble2x2000, offsets 3 et 4 (Budget4000 y faisait 51,6 et 50,8 %). Si la borne basse sur 1 000 parties reste au-dessus de 50 % : une version de page, deux arbres de 2 000 sur deux workers (le chemin de l'Oracle light), au temps de la 1.2. Du calcul en plus, pas une idée, mais à temps égal pour le joueur."
   },
@@ -1099,11 +1130,6 @@
    "when": "Ensuite",
    "title": "Le Valet de Carreau, seule figure au-dessus de 60 %",
    "text": "Remesuré avec l'arbre du 1.1 (@200, 500 parties par pioche) le 11/10 : le nouveau Valet de Trèfle n'est plus trop fort (44,0 % ± 3,3 pour qui le pose, contre 62,4 % pour l'ancien). Le Valet de Carreau (la Somme) passe à 62,4 % ± 3,7 : la seule figure au-dessus du seuil, à regarder (docs/extension.md)."
-  },
-  {
-   "when": "Plus tard",
-   "title": "ReplyFpu : la première réponse adverse",
-   "text": "22 % des itérations de la 1.2 essaient une réponse adverse pour la première fois (444 réponses visitées par coup, 173 une seule fois). Donner à une réponse jamais essayée la valeur de son parent moins δ au lieu de l'infini (+fpu=δ, src/sim/first-play.js). Non codé et sans priorité depuis la nuit du 17/10 : effet de signe inconnu, et il viserait la même trajectoire d'arbre que celle que deux arbres moyennent déjà."
   },
   {
    "when": "Plus tard",

@@ -177,7 +177,17 @@ Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées so
 - **Le nom** : `CommonDeals` (`glossaire.md`).
 - **Les commandes** : section 4.
 
-### 2. `ReplyFpu` : le premier essai d'une réponse adverse au mérite (proposé, pas codé)
+### 2. `ReplyFpu` : le premier essai d'une réponse adverse au mérite (codé le 17/10)
+
+- **Le résultat du jour (17/10, Sami : 250 parties à 2 000 contre la 1.2@2000, offset 0)** :
+  - `ReplyFpu0` (`+fpu=0`) : **45,6 % (40,0 – 51,2)**, en commençant 41,6 %, écarté ;
+  - `ReplyFpu1` (`+fpu=1`) : **53,6 % (48,6 – 58,6)**, 53,6 % des deux côtés, en file pour la nuit du 17-18/10
+    (`VALIDATE_LONG_2..4_ReplyFpu1`, offsets 1 à 3, règle d'arrêt ; le duel du jour compte comme le job 1).
+
+  Sans marge (δ = 0) l'adversaire revient trop à ses premières réponses et en rate de meilleures ; avec δ = 0,1 il
+  en essaie encore la plupart, mais plus tard. Le bon δ est peut-être plus grand : `fpu=2` ou `fpu=3` après la 1k@2k.
+  Coût : empreintes à 6 601 ms la partie contre 6 372 pour la 1.2 (+3,6 % sur un fil, `fpu=0` 5 507 ms), à
+  vérifier dans les replays de la nuit (itérations par coup) avant de parler de temps égal.
 
 - **Le mécanisme** : la « first-play urgency » sous la racine. Une réponse jamais essayée vaut la moyenne des réponses
   déjà essayées du nœud, moins δ, au lieu de passer avant toutes (+∞ dans UCB). Les 22 % d'itérations qui essaient
@@ -196,12 +206,14 @@ Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées so
     raterait des réfutations rares, et c'est encore la fusion de stratégies.
 - **Le coût** : nul. `select` parcourt déjà les enfants du nœud, la moyenne s'y ajoute.
 - **Le code** :
-  - `src/sim/first-play.js` : `firstPlayValue(children, fpu)` rend +∞ sans l'option ou sans enfant visité, sinon la
-    moyenne des enfants visités moins δ ;
-  - dans `select`, `child.visits === 0 ? firstPlay : …`, aux étages 1 et plus seulement ;
-  - `+fpu=δ` dans `ismctsSettings` ;
-  - sans la clé, mêmes coups (l'empreinte de la 1.2) ;
-  - le test : la racine essaie ses 8 candidats, un nœud adverse revient à une réponse connue meilleure que la moyenne.
+  - `src/sim/first-play.js` : `untriedScore(children, fpu, bonus)` rend +∞ sans l'option ou sans enfant visité,
+    sinon la moyenne des enfants visités moins δ, plus le bonus d'exploration d'UCB pour une visite ;
+  - dans `select`, `child.visits === 0 ? untried(child, rank) : …`, aux étages 1 et plus seulement ;
+  - `+fpu=d` dans `ismctsSettings`, δ = d / 10 ;
+  - sans la clé, mêmes coups (l'empreinte de la 1.2, `1d041613cd7bcd8d`) ; `fpu=0` `d7ea4c190e6e63c0`, `fpu=1`
+    `1a42545c7dcbaeeb` ;
+  - le test (`tests/first-play.test.js`) : la racine essaie autant de candidats, les nœuds adverses ouvrent moins de
+    réponses.
 - **Les noms** : `ReplyFpu0` (δ = 0) et `ReplyFpu1` (δ = 0,1).
 - **Les commandes** : un tri à 400 d'abord ; il change l'évaluation, pas la lecture des visites, donc un tri peut
   l'écarter.
@@ -441,8 +453,8 @@ Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par p
 2. `Ensemble2x2000` égale Budget4000 : le bruit vaut environ 2,5 points. Mais il ne se réduit qu'avec des arbres
    indépendants. Apparier davantage (élagage par moitiés sur donnes communes, finalistes appariés) viserait le mauvais
    bruit et n'est pas proposé.
-3. `ReplyFpu` reste une famille nouvelle, non codée, sans priorité : son effet a un signe inconnu, et elle viserait
-   la même trajectoire d'arbre.
+3. `ReplyFpu` restait une famille nouvelle, sans priorité : son effet avait un signe inconnu. Codé le 17/10 et joué
+   de jour à 2 000 (§ 2) : `fpu=0` perd (45,6 %), `fpu=1` fait 53,6 % sur 250 parties, à confirmer la nuit du 17-18/10.
 
 **La suite** : la 1.3 de la page sera « la 1.2 sur deux workers » (`Ensemble2x2000`) si ses offsets 3 et 4 tiennent,
 ou la 1.2@4000. L'Oracle light reste au-dessus.

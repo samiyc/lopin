@@ -63,6 +63,7 @@ mesures détaillées sont plus bas, section par section.
 | MO-ISMCTS (un arbre par joueur, Cowling, Powley et Whitehouse 2012), retenu par le panel du 16/10 | 16/10 | pas codé | rejeté sur le papier (`docs/priorites-1.3.md`) : il sert quand un coup cache quelque chose à l'adversaire. Ici, un coup (une carte sur une borne) est public ; seuls la donne et les pioches sont cachées, et l'ISMCTS les tire à la racine. Avec des coups publics, les arbres de chaque joueur sont celui de la 1.2. Et il ne sépare pas les mains de l'adversaire à sa première réponse, là où est la fusion de stratégies : sa racine les regroupe aussi | — |
 | Retirer la chance des jokers des résultats (variable de contrôle) | 16/10 | jokers de la main adverse tirée : corrélation −0,04 avec le résultat ; jokers de mes pioches : +0,12 (30 positions, 300 donnes chacune) | écarté par la mesure : au plus 1,5 % de la variance des résultats | — |
 | `CommonDeals` : les candidats de la racine comparés sur les mêmes donnes (`+crn=1`) | 16-17/10 | tri à 400 : 55,3 % (50,5 – 60,0) ; 1k@2k : **50,7 % (48,2 – 53,2)** sur 1 000 parties | écarté : le regret de la racine baissait à 400 (−0,43 point), rien à 2 000. Le bruit qui coûte des points est celui du chemin de chaque arbre, pas des donnes de la racine : deux arbres de 2 000 indépendants font 54,6 %, autant qu'un arbre de 4 000 (`docs/priorites-1.3.md`, § 6). L'option reste (`+crn=1`) | — |
+| `ReplyFpu0` : sous la racine, une réponse jamais essayée vaut la moyenne de ses sœurs essayées (`+fpu=0`) | 17/10 | 2 000 contre la 1.2@2000, 250 parties de jour : **45,6 % (40,0 – 51,2)** | écarté : sans marge, l'adversaire modélisé revient trop tôt à ses premières réponses. `ReplyFpu1` (`+fpu=1`, moins 0,1) fait 53,6 % (48,6 – 58,6) et passe sa 1k@2k la nuit du 17-18/10 (`docs/priorites-1.3.md`, § 2) | — |
 
 ## Comment le Stratège choisit un coup
 
@@ -3732,3 +3733,13 @@ Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par p
   parties, l'Oracle light 1.1 passe à `pwl=2` (un moteur différent, donc une version).
 - **Oracle3 en deux arbres n'apporte rien** : 55,4 % contre 57,1 % en un arbre, pour deux fois le temps de l'Oracle
   light. Il ne vient pas dans la page.
+
+### ReplyFpu de jour (17/10)
+
+Sami a demandé 250 parties à 2 000 de jour, puis des jobs de nuit si le score passe 50 %. Les deux variantes
+ont joué contre la 1.2@2000 (offset 0, `docs/priorites-1.3.md`, § 2) :
+
+- `ReplyFpu0` (`+fpu=0`) : 45,6 % (40,0 – 51,2), 41,6 % en commençant ; écarté (tableau du haut).
+- `ReplyFpu1` (`+fpu=1`) : 53,6 % (48,6 – 58,6), 53,6 % des deux côtés ; `VALIDATE_LONG_2..4_ReplyFpu1` (offsets 1
+  à 3) en file pour la nuit du 17-18/10. Ce serait la première idée à calcul égal au-dessus de la 1.2 depuis le 08/10,
+  si la 1k@2k tient.

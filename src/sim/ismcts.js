@@ -13,6 +13,7 @@ import { createReader, inferredHands, pickHand } from "./infer.js";
 import { determinize, seeAll } from "./lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
+import { untriedScore } from "./first-play.js";
 import { withTreeStats } from "./tree-stats.js";
 import { moveKey } from "./search.js";
 
@@ -68,7 +69,7 @@ function valueOf(child, shared, rave, implicit = 0) {
  * the best by UCB1 — or, with `puct`, AlphaZero's rule (puct.js), so the core's
  * favourites are explored first and longer.
  */
-function select(node, moves, { exploration, amaf, rave, puct, implicit }, mover) {
+function select(node, moves, { exploration, amaf, rave, puct, implicit, fpu }, mover) {
   const children = moves.map((move) => {
     const key = moveKey(move);
     if (!node.children.has(key)) node.children.set(key, newNode());
@@ -76,9 +77,10 @@ function select(node, moves, { exploration, amaf, rave, puct, implicit }, mover)
     child.avail += 1;
     return { move, child, shared: amaf?.get(`${mover}|${key}`) };
   });
-  // A move never tried comes first (+∞), and the first of equal scores wins: the order UCB always had.
+  // A move never tried comes first (+∞, or by `fpu`: first-play.js), and the first of equal scores wins: the order UCB always had.
   const bonus = explorationBonus({ exploration, puct }, children.length);
-  const scores = children.map(({ child, shared }, rank) => (child.visits === 0 ? Infinity : valueOf(child, shared, rave, implicit) + bonus(child, rank)));
+  const untried = untriedScore(children, fpu, bonus);
+  const scores = children.map(({ child, shared }, rank) => (child.visits === 0 ? untried(child, rank) : valueOf(child, shared, rave, implicit) + bonus(child, rank)));
   return children[scores.indexOf(Math.max(...scores))];
 }
 
@@ -109,7 +111,7 @@ const explorationAt = (game, ctx) => (game.current === 0 ? (ctx.firstExploration
 function choiceAt(node, ply, game, ctx) {
   if (ply === 0 && ctx.halving) return rootChoice(node, ctx);
   const moves = ply === 0 ? ctx.rootMoves : shortlist(ctx.judge, game, breadth(node, ctx), ctx.diverse);
-  return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave, puct: ctx.puct, implicit: ctx.implicit }, game.current);
+  return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave, puct: ctx.puct, implicit: ctx.implicit, fpu: ply > 0 ? ctx.fpu : undefined }, game.current);
 }
 
 /** The walk down the tree: the path taken, and the moves made on it (`rave`). `first`: the root's choice, made before the deal (`crn`). */
@@ -197,7 +199,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     state, player: state.current, deals, rootMoves, judge,
     rollout: policy(rolloutRng), rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0,
+    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0, fpu: cfg.fpu,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -297,7 +299,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+pwl=0..3` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+pwl=0..3` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -308,7 +310,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

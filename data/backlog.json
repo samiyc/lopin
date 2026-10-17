@@ -3350,6 +3350,79 @@
       "status": "todo"
     },
     {
+      "id": "VALIDATE_LONG_1_ReplyFpu1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+fpu=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "ReplyFpu1 (+fpu=1, src/sim/first-play.js, docs/priorites-1.3.md) : sous la racine, une réponse jamais essayée vaut la moyenne de ses sœurs essayées moins 0,1 au lieu de +∞. Joué de jour le 17/10 (Sami : 250 parties à 2 000, des jobs de nuit si > 50 %) : 53,6 % (48,6 – 58,6) ; ReplyFpu0 (fpu=0) 45,6 %, écarté.",
+      "status": "done",
+      "doneAt": "2026-10-17T11:21",
+      "minutes": 24,
+      "output": "backlog-runs/2026-10-17-10-57_VALIDATE_LONG_1_ReplyFpu1.txt"
+    },
+    {
+      "id": "VALIDATE_LONG_2_ReplyFpu1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+fpu=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "ReplyFpu1 (+fpu=1, src/sim/first-play.js, docs/priorites-1.3.md) : sous la racine, une réponse jamais essayée vaut la moyenne de ses sœurs essayées moins 0,1 au lieu de +∞. Le protocole 1k@2k, donnes 2 sur 4, règle d'arrêt. Coût par itération +3,6 % au banc d'un fil (empreinte) : à itérations égales, à vérifier dans les replays.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_ReplyFpu1"
+          ],
+          "below": 0.47
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_3_ReplyFpu1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+fpu=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "ReplyFpu1 (+fpu=1, src/sim/first-play.js, docs/priorites-1.3.md) : sous la racine, une réponse jamais essayée vaut la moyenne de ses sœurs essayées moins 0,1 au lieu de +∞. Le protocole 1k@2k, donnes 3 sur 4, règle d'arrêt. Coût par itération +3,6 % au banc d'un fil (empreinte) : à itérations égales, à vérifier dans les replays.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_ReplyFpu1"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_ReplyFpu1",
+            "VALIDATE_LONG_2_ReplyFpu1"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_4_ReplyFpu1",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+fpu=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "25 min",
+      "limit": 60,
+      "why": "ReplyFpu1 (+fpu=1, src/sim/first-play.js, docs/priorites-1.3.md) : sous la racine, une réponse jamais essayée vaut la moyenne de ses sœurs essayées moins 0,1 au lieu de +∞. Le protocole 1k@2k, donnes 4 sur 4, règle d'arrêt. Coût par itération +3,6 % au banc d'un fil (empreinte) : à itérations égales, à vérifier dans les replays.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_ReplyFpu1"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_ReplyFpu1",
+            "VALIDATE_LONG_2_ReplyFpu1"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
       "id": "SEATS_1_Base",
       "command": "npm run deals -- --engine \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" --plays 1 --deals 4500 --offset 20 --out tmp/seats-20-base.json",
       "estimate": "1 h 20",

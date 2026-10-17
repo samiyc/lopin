@@ -418,6 +418,11 @@ scripts/      build.js (+ lib/pool.js, lib/sim-worker.js), pdf.js,
   the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
   reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Bornage's
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.
+- **ReplyFpu** (17/10, `src/sim/first-play.js`, `docs/priorites-1.3.md` § 2): `+fpu=d` scores an untried move below
+  the root at its tried siblings' mean minus d / 10 plus one visit's UCB bonus, instead of +∞ (off by default, the
+  1.2's fingerprint unchanged; `fpu=1` → `1a42545c7dcbaeeb`). Day duels at 2 000 (250 games, offset 0): `fpu=0`
+  45.6 %, rejected; `fpu=1` 53.6 % (48.6 – 58.6), its 1k@2k queued (`VALIDATE_LONG_2..4_ReplyFpu1`, the day duel
+  counted as job 1 from `backlog-runs/`).
 - **Seat compensations** (16/10, `docs/sieges.md`): `createGame`'s `seat` (`src/sim/seat-rules.js`, named in
   `src/config/seats.js`, off by default) deals other hand sizes or lets the first player look at the top of the pile
   (`src/sim/peek.js`, `state.known`). Bots read a peek — `determinize` keeps the seen cards in place, the core counts
