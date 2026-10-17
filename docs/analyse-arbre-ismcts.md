@@ -405,4 +405,4 @@ Un arbre plus propre (moins de nœuds à une visite, plus de pli 4, plus de coup
 les candidats) n'a jamais donné un robot plus fort. Ce qui reste ouvert après ces mesures : le
 **choix** entre les candidats (le coup de l'oracle, présent dans le top 8, n'est joué qu'environ
 40 % du temps en milieu de partie) et le **bruit** du coup joué (top1 / top2 ≈ 1,38). La suite
-(PUCT, Ensemble, Budget4000) est dans `docs/strategie.md`, « Feuille de route 1.3 ».
+(PUCT, Ensemble, Budget4000) est dans `docs/strategie/05-de-la-1.1-a-la-feuille-1.3.md`, « Feuille de route 1.3 ».

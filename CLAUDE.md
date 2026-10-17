@@ -103,6 +103,12 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   `tmp/` via `tmpFile()`; `data/` keeps facts and summaries, each under 500 KB
   (`tests/web-cli/data-budget.test.js`). Never add a `.gitignore` line for one export:
   a 24 MB tree dump landed in `data/` on 10/10 and went into git.
+- **A Markdown file stays under 800 lines** (Sami, 17/10; `tests/web-cli/md-budget.test.js`,
+  every `.md` but the generated `out/`), CLAUDE.md under 600: it is read at every session.
+  A doc that grows splits into chapters, as `docs/strategie.md` did on 17/10 (3 748 lines):
+  the ledger and the table of contents stay there, the journal is `docs/strategie/`, one
+  file per period. A new attempt goes at the end of the last chapter, or opens the next one
+  (listed in the table of contents) when it would pass 800.
 - **No number is typed by hand into a report.** `src/report/data.js` computes,
   `analysis.js` derives findings, renderers only format. A rule change is an
   edit to `src/config/` followed by a rebuild.
@@ -366,14 +372,14 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   hold: the protocol's 1k@2k (`VALIDATE_LONG_1..4_Borne10`, 10/10) gives **45,9 % (43,3 – 48,5)**.
   The 1.2 stays the version to beat. Its replays, duels and Elo lines are kept (hidden by
   `KEPT_VERSIONS`), its hand-typed page is gone; `diverse` stays (every tree goes through `pickCandidates`).
-- **The 1.3 roadmap** (11/10, `docs/strategie.md` « Feuille de route 1.3 »): the tree's shape no
+- **The 1.3 roadmap** (11/10, `docs/strategie/05-de-la-1.1-a-la-feuille-1.3.md` « Feuille de route 1.3 »): the tree's shape no
   longer pays (diversity, `pw`: 45.9-47.0 %); what is left is the root's **choice** and the **noise**
   of the move played. `+puct=c` (`select` in `ismcts.js`: AlphaZero's exploration term, the prior
   from the core's rank 1 / (k + 1)) and `+trees=k` (`createEnsemble`: the budget shared between k
   seeds, root visits added) are off by default — the 1.0 (`152e2a9c9d66170c`) and the 1.2
   (`"ismcts+widen=7+depth=5+core=stfig6+exact=12@150,greedy" 20` → `1d041613cd7bcd8d`)
   fingerprints did not move. `Budget4000` measures what doubling the budget is worth.
-- **The 1.2 read by the oracle** (night of 14/10, `docs/strategie.md`): Oracle2 (`ORACLES[2]`,
+- **The 1.2 read by the oracle** (night of 14/10, `docs/strategie/06-les-oracles.md`): Oracle2 (`ORACLES[2]`,
   `npm run oracle -- --oracle 2`: the oracle's tree with `core=stfig6+exact=12+widen=7`) scored
   48.1 % against Oracle1 over 108 games, so Oracle1 stays version 1. Oracle1 read the 1.2's
   Budget4000 games (1 642 positions, 851 gaps) and every gap was confirmed by play: the oracle's
@@ -381,7 +387,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   **The root's 8 candidates are not the bottleneck**, and the oracle is no stronger judge than the
   1.2; only the top-8 group (ranks 4-8, +3.6 ± 4.7 over 153) is left open. `stopIf` takes
   `atLeast` too, so both branches of a choice can be queued; `--confirm` takes `--out`.
-- **The deep oracle** (14/10, `docs/strategie.md`): against the 1.2@2000, the 1.2's own tree at 20 000
+- **The deep oracle** (14/10, `docs/strategie/06-les-oracles.md`): against the 1.2@2000, the 1.2's own tree at 20 000
   iterations scores 55.7 % and `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000` (Depth10Pw) 61.4 %
   (55.1 – 67.8, 140 games), then 52.9 % on new decks: 57.1 % pooled over 280 games (≈ 52.0 – 62.3), the
   first judge stronger than the 1.2, short of the 60 % rule.

@@ -58,7 +58,7 @@ automatiquement. Mode d'emploi : `docs/jouer.md`.
 | `data/replays/` | les replays gardés pour l'analyse (les autres vont dans `replays/`, hors git) |
 | `docs/jouer.md` | jouer, observer, replays, versions des robots |
 | `docs/analyse-replays.md` | les parties contre le Stratège, et les idées mesurées |
-| `docs/strategie.md` | la stratégie des robots, principe par principe, avec ses tests et ses mesures |
+| `docs/strategie.md` | la stratégie des robots, principe par principe, avec ses tests, le registre des tentatives écartées et le sommaire du journal (`docs/strategie/`, un chapitre par période) |
 | `docs/noms.md` | propositions de noms |
 | `docs/methode.md` | méthode, hypothèses et limites des calculs |
 | `docs/commandes.md` | toutes les commandes `npm run`, rangées par usage |

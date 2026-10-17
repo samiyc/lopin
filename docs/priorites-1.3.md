@@ -60,7 +60,7 @@ prend la suite.
 | 5 | — | 16 | 0,8 % | 0,3 |
 
 - **Au 3e étage, presque chaque visite est un premier essai.** Le coup essayé est le premier du cœur dans cette donne,
-  celui que la simulation aurait joué : l'arbre n'y apprend rien. On le voyait déjà le 06/10 (`strategie.md`,
+  celui que la simulation aurait joué : l'arbre n'y apprend rien. On le voyait déjà le 06/10 (`strategie/04-labo-a-2000.md`,
   « Ce que la largeur fait à la profondeur » : UCB choisit 82 % des coups à l'étage 1, 7 % à l'étage 2).
 - **Au 2e étage, les réponses changent avec la main adverse tirée** : environ 55 par candidat, 3 ou 4 visites chacune
   en moyenne. Une itération sur cinq essaie une réponse nouvelle.
@@ -147,7 +147,7 @@ en tirant sa donne avant de choisir son candidat.
 ## 2. Les idées, classées
 
 Trois idées, et une mesure qui borne la famille du bruit. Les lignes citées sont celles de `docs/strategie.md` au
-16/10.
+16/10, avant son découpage en chapitres (`docs/strategie/`, 17/10).
 
 ### 1. `CommonDeals` : les candidats comparés sur les mêmes donnes (codé, trié, en file)
 

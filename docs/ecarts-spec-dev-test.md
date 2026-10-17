@@ -65,7 +65,7 @@ Les chemins cités plus bas sont ceux d'après la réorganisation en sous-dossie
     1. `239e4b7` (17/10 à 09h47) : dépouillement complet des 13 jobs de la nuit (`CommonDeals` à 50,7 %, `Ensemble2x2000` à 54,6 %, `OracleLight-Pwl3-Trees2` à 53,6 %, `OracleLight-Pwl2-Trees2` à 57,9 %, `Oracle3-Pwl3-Trees2` à 55,4 %) dans `docs/priorites-1.3.md`, `docs/1.3-to-oracle-shift.md`, `docs/strategie.md`, `CLAUDE.md`, `data/changelog-exp-1.3.json`, `data/changelog-oracle.json` et `data/backlog.json`.
     2. `94d9335` (17/10 à 11h00) : implémentation de `ReplyFpu` (`src/sim/mcts/first-play.js`, `+fpu=d`, `tests/sim-search/first-play.test.js`), exécution des duels de jour (`ReplyFpu0` 45,6 %, `ReplyFpu1` 53,6 % dont le log `backlog-runs/2026-10-17-10-57_VALIDATE_LONG_1_ReplyFpu1.txt` est écrit dans le dossier principal), et mise en file des 12 jobs de la nuit du 17–18/10.
 - **Écart sur `main`** :
-  - Sur `main`, `CLAUDE.md` (L412), `docs/1.3-to-oracle-shift.md` (L21–24, L31–53), `docs/priorites-1.3.md` (L33–36, L330–346), `docs/strategie.md` (L3669–3673, L3695–3698) et `docs/glossaire.md` (L485) présentent encore ces 13 jobs au futur (*« en file pour cette nuit »*), et le moteur `+fpu=d` mentionné dans `backlog-runs/2026-10-17-10-57_VALIDATE_LONG_1_ReplyFpu1.txt` n'existe pas encore dans `src/sim/` sur `main`.
+  - Sur `main`, `CLAUDE.md` (L412), `docs/1.3-to-oracle-shift.md` (L21–24, L31–53), `docs/priorites-1.3.md` (L33–36, L330–346), `docs/strategie/06-les-oracles.md` (L527–531, L553–556) et `docs/glossaire.md` (L485) présentent encore ces 13 jobs au futur (*« en file pour cette nuit »*), et le moteur `+fpu=d` mentionné dans `backlog-runs/2026-10-17-10-57_VALIDATE_LONG_1_ReplyFpu1.txt` n'existe pas encore dans `src/sim/` sur `main`.
 - **Correction prévue** :
   - Réinitialiser la modification locale de `data/backlog.json` sur `main` (déjà committée dans `239e4b7`) et fusionner `priorites-1.3` (`94d9335`) dans `main` (`git merge --ff-only priorites-1.3`), puis supprimer les worktrees résiduels de `.claude/worktrees/`.
 
@@ -100,7 +100,7 @@ Les chemins cités plus bas sont ceux d'après la réorganisation en sous-dossie
   - L208–218 : Décrit en détail le mécanisme de réflexion anticipée pendant le tour humain et le crédit de la moitié du temps (`budget − min(attendu / 2, budget × 3/4)`).
 - **Code (`web/app/workers/think-worker.js` L17–19, `src/sim/mcts/ismcts.js` L293, `src/config/bots.js` L42)** :
   - `startPonder` vérifie `if (!bot.warms) return;`. Seul l'ancien moteur plat `searchBot` (`src/sim/search/search.js` L121, utilisé par `experimental` 0.6/0.7) possède `warms`.
-  - Aucun bot ISMCTS (`experimental` 1.2 ni `oracle-light` 1.0) ne possède `warms`. Le *pondering* a été volontairement coupé le 16/10 (`CLAUDE.md` L241–243, `docs/strategie.md` L3660–3664) car il amputait le budget de la 1.2 sans réutiliser l'arbre.
+  - Aucun bot ISMCTS (`experimental` 1.2 ni `oracle-light` 1.0) ne possède `warms`. Le *pondering* a été volontairement coupé le 16/10 (`CLAUDE.md` L241–243, `docs/strategie/06-les-oracles.md` L518–522) car il amputait le budget de la 1.2 sans réutiliser l'arbre.
 
 ---
 
