@@ -228,8 +228,12 @@ export function createIsmcts(state, scored, options) {
     rollouts: () => ctx.iterations,
     scored: rated,
     best: () => rated().reduce((a, b) => (b.gain > a.gain ? b : a)).move,
-    /** The tree itself, read by the finalists bench (scripts, not the game). */
+    /** The tree itself, read by the finalists bench and the Labo (tree-snapshot.js). */
     tree: () => root,
+    trees: () => [root],
+    /** The root's candidates in the core's order, and the core's scored moves they came from (the Labo reads both). */
+    candidates: () => ctx.rootMoves,
+    core: () => scored,
   };
 }
 

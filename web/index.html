@@ -13,7 +13,7 @@
   <h1>Bornage <small>Lopin n°742</small></h1>
   <nav class="tabs" role="tablist" aria-label="Mode">
     <button type="button" role="tab" id="tab-play" data-mode="play" aria-selected="true">Jouer</button>
-    <button type="button" role="tab" id="tab-observe" data-mode="observe" aria-selected="false">Observer</button>
+    <button type="button" role="tab" id="tab-observe" data-mode="observe" aria-selected="false" title="Deux robots jouent coup par coup, leur arbre de recherche sous la table">Labo</button>
     <button type="button" role="tab" id="tab-puzzles" data-mode="puzzles" aria-selected="false">Puzzles</button>
     <button type="button" role="tab" id="tab-replays" data-mode="replays" aria-selected="false">Replays</button>
     <button type="button" role="tab" id="tab-stats" data-mode="stats" aria-selected="false">Stats</button>
@@ -53,9 +53,15 @@
     <section class="panel" id="panel-observe" hidden>
       <label>En bas <select id="observe-bottom"></select></label>
       <label>En haut <select id="observe-top"></select></label>
-      <label>Graine <input id="observe-seed" inputmode="numeric" autocomplete="off"></label>
-      <button type="button" id="btn-observe">Lancer une partie</button>
+      <label>Graine <input id="observe-seed" inputmode="numeric" autocomplete="off" placeholder="au hasard"></label>
+      <button type="button" id="btn-observe">Nouvelle partie</button>
+      <div class="lab-actions">
+        <button type="button" id="btn-lab-step" class="quiet" disabled>Coup suivant</button>
+        <button type="button" id="btn-lab-auto" class="quiet" aria-pressed="false" disabled>En continu</button>
+      </div>
+      <label>Fils pour les robots <input type="number" id="lab-workers" min="1" value="4" title="Workers au plus pour les robots du Labo : 4 par défaut, jusqu'au nombre de cœurs moins 3"></label>
       <button type="button" id="btn-observe-save" class="quiet">Enregistrer cette partie</button>
+      <p class="hint">Chaque robot cherche ses propres itérations, comme en duel. Clique une carte (ou un candidat) pour voir les bornes où elle va.</p>
     </section>
 
     <section class="panel" id="panel-replays" hidden>
@@ -120,6 +126,8 @@
     </div>
     <div class="banner" id="banner" hidden></div>
   </section>
+
+  <section class="lab-view" id="lab-view" hidden aria-label="Labo : la réflexion du robot"></section>
 
   <section class="stats-view" id="stats-view" hidden aria-live="polite"></section>
 </main>

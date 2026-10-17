@@ -17,6 +17,15 @@ import { settledAtEnd, tableView } from "./view.js";
  */
 const viewer = { log: null, frames: [], index: 0, shown: 0, timer: null, sorts: new Map(), orders: [[], []], advisor: null };
 
+/**
+ * The Labo's hooks (lab/lab-panel.js): `marks(log, index, frames)` colours the table (table.js `marks`), `after({ log, frames,
+ * index })` draws its own panel once the table is drawn. Without them the viewer is the plain player.
+ */
+let hooks = { marks: () => undefined, after: () => {} };
+export function setLabHooks(next) {
+  hooks = { ...hooks, ...next };
+}
+
 /** Asks a fresh worker for the Stratège 2.1's opinion on each human move of `log`; a replay opened since stops the last one. */
 function askAdvice(log) {
   viewer.advisor?.terminate();
@@ -69,12 +78,48 @@ export function render() {
   const [handOrder, topOrder] = viewer.orders.map((orders) => orders[index]);
   const view = tableView(SPEC, frame.state, { bottom: 0, reveal: true, shown, lastMove, handOrder, topOrder });
   const names = { bottom: playerName(log.players[0]), top: playerName(log.players[1]) };
-  renderTable(view, { status: passText(log, frame) ?? (timer ? "Lecture…" : "En pause."), names, lastMove, showTools: true });
+  renderTable(view, { status: viewer.status ?? passText(log, frame) ?? (timer ? "Lecture…" : "En pause."), names, lastMove, showTools: true, marks: hooks.marks(log, index, frames) });
   $("turn").textContent = turnText(frame);
   $("frame").textContent = `Coup ${index} / ${last()}`;
   $("btn-toggle").textContent = timer ? "❚❚" : "▶";
   $("btn-toggle").setAttribute("aria-label", timer ? "Pause" : "Lecture");
   renderExplain(log, frame);
+  hooks.after({ log, frames, index });
+}
+
+/** Is the player following `log` to its end: another game until now, or standing on its last move? */
+const following = (log) => viewer.log !== log || viewer.index >= last();
+
+/** Another game takes the player: the last one's playback, advice and sorts stop. */
+function leaveLog() {
+  pause();
+  viewer.advisor?.terminate();
+  viewer.sorts = new Map();
+}
+
+/**
+ * A game still being played (the Labo): its frames rebuilt from the log as it grows, the player kept on the last move
+ * if it stood there. `status` replaces the player's « En pause » while a bot thinks (null gives it back); `draw`:
+ * false while another tab is on show (only the visible tab draws on the table); `jump`: true goes to the last move,
+ * false stays where the player is, unset goes on following if it was at the end.
+ */
+export function follow(log, { status = null, draw = true, jump } = {}) {
+  const wasLast = jump ?? following(log);
+  if (viewer.log !== log) leaveLog();
+  viewer.log = log;
+  viewer.status = status;
+  viewer.frames = replayStates(log);
+  arrangeHands();
+  if (wasLast) moveTo({ index: last(), shown: 0 });
+  if (draw) render();
+}
+
+/** The move on show (0: the deal). */
+export const position = () => viewer.index;
+
+/** Puts the player on move `index` (kept within the game), without drawing. */
+export function goTo(index) {
+  moveTo({ index: Math.max(0, Math.min(index, last())), shown: 0 });
 }
 
 export function pause() {
@@ -115,6 +160,7 @@ function play() {
 export function load(log, { autoplay = false } = {}) {
   pause();
   viewer.log = log;
+  viewer.status = null;
   viewer.frames = replayStates(log);
   askAdvice(log);
   viewer.sorts = new Map();

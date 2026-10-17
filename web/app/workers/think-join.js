@@ -1,4 +1,22 @@
 import { addScores } from "../../../src/sim/mcts/choice.js";
+import { addRootStats } from "../../../src/sim/mcts/tree-snapshot.js";
+
+/** The Labo's view of the workers' trees (think-worker.js): their root candidates added up, their trees side by side. */
+export function joinLab(labs) {
+  const trees = labs.filter((lab) => lab?.trees);
+  if (trees.length === 0) return labs[0] ?? null;
+  return { root: addRootStats(trees.map((lab) => lab.root)), trees: trees.flatMap((lab) => lab.trees) };
+}
+
+/** The workers' latest `progress` messages as one: rollouts summed, root candidates added up, the longest time. */
+export function joinProgress(parts) {
+  const known = parts.filter(Boolean);
+  return {
+    rollouts: known.reduce((sum, part) => sum + part.rollouts, 0),
+    elapsedMs: Math.max(0, ...known.map((part) => part.elapsedMs)),
+    root: addRootStats(known.map((part) => part.root)),
+  };
+}
 
 /**
  * The move of an ensemble searched one tree per worker (`thinker.js`), PURE:
@@ -19,5 +37,6 @@ export function joinReplies(replies) {
     scored,
     rollouts: replies.reduce((sum, reply) => sum + reply.rollouts, 0),
     thoughtMs: Math.max(...replies.map((reply) => reply.thoughtMs)),
+    ...(first.lab === undefined ? {} : { lab: joinLab(replies.map((reply) => reply.lab)) }),
   };
 }

@@ -1,7 +1,8 @@
 import { wireDeckColors } from "./board/deck-colors.js";
 import { $, openDialog } from "./board/dom.js";
 import { setupInput } from "./board/drag.js";
-import { wireObserve, wireReplays } from "./replays/panels.js";
+import { wireReplays } from "./replays/panels.js";
+import { pauseLab, showLab, wireLab } from "./lab/lab-game.js";
 import { hasGame, playInput, render as renderPlay, setVisible, wirePlayControls } from "./play/play.js";
 import { puzzleInput, render as renderPuzzle, showPuzzles, wirePuzzles } from "./puzzles/puzzles.js";
 import { renderStats } from "./stats.js";
@@ -19,9 +20,10 @@ const replays = wireReplays();
 
 wirePlayer();
 wirePlayControls();
-wireObserve();
 const INPUTS = { play: playInput, puzzles: puzzleInput };
 let mode = "play";
+// The Labo (the Observer, 17/10) draws its panel under the table on its own tab and in Replays.
+wireLab({ active: () => mode === "observe" || mode === "replays" });
 /** The table's input goes to the tab on show; the others ignore it. */
 const routed = Object.fromEntries(Object.keys(playInput).map((name) => [name, (...args) => (INPUTS[mode] ? INPUTS[mode][name](...args) : undefined)]));
 routed.enabled = () => Boolean(INPUTS[mode]?.enabled());
@@ -31,15 +33,15 @@ wirePuzzles();
 
 const PANELS = {
   play: ["panel-play"],
-  observe: ["panel-observe", "player", "explain"],
-  replays: ["panel-replays", "player", "explain"],
+  observe: ["panel-observe", "player", "explain", "lab-view"],
+  replays: ["panel-replays", "player", "explain", "lab-view"],
   puzzles: ["panel-puzzles"],
   stats: [],
 };
 
 const EMPTY_MESSAGES = {
   play: "Lance une nouvelle partie.",
-  observe: "Choisis deux robots et lance une partie.",
+  observe: "Choisis deux robots et lance une nouvelle partie : ils jouent coup par coup, leur arbre sous la table.",
   replays: "Choisis une partie dans la liste.",
   puzzles: "Chargement des puzzles…",
   stats: "",
@@ -90,6 +92,8 @@ function show(tab) {
   applyFold();
   setVisible(tab === "play");
   showPuzzles(tab === "puzzles");
+  if (tab === "observe") showLab();
+  else pauseLab();
   redraw(tab);
   if (tab === "replays") replays.refresh();
 }

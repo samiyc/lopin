@@ -38,15 +38,18 @@ export function cardElement(card, attrs = {}) {
 
 const backElement = () => el("div", { class: "card back", "aria-hidden": "true" });
 
-function renderTopHand(hand) {
-  const cards = hand.hidden ? Array.from({ length: hand.count }, backElement) : hand.cards.map((card) => cardElement(card));
+/** The Labo's tone of a card (lab/confidence.js): `tone-sure`, `tone-maybe`, `tone-poor`, `tone-unseen`, or nothing. */
+const toneClass = (marks, card) => (marks.tones?.has(card.id) ? `tone-${marks.tones.get(card.id)}` : "");
+
+function renderTopHand(hand, marks) {
+  const cards = hand.hidden ? Array.from({ length: hand.count }, backElement) : hand.cards.map((card) => cardElement(card, { class: toneClass(marks, card), dataset: { card: card.id } }));
   $("hand-top").replaceChildren(...cards);
 }
 
 function renderBottomHand(hand, { interactive, selected, marks }) {
   const cards = hand.cards.map((card, index) =>
     cardElement(card, {
-      class: [index === selected ? "selected" : "", marks.discard.has(card.id) ? "discardable" : ""].filter(Boolean).join(" "),
+      class: [index === selected ? "selected" : "", marks.discard.has(card.id) ? "discardable" : "", toneClass(marks, card)].filter(Boolean).join(" "),
       draggable: interactive ? "true" : null,
       tabindex: interactive ? "0" : null,
       role: interactive ? "button" : null,
@@ -56,15 +59,18 @@ function renderBottomHand(hand, { interactive, selected, marks }) {
   $("hand-bottom").replaceChildren(...cards);
 }
 
-/** A side's cards: the last one played ringed, and the one a selected Dame de Pique would take back lit (`recalled`). */
-function sideElement(cards, position, border, { legal, lastMove, premove = false, recalled = false }) {
+/**
+ * A side's cards: the last one played ringed, and the one a selected Dame de Pique would take back lit (`recalled`).
+ * `tone` (the Labo): how the card looked at would do there, `{ tone, label }`.
+ */
+function sideElement(cards, position, border, { legal, lastMove, premove = false, recalled = false, tone = null }) {
   const classOf = (i) => {
     if (i !== cards.length - 1) return "";
     return [lastMove && position === lastMove ? "last" : "", recalled ? "recallable" : ""].filter(Boolean).join(" ");
   };
   const drawn = cards.map((card, i) => cardElement(card, { class: classOf(i) }));
-  const classes = ["side", position, legal ? "drop-ok" : "", premove ? "premove" : ""].filter(Boolean).join(" ");
-  return el("div", { class: classes, dataset: { border: border.index, position } }, ...drawn);
+  const classes = ["side", position, legal ? "drop-ok" : "", premove ? "premove" : "", tone ? `tone-${tone.tone}` : ""].filter(Boolean).join(" ");
+  return el("div", { class: classes, dataset: { border: border.index, position, ...(tone ? { rate: tone.label } : {}) } }, ...drawn);
 }
 
 function stoneElement(border) {
@@ -83,13 +89,14 @@ function borderElement(border, { legalBorders, lastMove, premove, marks }) {
   const legal = legalBorders.has(border.index);
   const lastSide = border.lastMove ? lastMove.side : null;
   const recalled = marks.recall.has(border.index);
+  const toneOf = (position) => (marks.sides?.position === position ? (marks.sides.tones.get(border.index) ?? null) : null);
   return el(
     "div",
     { class: "border", dataset: { border: border.index } },
     el("p", { class: "formation" }, border.formations?.top ?? ""),
-    sideRow(sideElement(border.top, "top", border, { legal: false, lastMove: lastSide }), border.figures?.top),
+    sideRow(sideElement(border.top, "top", border, { legal: false, lastMove: lastSide, tone: toneOf("top") }), border.figures?.top),
     stoneElement(border),
-    sideRow(sideElement(border.bottom, "bottom", border, { legal, lastMove: lastSide, premove: premove === border.index, recalled }), border.figures?.bottom),
+    sideRow(sideElement(border.bottom, "bottom", border, { legal, lastMove: lastSide, premove: premove === border.index, recalled, tone: toneOf("bottom") }), border.figures?.bottom),
     el("p", { class: "formation" }, border.formations?.bottom ?? ""),
   );
 }
@@ -186,7 +193,8 @@ const NO_MARKS = Object.freeze({ recall: new Set(), discard: new Set() });
  * `options`: `{ status, names: { top, bottom }, interactive, selected,
  * legalBorders: Set, lastMove: { border, side } | null, marks, showTools }`.
  * `marks` (the extension): `recall`, the borders whose bottom card a selected
- * Dame de Pique would take back; `discard`, the card ids a Valet de Trèfle may discard.
+ * Dame de Pique would take back; `discard`, the card ids a Valet de Trèfle may discard. The Labo adds `tones`
+ * (card id → tone) and `sides` (`{ position, tones: Map<border, { tone, label }> }`: the borders a card goes to).
  */
 export function renderTable(view, options) {
   const settings = { interactive: false, selected: null, legalBorders: new Set(), lastMove: null, showTools: false, canPass: false, ...options };
@@ -194,7 +202,7 @@ export function renderTable(view, options) {
   renderCounters(view, settings.status);
   $("label-top").textContent = settings.names.top;
   $("label-bottom").textContent = settings.names.bottom;
-  renderTopHand(view.top);
+  renderTopHand(view.top, settings.marks);
   renderBottomHand(view.bottom, settings);
   $("board").replaceChildren(...view.borders.map((border) => borderElement(border, settings)));
   renderSuitBar(view.suits);

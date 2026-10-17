@@ -1,7 +1,7 @@
 import { BOT_LINEUP, botTag, engineOf } from "../../../src/config/bots.js";
 import { OFFICIAL_RULES } from "../../../src/config/rules.js";
 import { createRng } from "../../../src/core/random.js";
-import { finishLog, playLogged, rulesOf, startLog } from "../../../src/replay/core/log.js";
+import { playLogged, rulesOf } from "../../../src/replay/core/log.js";
 import { engineFor, pickBest } from "../../../src/sim/bots.js";
 import { createGame, legalMoves } from "../../../src/sim/engine/game.js";
 import { figuresFor } from "../board/figure-input.js";
@@ -40,34 +40,6 @@ export function botChoice(state, player) {
 export function playBot(log, state, player) {
   const { move, scored } = botChoice(state, player);
   return playLogged(log, state, move, scored);
-}
-
-const yieldToPage = () => new Promise((resolve) => setTimeout(resolve, 0));
-
-/**
- * A whole bot-against-bot game, resolved as a finished log. It hands the page
- * back between moves: a Stratège looking ahead thinks for a fraction of a
- * second per move, and a whole game in one go would freeze the page.
- * `onTurn(turn)` reports progress. `thinkerFor(id, player, seed)` (the page's
- * `createThinker`) lets a bot that thinks in workers do so here too: the
- * Oracle light searched on the page's thread froze it for seconds a move.
- */
-export async function generateBotGame(bottomId, topId, seed, { onTurn = () => {}, thinkerFor = null } = {}) {
-  const state = newGame(seed);
-  const players = [botPlayer(bottomId, seed + 1), botPlayer(topId, seed + 2)];
-  const thinkers = thinkerFor ? [thinkerFor(bottomId, players[0], seed + 1), thinkerFor(topId, players[1], seed + 2)] : null;
-  const log = startLog(state, { rules: RULES, players: [botEntry(0, bottomId), botEntry(1, topId)], seed });
-  try {
-    while (!state.over) {
-      const { move, scored } = thinkers ? await thinkers[state.current].decide(state, log) : botChoice(state, players[state.current]);
-      playLogged(log, state, move, scored);
-      onTurn(state.turn);
-      await yieldToPage();
-    }
-  } finally {
-    thinkers?.forEach((thinker) => thinker.stop());
-  }
-  return finishLog(log, state);
 }
 
 /** "Stratège 1.1.0", or the human's name, for a log's player entry. */

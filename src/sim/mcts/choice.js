@@ -84,5 +84,8 @@ export function createEnsemble(createSearch, state, scored, { trees, part, ...op
     scored: rated,
     best: () => rated().reduce((a, b) => (b.gain > a.gain ? b : a)).move,
     tree: () => searches[0].tree(),
+    trees: () => searches.map((search) => search.tree()),
+    candidates: () => searches[0].candidates(),
+    core: () => searches[0].core(),
   };
 }

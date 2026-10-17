@@ -36,7 +36,7 @@ côte, gagne.
 
 ## Les cinq onglets
 
-Dans l'ordre : Jouer, Observer, Puzzles, Replays, Stats.
+Dans l'ordre : Jouer, Labo (l'ancien Observer), Puzzles, Replays, Stats.
 
 **Jouer.** « Nouvelle partie », sur deux colonnes : à gauche ton adversaire,
 à droite qui commence, les cartes bonus de l'extension (0 à 6), l'option
@@ -96,13 +96,38 @@ chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
 - **« Recommencer »** : demande confirmation, puis abandonne la partie sans rien
   enregistrer.
 
-**Observer.** Deux robots de la gamme s'affrontent, avec les deux mains visibles.
+**Labo** (l'ancien Observer, 17/10). Deux robots de la gamme s'affrontent, avec les deux
+mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant », ou
+« En continu » jusqu'à « Pause ».
+- Pendant qu'un robot arbre (Expérimental, Oracle light) réfléchit, ses 8 candidats
+  bougent en direct sous la table : visites, taux de victoire et sa fourchette à 95 %.
+  Chaque robot cherche ses propres itérations, comme en duel : la partie est celle
+  que joueraient les mêmes robots avec la même graine dans Node.
+- **Les cartes de sa main sont colorées** : vert, aussi bon que le coup joué (l'arbre
+  ne les départage pas) ; jaune, plus loin ; rouge, nettement derrière ; gris, la
+  carte n'est dans aucun des 8 candidats. Clique une carte (ou un candidat) : les
+  bornes où elle irait s'allument avec leur taux.
+- **Le diagnostic** relève ce qui frappe dans l'arbre : coup incertain (les deux
+  premiers ne se départagent pas), réplique dangereuse de l'adversaire, meilleur taux
+  ailleurs que sur le plus visité, coup que le cœur classait loin, candidats
+  presque pas explorés, pli 3 où l'on juge sur une seule partie, profondeur jamais
+  atteinte.
+- **Les étages** : par pli, les nœuds visités plusieurs fois, une seule, jamais.
+- **L'arbre** se dessine quand le coup est joué : un nœud par coup, sa taille selon
+  ses visites, sa couleur selon le taux de qui le joue (rouge 30 % ou moins, vert
+  70 % ou plus). Molette pour zoomer, glisser pour se déplacer, double-clic dans le
+  vide (ou Échap) pour tout revoir ; clic sur un nœud pour son détail (la suite de
+  coups en clair, taux, visites, disponibilité, suites), double-clic pour le déplier ;
+  clic sur un étage pour ses chiffres. « +205 » regroupe les coups trop peu visités
+  pour être dessinés. L'Oracle light montre ses deux arbres (« Arbres : 1 2 »).
+- Coup par coup, le lecteur reste sur la position que le robot vient d'étudier :
+  > montre son coup. En continu, il suit la partie jusqu'au bout.
+- « Fils pour les robots » : 4 workers au plus par défaut (jusqu'au nombre de cœurs
+  moins 3), à côté des duels de jour.
 - Boutons début ⏮, coup précédent <, lecture et pause, coup suivant >, fin ⏭
   (les bornes réglées), et vitesse. Les touches Début et Fin font la même chose.
   Depuis la fin, < revient au coup d'avant. La pioche est vide pendant les 12
   derniers coups : c'est normal, il n'y a plus rien à piocher.
-- Le Stratège réfléchit une fraction de seconde par coup : la partie se calcule
-  coup par coup avant de démarrer (« Les robots jouent… tour 12 / 42 »).
 - Les deux mains sont triées par couleur à la distribution, et les cartes piochées
   arrivent à droite, comme en jeu. « Trier : par couleur / par valeur » range les
   deux mains à partir du coup affiché.
@@ -121,7 +146,9 @@ chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
   - le score (ou « 3 bornes connectées ») et le mode : « Standard » ou
     « Extension (6 bonus) » ;
   - la durée et la date.
-- Même lecteur que l'Observer.
+- Même lecteur que le Labo. Une partie jouée au Labo et enregistrée garde, coup par
+  coup, les candidats et les étages de l'arbre (pas l'arbre lui-même) : le panneau
+  du Labo les remontre ; un replay de duel n'en a que les étages.
 - Pour chacun de tes coups, le panneau donne le temps que tu as mis (« Joue 5♥
   sur la borne 2 en 2 min 30 s »). Il dit aussi ce que le **Stratège 2.1**
   aurait joué : ses 4 meilleurs coups et le tien, chacun rejoué sur les mêmes

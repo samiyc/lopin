@@ -79,9 +79,9 @@ web/          index.html, style.css, app/: main (tabs), stats, then
               board/ (table: DOM, drag: input, hand: PURE, clock: PURE timer
               paused out of focus, dom, figure-input), play/ (play: Jouer,
               play-game: a new game, thinker, premove), replays/ (viewer +
-              panels: Observer, Replays; view: PURE, tested; steps: PURE replay
+              panels: Replays; view: PURE, tested; steps: PURE replay
               player moves; runner: games as the page plays them; explain,
-              replays-api), puzzles/, workers/ (think, solve, advice)
+              replays-api), lab/ (the Labo), puzzles/, workers/ (think, solve, advice)
 tests/        one folder per area: core/, sim-engine/, sim-heuristics/,
               sim-search/, replay/, web-cli/; fixtures/ (replays)
 data/irl/     essais.json: the 10 real games, transcribed from the photos
@@ -272,7 +272,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   (`oracle-light`, 16/10) is an ensemble (`+trees=2`) searched one tree per
   worker (`think.workers`, `part` in `createEnsemble`), the scores added up by
   `web/app/workers/think-join.js` as in Node, so it plays the duels' moves
-  (`tests/web-cli/think-join.test.js`); the Observer goes through the same thinkers.
+  (`tests/web-cli/think-join.test.js`); the Labo goes through the same thinkers.
 - **Certainties are theorems** (`src/sim/eval/certainty.js`): a border is `won` /
   `lost` for a player when no finish of the other side (enumerated over every
   card they cannot see) changes it. Tested over whole games. The experimental
@@ -490,9 +490,15 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   winning move leaves the opponent no legal move, so they pass and the mover
   plays again; `src/sim/engine/double-turn.js`). The core does not know it; the
   solver does (a pass is a move to it), so the 1.2 plays it at 12 cards.
-- **Anything that runs a look-ahead bot in the page yields between moves**
-  (`generateBotGame` is async): a whole observer game computed in one go
-  froze the page for several seconds.
+- **Anything that runs a look-ahead bot in the page yields between moves**: a
+  whole observer game computed in one go froze the page for several seconds.
+- **The Labo** (Sami, 17/10; the Observer tab, `web/app/lab/`, `docs/jouer.md`): bots play move by
+  move, each tree bot's worker reporting its tree (`lab: true`: `progress` while it searches, then
+  `rootStats` + `snapshotTree`, `src/sim/mcts/tree-snapshot.js`, read between steps so no move
+  changes — 1.2, 1.0 and Oracle v1 fingerprints checked). Pure and tested: confidence, tree-layout,
+  tree-diagnosis, lab-text; DOM: lab-game, lab-panel, lab-parts, tree-view (SVG, wheel zoom, drag).
+  Workers capped at 4 (up to cores − 3). Next lots (`data/changelog-exp-1.3.json` « La suite »):
+  bot settings with guards, configs already measured, a move re-searched, the oracle, a profiler.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):
   sorted at the deal, drawn cards appended, a sort applied from the position
   it was asked at. Both hands, via `handOrder` / `topOrder` of `tableView`.

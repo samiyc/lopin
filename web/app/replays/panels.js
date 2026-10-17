@@ -1,56 +1,13 @@
-import { BOT_IDS, BOT_LINEUP, DEFAULT_OPPONENT } from "../../../src/config/bots.js";
-import { $, el, freshSeed, toast } from "../board/dom.js";
-import { keepReplay, listReplays, loadReplay, saveReplay } from "./replays-api.js";
-import { generateBotGame, playerName } from "./runner.js";
-import { clearTable } from "../board/table.js";
-import { createThinker } from "../play/thinker.js";
+import { $, el, toast } from "../board/dom.js";
+import { keepReplay, listReplays, loadReplay } from "./replays-api.js";
+import { playerName } from "./runner.js";
 import { replayLabel } from "./view.js";
-import { currentLog, load, loaded, pause } from "./viewer.js";
+import { load } from "./viewer.js";
 
 /**
- * The "Observer" and "Replays" panels. Both feed the same viewer: an
- * observer game is generated whole, then played back like a saved one.
+ * The "Replays" panel: the saved games, played back in the shared viewer. The Observer became the Labo
+ * (lab/lab-game.js, 17/10), which plays its games live in the same viewer.
  */
-function fillBotSelect(select, chosen) {
-  select.replaceChildren(...BOT_IDS.map((id) => el("option", { value: id, selected: id === chosen }, `${BOT_LINEUP[id].label} ${BOT_LINEUP[id].version}`)));
-}
-
-function seedFromInput() {
-  const typed = Number.parseInt($("observe-seed").value, 10);
-  const seed = Number.isInteger(typed) && typed >= 0 ? typed : freshSeed();
-  $("observe-seed").value = String(seed);
-  return seed;
-}
-
-export function wireObserve() {
-  fillBotSelect($("observe-bottom"), DEFAULT_OPPONENT);
-  fillBotSelect($("observe-top"), "basique");
-  $("btn-observe").addEventListener("click", async () => {
-    const button = $("btn-observe");
-    button.disabled = true;
-    pause();
-    clearTable("Les robots jouent…");
-    try {
-      const onTurn = (turn) => {
-        $("status").textContent = `Les robots jouent… tour ${turn} / 42`;
-      };
-      const thinkerFor = (id, player, seed) => createThinker(player, BOT_LINEUP[id].think, seed);
-      const log = await generateBotGame($("observe-bottom").value, $("observe-top").value, seedFromInput(), { onTurn, thinkerFor });
-      load(log, { autoplay: true });
-    } finally {
-      button.disabled = false;
-    }
-  });
-  $("btn-observe-save").addEventListener("click", async () => {
-    if (!loaded()) return toast("Lance d'abord une partie.");
-    try {
-      toast(`Partie enregistrée : ${(await saveReplay(currentLog())).path}`);
-    } catch (error) {
-      toast(`Enregistrement impossible : ${error.message}`);
-    }
-    return undefined;
-  });
-}
 
 /** Three lines: who played (and who won), score and mode, then duration and date. Green or red for the human. */
 function replayButton(header) {

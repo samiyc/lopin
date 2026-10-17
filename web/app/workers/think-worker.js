@@ -5,6 +5,8 @@ import { partBudget } from "../../../src/sim/mcts/choice.js";
 import { budgetOf } from "../../../src/sim/heuristics/experimental.js";
 import { legalMoves } from "../../../src/sim/engine/game.js";
 import { CREDIT, createPonder } from "../../../src/sim/search/ponder.js";
+import { treeStats } from "../../../src/sim/mcts/tree-stats.js";
+import { addRootStats, rootStats, snapshotTree } from "../../../src/sim/mcts/tree-snapshot.js";
 
 /**
  * The experimental bot's own thread (`thinker.js` talks to it). It searches
@@ -27,9 +29,15 @@ import { CREDIT, createPonder } from "../../../src/sim/search/ponder.js";
  * `decide` carries an `id`, echoed in the answer, so that the page drops an
  * answer that comes back after it gave up waiting (thinker.js).
  * Message out: `move { id, move, scored, pondered, rollouts, thoughtMs }`.
+ *
+ * The Labo (Sami, 17/10) inits with `lab: true`: a tree search then posts `progress { id, rollouts, elapsedMs, root }`
+ * every `PROGRESS_MS` while it searches, and its `move` carries `lab: { root, trees: [{ levels, snapshot }] }`, the
+ * root's candidates and the pruned trees (tree-snapshot.js). Read between steps only: the move is the same.
  */
 const SLICE_MS = 25;
+const PROGRESS_MS = 250;
 let bot = null;
+let lab = false;
 let limits = { limitMs: 10000, minMs: 400, iterations: Infinity };
 let share = {};
 let ponder = null;
@@ -43,13 +51,31 @@ async function keepPondering(mine) {
   while (ponder === mine && mine.work(SLICE_MS)) await breathe();
 }
 
+/** The root's candidates of every tree a search holds, added up (an ensemble in one worker has several). */
+const labRoot = (search) => addRootStats(search.trees().map((tree) => rootStats(tree, search.candidates(), search.core())));
+
+/** What the Labo reads of a finished search, or null for a search without a tree (the flat 0.7). */
+function labOf(search, state) {
+  if (!search.trees) return null;
+  return { root: labRoot(search), trees: search.trees().map((tree) => ({ levels: treeStats(tree), snapshot: snapshotTree(tree, { rootPlayer: state.current }) })) };
+}
+
 /** Searches the reply, starting from what pondering learned (`taken`: `{ warm, spentMs }`). */
-function searchReply(state, moves, { warm, spentMs }) {
+function searchReply(state, moves, { warm, spentMs }, id) {
   const started = now();
   const search = bot.searchFor(state, moves, {}, { warm, ...share });
   const budget = Math.max(limits.minMs, limits.limitMs - CREDIT * spentMs);
-  while (!search.done() && search.rollouts() < limits.iterations && now() - started < budget) search.step();
-  return { move: search.best(), scored: search.scored(), pondered: Math.round(spentMs), rollouts: search.rollouts(), thoughtMs: Math.round(now() - started) };
+  const tells = lab && Boolean(search.trees);
+  let told = started;
+  while (!search.done() && search.rollouts() < limits.iterations && now() - started < budget) {
+    search.step();
+    if (tells && now() - told >= PROGRESS_MS) {
+      told = now();
+      postMessage({ type: "progress", id, rollouts: search.rollouts(), elapsedMs: Math.round(told - started), root: labRoot(search) });
+    }
+  }
+  const reply = { move: search.best(), scored: search.scored(), pondered: Math.round(spentMs), rollouts: search.rollouts(), thoughtMs: Math.round(now() - started) };
+  return lab ? { ...reply, lab: labOf(search, state) } : reply;
 }
 
 /** A small endgame, solved exactly (Expérimental 0.7): no search, no clock. */
@@ -57,22 +83,24 @@ function solvedReply(state, moves) {
   const started = now();
   const scored = bot.scoreMoves(state, moves);
   const best = scored.reduce((a, b) => (b.gain > a.gain ? b : a));
-  return { move: best.move, scored, pondered: 0, rollouts: 0, thoughtMs: Math.round(now() - started) };
+  const reply = { move: best.move, scored, pondered: 0, rollouts: 0, thoughtMs: Math.round(now() - started) };
+  return lab ? { ...reply, lab: { exact: true } } : reply;
 }
 
-function decide(log) {
+function decide(log, id) {
   const state = current(log);
   const moves = legalMoves(state);
   const taken = ponder?.take() ?? { warm: null, spentMs: 0 };
   ponder = null;
   if (bot.solves?.(state, moves)) return solvedReply(state, moves);
-  if (moves.length > 1) return searchReply(state, moves, taken);
+  if (moves.length > 1) return searchReply(state, moves, taken, id);
   return { move: moves[0] ?? null, scored: bot.scoreMoves(state, moves), pondered: 0, rollouts: 0, thoughtMs: 0 };
 }
 
 const HANDLERS = {
-  init({ engine, seed, limitMs, minMs, part = 0, workers = 1 }) {
+  init({ engine, seed, limitMs, minMs, part = 0, workers = 1, lab: labOn = false }) {
     bot = engineFor(engine)(createRng(seed));
+    lab = Boolean(labOn);
     const budget = budgetOf(engine.split("@")[1]).budget ?? Infinity;
     share = workers > 1 ? { part } : {};
     limits = { limitMs, minMs, iterations: workers > 1 ? partBudget(budget, workers, part) : budget };
@@ -88,7 +116,7 @@ const HANDLERS = {
   },
   decide({ log, id }) {
     try {
-      postMessage({ type: "move", id, ...decide(log) });
+      postMessage({ type: "move", id, ...decide(log, id) });
     } catch (err) {
       console.error("Worker decide error:", err);
       try {

@@ -392,6 +392,24 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   (`kind: "fork"`, `npm run puzzles -- --fork`, ids à partir de 401) n'ont que des coups gagnants
   de ce genre.
 
+## Le Labo
+
+- **Le Labo** (17/10, l'ancien onglet Observer) : deux robots jouent coup par coup dans la page, et
+  chaque robot arbre montre sa réflexion sous la table (`web/app/lab/`). Un outil pour trouver des
+  idées : elles passent ensuite le tri à 400 et la 1k@2k, jamais le Labo seul.
+- **L'instantané d'arbre** (`snapshotTree`, `src/sim/mcts/tree-snapshot.js`) : une copie élaguée de
+  l'arbre d'un coup, plis courts d'abord (tous les candidats, puis au plus 7 enfants d'au moins
+  2 visites par nœud, 1 500 nœuds au plus) ; ce qui manque est résumé en « +n ». Lu entre deux
+  itérations : il ne change aucun coup.
+- **Le ton d'un candidat** (`confidence.js`) : *sûr* (vert), le coup joué ou un coup dont la fourchette
+  rejoint la sienne à 3 points près ; *plus loin* (jaune) ; *derrière* (rouge), toute sa fourchette
+  sous celle du coup joué ; *non regardé* (gris), hors des 8 candidats. Une carte prend le ton de son
+  coup le plus visité.
+- **Les diagnostics** (`tree-diagnosis.js`, seuils dans `DIAGNOSIS`) : coup incertain, réplique
+  dangereuse (une réponse adverse 15 points au-dessus des autres), plus visité ≠ meilleur taux,
+  coup que le cœur classait 5ᵉ ou plus loin, candidat affamé (moins de 2 % des visites), arbre plat
+  (plus de 60 % des nœuds du pli 3 à une visite), profondeur jamais atteinte.
+
 ## L'oracle
 
 - **L'oracle** : le même arbre que le V1, en beaucoup plus large et plus long (tous les coups à
@@ -488,7 +506,7 @@ version :
 | `OracleLight-Pwl3-Trees2` | l'Oracle light (`pwl=3`, 10 000) dont les itérations se partagent entre 2 arbres de 5 000 (Ensemble, visites de la racine additionnées) ; dans la page, un arbre par worker, les mêmes coups qu'en Node (`think-join.js`) : 8,5 s au premier coup au lieu de 13,6. Duels de nuit contre la 1.2@2000 sur les offsets 12 à 14, les donnes du 56,0 % de l'arbre unique : il doit faire au moins autant. Nuit du 17/10 : 54,3 / 53,6 / 52,9 %, **53,6 % (49,7 – 57,4) sur 420 parties**, 2,4 points sous l'arbre unique, dans le bruit (± 4,7). `-Trees3` et `-Trees4` ont été retirés de la file (Sami, 16/10 : deux arbres suffisent en vitesse, et des arbres plus petits joueraient moins bien) | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000` |
 | `OracleLight-Pwl2-Trees2` | le même partagé en 2 arbres de 5 000, au niveau `pwl=2` : des arbres plus petits demandent peut-être un niveau plus bas (Sami, 16/10) ; offsets 12 et 13. Nuit du 17/10 : 55,0 puis 60,7 %, **57,9 % (52,3 – 63,4) sur 280 parties**, contre 53,9 % pour `Pwl3-Trees2` sur les mêmes donnes : des arbres de 5 000 veulent un niveau plus bas. L'offset 14 est en file ; au-dessus de 56 % sur 420 parties, l'Oracle light 1.1 | `…+pwl=2+trees=2@10000` |
 | `Oracle3-Pwl3-Trees2` | Oracle3 (20 000) en 2 arbres de 10 000, au niveau `pwl=3` retenu pour un arbre de 10 000 : moins de bruit dans le choix du coup sans perdre la profondeur ? Offsets 12 et 13, les donnes d'Oracle3 (61,4 puis 52,9 %, 57,1 % sur 280 parties). Nuit du 17/10 : 60,0 puis 50,7 %, **55,4 % (50,3 – 60,4)** : pas mieux qu'en un arbre, pour deux fois le temps de l'Oracle light | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@20000` |
-| Oracle light 1.0 (`oracle-light`) | le robot de la page (Sami, 16/10) : `OracleLight-Pwl3-Trees2` sur deux workers, au choix de « Nouvelle partie » et d'« Observer » | `oracle-light@1.0` |
+| Oracle light 1.0 (`oracle-light`) | le robot de la page (Sami, 16/10) : `OracleLight-Pwl3-Trees2` sur deux workers, au choix de « Nouvelle partie » et du Labo | `oracle-light@1.0` |
 | `Oracle3-Pwl2` / `-Pwl3` / `-Pwl5` | Oracle3 (20 000, `pwl=4`) à un autre niveau d'élargissement ; `Pwl5` pousse le plus vers la profondeur (Sami, 16/10). Nuit du 16/10, offset 12 : `Pwl2` 57,1 %, `Pwl3` 59,3 %, `Pwl5` 57,1 % (Oracle3 = `pwl=4` : 61,4 %), un plateau | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=5@20000` |
 | `FinalMean` / `FinalLcb1` | la 1.2 qui joue, au lieu du candidat le plus visité, celui au meilleur taux de victoire moins c / √visites (Sami, 15/10 : `final=c`, `final-choice.js`) : c = 0, le meilleur taux ; c = 1, une borne basse à ~95 %. Pour les rangs 4 à 8 qu'Oracle3 trouve meilleurs (+2,5 ± 2,4) ; même coût par itération. Tri à 800 : 49,8 et 51,7 % ; premier duel long à 2 000 : 54,8 et 55,2 % ; la 1k@2k (15/10) : `FinalMean` 51,9 % (49,3 – 54,5), `FinalLcb1` 52,7 % (50,1 – 55,3), retombé à **51,5 % (49,4 – 53,7) sur 1 500 parties** avec la confirmation : pas de 1.3 | `ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000` |
 | `CommonDeals` | la 1.2 dont les candidats de la racine sont comparés sur les mêmes donnes : la k-ième visite de chacun joue la k-ième donne de la recherche et la k-ième suite de tirages des simulations (`crn=1`, `common-deals.js`, 16/10) ; UCB, l'arbre et le coup joué (le plus visité) inchangés, même coût par itération. Les « finalistes appariés » du panel du 16/10, étendus à tous les candidats (`docs/priorites-1.3.md`). Tri à 400 : 55,3 % ; 1k@2k (17/10) : **50,7 % (48,2 – 53,2)**, écarté | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1@2000` |

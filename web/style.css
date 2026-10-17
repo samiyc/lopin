@@ -29,6 +29,10 @@
   /* The extension's hints: what a Dame de Pique takes back, what a Valet de Trèfle may discard. */
   --recall: #1a8fa0;
   --discard: #e07a10;
+  /* The Labo's tones (lab/confidence.js): a move as good as the one played, further, clearly behind. */
+  --sure: #1f9d55;
+  --maybe: #d4a017;
+  --poor: #d0453a;
   --display: "Bodoni Moda", Didot, Georgia, serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --suit: "Times New Roman", Times, Georgia, serif;
@@ -62,6 +66,9 @@ html { zoom: var(--ui-zoom); }
     --discard: #f59a3a;
     --ui-diamond: #7ab4ff;
     --ui-club: #5fd3a5;
+    --sure: #3fcf7c;
+    --maybe: #f0c040;
+    --poor: #f06a5c;
     color-scheme: dark;
   }
 }
@@ -308,6 +315,89 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
 
 @media (prefers-reduced-motion: reduce) {
   .stone, .stone.animate { transition: none; animation: none; }
+}
+
+/* ── The Labo (Sami, 17/10) ─────────────────
+   The cards of the hand to move ringed by how sure the bot was of them, the borders a card goes to tinted with its
+   rate, and the panel under the table: candidates, diagnosis, levels, the tree. */
+.tone-sure { --tone: var(--sure); }
+.tone-maybe { --tone: var(--maybe); }
+.tone-poor { --tone: var(--poor); }
+.tone-unseen { --tone: var(--stone); }
+.card.tone-sure, .card.tone-maybe, .card.tone-poor { box-shadow: 0 0 0 3px var(--tone); background: color-mix(in oklab, var(--card) 84%, var(--tone)); }
+.card.tone-unseen { filter: grayscale(0.8) opacity(0.7); }
+.hand .card[data-card] { cursor: pointer; }
+.side.tone-sure, .side.tone-maybe, .side.tone-poor { background: color-mix(in oklab, var(--tone) 24%, transparent); outline: 2px solid var(--tone); }
+.side[data-rate]::after { content: attr(data-rate); margin: 2px 0; padding: 0 6px; border-radius: 999px; background: var(--tone); color: #fff; font: 700 0.75rem var(--body); }
+.lab-actions { display: flex; gap: 6px; }
+.lab-actions button { flex: 1; }
+.lab-actions button[aria-pressed="true"] { background: var(--focus); border-color: var(--focus); color: #fff; }
+
+/* The sidebar spans both rows, so the panel sits right under the table, not under the sidebar. */
+.layout:has(.lab-view:not([hidden])) .sidebar { grid-row: 1 / span 2; }
+.lab-view { grid-column: 2; display: grid; gap: 12px; min-width: 0; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.lab-view h2 { margin: 0; font: 700 1.15rem var(--display); }
+.lab-view h2 small { margin-left: 6px; font: 400 0.85rem var(--body); color: var(--ink-2); }
+.lab-view h3 { margin: 0 0 6px; font-size: 0.9rem; color: var(--ink-2); }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+.lab-bars { display: grid; gap: 4px; }
+.lab-bar { display: grid; grid-template-columns: 5.2em minmax(60px, 1fr) auto; align-items: center; gap: 8px; padding: 4px 8px; background: transparent; color: var(--ink); border: 1px solid var(--line); text-align: left; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.lab-bar.chosen { border-color: var(--focus); border-left-width: 5px; font-weight: 700; }
+.lab-bar.focused { box-shadow: 0 0 0 2px var(--recall); }
+.lab-bar small { color: var(--ink-2); font-weight: 400; }
+.lab-move { font-weight: 700; white-space: nowrap; }
+.lab-track { height: 10px; border-radius: 5px; background: color-mix(in oklab, var(--line) 70%, transparent); overflow: hidden; }
+.lab-fill { display: block; height: 100%; border-radius: 5px; background: var(--tone); transition: width 200ms ease; }
+.lab-findings { margin: 0 0 10px; padding-left: 1.2em; display: grid; gap: 4px; font-size: 0.86rem; }
+.lab-findings li.warn { color: var(--poor); font-weight: 700; }
+.lab-levels { display: grid; gap: 3px; }
+.lab-level { display: grid; grid-template-columns: 3.4em minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 2px 6px; background: transparent; color: var(--ink); border: 1px solid transparent; text-align: left; font-size: 0.8rem; }
+.lab-level:hover { border-color: var(--line); }
+.lab-level-name { grid-row: 1 / 3; font-weight: 700; }
+.lab-level-track { display: flex; height: 10px; min-width: 4px; border-radius: 3px; overflow: hidden; }
+.lab-level-facts { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.seg { display: inline-block; height: 100%; }
+.seg.rest { background: var(--felt-2); }
+.seg.one { background: var(--maybe); }
+.seg.zero { background: var(--stone); }
+.lab-legend { margin: 4px 0 0; font-size: 0.78rem; color: var(--ink-2); }
+.lab-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: middle; }
+.lab-legend .dot { border-radius: 50%; }
+.lab-legend .dot.low { background: hsl(0 62% 44%); }
+.lab-legend .dot.high { background: hsl(120 62% 44%); }
+.lab-tree-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.lab-tree-head h3 { margin: 0; }
+.lab-trees { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; }
+.lab-trees button { padding: 2px 10px; }
+.lab-tree-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 12px; }
+.lab-tree { height: 480px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
+.lab-tree:focus-visible { outline: 3px solid var(--focus); }
+.tree-svg { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; user-select: none; }
+.tree-svg.dragging { cursor: grabbing; }
+.tree-band rect { fill: transparent; }
+.tree-band:nth-child(even) rect { fill: color-mix(in oklab, var(--felt) 6%, transparent); }
+.tree-band-label { fill: var(--ink-2); font: 700 13px var(--body); }
+.tree-link { fill: none; stroke: var(--ink-2); stroke-opacity: 0.3; stroke-linecap: round; }
+.tree-link.played { stroke: var(--focus); stroke-opacity: 0.9; }
+.tree-node { cursor: pointer; }
+.tree-node circle { stroke: var(--panel); stroke-width: 1.5; }
+.tree-node.played circle { stroke: var(--focus); stroke-width: 4; }
+.tree-node.selected circle { stroke: var(--ink); stroke-width: 3; }
+.tree-node.ghost circle { fill-opacity: 0.35; stroke-dasharray: 3 2; stroke: var(--ink-2); }
+.tree-node:hover circle { stroke: var(--ink); }
+.tree-label { fill: var(--ink); font: 11px var(--body); text-anchor: middle; pointer-events: none; }
+.tree-folded { fill: var(--ink-2); font: 700 10px var(--body); pointer-events: none; }
+.lab-detail { display: grid; align-content: start; gap: 6px; font-size: 0.85rem; }
+.lab-detail h3 { margin: 0; font-size: 1rem; color: var(--ink); }
+.lab-detail p, .lab-detail ul { margin: 0; }
+.lab-detail .lab-line { color: var(--ink-2); }
+.lab-detail dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; margin: 0; }
+.lab-detail dt { color: var(--ink-2); }
+.lab-detail dd { margin: 0; font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) {
+  .lab-view { grid-column: 1; }
+  .lab-grid, .lab-tree-wrap { grid-template-columns: 1fr; }
+  .lab-tree { height: 360px; }
 }
 
 /* Puzzles: favourite and id tools, and the status once a puzzle is over. */
