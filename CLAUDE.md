@@ -401,7 +401,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
   reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 5
   the deepest (7 replies at 16 / 25 / 31 / 36 / 40 visits; the 5th level reached in 20.0 / 28.6 / 40.1 / 55.7 /
-  67.6 % of the moves at 2 000); `+pw=k` is obsolete, kept for old engine ids (`pw=1` =
+  67.6 % of the moves at 2 000); `+pw=k` is obsolete, kept for old engine ids (`normalizeEngine` files it under its level, so lab-index pools both names) (`pw=1` =
   `pwl=4`, `pw=2` = `pwl=2`, `pw=3` = `pwl=1`, same moves: `afcf0cce6dde1a56` with
   `"ismcts+widen=7+depth=5+core=stfig6+exact=12+pwl=4@150,greedy" 20`). `+pw=k` offers k + √visits replies: at 2 000 iterations no
   formula changes the 1.2's level (`pw=1` 51.1 %, `pw=2` 47.8 %, `Pw3-ExactEnd12` 51.2 % over 1 180 games,

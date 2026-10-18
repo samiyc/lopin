@@ -178,7 +178,7 @@ en a posé plus gagne 68,4 → 67,7 / 67,6 → 67,8 / 63,4 → 63,4 %).
 
 ## 4. Les jobs de nuit
 
-Mis en file le 17/10 (`data/backlog.json`) pour la nuit du 17-18/10, dans cet ordre : chaque job apparié lit la base
+Mis en file le 17/10 (`data/backlog.json`) pour la nuit du 17-18/10, reporté à celle du 18-19/10 (derrière MirrorMoves), dans cet ordre : chaque job apparié lit la base
 écrite avant lui. Les sorties vont dans `tmp/` (une base manquante ne fait perdre que la comparaison, refaisable avec
 `--compare`). Durées mesurées à 18 fils le 16/10 : la 1.2@400 ~19 s par partie et par fil, l'Omniscient@400 ~16 s.
 

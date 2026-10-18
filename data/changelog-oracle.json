@@ -513,13 +513,26 @@
   "c7f9503": [
    "page",
    "Une réponse tardive d'un worker est ignorée"
+  ],
+  "5a15af7": [
+   "juge",
+   "Les juges dans le Labo : Oracle light, Oracle3, Omniscient, le solveur"
+  ],
+  "5fe9dbe": [
+   "light",
+   "L'élargissement progressif : tous les essais pwl, une section du carnet"
   ]
  },
  "next": [
   {
-   "when": "Plus tard, sans hâte",
+   "when": "Cette nuit",
    "title": "L'Oracle light 1.1 à pwl=2 ?",
-   "text": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2, offset 14 (en file) : 420 parties face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique. Au-dessus de 56 % : l'Oracle light 1.1 passe à pwl=2 (un autre moteur, donc une version : bots.js, son Elo, ce carnet). Retenue par Sami le 17/10 parmi les trois pistes au meilleur rendement, mais pas pressée : le Labo passe d'abord."
+   "text": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2, offset 14 (en file la nuit du 18-19/10, après MirrorMoves) : 420 parties face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique. Au-dessus de 56 % : l'Oracle light 1.1 passe à pwl=2 (un autre moteur, donc une version : bots.js, son Elo, ce carnet). Retenue par Sami le 17/10 parmi les trois pistes au meilleur rendement ; le Labo est fait. Tous les niveaux essayés : la section « L'élargissement progressif » de ce carnet."
+  },
+  {
+   "when": "Fait (18/10)",
+   "title": "Les oracles dans le Labo",
+   "text": "« L'avis des juges » sous chaque coup du Labo : l'Oracle light et Oracle3 jugent la décision avec ce que le robot savait, l'Omniscient 1.0 (la 1.2 avec +omniscient=1+exact=14) juge la donne, le solveur exact donne la vérité sur chaque coup une fois la pioche vide. Un coup que seul l'omniscient refuse a perdu à cause des cartes cachées."
   },
   {
    "when": "Ensuite",

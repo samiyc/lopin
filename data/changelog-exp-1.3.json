@@ -877,6 +877,19 @@
    "when": "16/10",
    "idea": "Rendre au premier joueur la carte d'information que le second a de plus : une phrase de règle, rien à compter.",
    "note": "Pour les trois robots rapides, le premier revient à 50,3 / 49,5 / 50,8 % ; elle ne change ni la durée, ni la façon de gagner, ni le joker. Écartées : regarder au seul premier tour (A), 7 cartes (C, dix fois trop : +14 points). À 150 itérations la 1.2 en tire +5,3 ± 7,5 points : à confirmer sur la 1.2@400 (jobs SEATS_ et DEALS_ de docs/sieges.md §4, ~6 h 40, en file pour la nuit du 17-18/10). La feuille de règles attend la décision de Sami."
+  },
+  {
+   "id": "mirror-moves",
+   "name": "MirrorMoves : les coups miroirs (+mirror=1)",
+   "family": "racine",
+   "bench": "duel",
+   "score": 45.7,
+   "lo": 39,
+   "hi": 52.4,
+   "verdict": "attente",
+   "when": "18/10",
+   "idea": "Idée de Sami au Labo (18/10) : tant que rien n'est posé hors de la borne du milieu, jouer sur la borne b ou sur la borne 8 − b donne deux parties miroirs de même valeur. La racine et chaque liste courte ne gardent que les bornes 1 à 4 (src/sim/mcts/mirror.js), les places libérées vont à d'autres cartes.",
+   "note": "Sur 750 parties de la 1.2, le plateau est miroir à 1,16 coup par partie (le tour 1 toujours, le 2 dans 13 %, le 3 dans 3 %) ; au tour 1, 3,6 cartes différentes parmi les 8 candidats au lieu de 2,6. Tri à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, sans écart net. La 1k@2k passe en tête de la file la nuit du 18-19/10 (VALIDATE_LONG_1 à 4_MirrorMoves). Empreinte de la 1.2 inchangée sans l'option."
   }
  ],
  "manualJobs": [],
@@ -884,6 +897,10 @@
   "1164647": [
    "outils",
    "llm-play : un journal texte à côté de chaque replay"
+  ],
+  "4934395": [
+   "lecteur",
+   "L'arbre du Labo : 2 fils dès le pli 2"
   ],
   "8950651": [
    "extension",
@@ -1124,9 +1141,50 @@
   "a897e37": [
    "outils",
    "Le carnet du 17/10 : CommonDeals, Ensemble2x2000, les sièges"
+  ],
+  "c80dcbb": [
+   "outils",
+   "La suite : le Labo, puis un article compagnon"
+  ],
+  "b280fa3": [
+   "lecteur",
+   "Le Labo, lot 1 : l'arbre en direct, les cartes colorées, le diagnostic"
+  ],
+  "9e9699f": [
+   "racine",
+   "MirrorMoves (+mirror=1) ; l'arbre du Labo à 3 fils par nœud"
+  ],
+  "1b8865d": [
+   "lecteur",
+   "L'arbre du Labo jusqu'au pli 5 ; la doc des profondeurs corrigée"
+  ],
+  "23995d9": [
+   "lecteur",
+   "Le Labo, lot 2 : le constructeur de bots, les configs mesurées, un coup rejoué"
+  ],
+  "2a55a66": [
+   "lecteur",
+   "Le Labo : la colonne de gauche ne déborde plus"
+  ],
+  "7a34c41": [
+   "lecteur",
+   "L'arbre du Labo à droite des noms des plis"
+  ],
+  "5a15af7": [
+   "lecteur",
+   "Le Labo, lot 3 : les juges, « Déjà rencontré », le profileur, npm run position"
+  ],
+  "f14c059": [
+   "outils",
+   "La nuit : MirrorMoves en tête de la file"
   ]
  },
  "next": [
+  {
+   "when": "Cette nuit",
+   "title": "MirrorMoves : la 1k@2k, en tête de la file",
+   "text": "VALIDATE_LONG_1 à 4_MirrorMoves contre la 1.2, offsets 0 à 3, environ 1 h 40 ; arrêt sous 47 % après le premier, sous 50 % après les deux premiers. La borne basse au-dessus de 50 % sur 1 000 parties : le miroir entre dans la 1.3, puis se mesure sur l'Oracle light."
+  },
   {
    "when": "Depuis le 15/10",
    "title": "Changement de cap : l'oracle jouable",
@@ -1140,7 +1198,7 @@
   {
    "when": "Cette nuit",
    "title": "Les sièges : B sur la 1.2",
-   "text": "En file pour la nuit du 17-18/10 : les 6 jobs de docs/sieges.md § 4 (la 1.2@400 contre elle-même avec et sans B, et les omniscients, ~6 h 40). B entre 49 et 51 % pour la 1.2 devient la règle proposée ; au-dessus de 51 %, le réglage B(N) (« pendant ses N premiers tours », N ≈ 12-13). La page devra montrer la carte du dessus au joueur humain qui commence."
+   "text": "Toujours en file, derrière MirrorMoves et Ensemble2x2000, pour la nuit du 18-19/10 : les 6 jobs de docs/sieges.md § 4 (la 1.2@400 contre elle-même avec et sans B, et les omniscients, ~6 h 40). B entre 49 et 51 % pour la 1.2 devient la règle proposée ; au-dessus de 51 %, le réglage B(N) (« pendant ses N premiers tours », N ≈ 12-13). La page devra montrer la carte du dessus au joueur humain qui commence."
   },
   {
    "when": "Ensuite",
@@ -1153,9 +1211,9 @@
    "text": "Remesuré avec l'arbre du 1.1 (@200, 500 parties par pioche) le 11/10 : le nouveau Valet de Trèfle n'est plus trop fort (44,0 % ± 3,3 pour qui le pose, contre 62,4 % pour l'ancien). Le Valet de Carreau (la Somme) passe à 62,4 % ± 3,7 : la seule figure au-dessus du seuil, à regarder (docs/extension.md)."
   },
   {
-   "when": "Ensuite",
+   "when": "Fait (17-18/10)",
    "title": "Le Labo : l'Observer devient un outil de recherche",
-   "text": "Choisi par Sami le 17/10 parmi les pistes de l'audit (le meilleur rapport gain / effort). L'onglet Observer devient le Labo : une partie robot contre robot jouée en direct, l'arbre de chaque coup dessiné et navigable (zoom, glisser, un clic pour le détail d'un nœud ou d'un étage), les cartes de la main colorées selon la confiance du bot (vert, jaune, rouge), les 8 candidats avec leurs visites, leur taux et leur intervalle, des diagnostics de l'arbre. Puis des réglages fins des bots avec garde-fous, ce qui a déjà été mesuré en duels longs pour la config construite, un coup rejoué avec d'autres paramètres, l'avis de l'oracle, un profileur. Un outil pour trouver des idées ; elles passent ensuite le tri à 400 et la 1k@2k. Aucun coup ne change : les empreintes restent."
+   "text": "Les trois lots sont faits (docs/labo.md). Lot 1 : la partie coup par coup, les 8 candidats en direct, les cartes colorées, le diagnostic, l'arbre en SVG jusqu'au pli 5. Lot 2 : le constructeur de bots avec ses garde-fous, ce que les duels ont déjà mesuré de la config (npm run lab-index), « Rejouer ce coup avec… », les réglages sauvés. Lot 3 : l'avis des juges (Oracle light, Oracle3, Omniscient, le solveur exact), « Déjà rencontré », le profileur, la note par coup et npm run position. Aucun coup ne change : les trois empreintes sont restées. Une première idée en est sortie : MirrorMoves."
   },
   {
    "when": "Plus tard",

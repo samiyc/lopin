@@ -596,7 +596,7 @@ Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par p
   indépendants moyennent. À budget égal, deux arbres de 1 000 perdaient la profondeur (`Ensemble`, 51,0 %).
 - **Ce que ça donne pour la page** : deux arbres de 2 000 sur deux workers jouent dans le temps de la 1.2 (2,6 s au
   tour 3), comme l'Oracle light. C'est du calcul en plus, pas une idée, mais à temps égal pour le joueur. La 1k@2k
-  complète (offsets 3 et 4, les autres donnes de Budget4000) est en file pour la nuit du 17-18/10 ; si elle tient,
+  complète (offsets 3 et 4, les autres donnes de Budget4000) est en file, reportée à la nuit du 18-19/10 ; si elle tient,
   c'est la version de page la moins chère au-dessus de la 1.2.
 - **L'Oracle light en deux arbres préfère `pwl=2`** : sur les mêmes donnes, 57,9 % contre 53,9 % avec `pwl=3`, alors
   qu'en un arbre de 10 000 `pwl=3` menait (57,1 contre 52,5 %). Des arbres de 5 000 veulent un niveau plus bas,
