@@ -95,3 +95,13 @@ describe("the Labo's saved settings (lab-presets.js)", async () => {
     assert.deepEqual(list.map((entry) => [entry.name, entry.note]), [["Miroir", "new"], ["Autre", ""]]);
   });
 });
+
+describe("the obsolete pw as its level (engine-id.js)", () => {
+  it("files pw=1, 2, 3 under pwl=4, 2, 1, which play the same moves", () => {
+    const oracle3 = "ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000";
+    assert.equal(normalizeEngine(oracle3), normalizeEngine(oracle3.replace("pw=1", "pwl=4")));
+    assert.equal(normalizeEngine("ismcts+pw=3@400"), "ismcts+pwl=1@400");
+    assert.equal(normalizeEngine("ismcts+pw=2+pwl=3@400"), "ismcts+pwl=3@400", "with pwl given, the tree ignores pw");
+    assert.equal(normalizeEngine("ismcts+pw=5@400"), "ismcts+pw=5@400", "a k that is no level stays as it is");
+  });
+});

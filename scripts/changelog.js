@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { BOT_LINEUP } from "../src/config/bots.js";
+import { engineParts, normalizeEngine } from "../src/sim/mcts/engine-id.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
 
 /**
@@ -90,8 +91,48 @@ const [journal, template, doneFile, queueFile] = await Promise.all([
 const sinceIso = journal.since.replace(" ", "T");
 const allJobs = [...jobsOf(doneFile), ...jobsOf(queueFile), ...(journal.manualJobs ?? []).map((job) => ({ ...job, status: "done", manual: true }))];
 const jobs = version === "1.0" ? allJobs : allJobs.filter((j) => !j.doneAt || j.doneAt >= sinceIso || j.manual);
+/**
+ * The oracles' progressive widening (Sami, 19/10, « IV · L'élargissement progressif »): every duel of a depth-10 tree
+ * against the 1.2@2000, from data/lab-configs.json (npm run lab-index: pooled over the deck pairs, `pw=k` filed under
+ * its level), each with its level, trees, budget and what else it changes. The score is the oracle's side.
+ */
+const DUEL = /npm run duel -- "([^"]+)"/;
+
+/** The duels still to come, by the one spelling of the engine they test: `{ engine: [job ids] }`. */
+function pendingDuels(jobs) {
+  const pending = {};
+  for (const job of jobs.filter((entry) => ["todo", "scheduled"].includes(entry.status))) {
+    const [, engine] = DUEL.exec(job.command ?? "") ?? [];
+    if (!engine) continue;
+    const key = normalizeEngine(engine);
+    pending[key] = [...(pending[key] ?? []), job.id];
+  }
+  return pending;
+}
+
+async function loadPwlData(jobs) {
+  const configs = await read("data/lab-configs.json").catch(() => null);
+  if (!configs) return { pwl: null };
+  const v12 = normalizeEngine(BOT_LINEUP.experimental.engine);
+  const light = normalizeEngine(BOT_LINEUP["oracle-light"].engine);
+  const rows = configs.pairs
+    .filter((pair) => (pair.a === v12 || pair.b === v12) && /depth=10/.test(pair.a + pair.b))
+    .map((pair) => {
+      const first = pair.a !== v12;
+      const engine = first ? pair.a : pair.b;
+      const settings = Object.fromEntries(engineParts(engine).changes);
+      const side = first ? { score: pair.score, low: pair.low, high: pair.high } : { score: 1 - pair.score, low: 1 - pair.high, high: 1 - pair.low };
+      const extra = Object.keys(settings).filter((key) => !["core", "depth", "exact", "widen", "pwl", "trees"].includes(key));
+      return { engine, name: configs.names[engine] ?? null, budget: engineParts(engine).budget, pwl: Number(settings.pwl ?? 0), trees: Number(settings.trees ?? 1), extra: extra.map((key) => `${key}=${settings[key]}`), ...side, games: pair.games, decks: pair.decks, lineup: engine === light };
+    });
+  const pending = pendingDuels(jobs);
+  return { pwl: { built: configs.built, rows: rows.map((row) => ({ ...row, pending: pending[row.engine] ?? [] })) } };
+}
+
 async function loadExtraData(targetVersion, html) {
   if (targetVersion === "1.0") return loadV1ZeroData();
+  // The queue itself: the page's jobs keep no command.
+  if (targetVersion === "oracle") return loadPwlData(queueFile.jobs);
   if (html.includes('id="reference"')) return loadV1PlusData();
   return {};
 }

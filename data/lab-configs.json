@@ -39,7 +39,7 @@
   "ismcts+depth=5+exact=12+rollout=stfig6crit+shortlist=stfig6+widen=7@2000": "RolloutCrit-Exact12",
   "ismcts+core=stfig6+depth=5+diverse=2+exact=12+widen=5@2000": "Borne10",
   "ismcts+candidates=10+core=stfig6+depth=4+diverse=2+exact=12+widen=8@2000": "c2",
-  "ismcts+core=stfig6+depth=5+exact=12+pw=1+widen=7@2000": "PW-ExactEnd12",
+  "ismcts+core=stfig6+depth=5+exact=12+pwl=4+widen=7@2000": "PW-ExactEnd12",
   "ismcts+core=stfig6+depth=5+exact=12+widen=7@4000": "Budget4000",
   "ismcts+core=stfig6+depth=5+exact=12+puct=1+widen=7@2000": "PUCT-1",
   "ismcts+core=stfig6+depth=5+exact=12+trees=2+widen=7@2000": "Ensemble",
@@ -49,24 +49,22 @@
   "ismcts+core=stfig6+depth=5+exact=12+shortlist=dist1+widen=7@2000": "DistOracle1Root-Exact12",
   "ismcts+candidates=99+core=stfig6+depth=5+exact=12+smart=1+widen=7@20000": "Oracle2",
   "ismcts+core=stfig6+depth=5+exact=12+widen=7@20000": "Budget20000",
-  "ismcts+core=stfig6+depth=10+exact=12+pw=1+widen=7@20000": "Budget20000-Depth10Pw",
-  "ismcts+core=stfig6+depth=5+exact=12+pw=3+widen=7@2000": "Pw3-ExactEnd12",
+  "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@20000": "Budget20000-Depth10Pw",
+  "ismcts+core=stfig6+depth=5+exact=12+pwl=1+widen=7@2000": "Pw3-ExactEnd12",
   "ismcts+core=stfig6+depth=5+exact=12+final=0+widen=7@2000": "FinalMean",
   "ismcts+core=stfig6+depth=5+exact=12+final=1+widen=7@2000": "FinalLcb1",
   "ismcts+core=stfig6+depth=5+exact=12+puct=2+widen=7@2000": "PUCT-2",
   "ismcts+core=stfig6+depth=5+exact=12+implicit=0.2+widen=7@t2000": "Implicit2",
   "ismcts+core=stfig6+depth=5+exact=12+forkCut=1+widen=7@t2000": "ForkCut1",
   "ismcts+core=stfig6+depth=5+exact=12+margin=0.05+widen=7@2000": "MarginBackup05",
-  "ismcts+core=stfig6+depth=10+exact=12+pw=1+widen=7@10000": "OracleLight-Pw1",
-  "ismcts+core=stfig6+depth=10+exact=12+pw=2+widen=7@10000": "OracleLight-Pw2",
-  "ismcts+core=stfig6+depth=10+exact=12+pw=3+widen=7@10000": "OracleLight-Pw3",
+  "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@10000": "OracleLight-Pw1",
+  "ismcts+core=stfig6+depth=10+exact=12+pwl=2+widen=7@10000": "OracleLight-Pw2",
+  "ismcts+core=stfig6+depth=10+exact=12+pwl=1+widen=7@10000": "OracleLight-Pw3",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=5+widen=7@20000": "Oracle3-Pwl5",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=3+widen=7@20000": "Oracle3-Pwl3",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=2+widen=7@20000": "Oracle3-Pwl2",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=3+widen=7@10000": "OracleLight-Pwl3",
   "ismcts+core=stfig6+depth=10+exact=12+final=1+pwl=2+widen=7@10000": "OracleLight-Pwl2-FinalLcb1",
-  "ismcts+core=stfig6+depth=10+exact=12+pwl=1+widen=7@10000": "OracleLight-Pwl1",
-  "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@10000": "OracleLight-Pwl4",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=5+widen=7@10000": "OracleLight-Pwl5",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=3+trees=2+widen=7@10000": "Oracle light 1.0",
   "ismcts+core=stfig6+depth=10+exact=12+pwl=3+trees=2+widen=7@20000": "Oracle3-Pwl3-Trees2",
@@ -188,7 +186,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=5+exact=12+pw=3+widen=7@2000",
+   "a": "ismcts+core=stfig6+depth=5+exact=12+pwl=1+widen=7@2000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 1180,
    "score": 0.5119,
@@ -573,7 +571,7 @@
   },
   {
    "a": "ismcts+depth=5+widen=3@t1400",
-   "b": "ismcts+depth=6+pw=1+widen=6@t1400",
+   "b": "ismcts+depth=6+pwl=4+widen=6@t1400",
    "games": 432,
    "score": 0.4722,
    "low": 0.4264,
@@ -596,7 +594,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=5+exact=12+pw=1+widen=7@2000",
+   "a": "ismcts+core=stfig6+depth=5+exact=12+pwl=4+widen=7@2000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 430,
    "score": 0.4837,
@@ -608,7 +606,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pw=2+widen=7@10000",
+   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=2+widen=7@10000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 420,
    "score": 0.5452,
@@ -848,7 +846,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pw=1+widen=7@20000",
+   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@20000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 280,
    "score": 0.5714,
@@ -857,6 +855,30 @@
    "decks": 140,
    "files": 2,
    "last": "2026-10-14",
+   "source": "duels"
+  },
+  {
+   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@10000",
+   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
+   "games": 280,
+   "score": 0.5,
+   "low": 0.4484,
+   "high": 0.5516,
+   "decks": 140,
+   "files": 2,
+   "last": "2026-10-16",
+   "source": "duels"
+  },
+  {
+   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=1+widen=7@10000",
+   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
+   "games": 280,
+   "score": 0.5214,
+   "low": 0.4729,
+   "high": 0.57,
+   "decks": 140,
+   "files": 2,
+   "last": "2026-10-16",
    "source": "duels"
   },
   {
@@ -1088,7 +1110,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=5+exact=12+pw=2+widen=7@2000",
+   "a": "ismcts+core=stfig6+depth=5+exact=12+pwl=2+widen=7@2000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 180,
    "score": 0.4778,
@@ -1100,7 +1122,7 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+depth=5+pw=1@t1400",
+   "a": "ismcts+depth=5+pwl=4@t1400",
    "b": "ismcts+depth=5+widen=3@t1400",
    "games": 144,
    "score": 0.4583,
@@ -1148,8 +1170,8 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+depth=6+exploration=0.5+pw=1+widen=6@t1400",
-   "b": "ismcts+depth=6+pw=1+widen=6@t1400",
+   "a": "ismcts+depth=6+exploration=0.5+pwl=4+widen=6@t1400",
+   "b": "ismcts+depth=6+pwl=4+widen=6@t1400",
    "games": 144,
    "score": 0.5694,
    "low": 0.5072,
@@ -1220,30 +1242,6 @@
    "source": "duels"
   },
   {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pw=1+widen=7@10000",
-   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
-   "games": 140,
-   "score": 0.5071,
-   "low": 0.4395,
-   "high": 0.5747,
-   "decks": 70,
-   "files": 1,
-   "last": "2026-10-15",
-   "source": "duels"
-  },
-  {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pw=3+widen=7@10000",
-   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
-   "games": 140,
-   "score": 0.5143,
-   "low": 0.4425,
-   "high": 0.5861,
-   "decks": 70,
-   "files": 1,
-   "last": "2026-10-15",
-   "source": "duels"
-  },
-  {
    "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=5+widen=7@20000",
    "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
    "games": 140,
@@ -1274,30 +1272,6 @@
    "score": 0.5714,
    "low": 0.4961,
    "high": 0.6468,
-   "decks": 70,
-   "files": 1,
-   "last": "2026-10-16",
-   "source": "duels"
-  },
-  {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=1+widen=7@10000",
-   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
-   "games": 140,
-   "score": 0.5286,
-   "low": 0.4628,
-   "high": 0.5944,
-   "decks": 70,
-   "files": 1,
-   "last": "2026-10-16",
-   "source": "duels"
-  },
-  {
-   "a": "ismcts+core=stfig6+depth=10+exact=12+pwl=4+widen=7@10000",
-   "b": "ismcts+core=stfig6+depth=5+exact=12+widen=7@2000",
-   "games": 140,
-   "score": 0.4929,
-   "low": 0.4144,
-   "high": 0.5714,
    "decks": 70,
    "files": 1,
    "last": "2026-10-16",

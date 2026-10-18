@@ -13,7 +13,7 @@
     <p class="lead" id="lead"></p>
     <div class="tiles" id="tiles"></div>
     <nav class="toc" aria-label="Sections">
-      <a href="#journee">La frise</a><a href="#carnet">Le carnet</a><a href="#suite">La suite</a>
+      <a href="#journee">La frise</a><a href="#carnet">Le carnet</a><a href="#pwl">L'élargissement</a><a href="#suite">La suite</a>
     </nav>
   </div>
 </header>
@@ -64,9 +64,19 @@
     </div>
   </section>
 
+  <section id="pwl" aria-labelledby="t-pwl">
+    <div>
+      <p class="eyebrow">III · Un réglage, tous ses essais</p>
+      <h2 id="t-pwl">L'élargissement progressif</h2>
+    </div>
+    <p>Sous la racine, un nœud n'offre d'abord que quelques réponses, puis davantage à mesure qu'il est visité : c'est l'élargissement progressif, <code>+pwl=n</code>, du niveau 1 (le plus large) au niveau 5 (le plus profond). Voici chaque arbre à 10 étages essayé contre la 1.2@2000, groupé par budget et par nombre d'arbres, avec sa fourchette à 95 % sur les paires de donnes. Les anciens <code>+pw=k</code> sont rangés à leur niveau (ils jouent les mêmes coups) et leurs parties réunies. Les essais d'un même groupe ont été joués sur les mêmes donnes : les différences entre niveaux se lisent d'une ligne à l'autre, mais deux fourchettes qui se chevauchent ne les départagent pas.</p>
+    <div class="grid-pwl" id="pwl-groups"></div>
+    <p class="small muted" id="pwl-foot"></p>
+  </section>
+
   <section id="suite" aria-labelledby="t-suite">
     <div>
-      <p class="eyebrow">III · Ce soir, demain</p>
+      <p class="eyebrow">IV · Ce soir, demain</p>
       <h2 id="t-suite">La suite</h2>
     </div>
     <div class="grid3" id="next"></div>
@@ -426,7 +436,47 @@ document.querySelectorAll("[data-sort]").forEach((button) => button.addEventList
   renderNotebook();
 }));
 
-/* ── III · Next ─────────────────────────────────────────── */
+/* ── III · Progressive widening ────────────────────────── */
+const PWL_GROUPS = [
+  ["L'Oracle light, un arbre de 10 000", (row) => row.budget === "10000" && row.trees === 1],
+  ["L'Oracle light, deux arbres de 5 000", (row) => row.budget === "10000" && row.trees === 2],
+  ["Oracle3, 20 000 itérations", (row) => row.budget === "20000"],
+];
+const pwlLabel = (row) => [`pwl=${row.pwl}`, row.trees > 1 && row.budget === "20000" ? `${row.trees} arbres` : null, ...row.extra].filter(Boolean).join(" · ");
+const pctText = (x) => `${fr(100 * x)} %`;
+function pwlRow(row) {
+  const verdict = row.low > 0.5 ? "gagne" : row.high < 0.5 ? "perd" : "neutre";
+  const forest = forestOf({ score: 100 * row.score, lo: 100 * row.low, hi: 100 * row.high, verdict });
+  const tags = [row.lineup ? html("span", { class: "verdict v-gagne" }, "dans la page") : null, ...row.pending.map((id) => html("span", { class: "verdict v-attente", title: id }, "en file"))];
+  return html("tr", { title: row.name ? `${row.name} — ${row.engine}` : row.engine },
+    html("td", {}, html("b", {}, pwlLabel(row)), ...tags.filter(Boolean)),
+    html("td", { class: "num" }, `${pctText(row.score)}`, html("br"), html("span", { class: "small muted" }, `${pctText(row.low)} – ${pctText(row.high)}`)),
+    html("td", {}, forest),
+    html("td", { class: "num small" }, `${thousands(row.games)} parties`));
+}
+/** Which row the page's Oracle light plays, read from the data. */
+function lineupText() {
+  const row = DATA.pwl.rows.find((entry) => entry.lineup);
+  return row ? ` « Dans la page » : l'Oracle light de la gamme, ${pwlLabel(row)} sur ${row.trees} arbre${row.trees > 1 ? "s" : ""}.` : "";
+}
+function drawPwl() {
+  const box = $("pwl-groups");
+  if (!DATA.pwl) {
+    box.replaceChildren(html("p", { class: "small muted" }, "Pas de data/lab-configs.json : lance npm run lab-index."));
+    return;
+  }
+  const order = (a, b) => a.pwl - b.pwl || a.trees - b.trees || a.extra.length - b.extra.length;
+  box.replaceChildren(...PWL_GROUPS.map(([title, keep]) => {
+    const rows = DATA.pwl.rows.filter(keep).sort(order);
+    const best = rows.reduce((top, row) => (row.score > (top?.score ?? -1) ? row : top), null);
+    const table = html("table", {}, html("tbody", {}, ...rows.map(pwlRow)));
+    const lead = best ? html("p", { class: "small" }, `En tête : ${pwlLabel(best)}, ${pctText(best.score)} sur ${thousands(best.games)} parties.`) : null;
+    return html("div", { class: "panel" }, html("h3", {}, title), lead, html("div", { class: "scroll" }, table));
+  }));
+  $("pwl-foot").textContent = `Les duels de duels/ et du backlog, réunis par npm run lab-index le ${DATA.pwl.built.split("-").reverse().join("/")}. Un essai « en file » a encore un duel à venir.${lineupText()}`;
+}
+
+/* ── IV · Next ─────────────────────────────────────────── */
 function drawNext() {
   $("next").replaceChildren(...J.next.map(({ when, title, text }) => html("div", { class: "panel" }, html("p", { class: "eyebrow" }, when), html("h3", {}, title), html("p", { class: "small" }, text))));
   $("foot").innerHTML = `Construit le ${DATA.built} par <code>npm run changelog -- oracle</code> (scripts/changelog.js) : les essais de <code>data/changelog-oracle.json</code>, les jobs de <code>backlog.json</code> et <code>backlog-done/</code>, et les ${COMMITS.length} commits des oracles. Le détail de chaque essai : <code>docs/strategie.md</code> ; le cap : <code>docs/1.3-to-oracle-shift.md</code>.`;
@@ -434,5 +484,6 @@ function drawNext() {
 
 drawTimeline();
 renderNotebook();
+drawPwl();
 drawNext();
 </script>
