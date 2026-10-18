@@ -122,7 +122,12 @@ Le plan de départ :
   - l'Oracle light (10 000 itérations, deux workers, environ 5 s), ou Oracle3 à 20 000 avec un
     avertissement (environ 20 s) ;
   - son favori, sa part de visites, et le rang chez lui du coup du bot ;
-  - avec 12 cartes au plus et la pioche vide, le solveur exact donne le verdict de chaque coup.
+  - avec 12 cartes au plus et la pioche vide, le solveur exact donne le verdict de chaque coup ;
+  - **l'avis de l'omniscient** (Sami, 18/10), en complément : l'arbre de la 1.2 avec
+    `+omniscient=1`, qui voit les deux mains et la pioche. Il juge la donne, pas la décision : il
+    dit quel coup gagnait avec ces cartes-là, et son solveur compte la pioche, donc il prouve les
+    fins de partie dès 14 cartes. Un écart entre l'oracle et l'omniscient sépare un coup mal choisi
+    d'un coup qui n'a perdu qu'à cause des cartes cachées.
 - **« Déjà rencontré »** : `lab-index` tire aussi des duels de la 1.2 la distribution, tour par
   tour, de quelques chiffres de l'arbre (part du premier, écart, nœuds à une visite). Le Labo situe
   le coup affiché : « plus incertain que 85 % des coups du tour 18 ».

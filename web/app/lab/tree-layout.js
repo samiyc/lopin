@@ -9,9 +9,12 @@
  *   under the best one), and nothing past ply `open`;
  * a node folded so, unless its id is in `expanded`, keeps the number of children it hides (`folded`).
  *
+ * The ply names are written at the left (tree-view.js): the nodes start `gutter` to their right (Sami, 18/10: the first
+ * nodes sat under « Pli 2 · réponses de l'adversaire »).
+ *
  * A node's id is its path of move keys from the root, joined by « / » (the root's is "").
  */
-export const LAYOUT = Object.freeze({ open: 5, shown: [3, 2, 2, 2, 2], reach: [8, 8, 8, 2, 1], slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
+export const LAYOUT = Object.freeze({ open: 5, shown: [3, 2, 2, 2, 2], reach: [8, 8, 8, 2, 1], gutter: 230, slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
 
 const childId = (parent, key) => (parent === "" ? key : `${parent}/${key}`);
 
@@ -64,20 +67,20 @@ function placeAll(snapshot, { slot, ...limits }) {
  * wins, rate, avail, x, y, r, folded, hidden }` (`hidden`: the « +n » node of what a parent left out).
  */
 export function layoutTree(snapshot, { expanded = new Set(), ...sizes } = {}) {
-  const { slot, band, top, rMin, rMax, wMin, wMax, open, shown, reach } = { ...LAYOUT, ...sizes };
+  const { gutter, slot, band, top, rMin, rMax, wMin, wMax, open, shown, reach } = { ...LAYOUT, ...sizes };
   const total = Math.max(1, snapshot.visits);
   const { nodes, links, slots } = placeAll(snapshot, { open, expanded, slot, shown, reach });
   let deepest = 0;
   for (const node of nodes) {
     deepest = Math.max(deepest, node.depth);
-    node.x += slot;
+    node.x += gutter + slot;
     node.y = top + node.depth * band;
     node.r = node.depth === 0 ? rMax : rMin + (rMax - rMin) * Math.sqrt(node.visits / total);
     node.rate = node.depth > 0 && node.visits > 0 ? node.wins / node.visits : null;
   }
   const widths = links.map(({ from, to, visits }) => ({ from, to, width: wMin + (wMax - wMin) * (visits / total) }));
   const bands = Array.from({ length: deepest + 1 }, (_, depth) => ({ depth, y: top + depth * band }));
-  return { nodes, links: widths, bands, width: (slots + 1) * slot, height: top + deepest * band + top };
+  return { nodes, links: widths, bands, width: gutter + (slots + 1) * slot, height: top + deepest * band + top };
 }
 
 /** The snapshot's nodes from the root to `id`, root excluded: the line of play a node stands for. */
