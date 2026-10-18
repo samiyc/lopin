@@ -3,7 +3,7 @@
  * by side and each parent centred over its children. A node's radius grows with √visits, a link's width with its
  * visits; what a node left out (`hidden`) is drawn as a small « +n » node. Sami, 18/10, so that the tree stays narrow
  * and reaches ply 5:
- * - ply k draws each node's `shown[k - 1]` most visited children (3 for plies 1-2, 2 for plies 3-5), the others join
+ * - ply k draws each node's `shown[k - 1]` most visited children (3 for ply 1, the candidates, 2 for plies 2-5), the others join
  *   its « +n » node; that node's id in `expanded` (a double click on it) draws them all;
  * - ply k is drawn only under the root's `reach[k - 1]` most visited candidates (ply 4 under the best two, ply 5
  *   under the best one), and nothing past ply `open`;
@@ -11,7 +11,7 @@
  *
  * A node's id is its path of move keys from the root, joined by « / » (the root's is "").
  */
-export const LAYOUT = Object.freeze({ open: 5, shown: [3, 3, 2, 2, 2], reach: [8, 8, 8, 2, 1], slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
+export const LAYOUT = Object.freeze({ open: 5, shown: [3, 2, 2, 2, 2], reach: [8, 8, 8, 2, 1], slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
 
 const childId = (parent, key) => (parent === "" ? key : `${parent}/${key}`);
 

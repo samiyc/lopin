@@ -83,15 +83,15 @@ describe("the Labo's tree drawing (tree-layout.js)", () => {
     assert.equal(at(all, "+"), undefined);
   });
 
-  it("draws 2 children from ply 3, ply 4 under the best two candidates and ply 5 under the best one", () => {
+  it("draws 2 children from ply 2, ply 4 under the best two candidates and ply 5 under the best one", () => {
     const chain = (prefix, depth) => (depth > 6 ? [] : [3, 2, 1].map((visits, index) => node(`${index}@${depth}`, [visits * (7 - depth), 1], chain(`${prefix}${index}`, depth + 1))));
     const deep = node("root", [100, 0], chain("", 1));
     const { nodes } = layoutTree(deep);
     const real = nodes.filter((entry) => !entry.hidden);
     const under = (rank, depth) => real.filter((entry) => entry.depth === depth && entry.id.startsWith(`${rank}@1`)).length;
-    assert.deepEqual([1, 2, 3, 4, 5].map((depth) => real.filter((entry) => entry.depth === depth).length), [3, 9, 18, 24, 24]);
-    assert.deepEqual([under(0, 4), under(1, 4), under(2, 4)], [12, 12, 0]);
-    assert.deepEqual([under(0, 5), under(1, 5)], [24, 0]);
+    assert.deepEqual([1, 2, 3, 4, 5].map((depth) => real.filter((entry) => entry.depth === depth).length), [3, 6, 12, 16, 16]);
+    assert.deepEqual([under(0, 4), under(1, 4), under(2, 4)], [8, 8, 0]);
+    assert.deepEqual([under(0, 5), under(1, 5)], [16, 0]);
     assert.equal(Math.max(...nodes.map((entry) => entry.depth)), 5);
   });
 

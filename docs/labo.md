@@ -49,8 +49,8 @@ Commit `b280fa3`.
   - un clic sur un étage donne ses chiffres ;
   - l'Oracle light montre ses deux arbres.
 - **Le 18/10** (Sami), pour un arbre étroit qui descend jusqu'au pli 5 :
-  - les plis 1 et 2 dessinent les 3 fils les plus visités de chaque nœud, les plis 3 à 5 les 2
-    meilleurs ; les autres rejoignent le nœud « +n », et un double-clic sur « +n » les montre tous ;
+  - le pli 1 dessine les 3 candidats les plus visités, les plis 2 à 5 les 2 meilleurs fils de chaque
+    nœud (Sami, 18/10, le soir) ; les autres rejoignent le nœud « +n », et un double-clic sur « +n » les montre tous ;
   - le pli 4 n'est dessiné que sous les deux candidats les plus visités, le pli 5 sous le premier
     seulement ; un double-clic sur un nœud plié le déplie ;
   - l'instantané garde 2 fils par nœud à partir du pli 4 (7 avant), pour que son budget de 1 500
