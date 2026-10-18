@@ -4,8 +4,10 @@ import { ISMCTS, ismctsSettings } from "../../../src/sim/mcts/ismcts.js";
 import { $, el, freshSeed, recall, remember, toast } from "../board/dom.js";
 import { createThinker } from "../play/thinker.js";
 import { saveReplay } from "../replays/replays-api.js";
-import { RULES, botEntry, botPlayer, newGame, playerName } from "../replays/runner.js";
-import { currentLog, follow, goTo, loaded, position } from "../replays/viewer.js";
+import { RULES, botEntry, botPlayer, engineEntry, enginePlayer, newGame, playerName } from "../replays/runner.js";
+import { currentLog, follow, goTo, loaded, position, render as renderViewer } from "../replays/viewer.js";
+import { LAB_LIMIT_MS, labelOf, readChoice, thinkOf } from "./engine-builder.js";
+import { blockedBy, labConfigs, wireBuilder } from "./lab-builder.js";
 import { compactLab } from "./lab-text.js";
 import { clearLabs, recordLab, setThinking, showProgress, wireLabPanel } from "./lab-panel.js";
 
@@ -17,13 +19,15 @@ import { clearLabs, recordLab, setThinking, showProgress, wireLabPanel } from ".
  *
  * The workers are capped (Sami, 17/10: 4 by default, up to the cores minus 3), split per bot: an Oracle light held to
  * one worker searches both its trees there, with the same moves.
+ *
+ * A bot list holds the line-up and the bots built in « Régler un robot » (lot 2, `engine:<id>`, lab-builder.js); a
+ * built bot is logged with its engine (`engineEntry`), seeded as a line-up bot.
  */
 const WORKERS_KEY = "lopin.labWorkers";
 const DEFAULT_WORKERS = 4;
-const LIMIT_MS = 180_000;
 const AUTO_GAP_MS = 250;
 
-const game = { log: null, state: null, thinkers: null, auto: false, busy: false, ids: null, active: () => false };
+const game = { log: null, state: null, thinkers: null, auto: false, busy: false, active: () => false };
 
 /** The most workers the Labo may take: every logical core but 3, at least one. */
 const maxWorkers = () => Math.max(1, (navigator.hardwareConcurrency || 4) - 3);
@@ -37,17 +41,32 @@ function workerCap() {
 }
 
 /** A line-up bot's thinking in the Labo: its own worker count under the cap, its iterations rather than the clock. */
-function labThink(id, cap) {
+function lineupThink(id, cap) {
   const think = BOT_LINEUP[id].think;
   if (!think) return null;
-  return { ...think, limitMs: LIMIT_MS, minMs: 0, workers: Math.min(think.workers ?? 1, cap) };
+  return { ...think, limitMs: LAB_LIMIT_MS, minMs: 0, workers: Math.min(think.workers ?? 1, cap) };
+}
+
+/** A bot list's choice in seat `seat`: its player, its log entry and how it thinks. */
+function seated(value, seat, seed, cap) {
+  const { lineup, engine } = readChoice(value);
+  if (lineup) return { player: botPlayer(lineup, seed), entry: botEntry(seat, lineup), think: lineupThink(lineup, cap) };
+  return { player: enginePlayer(engine, seed), entry: engineEntry(seat, engine, labelOf(engine, labConfigs())), think: thinkOf(engine, { cap, limitMs: LAB_LIMIT_MS }) };
 }
 
 /** The depth a log's player searches (its engine's `depth`), for the « depth never reached » finding. */
 export function depthOf(player) {
-  const engine = BOT_LINEUP[player?.bot]?.engine;
-  const settings = engine ? ismctsSettings(engine.split("@")[0]) : null;
+  const settings = settingsOf(player ? (player.engine ?? BOT_LINEUP[player.bot]?.engine ?? player.bot) : null);
   return settings ? (settings.depth ?? ISMCTS.depth) : null;
+}
+
+/** An engine's tree settings, or null (no engine, not a tree, or a setting since removed in an old replay). */
+function settingsOf(engine) {
+  try {
+    return engine ? ismctsSettings(engine.split("@")[0]) : null;
+  } catch {
+    return null;
+  }
 }
 
 function fillBotSelect(select, chosen) {
@@ -79,21 +98,23 @@ const show = (status = null, jump = undefined) => follow(game.log, { status, dra
 
 /** A fresh game between the two bots chosen, nothing played yet. */
 function startGame() {
+  const values = [$("observe-bottom").value, $("observe-top").value];
+  const blocked = blockedBy(values);
+  if (blocked) return toast(blocked, 9000);
   stopThinkers();
   const seed = seedFromInput();
-  const ids = [$("observe-bottom").value, $("observe-top").value];
   const cap = workerCap();
   game.state = newGame(seed);
-  game.ids = ids;
-  const players = [botPlayer(ids[0], seed + 1), botPlayer(ids[1], seed + 2)];
-  game.thinkers = players.map((player, seat) => createThinker(player, labThink(ids[seat], cap), seed + 1 + seat, { lab: true, onProgress: showProgress }));
-  game.log = startLog(game.state, { rules: RULES, players: [botEntry(0, ids[0]), botEntry(1, ids[1])], seed });
+  const bots = values.map((value, seat) => seated(value, seat, seed + 1 + seat, cap));
+  game.thinkers = bots.map(({ player, think }, seat) => createThinker(player, think, seed + 1 + seat, { lab: true, onProgress: showProgress }));
+  game.log = startLog(game.state, { rules: RULES, players: bots.map(({ entry }) => entry), seed });
   clearLabs(game.log);
   game.at = null;
   game.auto = false;
   game.busy = false;
   show("Prêt : « Coup suivant » ou « En continu ».");
   refreshButtons();
+  return undefined;
 }
 
 /** The bot to move searches (its bars move live) and plays; its report is kept for that decision, in full and in the log. */
@@ -164,6 +185,7 @@ export function wireLab({ active }) {
   $("lab-workers").max = String(maxWorkers());
   $("lab-workers").value = recall(WORKERS_KEY, String(Math.min(DEFAULT_WORKERS, maxWorkers())));
   wireLabPanel({ active, depthOf });
+  wireBuilder({ onVariants: () => active() && renderViewer() });
   $("btn-observe").addEventListener("click", startGame);
   $("btn-lab-step").addEventListener("click", step);
   $("btn-lab-auto").addEventListener("click", toggleAuto);

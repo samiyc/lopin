@@ -20,11 +20,15 @@ export function newGame(seed, bonus = 0, openHands = false) {
   return createGame(spec, { order, jokerRule, endMode, rng: createRng(seed), figures: figuresFor(seed, bonus), openHands: Boolean(openHands), seed });
 }
 
-export function botPlayer(id, seed) {
-  return { id, engine: engineOf(id), bot: engineFor(engineOf(id))(createRng(seed)), rng: createRng(seed ^ 0x5bd1e995) };
-}
+/** A bot playing `engine` (any engine id: the Labo builds some off the line-up), seeded as the line-up's. */
+export const enginePlayer = (engine, seed, id = engine) => ({ id, engine, bot: engineFor(engine)(createRng(seed)), rng: createRng(seed ^ 0x5bd1e995) });
+
+export const botPlayer = (id, seed) => enginePlayer(engineOf(id), seed, id);
 
 export const botEntry = (seat, id) => ({ seat, kind: "bot", bot: id, version: BOT_LINEUP[id].version, label: BOT_LINEUP[id].label });
+
+/** A bot off the line-up (the Labo, lot 2), logged as the duels log theirs (`bot` and `version` its engine id) with its `engine` and a name. */
+export const engineEntry = (seat, engine, label) => ({ seat, kind: "bot", bot: engine, version: engine, engine, label });
 
 export const humanEntry = (seat, name) => ({ seat, kind: "human", name });
 
@@ -42,10 +46,11 @@ export function playBot(log, state, player) {
   return playLogged(log, state, move, scored);
 }
 
-/** "Stratège 1.1.0", or the human's name, for a log's player entry. */
+/** "Stratège 1.1.0", the human's name, or a Labo bot's name, for a log's player entry. */
 export function playerName(entry) {
   if (!entry) return "";
-  return entry.kind === "human" ? entry.name : `${entry.label ?? entry.bot} ${entry.version}`;
+  if (entry.kind === "human") return entry.name;
+  return entry.engine ? entry.label : `${entry.label ?? entry.bot} ${entry.version}`;
 }
 
 export { botTag };

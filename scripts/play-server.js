@@ -6,6 +6,7 @@ import { REPLAY_FORMAT } from "../src/replay/core/log.js";
 import { isAttempt, summarize } from "../src/replay/stats/puzzle-attempts.js";
 import { ATTEMPTS_FILE, readAttempts } from "./lib/domain/puzzle-attempts-file.js";
 import { eloTable, statsPage } from "./lib/domain/elo-data.js";
+import { isPreset, readPresets, withPreset, writePresets } from "./lib/domain/lab-presets.js";
 import { REPLAY_DIRS, isReplayDir, isSafeName, replayFileName, replayHeader } from "./lib/domain/replay-files.js";
 
 /**
@@ -104,6 +105,24 @@ async function attempts(req, res) {
   return send(res, 201, { stored: true });
 }
 
+const LAB_CONFIGS = join(ROOT, "data/lab-configs.json");
+
+/** `/api/lab/configs`: what the duels measured (npm run lab-index), or nothing yet. */
+async function labConfigs(res) {
+  const text = await readFile(LAB_CONFIGS, "utf8").catch(() => JSON.stringify({ names: {}, pairs: [] }));
+  return send(res, 200, text);
+}
+
+/** `/api/lab/presets`: the Labo's saved settings (GET), or one more (POST, replacing one of the same name). */
+async function labPresets(req, res) {
+  if (req.method === "GET") return send(res, 200, { presets: await readPresets() });
+  if (req.method !== "POST") return send(res, 405, { error: "méthode non prise en charge" });
+  const preset = { ...JSON.parse(await readBody(req)), savedAt: new Date().toISOString() };
+  if (!isPreset(preset)) return send(res, 400, { error: "réglage invalide" });
+  await writePresets(withPreset(await readPresets(), preset));
+  return send(res, 201, { stored: true });
+}
+
 const api = (req, res, parts) => (parts.length === 0 ? collection(req, res) : item(req, res, parts));
 
 async function serveStatic(res, path) {
@@ -116,15 +135,20 @@ async function serveStatic(res, path) {
   return send(res, 200, body, TYPES[extname(clean)] ?? "application/octet-stream");
 }
 
+/** The API's fixed paths. */
+const ROUTES = {
+  "/api/elo": async (req, res) => send(res, 200, await eloTable()),
+  "/api/stats": async (req, res) => send(res, 200, await statsPage()),
+  "/api/lab/configs": (req, res) => labConfigs(res),
+  "/api/lab/presets": labPresets,
+  "/api/puzzles/attempts": attempts,
+};
+
 const server = createServer(async (req, res) => {
   const { pathname } = new URL(req.url, "http://localhost");
   try {
-    if (pathname === "/api/elo") {
-      send(res, 200, await eloTable());
-    } else if (pathname === "/api/stats") {
-      send(res, 200, await statsPage());
-    } else if (pathname === "/api/puzzles/attempts") {
-      await attempts(req, res);
+    if (ROUTES[pathname]) {
+      await ROUTES[pathname](req, res);
     } else if (pathname.startsWith("/api/replays")) {
       const parts = pathname.split("/").slice(3).filter(Boolean).map(decodeURIComponent);
       await api(req, res, parts);

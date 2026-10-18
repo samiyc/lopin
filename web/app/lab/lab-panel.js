@@ -4,6 +4,7 @@ import { SPEC, playerName } from "../replays/runner.js";
 import { render as renderViewer, setLabHooks } from "../replays/viewer.js";
 import { decisionAt, expandLab, labMarks } from "./lab-text.js";
 import { bandDetail, candidateBars, findings, header, levelRows, nodeDetail } from "./lab-parts.js";
+import { replaySection, wireReplay } from "./lab-replay.js";
 import { createTreeView } from "./tree-view.js";
 
 /**
@@ -142,10 +143,17 @@ function enter(key) {
   if (key !== panel.decisionKey) Object.assign(panel, { decisionKey: key, selection: null, tree: 0, focus: null });
 }
 
+/** « Rejouer ce coup avec… » for a decision made (a live one is still searched). */
+function replayOf(log, frames, index, decision) {
+  if (decision.live || !decision.entry) return null;
+  const { state } = frames[index];
+  return replaySection({ key: `${log.startedAt}|${decision.turn}`, log, turn: decision.turn, state, seat: state.current, played: playedOf(decision.entry) });
+}
+
 /** A move that left no tree: a human's, or a bot that does not search in a tree (Basique, Stratège). */
-function renderBare(decision, mover) {
+function renderBare(decision, mover, replay) {
   const why = mover.kind === "human" ? "un coup humain" : `${playerName(mover)} ne cherche pas en arbre`;
-  $("lab-view").replaceChildren(header(decision, playerName(mover), playedOf(decision.entry)), el("p", { class: "hint" }, `Pas d'arbre pour ce coup : ${why}.`));
+  $("lab-view").replaceChildren(header(decision, playerName(mover), playedOf(decision.entry)), el("p", { class: "hint" }, `Pas d'arbre pour ce coup : ${why}.`), ...(replay ? [replay] : []));
 }
 
 function render({ log, frames, index }) {
@@ -156,14 +164,15 @@ function render({ log, frames, index }) {
     return;
   }
   const mover = log.players[frames[index].state.current];
-  if (!decision.lab) return renderBare(decision, mover);
+  const replay = replayOf(log, frames, index, decision);
+  if (!decision.lab) return renderBare(decision, mover, replay);
   const key = `${log.startedAt}|${decision.turn}`;
   enter(key);
   const trees = decision.lab.trees ?? [];
   const tree = trees[panel.tree] ?? {};
   const played = playedOf(decision.entry);
   const parts = columns(decision, { played, depth: panel.depthOf(mover), levels: tree.levels });
-  $("lab-view").replaceChildren(header(decision, playerName(mover), played), parts, ...treeSection(decision, trees));
+  $("lab-view").replaceChildren(header(decision, playerName(mover), played), parts, ...(replay ? [replay] : []), ...treeSection(decision, trees));
   if (tree.snapshot) drawTree(log, decision, tree, key);
 }
 
@@ -203,4 +212,5 @@ export function wireLabPanel({ active, depthOf = () => null }) {
   Object.assign(panel, { active, depthOf });
   setLabHooks({ marks: marksFor, after: render });
   wireInput();
+  wireReplay();
 }

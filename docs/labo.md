@@ -60,7 +60,31 @@ Commit `b280fa3`.
 - **Replays** : une partie du Labo enregistrée garde ses candidats et ses étages ; un replay de
   duel n'en garde que les étages.
 
-## Lot 2 : les réglages et ce qui a déjà été mesuré (à faire)
+## Lot 2 : les réglages et ce qui a déjà été mesuré (fait, 18/10)
+
+Le mode d'emploi est dans `docs/jouer.md`. Ce qui a été fait :
+
+- **Le constructeur** : `web/app/lab/engine-builder.js` (pur) et `lab-builder.js` (DOM).
+  - Le formulaire non touché redonne l'id de la 1.2, donc les mêmes coups.
+  - Les réglages qu'il ne montre pas (diverse, rave…) sont gardés.
+- **Une config, une écriture** : `src/sim/mcts/engine-id.js` trie les réglages, ôte ceux qui sont à
+  leur valeur par défaut et écrit toujours le budget.
+- **Les configs mesurées** : `npm run lab-index` lit les fichiers de `duels/` (l'index ne dit pas
+  quelles parties partagent une donne). Il prend aussi les sorties du backlog quand elles ont plus
+  de parties : les fichiers de duel de ReplyFpu1 (17/10) manquent dans `duels/`, et ses sorties
+  donnent n, moyenne et écart-type des paires, de quoi refaire exactement la fourchette.
+  - Les deux sources s'accordent : 1.2 contre 1.1, 52,7 % (50,5 – 54,8) ; FinalLcb1 51,5 %
+    (49,4 – 53,7) ; ReplyFpu1 51,5 % (49,0 – 54,0).
+  - Les noms viennent de la gamme et des traitements du backlog (la dernière colonne de l'id).
+  - Le verdict est lu sur la fourchette, du côté de la config : devant, derrière, pas d'écart net.
+    Les tentatives des changelogs ne nomment pas leur moteur : elles n'ont pas servi.
+- **Les moteurs libres** : `enginePlayer` / `engineEntry` (`runner.js`), le moteur écrit dans le
+  replay (`bot` et `version` comme les duels, plus `engine` et un nom).
+- **« Rejouer ce coup avec… »** : `web/app/lab/lab-replay.js`.
+- **Les réglages sauvés** : `/api/lab/presets`, `scripts/lib/domain/lab-presets.js`
+  (`LOPIN_LAB_PRESETS` pour essayer la page sans toucher au fichier).
+
+Le plan de départ :
 
 - **Le constructeur de bots** (`web/app/lab/engine-builder.js`, pur).
   - Le formulaire donne un engine id : base 1.2, puis widen, depth, candidats, pwl, exact, trees,

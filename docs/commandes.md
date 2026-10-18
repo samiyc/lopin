@@ -64,6 +64,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/heuristics/experimental.
 | `npm run duel:long -- <A> <B>` | le même, profil long (20 min au plus) | `duels/` |
 | `npm run tree-stats -- <duels…> \| --last N` | la forme de l'arbre des robots à arbre dans des duels gardés (Sami, 14/10) : par moteur et par niveau, la part des coups qui l'atteignent, les nœuds, ceux à 0 et 1 visite, le plus visité — de quoi choisir une formule de `pw` | la console (lit le `tree` de chaque coup, `src/sim/mcts/tree-stats.js`) |
 | `npm run versus -- <A> <B> [--label nom]` | toutes les parties de A contre B gardées dans `duels/`, réunies par paires : score, par siège, par jokers, ce que A joue autrement | `data/versus.json` (avec `--label`) |
+| `npm run lab-index` | les duels de `duels/` regroupés par paire de configs (une seule écriture par config : réglages triés, valeurs par défaut ôtées), score et fourchette par paires de donnes, et leurs noms ; le Labo s'en sert pour dire si une config est « déjà mesurée » (environ 25 s) | `data/lab-configs.json` |
 | `npm run elo [-- --duels]` | le classement Elo des joueurs et de chaque version | — (lit `data/elo-duels.json`) |
 | `npm run bench [-- budget seeds moteur]` | l'étalon de la recherche : les puzzles les plus durs, trouvés ou non, en combien d'itérations | — |
 | `npm run ab -- <référence> <variante>… [--vs stratege] [--pairs 200]` | plusieurs moteurs contre le même adversaire, sur les mêmes donnes : l'écart de chaque variante | — |

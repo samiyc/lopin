@@ -32,3 +32,12 @@ export const savePuzzleAttempt = (attempt) =>
 
 /** The attempts stored, summed up per puzzle: `{ summary: { [id]: { attempts, solved, bestMs, lastSlips } } }`. */
 export const fetchPuzzleAttempts = () => call("/api/puzzles/attempts");
+
+/** What the duels measured, by pair of configs (`npm run lab-index`): `{ names, pairs }`. */
+export const fetchLabConfigs = () => call("/api/lab/configs");
+
+/** The Labo's saved settings: `{ presets: [{ name, bots, seed, note, savedAt }] }`. */
+export const fetchLabPresets = () => call("/api/lab/presets");
+
+export const saveLabPreset = (preset) =>
+  call("/api/lab/presets", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(preset) });

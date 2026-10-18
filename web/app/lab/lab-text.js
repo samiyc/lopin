@@ -10,6 +10,9 @@ export const percent = (value) => (value === null || value === undefined ? "—"
 /** « 7♥ → 3 », or « passe ». `move`: `{ card, border }` with the card's id and the 0-based border. */
 export const moveName = (spec, move) => (move ? `${formatCard(spec, move.card)} → ${move.border + 1}` : "passe");
 
+/** Are two moves (`{ card, border }`, or null for a pass) the same? */
+export const sameMove = (a, b) => (a && b ? a.card === b.card && a.border === b.border : a === b);
+
 /** A snapshot key (`moveKey`: "12@3", "pass") or the « +n » node, written. */
 export function keyName(spec, key) {
   if (key === "pass") return "passe";

@@ -141,6 +141,22 @@ mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant 
 - Le panneau de droite dit ce que le robot avait en main, où il a joué, ce qu'il y
   avait en face, et ses meilleures options avec leur gain estimé.
 - « Enregistrer cette partie » la range dans `replays/`.
+- **Régler un robot** (lot 2, 18/10) : un formulaire part de l'Expérimental 1.2 (ou d'un robot
+  de la gamme, ou d'une config nommée par les duels) et donne l'identifiant du moteur. Dessous :
+  - ce qu'il coûte par coup et par partie, d'après la vitesse de la 1.2 mesurée une fois dans un worker ;
+  - les garde-fous : orange au-delà de 10 000 itérations par coup ou de 5 min par partie, rouge
+    au-delà de 50 000 (la partie ne part qu'avec « J'accepte une partie très longue »), une note
+    au-delà de la profondeur 10 ;
+  - ce que les duels en ont déjà mesuré (« 51,5 % (49,0 – 54,0) sur 1 000 parties contre
+    Expérimental 1.2 : pas d'écart net »), ou « jamais mesurée » avec ses voisines (un réglage de
+    différence), qu'un clic charge. La source est `data/lab-configs.json` (`npm run lab-index`).
+
+  « En bas » / « En haut » le mettent dans la liste des robots, « Variante » dans « Rejouer ce coup avec… ».
+- **Rejouer ce coup avec…**, sous les candidats, dans le Labo comme dans les Replays : la position
+  affichée est recherchée de nouveau par 1 à 4 variantes, l'une après l'autre, côte à côte, avec
+  « Autre coup » quand le choix change. Avec « la graine du coup joué », le même moteur retrouve le
+  même coup : un témoin pour les autres.
+- **Réglages sauvés** : les deux robots, la graine et une note, sous un nom, dans `data/lab-presets.json`.
 
 **Replays.** La liste des parties récentes (`replays/`) et gardées
 (`data/replays/`), cinq visibles à la fois.

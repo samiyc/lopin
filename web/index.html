@@ -62,6 +62,32 @@
       <label>Fils pour les robots <input type="number" id="lab-workers" min="1" value="4" title="Workers au plus pour les robots du Labo : 4 par défaut, jusqu'au nombre de cœurs moins 3"></label>
       <button type="button" id="btn-observe-save" class="quiet">Enregistrer cette partie</button>
       <p class="hint">Chaque robot cherche ses propres itérations, comme en duel. Clique une carte (ou un candidat) pour voir les bornes où elle va.</p>
+      <details class="lab-box" id="lab-builder">
+        <summary>Régler un robot</summary>
+        <label>Partir de <select id="lab-base"></select></label>
+        <div class="lab-fields" id="lab-fields"></div>
+        <div class="lab-budget">
+          <label>Itérations par coup <input type="number" id="lab-budget" min="50" inputmode="numeric"></label>
+          <label class="check"><input type="checkbox" id="lab-timed"> en ms (@t)</label>
+        </div>
+        <code class="lab-engine" id="lab-engine"></code>
+        <p class="hint" id="lab-cost"></p>
+        <ul class="lab-guards" id="lab-guards"></ul>
+        <div class="lab-measured" id="lab-measured"></div>
+        <div class="lab-actions">
+          <button type="button" id="btn-lab-bottom" class="quiet" title="Ce robot en bas à la prochaine partie">En bas</button>
+          <button type="button" id="btn-lab-top" class="quiet" title="Ce robot en haut à la prochaine partie">En haut</button>
+          <button type="button" id="btn-lab-variant" class="quiet" title="Ajouter ce robot aux variantes de « Rejouer ce coup avec… »">Variante</button>
+        </div>
+        <label class="check"><input type="checkbox" id="lab-confirm"> J'accepte une partie très longue</label>
+      </details>
+      <details class="lab-box" id="lab-presets">
+        <summary>Réglages sauvés</summary>
+        <label>Reprendre <select id="lab-preset"></select></label>
+        <label>Nom <input id="lab-preset-name" maxlength="60" autocomplete="off"></label>
+        <label>Note <textarea id="lab-preset-note" rows="2" maxlength="500"></textarea></label>
+        <button type="button" id="btn-lab-preset-save" class="quiet">Sauver les deux robots et la graine</button>
+      </details>
     </section>
 
     <section class="panel" id="panel-replays" hidden>

@@ -500,8 +500,11 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   changes — 1.2, 1.0 and Oracle v1 fingerprints checked). Pure and tested: confidence, tree-layout,
   tree-diagnosis, lab-text; DOM: lab-game, lab-panel, lab-parts, tree-view (SVG, wheel zoom, drag;
   ply 1 draws 3 children, 2-5 two, ply 4 under the best two candidates, 5 under the best, Sami 18/10). Workers capped at 4 (up to cores − 3).
-  The lots, done and to come, are in `docs/labo.md`: bot settings with guards, configs already
-  measured, a move re-searched, the oracle, a profiler. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
+  The lots, done and to come, are in `docs/labo.md`. Lot 2 (18/10): a builder of engine ids
+  (engine-builder.js, pure; the untouched form is the 1.2), guards on the cost, what the duels measured
+  (`npm run lab-index` → data/lab-configs.json, configs filed by `normalizeEngine`, engine-id.js), free
+  engines (`enginePlayer` / `engineEntry`), « Rejouer ce coup avec… » (lab-replay.js), presets
+  (`/api/lab/presets`, data/lab-presets.json). Lot 3: the oracle, a profiler. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
   by default, fingerprints unchanged): while nothing lies off the middle border, borders b and 8 − b
   are one move, the tree keeps 1-4 (turn 1, rarely 2-3); its 1k@2k is queued.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):

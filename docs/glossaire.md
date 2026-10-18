@@ -410,7 +410,7 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   coup que le cœur classait 5ᵉ ou plus loin, candidat affamé (moins de 2 % des visites), arbre plat
   (plus de 60 % des nœuds du pli 3 à une visite), profondeur jamais atteinte.
 - **Les lots du Labo** (`docs/labo.md`) : 1, l'arbre en direct et les cartes colorées (fait le
-  17/10) ; 2, les réglages des bots, les configs déjà mesurées, un coup rejoué ; 3, l'oracle, le
+  17/10) ; 2, les réglages des bots, les configs déjà mesurées, un coup rejoué (fait le 18/10) ; 3, l'oracle, le
   profileur, l'export.
 - **Les coups miroirs** (`+mirror=1`, `src/sim/mcts/mirror.js`, Sami 18/10) : tant que rien n'est
   posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les

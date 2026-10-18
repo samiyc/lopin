@@ -394,6 +394,39 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
 .lab-detail dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; margin: 0; }
 .lab-detail dt { color: var(--ink-2); }
 .lab-detail dd { margin: 0; font-variant-numeric: tabular-nums; }
+/* The bot builder and the saved settings (lot 2), folded in the sidebar. */
+.lab-box { border-top: 1px solid var(--line); padding-top: 6px; display: grid; gap: 6px; }
+.lab-box[open] { gap: 8px; }
+.lab-box summary { cursor: pointer; font-weight: 700; color: var(--ink); }
+.lab-box textarea { font: inherit; resize: vertical; }
+.lab-fields { display: grid; gap: 3px; }
+.panel .lab-fields label { grid-template-columns: minmax(0, 1fr) 6.5em; align-items: center; gap: 6px; font-size: 0.8rem; }
+.lab-fields input, .lab-fields select { min-width: 0; width: 100%; }
+.lab-budget { display: grid; gap: 4px; }
+.lab-engine { display: block; padding: 4px 6px; border-radius: 6px; background: var(--paper); font-size: 0.72rem; overflow-wrap: anywhere; }
+.lab-engine.wrong { color: var(--poor); font-weight: 700; }
+.lab-box .hint, .lab-measured { margin: 0; font-size: 0.8rem; }
+.lab-guards { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: 0.8rem; }
+.lab-guards:empty { display: none; }
+.lab-guards .stop { color: var(--poor); font-weight: 700; }
+.lab-guards .warn { color: var(--maybe); font-weight: 700; }
+.lab-guards .note { color: var(--ink-2); }
+.lab-measured p { margin: 0 0 3px; }
+.lab-measured ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; margin: 2px 4px 2px 0; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.8rem; }
+.chip button { padding: 0 4px; line-height: 1; }
+/* « Rejouer ce coup avec… », under the candidates. */
+.lab-replay { display: grid; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.lab-variants { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.lab-replay-go { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 0.85rem; }
+.lab-replay-go label.check { display: flex; align-items: center; gap: 6px; }
+.lab-variant-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.lab-variant-card { display: grid; align-content: start; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.lab-variant-card.changed { border-color: var(--maybe); border-width: 2px; }
+.lab-variant-card h4 { margin: 0; font-size: 0.9rem; }
+.lab-variant-card p { margin: 0; font-size: 0.85rem; }
+.lab-variant-card .changed { color: var(--maybe); font-weight: 700; }
+.lab-variant-card .same { color: var(--ink-2); }
 @media (max-width: 900px) {
   .lab-view { grid-column: 1; }
   .lab-grid, .lab-tree-wrap { grid-template-columns: 1fr; }
