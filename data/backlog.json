@@ -142,6 +142,174 @@
       "limit": 118,
       "why": "La part des règles, deuxième moitié : 5 000 parties d'omniscients, ± 1,4 point.",
       "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_1_OracleLight-Mirror",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2+mirror=1@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" --long --games 70 --page --offset 15",
+      "estimate": "1 h 05",
+      "limit": 120,
+      "why": "MirrorMoves sur l'Oracle light (Sami, 19/10) : l'Oracle light 1.0 avec +mirror=1 contre lui-même, 10 000 itérations des deux côtés, donnes 1 sur 4 (140 parties, offset 15, des donnes neuves). Seulement si la 1k@2k de MirrorMoves sur la 1.2 tient : annulé si elle finit sous 50 %, ou si elle a été arrêtée en route. Coût estimé : 1,67 fois un LIGHT_DUEL (38 min), deux oracles au lieu d'un oracle et d'une 1.2.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves",
+            "VALIDATE_LONG_3_MirrorMoves",
+            "VALIDATE_LONG_4_MirrorMoves"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_2_OracleLight-Mirror",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2+mirror=1@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" --long --games 70 --page --offset 16",
+      "estimate": "1 h 05",
+      "limit": 120,
+      "why": "MirrorMoves sur l'Oracle light (Sami, 19/10) : l'Oracle light 1.0 avec +mirror=1 contre lui-même, 10 000 itérations des deux côtés, donnes 2 sur 4 (140 parties, offset 16, des donnes neuves). Seulement si la 1k@2k de MirrorMoves sur la 1.2 tient : annulé si elle finit sous 50 %, ou si elle a été arrêtée en route. Coût estimé : 1,67 fois un LIGHT_DUEL (38 min), deux oracles au lieu d'un oracle et d'une 1.2.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves",
+            "VALIDATE_LONG_3_MirrorMoves",
+            "VALIDATE_LONG_4_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "LIGHT_DUEL_1_OracleLight-Mirror"
+          ],
+          "below": 0.47
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Mirror",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2+mirror=1@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" --long --games 70 --page --offset 17",
+      "estimate": "1 h 05",
+      "limit": 120,
+      "why": "MirrorMoves sur l'Oracle light (Sami, 19/10) : l'Oracle light 1.0 avec +mirror=1 contre lui-même, 10 000 itérations des deux côtés, donnes 3 sur 4 (140 parties, offset 17, des donnes neuves). Seulement si la 1k@2k de MirrorMoves sur la 1.2 tient : annulé si elle finit sous 50 %, ou si elle a été arrêtée en route. Coût estimé : 1,67 fois un LIGHT_DUEL (38 min), deux oracles au lieu d'un oracle et d'une 1.2.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves",
+            "VALIDATE_LONG_3_MirrorMoves",
+            "VALIDATE_LONG_4_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "LIGHT_DUEL_1_OracleLight-Mirror"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "LIGHT_DUEL_1_OracleLight-Mirror",
+            "LIGHT_DUEL_2_OracleLight-Mirror"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_4_OracleLight-Mirror",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2+mirror=1@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" --long --games 70 --page --offset 18",
+      "estimate": "1 h 05",
+      "limit": 120,
+      "why": "MirrorMoves sur l'Oracle light (Sami, 19/10) : l'Oracle light 1.0 avec +mirror=1 contre lui-même, 10 000 itérations des deux côtés, donnes 4 sur 4 (140 parties, offset 18, des donnes neuves). Seulement si la 1k@2k de MirrorMoves sur la 1.2 tient : annulé si elle finit sous 50 %, ou si elle a été arrêtée en route. Coût estimé : 1,67 fois un LIGHT_DUEL (38 min), deux oracles au lieu d'un oracle et d'une 1.2.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves",
+            "VALIDATE_LONG_3_MirrorMoves",
+            "VALIDATE_LONG_4_MirrorMoves"
+          ],
+          "below": 0.5
+        },
+        {
+          "after": [
+            "LIGHT_DUEL_1_OracleLight-Mirror"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "LIGHT_DUEL_1_OracleLight-Mirror",
+            "LIGHT_DUEL_2_OracleLight-Mirror"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "DEEP_DUEL_1_OracleLight-vs-Oracle3",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000\" --long --games 60 --page --offset 15",
+      "estimate": "1 h 25",
+      "limit": 120,
+      "why": "Ce que coûte la moitié du budget (changelog des oracles, « Ensuite ») : l'Oracle light 1.0 de la page (deux arbres de 5 000, pwl=3) contre Oracle3 (20 000, pwl=4, 61,4 % puis 52,9 % contre la 1.2), 120 parties sur des donnes neuves (offset 15). 30 000 itérations par paire de coups au lieu de 12 000 : environ 2,5 fois un LIGHT_DUEL, d'où 60 donnes pour tenir sous 2 h. Un premier relevé, pas un verdict.",
+      "status": "todo"
     }
   ]
 }
