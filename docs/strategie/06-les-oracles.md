@@ -221,6 +221,19 @@ légaux ; « nœuds » : tous ceux créés à ce niveau, même jamais essayés) 
 - **Les niveaux 6 à 10 ne sont jamais atteints** : avec `depth=10`, l'arbre s'arrête au 5e niveau
   comme avec `depth=5`. Le gain de `Depth10Pw` vient donc de `pw`, qui concentre les visites (4 fois
   moins de nœuds jamais visités au niveau 3, 5 fois moins au niveau 4), pas de la profondeur.
+  **Corrigé le 18/10** (Sami, au Labo : l'Oracle light descend souvent aux plis 7-8 dans les derniers tours) : ce
+  tableau lisait une seule position de milieu de partie. Relu sur tous les coups des duels gardés
+  (`scripts/archive/tree-depth-by-pile.js`, le pli le plus profond qui a un nœud visité), la profondeur dépend de la
+  pioche : quand des bornes sont prises et que la main se vide, il reste peu de coups et l'arbre descend.
+
+  | Moteur (coups) | pioche ≥ 10 | pioche 4-9 | pioche 1-3 |
+  | --- | --- | --- | --- |
+  | `Depth10Pw@20000` (`pw=1`, 1 013) | pli 6 dans 48 % des coups | 97 %, pli 8 dans 35 % | 100 %, pli 8 dans 60 % |
+  | `OracleLight-Pwl3` (un arbre de 10 000, 6 070) | 18 % | 82 %, pli 8 dans 6 % | 75 %, pli 8 dans 32 % |
+  | Oracle light 1.0 (`pwl=3+trees=2`, 6 280) | 3 % | 54 % | 64 %, pli 8 dans 17 % |
+
+  Le gain de `depth=10` sur `depth=5` tient donc aussi à la fin de partie, juste avant le solveur exact (pioche vide).
+  Pour l'Oracle light, ce sont les arbres de 5 000 de chaque worker, d'où des plis moins profonds.
 - **Pourquoi c'est si dur de descendre** : le niveau 2 compte ~620 nœuds pour 8 candidats, ~78
   réponses adverses par candidat au lieu de 7. Chaque donne distribue une autre main à l'adversaire,
   donc ses 7 meilleures réponses changent d'une donne à l'autre : l'information cachée multiplie la

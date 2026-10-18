@@ -15,6 +15,9 @@ const seconds = (ms) => `${(ms / 1000).toFixed(1).replace(".", ",")} s`;
 const keyOfMove = (move) => (move ? `${move.card}@${move.border}` : "pass");
 
 /** « Tour 12 · Expérimental 1.2 joue 7♥ → 3 · 2 000 itérations en 3,1 s », or « … réfléchit… » live. */
+/** Where the decision stands: the table shows the last move played (« Tour 29 »), the panel the next one (Sami, 18/10). */
+const fromText = (turn) => (turn > 1 ? ` · sur la table après le tour ${turn - 1}, > le montre joué` : " · sur la table de la distribution, > le montre joué");
+
 export function header(decision, who, played) {
   if (decision.live) {
     const progress = decision.progress;
@@ -24,7 +27,7 @@ export function header(decision, who, played) {
   const iterations = (decision.lab?.root ?? []).reduce((sum, entry) => sum + entry.visits, 0);
   const thought = typeof decision.entry.thinkMs === "number" ? ` en ${seconds(decision.entry.thinkMs)}` : "";
   const facts = iterations > 0 ? ` · ${count(iterations)} itérations${thought}` : thought;
-  return el("h2", {}, `Tour ${decision.turn} · ${who} joue ${moveName(SPEC, played)}`, el("small", {}, facts));
+  return el("h2", {}, `Tour ${decision.turn} · ${who} joue ${moveName(SPEC, played)}`, el("small", {}, facts + fromText(decision.turn)));
 }
 
 function candidateRow(entry, { played, top, focus }) {
@@ -94,7 +97,7 @@ const fact = (term, value) => [el("dt", {}, term), el("dd", {}, value)];
 
 /** A node's detail: the line of play it stands for, its rate and interval, visits, availability, what follows. */
 export function nodeDetail(snapshot, id, names) {
-  if (id === "+" || id.endsWith("/+")) return [el("h3", {}, "Les autres coups"), el("p", { class: "hint" }, "Seuls les 3 fils les plus visités sont dessinés : double-clic sur ce nœud pour les voir tous, et le détail du nœud parent pour leurs chiffres.")];
+  if (id === "+" || id.endsWith("/+")) return [el("h3", {}, "Les autres coups"), el("p", { class: "hint" }, "Seuls les fils les plus visités sont dessinés (3 aux plis 1 et 2, 2 ensuite) : double-clic sur ce nœud pour les voir tous, et le détail du nœud parent pour leurs chiffres.")];
   const node = nodeAt(snapshot, id);
   if (!node) return [el("p", { class: "hint" }, "Ce nœud n'est plus dans l'arbre.")];
   if (id === "") return [el("h3", {}, "La position"), el("p", {}, `${count(node.visits)} itérations · ${node.size} nœuds gardés pour le dessin.`)];

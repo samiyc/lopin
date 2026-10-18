@@ -118,9 +118,12 @@ mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant 
   70 % ou plus). Molette pour zoomer, glisser pour se déplacer, double-clic dans le
   vide (ou Échap) pour tout revoir ; clic sur un nœud pour son détail (la suite de
   coups en clair, taux, visites, disponibilité, suites), double-clic pour le déplier ;
-  clic sur un étage pour ses chiffres. Chaque nœud ne montre que ses 3 fils les plus
-  visités (Sami, 18/10) : « +205 » regroupe les autres, un double-clic sur lui les
-  dessine tous. L'Oracle light montre ses deux arbres (« Arbres : 1 2 »).
+  clic sur un étage pour ses chiffres. L'arbre va jusqu'au pli 5 (Sami, 18/10) : 3 fils
+  par nœud aux plis 1 et 2, 2 ensuite, le pli 4 sous les deux meilleurs candidats, le
+  pli 5 sous le meilleur. « +205 » regroupe les autres fils, un double-clic sur lui les
+  dessine tous.
+- La table montre le dernier coup joué (« Tour 29 » sous la pioche), le panneau le
+  coup qui suit, cherché sur cette table (« Tour 30 »). L'Oracle light montre ses deux arbres (« Arbres : 1 2 »).
 - Coup par coup, le lecteur reste sur la position que le robot vient d'étudier :
   > montre son coup. En continu, il suit la partie jusqu'au bout.
 - « Fils pour les robots » : 4 workers au plus par défaut (jusqu'au nombre de cœurs

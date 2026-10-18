@@ -48,9 +48,15 @@ Commit `b280fa3`.
   - un double-clic le déplie ;
   - un clic sur un étage donne ses chiffres ;
   - l'Oracle light montre ses deux arbres.
-- **Le 18/10** (Sami) : l'arbre ne dessine que les 3 fils les plus visités de chaque nœud, à tous
-  les étages, candidats compris. Les autres rejoignent le nœud « +n ». Un double-clic sur « +n »
-  les montre tous.
+- **Le 18/10** (Sami), pour un arbre étroit qui descend jusqu'au pli 5 :
+  - les plis 1 et 2 dessinent les 3 fils les plus visités de chaque nœud, les plis 3 à 5 les 2
+    meilleurs ; les autres rejoignent le nœud « +n », et un double-clic sur « +n » les montre tous ;
+  - le pli 4 n'est dessiné que sous les deux candidats les plus visités, le pli 5 sous le premier
+    seulement ; un double-clic sur un nœud plié le déplie ;
+  - l'instantané garde 2 fils par nœud à partir du pli 4 (7 avant), pour que son budget de 1 500
+    nœuds atteigne le pli 5 le long des meilleures lignes ;
+  - l'en-tête dit sur quelle table porte le coup : la table montre le dernier coup joué (« Tour 29 »),
+    le panneau le coup suivant (« Tour 30 … sur la table après le tour 29 »).
 - **Replays** : une partie du Labo enregistrée garde ses candidats et ses étages ; un replay de
   duel n'en garde que les étages.
 
@@ -66,7 +72,9 @@ Commit `b280fa3`.
   (300 itérations de la 1.2), et donne une estimation par coup et par partie.
   - Orange au-delà de 10 000 itérations par coup ou de 5 min par partie.
   - Rouge, avec confirmation, au-delà de 50 000.
-  - Une note quand depth > 10 : les étages 6 à 10 ne sont jamais atteints.
+  - Une note quand depth > 10 : au-delà du pli 8, l'arbre ne descend presque jamais, même en fin de partie
+    (pli 6 atteint dans 3 à 48 % des coups tant que la pioche a 10 cartes ou plus, dans 64 à 100 % avec 1 à 3 ;
+    pli 8 dans 17 à 60 % à la fin ; `docs/strategie/06-les-oracles.md`).
   - Les workers restent plafonnés au réglage du Labo.
 - **Des moteurs libres** : `botPlayer` / `botEntry` acceptent un engine id hors gamme, enregistré
   dans le replay comme `{ kind: "bot", engine }`.

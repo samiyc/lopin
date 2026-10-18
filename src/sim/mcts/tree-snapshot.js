@@ -74,7 +74,7 @@ export function addRootStats(parts) {
   });
 }
 
-export const SNAPSHOT = Object.freeze({ maxNodes: 1500, minVisits: 2, perNode: 7, maxDepth: 12 });
+export const SNAPSHOT = Object.freeze({ maxNodes: 1500, minVisits: 2, perNode: 7, deepFrom: 4, deepPerNode: 2, maxDepth: 12 });
 
 /** A node's copy, without its children yet. */
 function copyOf(key, node, depth, mover) {
@@ -83,8 +83,9 @@ function copyOf(key, node, depth, mover) {
 
 /**
  * A pruned copy of the tree, built level by level so that the shallow plies are kept first: below the root a node keeps
- * its `perNode` most visited children with at least `minVisits` visits (the root keeps all its candidates), until
- * `maxNodes` copies; what it leaves out is summed in `hidden: { count, visits, wins }`. The root's player
+ * its `perNode` most visited children with at least `minVisits` visits (the root keeps all its candidates) — from ply
+ * `deepFrom` on, `deepPerNode` (Sami, 18/10: the Labo draws plies 4-5 along the best lines, which the budget must reach) —
+ * until `maxNodes` copies; what it leaves out is summed in `hidden: { count, visits, wins }`. The root's player
  * (`rootPlayer`) makes the moves of depth 1, then the players alternate (a pass hands the turn over too).
  */
 export function snapshotTree(root, { rootPlayer = 0, ...options } = {}) {
@@ -109,11 +110,12 @@ export function snapshotTree(root, { rootPlayer = 0, ...options } = {}) {
  * Copies into `copy` the children of `node` it keeps (at most `room` below the root), sums the others in
  * `copy.hidden`, and returns the pairs to visit next.
  */
-function copyChildren(copy, node, { minVisits, perNode, maxDepth }, room) {
+function copyChildren(copy, node, { minVisits, perNode, deepFrom, deepPerNode, maxDepth }, room) {
   const children = [...node.children.entries()].sort((a, b) => b[1].visits - a[1].visits);
   const depth = copy.depth + 1;
   const atRoot = copy.depth === 0;
-  const kept = depth > maxDepth ? [] : children.filter(([, child], index) => atRoot || (index < perNode && child.visits >= minVisits));
+  const most = depth >= deepFrom ? deepPerNode : perNode;
+  const kept = depth > maxDepth ? [] : children.filter(([, child], index) => atRoot || (index < most && child.visits >= minVisits));
   const shown = atRoot ? kept : kept.slice(0, Math.max(0, room));
   const pairs = shown.map(([key, child]) => ({ copy: copyOf(key, child, depth, 1 - copy.mover), node: child }));
   copy.children.push(...pairs.map((pair) => pair.copy));

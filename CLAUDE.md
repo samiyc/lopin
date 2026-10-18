@@ -394,7 +394,9 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   iterations scores 55.7 % and `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000` (Depth10Pw) 61.4 %
   (55.1 – 67.8, 140 games), then 52.9 % on new decks: 57.1 % pooled over 280 games (≈ 52.0 – 62.3), the
   first judge stronger than the 1.2, short of the 60 % rule.
-  Levels 6-10 are never reached: its gain is `pw` concentrating levels 3-4, not depth. **Each move of a
+  Levels 6-10 are reached late (corrected 18/10, Sami at the Labo: in the last turns before the solver, ply 6 in
+  64-100 % of the moves with 1-3 cards in the pile, ply 8 in 17-60 %; with a full pile, ply 6 in 3-48 %;
+  `scripts/archive/tree-depth-by-pile.js`), and `pw` concentrates levels 3-4. **Each move of a
   tree bot carries `tree` in the replays** (`src/sim/mcts/tree-stats.js`: iterations, and per level the nodes,
   those with 0 and 1 visit, the most visits) — the tool to choose a `pw` formula; `npm run tree-stats`
   reads it from kept duels. **Progressive widening is named `+pwl=n`** (Sami, 16/10, `widening.js`): 0 none to 5
@@ -497,7 +499,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   `rootStats` + `snapshotTree`, `src/sim/mcts/tree-snapshot.js`, read between steps so no move
   changes — 1.2, 1.0 and Oracle v1 fingerprints checked). Pure and tested: confidence, tree-layout,
   tree-diagnosis, lab-text; DOM: lab-game, lab-panel, lab-parts, tree-view (SVG, wheel zoom, drag;
-  3 children drawn per node, the rest in « +n », Sami 18/10). Workers capped at 4 (up to cores − 3).
+  plies 1-2 draw 3 children a node, 3-5 two, ply 4 under the best two candidates, 5 under the best, Sami 18/10). Workers capped at 4 (up to cores − 3).
   The lots, done and to come, are in `docs/labo.md`: bot settings with guards, configs already
   measured, a move re-searched, the oracle, a profiler. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
   by default, fingerprints unchanged): while nothing lies off the middle border, borders b and 8 − b
