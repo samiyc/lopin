@@ -99,7 +99,11 @@ button, select, input { font: inherit; }
 
 /* ── Layout ──────────────────────────────── */
 .layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 16px 20px; align-items: start; }
-.sidebar { display: grid; gap: 14px; position: sticky; top: 12px; }
+.sidebar { display: grid; gap: 14px; position: sticky; top: 12px; min-width: 0; }
+/* A long option (a Labo bot built off the line-up) must not widen the sidebar past its column: it overlapped the table (Sami, 18/10). */
+.sidebar > *, .panel > *, .panel label { min-width: 0; }
+.panel select, .panel input:not([type="checkbox"]):not([type="radio"]), .panel textarea { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.panel select { width: 100%; text-overflow: ellipsis; }
 /* The folded sidebar (Sami, 13/10, for a vertical split screen): Jouer only, a
    48px column with the pile count and the buttons reduced to their glyph. */
 .sidebar-fold { position: fixed; left: 20px; bottom: 12px; z-index: 10; width: 48px; padding: 4px 0; background: var(--panel); font-size: 1.1rem; line-height: 1; }
