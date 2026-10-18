@@ -2,30 +2,6 @@
   "note": "Les traitements longs, à lancer la nuit : npm run backlog (npm run backlog -- --list pour voir la file). Aucun ne dépasse 2 h (limit, en minutes ; au-delà il est arrêté et marqué timeout). Chaque traitement fait est marqué avec sa date, sa durée et sa sortie (backlog-runs/, hors de git). Un traitement plus urgent se place en tête des « todo ».",
   "jobs": [
     {
-      "id": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2",
-      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=2+trees=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
-      "estimate": "40 min",
-      "limit": 90,
-      "why": "L'Oracle light en deux arbres de 5 000 à pwl=2 : 57,9 % sur les offsets 12 et 13 (nuit du 17/10), contre 53,9 % pour pwl=3 en deux arbres sur les mêmes donnes. Le troisième offset pour 420 parties, face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique : au-dessus, l'Oracle light 1.1 passe à pwl=2.",
-      "status": "todo"
-    },
-    {
-      "id": "NOISE_DUEL_3_Ensemble2x2000",
-      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
-      "estimate": "36 min",
-      "limit": 75,
-      "why": "Ensemble2x2000 complété sur les donnes de Budget4000 (offset 3 : 51,6 % pour un arbre de 4 000). Offsets 1 et 2 : 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 (54,4 %). Sur 1 000 parties : deux arbres de 2 000 valent-ils un arbre de 4 000 (52,8 %) ? Si oui, la 1.2 sur deux workers joue en page au temps de la 1.2.",
-      "status": "todo"
-    },
-    {
-      "id": "NOISE_DUEL_4_Ensemble2x2000",
-      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
-      "estimate": "36 min",
-      "limit": 75,
-      "why": "Ensemble2x2000 complété sur les donnes de Budget4000 (offset 4 : 50,8 % pour un arbre de 4 000). Offsets 1 et 2 : 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 (54,4 %). Sur 1 000 parties : deux arbres de 2 000 valent-ils un arbre de 4 000 (52,8 %) ? Si oui, la 1.2 sur deux workers joue en page au temps de la 1.2.",
-      "status": "todo"
-    },
-    {
       "id": "VALIDATE_LONG_1_MirrorMoves",
       "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+mirror=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
       "estimate": "30 min",
@@ -93,6 +69,30 @@
           "below": 0.5
         }
       ],
+      "status": "todo"
+    },
+    {
+      "id": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=2+trees=2@10000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 70 --page --offset 14",
+      "estimate": "40 min",
+      "limit": 90,
+      "why": "L'Oracle light en deux arbres de 5 000 à pwl=2 : 57,9 % sur les offsets 12 et 13 (nuit du 17/10), contre 53,9 % pour pwl=3 en deux arbres sur les mêmes donnes. Le troisième offset pour 420 parties, face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique : au-dessus, l'Oracle light 1.1 passe à pwl=2.",
+      "status": "todo"
+    },
+    {
+      "id": "NOISE_DUEL_3_Ensemble2x2000",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "36 min",
+      "limit": 75,
+      "why": "Ensemble2x2000 complété sur les donnes de Budget4000 (offset 3 : 51,6 % pour un arbre de 4 000). Offsets 1 et 2 : 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 (54,4 %). Sur 1 000 parties : deux arbres de 2 000 valent-ils un arbre de 4 000 (52,8 %) ? Si oui, la 1.2 sur deux workers joue en page au temps de la 1.2.",
+      "status": "todo"
+    },
+    {
+      "id": "NOISE_DUEL_4_Ensemble2x2000",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 4",
+      "estimate": "36 min",
+      "limit": 75,
+      "why": "Ensemble2x2000 complété sur les donnes de Budget4000 (offset 4 : 50,8 % pour un arbre de 4 000). Offsets 1 et 2 : 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 (54,4 %). Sur 1 000 parties : deux arbres de 2 000 valent-ils un arbre de 4 000 (52,8 %) ? Si oui, la 1.2 sur deux workers joue en page au temps de la 1.2.",
       "status": "todo"
     },
     {
