@@ -17,10 +17,10 @@ const fallback = (thinker, player, state) => {
 };
 
 /** `count` workers, each told which tree of the ensemble is its own; `lab`: the Labo's tree reports (think-worker.js). */
-function spawn(player, think, { seed, count, lab }) {
+function spawn(player, think, { seed, count, lab, probe }) {
   return Array.from({ length: count }, (_, part) => {
     const worker = new Worker(new URL("../workers/think-worker.js", import.meta.url), { type: "module" });
-    worker.postMessage({ type: "init", engine: player.engine, seed, ...think, part, workers: count, lab });
+    worker.postMessage({ type: "init", engine: player.engine, seed, ...think, part, workers: count, lab, probe });
     return worker;
   });
 }
@@ -45,10 +45,10 @@ function progressed(talk, part, data) {
 const HEARD = { move: heard, progress: progressed, error: (talk) => answerWith(talk, null) };
 
 /** `lab` (the Labo, 17/10): the workers report their trees, and `onProgress({ rollouts, elapsedMs, root })` hears them search. */
-export function createThinker(player, think, seed, { lab = false, onProgress = null } = {}) {
+export function createThinker(player, think, seed, { lab = false, probe = false, onProgress = null } = {}) {
   if (!think) return { ponder() {}, stop() {}, decide: async (state) => botChoice(state, player) };
   const count = think.workers ?? 1;
-  const workers = spawn(player, think, { seed, count, lab });
+  const workers = spawn(player, think, { seed, count, lab, probe });
   const thinker = { last: null };
   // `asked`: each decision's number, so a worker's answer to an earlier one, back after the timeout, is dropped.
   const talk = { thinker, count, onProgress, answer: null, replies: [], progress: [], asked: 0 };

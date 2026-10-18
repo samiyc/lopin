@@ -1,11 +1,10 @@
 import { BOT_IDS, BOT_LINEUP } from "../../../src/config/bots.js";
 import { $, el } from "../board/dom.js";
-import { createThinker } from "../play/thinker.js";
-import { SPEC, enginePlayer } from "../replays/runner.js";
+import { SPEC } from "../replays/runner.js";
 import { render as renderViewer } from "../replays/viewer.js";
-import { LAB_LIMIT_MS, thinkOf } from "./engine-builder.js";
 import { addVariant, removeVariant, variants } from "./lab-builder.js";
 import { candidateBars } from "./lab-parts.js";
+import { searchPosition } from "./lab-search.js";
 import { moveName, sameMove } from "./lab-text.js";
 
 /**
@@ -23,21 +22,13 @@ function enterDecision(key) {
   Object.assign(replay, { key, results: [] });
 }
 
-const capOf = () => Math.max(1, Number.parseInt($("lab-workers").value, 10) || 1);
-
 /** One variant's search of the position; its bars move while it searches. */
-async function searchOne(result, { log, turn, state, seed }) {
-  const think = thinkOf(result.engine, { cap: capOf(), limitMs: LAB_LIMIT_MS });
+async function searchOne(result, context) {
   const onProgress = (progress) => {
     result.progress = progress;
     renderViewer();
   };
-  const thinker = createThinker(enginePlayer(result.engine, seed), think, seed, { lab: true, onProgress });
-  try {
-    result.reply = await thinker.decide(state, { ...log, turns: log.turns.slice(0, turn - 1), result: null, endedAt: null });
-  } finally {
-    thinker.stop();
-  }
+  result.reply = await searchPosition({ ...context, engine: result.engine, onProgress });
 }
 
 /** Every variant, one after the other (each takes its workers under the Labo's cap). */

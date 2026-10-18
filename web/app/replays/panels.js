@@ -1,4 +1,5 @@
 import { $, el, toast } from "../board/dom.js";
+import { listedPath, rememberPath } from "../lab/replay-paths.js";
 import { keepReplay, listReplays, loadReplay } from "./replays-api.js";
 import { playerName } from "./runner.js";
 import { replayLabel } from "./view.js";
@@ -39,7 +40,9 @@ export function wireReplays() {
   let current = null;
   const open = async (header) => {
     current = header;
-    load(await loadReplay(header.dir, header.name));
+    const log = await loadReplay(header.dir, header.name);
+    rememberPath(log, listedPath(header.dir, header.name));
+    load(log);
     $("btn-keep").hidden = header.dir !== "recent";
     markCurrent(header);
   };

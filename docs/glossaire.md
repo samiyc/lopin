@@ -410,8 +410,16 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   coup que le cœur classait 5ᵉ ou plus loin, candidat affamé (moins de 2 % des visites), arbre plat
   (plus de 60 % des nœuds du pli 3 à une visite), profondeur jamais atteinte.
 - **Les lots du Labo** (`docs/labo.md`) : 1, l'arbre en direct et les cartes colorées (fait le
-  17/10) ; 2, les réglages des bots, les configs déjà mesurées, un coup rejoué (fait le 18/10) ; 3, l'oracle, le
-  profileur, l'export.
+  17/10) ; 2, les réglages des bots, les configs déjà mesurées, un coup rejoué (fait le 18/10) ; 3, les
+  juges, le connu, le profileur, l'export (fait le 18/10).
+- **Les juges** (Labo, lot 3) : ce qui rend un avis sur le coup affiché. Les oracles (Oracle light,
+  Oracle3) jugent la **décision**, avec ce que le robot savait ; l'Omniscient juge la **donne**, toutes
+  les cartes vues ; le solveur exact, la pioche vide, donne la vérité sur chaque coup.
+- **Déjà rencontré** (Labo, lot 3) : le coup affiché situé parmi ceux de l'Expérimental 1.2 au même
+  tour en duel, par la part de visites de son favori et la part du pli 2 vue une seule fois.
+- **Le profileur** (Labo, lot 3, `probe.js`) : une sonde passée à la recherche, qui chronomètre les
+  étapes d'une itération (tirage, descente, simulation, remontée) et compte les évaluations du cœur
+  et les plis, sans changer un coup.
 - **Les coups miroirs** (`+mirror=1`, `src/sim/mcts/mirror.js`, Sami 18/10) : tant que rien n'est
   posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les
   bornes 1 à 4. La version qui le teste s'appelle `MirrorMoves`.

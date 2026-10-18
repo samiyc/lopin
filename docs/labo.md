@@ -116,32 +116,41 @@ Le plan de départ :
 - **Les préréglages sauvés** : `/api/lab/presets` écrit `data/lab-presets.json`. Chaque préréglage
   porte un nom, les moteurs, une graine et une note.
 
-## Lot 3 : l'oracle, le connu, le profileur, l'export (à faire)
+## Lot 3 : les juges, le connu, le profileur, l'export (fait, 18/10)
 
-- **L'avis de l'oracle** sur le coup affiché :
-  - l'Oracle light (10 000 itérations, deux workers, environ 5 s), ou Oracle3 à 20 000 avec un
-    avertissement (environ 20 s) ;
-  - son favori, sa part de visites, et le rang chez lui du coup du bot ;
-  - avec 12 cartes au plus et la pioche vide, le solveur exact donne le verdict de chaque coup ;
-  - **l'avis de l'omniscient** (Sami, 18/10), en complément : l'arbre de la 1.2 avec
-    `+omniscient=1`, qui voit les deux mains et la pioche. Il juge la donne, pas la décision : il
-    dit quel coup gagnait avec ces cartes-là, et son solveur compte la pioche, donc il prouve les
-    fins de partie dès 14 cartes. Un écart entre l'oracle et l'omniscient sépare un coup mal choisi
-    d'un coup qui n'a perdu qu'à cause des cartes cachées.
-- **« Déjà rencontré »** : `lab-index` tire aussi des duels de la 1.2 la distribution, tour par
-  tour, de quelques chiffres de l'arbre (part du premier, écart, nœuds à une visite). Le Labo situe
-  le coup affiché : « plus incertain que 85 % des coups du tour 18 ».
-- **Le profileur**, en option :
-  - une sonde `probe` dans `createIsmcts` mesure le temps du tirage, de la descente et des
-    simulations, et compte les évaluations du cœur et les plis simulés ; sans la sonde, rien ne
-    change, et `npm run bench` le vérifie ;
-  - si Edge le permet, l'API de profilage JS du navigateur donne en plus le temps par module.
-- **Garder pour analyse** :
-  - une note sur un coup (`entry.note`) ;
-  - « Copier la commande » donne le `npm run branch` / `oracle` de la position et le
-    `npm run duel` des deux configs, sans rien mettre dans le backlog.
-- **Des workers qui démarrent plus vite** (point A7 de l'audit) : charger à la demande la vingtaine
-  de modules d'idées rejetées.
+Le mode d'emploi est dans `docs/jouer.md`. Ce qui a été fait, et ce qui diffère du plan :
+
+- **L'avis des juges** (`web/app/lab/judges.js`, pur ; `lab-judges.js`), un bouton chacun, sous
+  « Rejouer ce coup avec… » :
+  - l'Oracle light 1.0 et Oracle3 (`ORACLES[3]`, 20 000 itérations, environ 30 s) jugent la
+    décision : leur favori, sa part de visites et son taux, le rang chez eux du coup joué ;
+  - l'Omniscient 1.0 (Sami, 18/10 : `ismcts+widen=7+depth=5+core=stfig6+exact=14+omniscient=1@2000`)
+    juge la donne, toutes les cartes vues ; son solveur compte la pioche (`exact=14`, plafonné en
+    nœuds au-delà de 12 cartes, l'arbre reprend la main sinon) ;
+  - le solveur exact (`solve-worker.js`), la pioche vide à 12 cartes au plus : chaque coup gagne,
+    fait nul ou perd, et le panneau dit si le coup joué était le mieux possible.
+  La recherche d'une position est commune aux variantes et aux juges (`lab-search.js`). Le panneau
+  la fait sur la vraie partie (`stateAt`) : les images du lecteur ne portent pas ce que lit le solveur.
+- **« Déjà rencontré »** (`src/replay/stats/tree-norms.js`) : `npm run lab-index` garde, pour
+  chacun des tours 1 à 30, les quantiles (tous les 5 %) de deux chiffres des 4 734 coups de la 1.2
+  en duel : la part de visites du favori, et la part du pli 2 vue une seule fois. L'écart entre les
+  deux premiers n'y est pas : les duels ne gardent pas les taux des candidats. Hors de la 1.2 à
+  2 000 itérations, le panneau prévient que la comparaison est faite pour elle.
+- **Le profileur** (`src/sim/mcts/probe.js`, la case « Profileur ») : le temps du tirage, de la
+  descente, de la simulation et de la remontée, les évaluations du cœur, les plis d'arbre et les plis
+  simulés par itération. Sans sonde, l'itération est la même fonction qu'avant, découpée en étapes ;
+  avec, le cœur et la politique de simulation sont seulement comptés : mêmes visites
+  (`tests/sim-search/probe.test.js`), et les trois empreintes inchangées. Premier relevé, la 1.2 à 300 itérations au
+  tour 1 : 95 % du temps dans la simulation (40 plis), 4 % dans la descente, 1 % dans le tirage.
+  L'API de profilage JS du navigateur n'a pas été branchée : elle demande un en-tête du serveur,
+  ne marche que dans Chrome et Edge, et ne range pas le temps par module.
+- **Garder pour analyse** (`lab-keep.js`) : une note par coup (`entry.note`, gardée quand on
+  enregistre la partie) et « Copier les commandes ». `npm run branch` et `npm run oracle` lisent les
+  parties de `duels/` par filtres, pas une position d'un replay : la commande est donc le nouveau
+  `npm run position -- <replay> <tour>` (`scripts/position.js`, la première graine est celle du
+  Labo), et le `npm run duel --long --page` des deux robots.
+- **Les workers qui démarrent plus vite** (A7) : écarté. Un worker de la 1.2 démarre et répond en
+  115 ms environ ; charger les idées à la demande n'en vaut pas la peine.
 
 ## Les idées venues du Labo
 

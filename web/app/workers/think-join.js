@@ -1,11 +1,13 @@
 import { addScores } from "../../../src/sim/mcts/choice.js";
+import { addProbes } from "../../../src/sim/mcts/probe.js";
 import { addRootStats } from "../../../src/sim/mcts/tree-snapshot.js";
 
-/** The Labo's view of the workers' trees (think-worker.js): their root candidates added up, their trees side by side. */
+/** The Labo's view of the workers' trees (think-worker.js): their root candidates added up, their trees side by side, their probes summed. */
 export function joinLab(labs) {
   const trees = labs.filter((lab) => lab?.trees);
   if (trees.length === 0) return labs[0] ?? null;
-  return { root: addRootStats(trees.map((lab) => lab.root)), trees: trees.flatMap((lab) => lab.trees) };
+  const joined = { root: addRootStats(trees.map((lab) => lab.root)), trees: trees.flatMap((lab) => lab.trees) };
+  return trees.some((lab) => lab.probe) ? { ...joined, probe: addProbes(trees.map((lab) => lab.probe)) } : joined;
 }
 
 /** The workers' latest `progress` messages as one: rollouts summed, root candidates added up, the longest time. */

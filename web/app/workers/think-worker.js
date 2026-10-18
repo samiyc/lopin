@@ -7,6 +7,7 @@ import { legalMoves } from "../../../src/sim/engine/game.js";
 import { CREDIT, createPonder } from "../../../src/sim/search/ponder.js";
 import { treeStats } from "../../../src/sim/mcts/tree-stats.js";
 import { addRootStats, rootStats, snapshotTree } from "../../../src/sim/mcts/tree-snapshot.js";
+import { newProbe } from "../../../src/sim/mcts/probe.js";
 
 /**
  * The experimental bot's own thread (`thinker.js` talks to it). It searches
@@ -33,11 +34,13 @@ import { addRootStats, rootStats, snapshotTree } from "../../../src/sim/mcts/tre
  * The Labo (Sami, 17/10) inits with `lab: true`: a tree search then posts `progress { id, rollouts, elapsedMs, root }`
  * every `PROGRESS_MS` while it searches, and its `move` carries `lab: { root, trees: [{ levels, snapshot }] }`, the
  * root's candidates and the pruned trees (tree-snapshot.js). Read between steps only: the move is the same.
+ * With `probe: true` too (lot 3, the profiler), the search is timed and counted (probe.js) and `lab.probe` says so.
  */
 const SLICE_MS = 25;
 const PROGRESS_MS = 250;
 let bot = null;
 let lab = false;
+let probing = false;
 let limits = { limitMs: 10000, minMs: 400, iterations: Infinity };
 let share = {};
 let ponder = null;
@@ -55,15 +58,22 @@ async function keepPondering(mine) {
 const labRoot = (search) => addRootStats(search.trees().map((tree) => rootStats(tree, search.candidates(), search.core())));
 
 /** What the Labo reads of a finished search, or null for a search without a tree (the flat 0.7). */
-function labOf(search, state) {
+function labOf(search, state, probe) {
   if (!search.trees) return null;
-  return { root: labRoot(search), trees: search.trees().map((tree) => ({ levels: treeStats(tree), snapshot: snapshotTree(tree, { rootPlayer: state.current }) })) };
+  const read = { root: labRoot(search), trees: search.trees().map((tree) => ({ levels: treeStats(tree), snapshot: snapshotTree(tree, { rootPlayer: state.current }) })) };
+  return probe ? { ...read, probe } : read;
 }
+
+const newProbeIfAsked = () => (probing ? newProbe() : null);
+
+/** What the search is created with: the head start, the worker's tree of an ensemble, the profiler's probe. */
+const searchExtra = (warm, probe) => (probe ? { warm, ...share, probe } : { warm, ...share });
 
 /** Searches the reply, starting from what pondering learned (`taken`: `{ warm, spentMs }`). */
 function searchReply(state, moves, { warm, spentMs }, id) {
   const started = now();
-  const search = bot.searchFor(state, moves, {}, { warm, ...share });
+  const probe = newProbeIfAsked();
+  const search = bot.searchFor(state, moves, {}, searchExtra(warm, probe));
   const budget = Math.max(limits.minMs, limits.limitMs - CREDIT * spentMs);
   const tells = lab && Boolean(search.trees);
   let told = started;
@@ -75,7 +85,7 @@ function searchReply(state, moves, { warm, spentMs }, id) {
     }
   }
   const reply = { move: search.best(), scored: search.scored(), pondered: Math.round(spentMs), rollouts: search.rollouts(), thoughtMs: Math.round(now() - started) };
-  return lab ? { ...reply, lab: labOf(search, state) } : reply;
+  return lab ? { ...reply, lab: labOf(search, state, probe) } : reply;
 }
 
 /** A small endgame, solved exactly (Expérimental 0.7): no search, no clock. */
@@ -98,9 +108,10 @@ function decide(log, id) {
 }
 
 const HANDLERS = {
-  init({ engine, seed, limitMs, minMs, part = 0, workers = 1, lab: labOn = false }) {
+  init({ engine, seed, limitMs, minMs, part = 0, workers = 1, lab: labOn = false, probe }) {
     bot = engineFor(engine)(createRng(seed));
     lab = Boolean(labOn);
+    probing = Boolean(probe);
     const budget = budgetOf(engine.split("@")[1]).budget ?? Infinity;
     share = workers > 1 ? { part } : {};
     limits = { limitMs, minMs, iterations: workers > 1 ? partBudget(budget, workers, part) : budget };

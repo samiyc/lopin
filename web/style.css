@@ -398,6 +398,13 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
 .lab-detail dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; margin: 0; }
 .lab-detail dt { color: var(--ink-2); }
 .lab-detail dd { margin: 0; font-variant-numeric: tabular-nums; }
+/* The profiler (lot 3): an iteration's time by stage. */
+.lab-probe { margin-top: 10px; }
+.lab-probe-track { width: 100%; height: 12px; }
+.seg.probe-deal { background: var(--stone); }
+.seg.probe-descent { background: var(--maybe); }
+.seg.probe-rollout { background: var(--felt-2); }
+.seg.probe-backup { background: var(--poor); }
 /* The bot builder and the saved settings (lot 2), folded in the sidebar. */
 .lab-box { border-top: 1px solid var(--line); padding-top: 6px; display: grid; gap: 6px; }
 .lab-box[open] { gap: 8px; }
@@ -443,3 +450,7 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top
 .puzzle-status { margin: 0; padding: 8px 10px; border-radius: 8px; border-left: 4px solid var(--line); font-weight: 700; }
 .puzzle-status.won { border-left-color: var(--won); color: var(--won); background: color-mix(in oklab, var(--won) 10%, transparent); }
 .puzzle-status.lost { border-left-color: var(--lost); color: var(--lost); background: color-mix(in oklab, var(--lost) 10%, transparent); }
+/* « Garder pour analyse » (lot 3). */
+.lab-keep textarea { width: 100%; box-sizing: border-box; font: inherit; resize: vertical; }
+.lab-commands { margin: 0; padding: 6px 8px; border-radius: 6px; background: var(--paper); font-size: 0.75rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lab-seen { margin-bottom: 10px; }

@@ -1,9 +1,15 @@
 import { parseCard } from "../../../src/core/notation.js";
+import { stateAt } from "../../../src/replay/core/log.js";
 import { $, el } from "../board/dom.js";
 import { SPEC, playerName } from "../replays/runner.js";
 import { render as renderViewer, setLabHooks } from "../replays/viewer.js";
 import { decisionAt, expandLab, labMarks } from "./lab-text.js";
-import { bandDetail, candidateBars, findings, header, levelRows, nodeDetail } from "./lab-parts.js";
+import { BOT_LINEUP } from "../../../src/config/bots.js";
+import { normalizeEngine } from "../../../src/sim/mcts/engine-id.js";
+import { labConfigs } from "./lab-builder.js";
+import { bandDetail, candidateBars, findings, header, levelRows, nodeDetail, probeRows, seenRows } from "./lab-parts.js";
+import { judgesSection, wireJudges } from "./lab-judges.js";
+import { keepSection, wireKeep } from "./lab-keep.js";
 import { replaySection, wireReplay } from "./lab-replay.js";
 import { createTreeView } from "./tree-view.js";
 
@@ -122,13 +128,24 @@ function drawTree(log, decision, tree, key) {
   renderDetail(log, tree);
 }
 
+/** Is a log's player the Expérimental 1.2 (the line-up's, or its engine built or in a duel)? */
+const engineOfPlayer = (player) => (player ? (player.engine ?? BOT_LINEUP[player.bot]?.engine ?? player.bot) : "");
+
+function isV12(player) {
+  try {
+    return normalizeEngine(engineOfPlayer(player) ?? "") === normalizeEngine(BOT_LINEUP.experimental.engine);
+  } catch {
+    return false; // an old replay's engine with a setting since removed
+  }
+}
+
 /** The candidates beside the findings and the levels. */
-function columns(decision, { played, depth, levels }) {
+function columns(decision, { played, depth, levels, mover }) {
   return el(
     "div",
     { class: "lab-grid" },
     el("div", { class: "lab-col" }, el("h3", {}, "Ses candidats"), candidateBars(decision, played, panel.focus)),
-    el("div", { class: "lab-col" }, el("h3", {}, "Diagnostic"), findings(decision, played, depth), levelRows(levels)),
+    el("div", { class: "lab-col" }, el("h3", {}, "Diagnostic"), findings(decision, played, depth), seenRows(decision, labConfigs().norms, isV12(mover)), levelRows(levels), probeRows(decision.lab?.probe)),
   );
 }
 
@@ -143,17 +160,28 @@ function enter(key) {
   if (key !== panel.decisionKey) Object.assign(panel, { decisionKey: key, selection: null, tree: 0, focus: null });
 }
 
-/** « Rejouer ce coup avec… » for a decision made (a live one is still searched). */
+const position = { key: null, state: null };
+
+/** The live game before decision `turn` (the viewer's frames are snapshots, without what a bot or the solver reads), kept per decision. */
+function livePosition(key, log, turn) {
+  if (position.key !== key) Object.assign(position, { key, state: stateAt(log, turn) });
+  return position.state;
+}
+
+/** « Rejouer ce coup avec… », « L'avis des juges » and « Garder pour analyse » for a decision made (a live one is still searched). */
 function replayOf(log, frames, index, decision) {
-  if (decision.live || !decision.entry) return null;
-  const { state } = frames[index];
-  return replaySection({ key: `${log.startedAt}|${decision.turn}`, log, turn: decision.turn, state, seat: state.current, played: playedOf(decision.entry) });
+  if (decision.live || !decision.entry) return [];
+  const key = `${log.startedAt}|${decision.turn}`;
+  const state = livePosition(key, log, decision.turn);
+  const context = { key, log, turn: decision.turn, state, seat: state.current, played: playedOf(decision.entry) };
+  const keep = keepSection({ log, turn: decision.turn, entry: decision.entry, mover: state.current, editable: log === panel.game });
+  return [replaySection(context), judgesSection(context), keep];
 }
 
 /** A move that left no tree: a human's, or a bot that does not search in a tree (Basique, Stratège). */
 function renderBare(decision, mover, replay) {
   const why = mover.kind === "human" ? "un coup humain" : `${playerName(mover)} ne cherche pas en arbre`;
-  $("lab-view").replaceChildren(header(decision, playerName(mover), playedOf(decision.entry)), el("p", { class: "hint" }, `Pas d'arbre pour ce coup : ${why}.`), ...(replay ? [replay] : []));
+  $("lab-view").replaceChildren(header(decision, playerName(mover), playedOf(decision.entry)), el("p", { class: "hint" }, `Pas d'arbre pour ce coup : ${why}.`), ...replay);
 }
 
 function render({ log, frames, index }) {
@@ -171,8 +199,8 @@ function render({ log, frames, index }) {
   const trees = decision.lab.trees ?? [];
   const tree = trees[panel.tree] ?? {};
   const played = playedOf(decision.entry);
-  const parts = columns(decision, { played, depth: panel.depthOf(mover), levels: tree.levels });
-  $("lab-view").replaceChildren(header(decision, playerName(mover), played), parts, ...(replay ? [replay] : []), ...treeSection(decision, trees));
+  const parts = columns(decision, { played, depth: panel.depthOf(mover), levels: tree.levels, mover });
+  $("lab-view").replaceChildren(header(decision, playerName(mover), played), parts, ...replay, ...treeSection(decision, trees));
   if (tree.snapshot) drawTree(log, decision, tree, key);
 }
 
@@ -213,4 +241,6 @@ export function wireLabPanel({ active, depthOf = () => null }) {
   setLabHooks({ marks: marksFor, after: render });
   wireInput();
   wireReplay();
+  wireJudges();
+  wireKeep();
 }

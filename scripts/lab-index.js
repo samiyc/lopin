@@ -1,5 +1,6 @@
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { BOT_LINEUP, V1_ENGINE } from "../src/config/bots.js";
+import { duelNumbers, quantiles } from "../src/replay/stats/tree-norms.js";
 import { normalizeEngine } from "../src/sim/mcts/engine-id.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
 import { pairedInterval, pointsOf } from "./lib/domain/duel-plan.js";
@@ -13,11 +14,16 @@ import { DUELS_DIR } from "./lib/domain/game-index.js";
  * not say which two games share a deck. The names come from the line-up and the backlog's duel jobs (a job's
  * version is the last column of its id, `VALIDATE_LONG_1_ReplyFpu1` → ReplyFpu1). Written to data/lab-configs.json,
  * served by `/api/lab/configs`.
+ *
+ * Lot 3, « Déjà rencontré »: the same files give, turn by turn, the quantiles of two numbers of the 1.2's trees
+ * (the favourite's share of the visits, the share of ply 2 seen once: src/replay/stats/tree-norms.js), in `norms`.
  */
 const OUT = new URL("../data/lab-configs.json", import.meta.url);
 const DUEL = /npm run duel -- "([^"]+)" "([^"]+)"/;
 // The Expérimental 1.1 left the line-up on 08/10 (src/config/bots.js names its engine in a comment).
 const RETIRED = { [V1_ENGINE]: "Expérimental 1.0", "ismcts+widen=7+depth=5+core=stfig6@2000": "Expérimental 1.1" };
+const V12 = normalizeEngine(BOT_LINEUP.experimental.engine);
+const MIN_MOVES = 40;
 const round = (x) => Math.round(x * 10000) / 10000;
 const Z = 1.96;
 
@@ -103,10 +109,30 @@ function pooled(runs) {
   return { a: runs[0].a, b: runs[0].b, games: 2 * n, score: round(mean), low: round(Math.max(0, mean - half)), high: round(Math.min(1, mean + half)), decks: n, files: runs.length, last, source: "backlog" };
 }
 
+/** The 1.2's searched moves of a game, filed by turn into `moves` (`turn → { top: [], flat: [] }`). */
+function collectNorms(moves, log) {
+  for (const entry of log.turns) {
+    const numbers = normalizeEngine(log.players[entry.player].bot) === V12 ? duelNumbers(entry) : null;
+    if (!numbers) continue;
+    const turn = moves.get(entry.turn) ?? { top: [], flat: [] };
+    turn.top.push(numbers.top);
+    turn.flat.push(numbers.flat);
+    moves.set(entry.turn, turn);
+  }
+}
+
+/** Each turn with enough moves: its count and the two numbers' quantiles. */
+const normsOf = (moves) =>
+  Object.fromEntries([...moves].filter(([, turn]) => turn.top.length >= MIN_MOVES).sort(([a], [b]) => a - b).map(([turn, { top, flat }]) => [turn, { moves: top.length, top: quantiles(top), flat: quantiles(flat) }]));
+
 const pairs = new Map();
+const norms = new Map();
 const files = (await readdir(DUELS_DIR)).filter((name) => name.endsWith(".json") && name !== "index.json");
 for (const file of files) {
-  for (const log of JSON.parse(await readFile(`${DUELS_DIR}${file}`, "utf8")).games ?? []) if (log.result) tally(pairs, file, log);
+  for (const log of JSON.parse(await readFile(`${DUELS_DIR}${file}`, "utf8")).games ?? []) if (log.result) {
+    tally(pairs, file, log);
+    collectNorms(norms, log);
+  }
 }
 const queue = backlogFiles();
 const jobs = [...(await queue.readArchive()), ...(await queue.readQueue()).jobs];
@@ -116,5 +142,5 @@ for (const [key, pair] of await backlogPairs(jobs)) if ((merged.get(key)?.games 
 const list = [...merged.values()].sort((x, y) => y.games - x.games);
 const names = namesOf(jobs);
 const note = "npm run lab-index : les duels regroupés par paire de configs (score du premier, a, et fourchette à 95 % sur les paires de donnes), lus dans duels/ ou, s'ils y sont moins nombreux, dans les sorties du backlog (source), et les noms des configs (la gamme, les traitements du backlog).";
-await writeFile(OUT, `${JSON.stringify({ note, built: new Date().toISOString().slice(0, 10), names, pairs: list }, null, 1)}\n`);
-console.log(`${list.length} paires de configs, ${list.reduce((sum, pair) => sum + pair.games, 0)} parties, ${Object.keys(names).length} noms → data/lab-configs.json`);
+await writeFile(OUT, `${JSON.stringify({ note, built: new Date().toISOString().slice(0, 10), names, pairs: list, norms: { engine: V12, turns: normsOf(norms) } }, null, 1)}\n`);
+console.log(`${norms.size} tours de la 1.2 pour « Déjà rencontré », ${list.length} paires de configs, ${list.reduce((sum, pair) => sum + pair.games, 0)} parties, ${Object.keys(names).length} noms → data/lab-configs.json`);

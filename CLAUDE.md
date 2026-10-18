@@ -504,7 +504,10 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   (engine-builder.js, pure; the untouched form is the 1.2), guards on the cost, what the duels measured
   (`npm run lab-index` → data/lab-configs.json, configs filed by `normalizeEngine`, engine-id.js), free
   engines (`enginePlayer` / `engineEntry`), « Rejouer ce coup avec… » (lab-replay.js), presets
-  (`/api/lab/presets`, data/lab-presets.json). Lot 3: the oracle, a profiler. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
+  (`/api/lab/presets`, data/lab-presets.json). Lot 3 (18/10): judges (judges.js: Oracle light, Oracle3,
+  Omniscient, the exact solver), « Déjà rencontré » (tree-norms.js, lab-index's `norms`), a probe
+  (`createIsmcts`'s `probe` option, probe.js: timed and counted, same visits), notes and
+  `npm run position`. The panel searches `stateAt`, not the viewer's snapshots. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
   by default, fingerprints unchanged): while nothing lies off the middle border, borders b and 8 − b
   are one move, the tree keeps 1-4 (turn 1, rarely 2-3); its 1k@2k is queued.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):

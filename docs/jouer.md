@@ -157,6 +157,17 @@ mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant 
   « Autre coup » quand le choix change. Avec « la graine du coup joué », le même moteur retrouve le
   même coup : un témoin pour les autres.
 - **Réglages sauvés** : les deux robots, la graine et une note, sous un nom, dans `data/lab-presets.json`.
+- **L'avis des juges** (lot 3), un bouton chacun : l'Oracle light et Oracle3 jugent la décision avec
+  ce que le robot savait, l'Omniscient juge la donne (il voit les deux mains et la pioche) ; un coup
+  que lui seul refuse a perdu à cause des cartes cachées. La pioche vide, à 12 cartes au plus, le
+  **solveur exact** dit de chaque coup s'il gagne, fait nul ou perd.
+- **Déjà rencontré**, dans le diagnostic : le coup parmi ceux de l'Expérimental 1.2 au même tour en
+  duel (« favori à 31 % des visites : plus incertain que 62 % d'entre eux »).
+- **Profileur** (la case à gauche, avant « Nouvelle partie ») : où va le temps d'une itération
+  (tirage, descente, simulation, remontée), et ce qu'elle coûte en évaluations du cœur et en plis.
+  Aucun coup ne change.
+- **Garder pour analyse** : une note sur le coup, gardée quand tu enregistres la partie, et
+  « Copier les commandes » : `npm run position` sur cette position et le duel long des deux robots.
 
 **Replays.** La liste des parties récentes (`replays/`) et gardées
 (`data/replays/`), cinq visibles à la fois.

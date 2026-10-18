@@ -37,15 +37,20 @@ export function decisionAt(frames, index, labs = new Map()) {
   return { entry: next.entry, lab: labs.get(turn) ?? next.entry.lab ?? null, turn };
 }
 
-/** What a replay keeps of a worker's report: the root's candidates and each tree's levels, not the trees themselves. */
+/** What a replay keeps of a worker's report: the root's candidates, each tree's levels (not the trees themselves), the probe. */
 export function compactLab(lab) {
   if (!lab) return null;
   if (lab.exact) return { exact: true };
-  return { root: lab.root, levels: lab.trees.map((tree) => tree.levels) };
+  const kept = { root: lab.root, levels: lab.trees.map((tree) => tree.levels) };
+  return lab.probe ? { ...kept, probe: lab.probe } : kept;
 }
 
 /** A kept report read back as the panel reads a live one (`trees` without snapshots). */
-export const expandLab = (lab) => (lab?.levels ? { root: lab.root, trees: lab.levels.map((levels) => ({ levels, snapshot: null })) } : lab);
+export function expandLab(lab) {
+  if (!lab?.levels) return lab;
+  const read = { root: lab.root, trees: lab.levels.map((levels) => ({ levels, snapshot: null })) };
+  return lab.probe ? { ...read, probe: lab.probe } : read;
+}
 
 const NONE = Object.freeze({ recall: new Set(), discard: new Set() });
 
@@ -60,4 +65,16 @@ export function labMarks({ root, played, hand, mover, focus = null }) {
   if (focus === null) return { ...NONE, tones };
   const sides = new Map([...borderTones(root, played, focus)].map(([border, entry]) => [border, { tone: entry.tone, label: percent(entry.rate) }]));
   return { ...NONE, tones, sides: { position: mover === 0 ? "bottom" : "top", tones: sides } };
+}
+
+/**
+ * The commands that take a decision further in Node (lot 3, « Copier les commandes »): `npm run position` on that
+ * position with the mover's engine and the Oracle light, and, both players being bots, their long duel.
+ * `path`: the replay's file (null: not saved yet); `engines`: the two seats' engine ids (null for a human).
+ */
+export function analysisCommands({ path, turn, mover, engines, oracle }) {
+  const file = path ?? "<enregistre d'abord la partie>";
+  const searched = [engines[mover], oracle].filter(Boolean).map((engine) => `--engine "${engine}"`).join(" ");
+  const position = `npm run position -- "${file}" ${turn} ${searched}`;
+  return engines.every(Boolean) ? [position, `npm run duel -- "${engines[0]}" "${engines[1]}" --long --page`] : [position];
 }

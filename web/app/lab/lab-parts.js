@@ -1,3 +1,5 @@
+import { placeDecision } from "../../../src/replay/stats/tree-norms.js";
+import { probeSummary } from "../../../src/sim/mcts/probe.js";
 import { interval } from "../../../src/sim/mcts/tree-snapshot.js";
 import { el } from "../board/dom.js";
 import { SPEC } from "../replays/runner.js";
@@ -82,6 +84,36 @@ export function levelRows(levels) {
   const most = Math.max(...levels.map((level) => level.nodes), 1);
   const legend = el("p", { class: "lab-legend" }, el("i", { class: "seg rest" }), " plusieurs visites ", el("i", { class: "seg one" }), " une seule ", el("i", { class: "seg zero" }), " jamais");
   return el("div", { class: "lab-levels" }, el("h3", {}, "Les étages de l'arbre"), ...levels.map((level) => levelRow(level, most)), legend);
+}
+
+/**
+ * « Déjà rencontré » (lot 3): the decision among the Expérimental 1.2's moves of the same turn in the kept duels
+ * (`npm run lab-index`, tree-norms.js). `compared`: is the mover the 1.2 itself (otherwise the comparison says so).
+ */
+export function seenRows(decision, norms, compared) {
+  const place = placeDecision(decision.lab, norms, decision.turn);
+  if (!place) return null;
+  const caveat = compared ? "" : " (comparaison faite pour la 1.2 à 2 000 itérations)";
+  return el(
+    "div",
+    { class: "lab-seen" },
+    el("h3", {}, "Déjà rencontré"),
+    el("p", { class: "lab-legend" }, `Parmi ${count(place.moves)} coups de l'Expérimental 1.2 au tour ${decision.turn} en duel${caveat} :`),
+    el("ul", { class: "lab-findings" }, el("li", {}, `favori à ${percent(place.top)} des visites : plus incertain que ${percent(place.hesitates)} d'entre eux`), el("li", {}, `pli 2 vu une seule fois à ${percent(place.flat)} : plus plat que ${percent(place.flatter)}`)),
+  );
+}
+
+const PROBE_PARTS = [["deal", "tirage"], ["descent", "descente"], ["rollout", "simulation"], ["backup", "remontée"]];
+const decimal = (value) => value.toFixed(1).replace(".", ",");
+
+/** The profiler's numbers (probe.js): where an iteration's time goes, and what it costs in core calls and plies. */
+export function probeRows(probe) {
+  const summary = probeSummary(probe);
+  if (!summary) return null;
+  const segments = PROBE_PARTS.map(([key]) => el("span", { class: `seg probe-${key}`, style: `flex: ${summary.share[key]}` }));
+  const legend = PROBE_PARTS.map(([key, name]) => [el("i", { class: `seg probe-${key}` }), ` ${name} ${percent(summary.share[key])} `]).flat();
+  const facts = `${count(Math.round(summary.perSecond))} itérations/s de recherche (${decimal(summary.msPerIteration)} ms chacune) · par itération : ${decimal(summary.coreCalls)} évaluations du cœur, ${decimal(summary.treePlies)} plis d'arbre, ${decimal(summary.rolloutPlies)} plis simulés`;
+  return el("div", { class: "lab-probe" }, el("h3", {}, "Le profileur"), el("div", { class: "lab-level-track lab-probe-track" }, ...segments), el("p", { class: "lab-legend" }, ...legend), el("p", { class: "lab-legend" }, facts));
 }
 
 /** What follows a node: its tried moves, how many seen once, what the drawing left out. */

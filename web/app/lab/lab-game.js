@@ -9,6 +9,7 @@ import { currentLog, follow, goTo, loaded, position, render as renderViewer } fr
 import { LAB_LIMIT_MS, labelOf, readChoice, thinkOf } from "./engine-builder.js";
 import { blockedBy, labConfigs, wireBuilder } from "./lab-builder.js";
 import { compactLab } from "./lab-text.js";
+import { rememberPath } from "./replay-paths.js";
 import { clearLabs, recordLab, setThinking, showProgress, wireLabPanel } from "./lab-panel.js";
 
 /**
@@ -106,7 +107,7 @@ function startGame() {
   const cap = workerCap();
   game.state = newGame(seed);
   const bots = values.map((value, seat) => seated(value, seat, seed + 1 + seat, cap));
-  game.thinkers = bots.map(({ player, think }, seat) => createThinker(player, think, seed + 1 + seat, { lab: true, onProgress: showProgress }));
+  game.thinkers = bots.map(({ player, think }, seat) => createThinker(player, think, seed + 1 + seat, { lab: true, probe: $("lab-probe").checked, onProgress: showProgress }));
   game.log = startLog(game.state, { rules: RULES, players: bots.map(({ entry }) => entry), seed });
   clearLabs(game.log);
   game.at = null;
@@ -193,7 +194,9 @@ export function wireLab({ active }) {
   $("btn-observe-save").addEventListener("click", async () => {
     if (!loaded()) return toast("Lance d'abord une partie.");
     try {
-      toast(`Partie enregistrée : ${(await saveReplay(currentLog())).path}`);
+      const saved = await saveReplay(currentLog());
+      rememberPath(currentLog(), saved.path);
+      toast(`Partie enregistrée : ${saved.path}`);
     } catch (error) {
       toast(`Enregistrement impossible : ${error.message}`);
     }

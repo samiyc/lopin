@@ -16,6 +16,7 @@ import { rolloutOf } from "./rollouts.js";
 import { withoutMirrors } from "./mirror.js";
 import { untriedScore } from "./first-play.js";
 import { withTreeStats } from "./tree-stats.js";
+import { probed, timedIteration } from "./probe.js";
 import { moveKey } from "../search/search.js";
 
 /**
@@ -170,13 +171,17 @@ function begin(root, ctx) {
   return { game: dealFor(ctx, visitRng(ctx, first.child.visits)), first };
 }
 
-/** One iteration: a deal, a walk down the tree, a rollout, and the result carried back up. */
-function iterate(root, ctx) {
-  const { game, first } = begin(root, ctx);
-  const { path, played } = descend(root, game, ctx, first);
-  // `implicit`: the new node's estimate, from its position before the rollout plays it on.
-  if (ctx.implicit > 0) estimateLeaf(path, game, ctx.oddsOf);
-  const winner = game.over ? game.winner : rolloutOf(game, ctx, played);
+/** The walk down the tree; `implicit`: the new node's estimate, from its position before the rollout plays it on. */
+function walk(root, game, ctx, first) {
+  const walked = descend(root, game, ctx, first);
+  if (ctx.implicit > 0) estimateLeaf(walked.path, game, ctx.oddsOf);
+  return walked;
+}
+
+const finish = (game, ctx, played) => (game.over ? game.winner : rolloutOf(game, ctx, played));
+
+/** The result carried back up the path. */
+function backUp({ path, played }, game, winner, ctx) {
   const points = pointsOf(game, winner, ctx.margin);
   for (const { child, mover } of path) {
     child.visits += 1;
@@ -185,6 +190,16 @@ function iterate(root, ctx) {
   if (ctx.implicit > 0) backUpEstimates(path);
   if (ctx.amaf) creditShared(ctx.amaf, played, winner);
 }
+
+/** One iteration: a deal, a walk down the tree, a rollout, and the result carried back up. */
+function iterate(root, ctx) {
+  const { game, first } = begin(root, ctx);
+  const walked = walk(root, game, ctx, first);
+  backUp(walked, game, finish(game, ctx, walked.played), ctx);
+}
+
+/** The same iteration, each stage timed into `ctx.probe` (probe.js, the Labo's profiler). */
+const iterateTimed = timedIteration({ begin, walk, finish, backUp });
 
 /** `infer`: the opponent's hand guessed from their moves (infer.js), from a seed of its own so the deals stay a plain search's when it is off. */
 const guessedHands = (state, judge, seed, { infer, readings }) => (infer > 0 ? inferredHands(state, judge, createRng(seed ^ 0x5bd1e995), { size: infer, readings }) : null);
@@ -218,11 +233,14 @@ export function createIsmcts(state, scored, options) {
   if ((options.trees ?? 1) > 1) return createEnsemble(createIsmcts, state, scored, options);
   const deals = createRng(options.seed);
   const ctx = resolveCtx(state, scored, options, deals);
+  // `probe` (the Labo's profiler, probe.js): the same iterations, timed and counted.
+  const run = options.probe ? iterateTimed : iterate;
+  if (options.probe) probed(ctx, options.probe);
   const root = options.root ?? newNode();
   const rated = () => ratingOf(root, scored, ctx);
   return {
     step() {
-      iterate(root, ctx);
+      run(root, ctx);
       ctx.iterations += 1;
     },
     done: () => ctx.rootMoves.length <= 1,

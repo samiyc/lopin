@@ -60,6 +60,7 @@
         <button type="button" id="btn-lab-auto" class="quiet" aria-pressed="false" disabled>En continu</button>
       </div>
       <label>Fils pour les robots <input type="number" id="lab-workers" min="1" value="4" title="Workers au plus pour les robots du Labo : 4 par défaut, jusqu'au nombre de cœurs moins 3"></label>
+      <label class="check" title="Le temps de chaque étape d'une itération (tirage, descente, simulation, remontée), les évaluations du cœur et les plis : ne change aucun coup"><input type="checkbox" id="lab-probe"> Profileur</label>
       <button type="button" id="btn-observe-save" class="quiet">Enregistrer cette partie</button>
       <p class="hint">Chaque robot cherche ses propres itérations, comme en duel. Clique une carte (ou un candidat) pour voir les bornes où elle va.</p>
       <details class="lab-box" id="lab-builder">

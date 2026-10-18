@@ -60,6 +60,7 @@
     "changelog": "node scripts/changelog.js",
     "versus": "node scripts/versus.js",
     "lab-index": "node scripts/lab-index.js",
+    "position": "node scripts/position.js",
     "shadow": "node scripts/shadow.js",
     "distill": "node scripts/distill.js",
     "features": "node scripts/features.js",
