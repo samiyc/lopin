@@ -2,35 +2,43 @@
  * Where each node of a tree snapshot is drawn (the Labo, Sami 17/10), PURE: top-down, one band per ply, the leaves side
  * by side and each parent centred over its children. A node's radius grows with √visits, a link's width with its
  * visits; what a node left out (`hidden`) is drawn as a small « +n » node. Below `open` plies a node is folded unless
- * its id is in `expanded`; a folded node keeps the number of children it hides (`folded`).
+ * its id is in `expanded`; a folded node keeps the number of children it hides (`folded`). Only a node's `shown` most
+ * visited children are drawn (Sami, 18/10: 3, the tree was too wide), the others join its « +n » node; that node's id
+ * in `expanded` (a double click on it) draws them all.
  *
  * A node's id is its path of move keys from the root, joined by « / » (the root's is "").
  */
-export const LAYOUT = Object.freeze({ open: 3, slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
+export const LAYOUT = Object.freeze({ open: 3, shown: 3, slot: 34, band: 92, top: 40, rMin: 4, rMax: 26, wMin: 1, wMax: 14 });
 
 const childId = (parent, key) => (parent === "" ? key : `${parent}/${key}`);
 
-/** The visible children of a snapshot node: none when folded. */
-function visibleChildren(node, id, depth, { open, expanded }) {
-  if (depth >= open && !expanded.has(id)) return [];
-  return node.children;
+/** The snapshot's own `hidden` plus the children not drawn: `{ count, visits, wins }`, or null when nothing is left out. */
+function leftOut(hidden, dropped) {
+  const { count = 0, visits = 0, wins = 0 } = hidden ?? {};
+  const left = { count, visits, wins };
+  for (const child of dropped) Object.assign(left, { count: left.count + 1, visits: left.visits + child.visits, wins: left.wins + child.wins });
+  return left.count > 0 ? left : null;
 }
 
-/**
- * The drawing of `snapshot`: `{ nodes, links, bands, width, height }`. Each node: `{ id, key, depth, mover, visits,
- * wins, rate, avail, x, y, r, folded, hidden }` (`hidden`: the « +n » node of what a parent left out).
- */
-/** The « +n » node standing for what `node` left out, in leaf slot `slot`. */
-const ghostOf = (node, id, depth, x) => ({ id: `${id}/+`, key: "+", depth: depth + 1, mover: 1 - node.mover, visits: node.hidden.visits, wins: node.hidden.wins, hidden: node.hidden.count, x, folded: 0 });
+/** The children drawn under a snapshot node (none when folded, its `shown` most visited unless widened) and what is left out. */
+function visibleChildren(node, id, depth, { open, expanded, shown }) {
+  if (depth >= open && !expanded.has(id)) return { children: [], left: null };
+  const ranked = [...node.children].sort((a, b) => b.visits - a.visits);
+  const cut = expanded.has(childId(id, "+")) ? ranked.length : shown;
+  return { children: ranked.slice(0, cut), left: leftOut(node.hidden, ranked.slice(cut)) };
+}
+
+/** The « +n » node standing for what `node` left out, at `x`. */
+const ghostOf = (node, left, { id, depth, x }) => ({ id: childId(id, "+"), key: "+", depth: depth + 1, mover: 1 - node.mover, visits: left.visits, wins: left.wins, hidden: left.count, x, folded: 0 });
 
 /** Places the visible nodes depth first: each leaf takes the next slot, each parent the middle of its children. */
-function placeAll(snapshot, { open, expanded, slot }) {
+function placeAll(snapshot, { open, expanded, slot, shown }) {
   const drawing = { nodes: [], links: [], slots: 0 };
   const place = (node, id, depth) => {
-    const children = visibleChildren(node, id, depth, { open, expanded });
+    const { children, left } = visibleChildren(node, id, depth, { open, expanded, shown });
     const placed = children.map((child) => place(child, childId(id, child.key), depth + 1));
-    if (node.hidden && children.length > 0) {
-      const ghost = ghostOf(node, id, depth, drawing.slots++ * slot);
+    if (left && children.length > 0) {
+      const ghost = ghostOf(node, left, { id, depth, x: drawing.slots++ * slot });
       drawing.nodes.push(ghost);
       placed.push(ghost);
     }
@@ -44,10 +52,14 @@ function placeAll(snapshot, { open, expanded, slot }) {
   return drawing;
 }
 
+/**
+ * The drawing of `snapshot`: `{ nodes, links, bands, width, height }`. Each node: `{ id, key, depth, mover, visits,
+ * wins, rate, avail, x, y, r, folded, hidden }` (`hidden`: the « +n » node of what a parent left out).
+ */
 export function layoutTree(snapshot, { open = LAYOUT.open, expanded = new Set(), ...sizes } = {}) {
-  const { slot, band, top, rMin, rMax, wMin, wMax } = { ...LAYOUT, ...sizes };
+  const { slot, band, top, rMin, rMax, wMin, wMax, shown } = { ...LAYOUT, ...sizes };
   const total = Math.max(1, snapshot.visits);
-  const { nodes, links, slots } = placeAll(snapshot, { open, expanded, slot });
+  const { nodes, links, slots } = placeAll(snapshot, { open, expanded, slot, shown });
   let deepest = 0;
   for (const node of nodes) {
     deepest = Math.max(deepest, node.depth);

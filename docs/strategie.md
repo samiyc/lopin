@@ -267,7 +267,7 @@ chapitre suivant, ajouté ici. Le tableau des tentatives écartées, plus haut, 
    - Un cœur allégé pour plus d'itérations ? Non (12/10)
    - Des simulations plus justes, à temps égal (12/10)
    - Les quatre pistes du 12/10
-6. [La nuit du 14/10 et les oracles : profond, Oracle3, Oracle light, CommonDeals, ReplyFpu](strategie/06-les-oracles.md) (14/10 – 17/10)
+6. [La nuit du 14/10 et les oracles : profond, Oracle3, Oracle light, CommonDeals, ReplyFpu, MirrorMoves](strategie/06-les-oracles.md) (14/10 – 18/10)
    - La nuit du 14/10 : Oracle2, et la 1.2 relue par l'oracle
    - Le budget des couleurs (14/10)
    - La double menace dans les simulations (14/10)
@@ -279,3 +279,4 @@ chapitre suivant, ajouté ici. Le tableau des tentatives écartées, plus haut, 
    - La soirée du 15/10 : les « dernière chance » et l'Oracle light
    - `pwl` : l'élargissement progressif en niveaux (Sami, 16/10)
    - Les donnes communes : `CommonDeals` (16/10, `docs/priorites-1.3.md`)
+   - Les coups miroirs : `MirrorMoves` (Sami au Labo, 18/10)

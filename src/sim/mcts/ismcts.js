@@ -13,6 +13,7 @@ import { createReader, inferredHands, pickHand } from "../search/infer.js";
 import { determinize, seeAll, unseenList } from "../search/lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
+import { withoutMirrors } from "./mirror.js";
 import { untriedScore } from "./first-play.js";
 import { withTreeStats } from "./tree-stats.js";
 import { moveKey } from "../search/search.js";
@@ -46,11 +47,11 @@ export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, dept
 const newNode = () => ({ visits: 0, wins: 0, avail: 0, children: new Map() });
 
 
-/** The core's `count` best moves where `state` stands, or a pass when there is none. */
-function shortlist(judge, state, count, diverse = 0) {
+/** The core's `count` best moves where `state` stands, or a pass when there is none; `mirror`: one of two mirror moves (mirror.js). */
+function shortlist(judge, state, count, { diverse = 0, mirror = false } = {}) {
   const moves = legalMoves(state);
   if (moves.length === 0) return [null];
-  return pickCandidates(judge.scoreMoves(state, moves), count, diverse);
+  return pickCandidates(judge.scoreMoves(state, mirror ? withoutMirrors(state, moves, (move) => move) : moves), count, diverse);
 }
 
 /**
@@ -110,7 +111,7 @@ const explorationAt = (game, ctx) => (game.current === 0 ? (ctx.firstExploration
 /** The move taken at this ply: the root's halving, or UCB among the root's candidates or the core's shortlist. */
 function choiceAt(node, ply, game, ctx) {
   if (ply === 0 && ctx.halving) return rootChoice(node, ctx);
-  const moves = ply === 0 ? ctx.rootMoves : shortlist(ctx.judge, game, breadth(node, ctx), ctx.diverse);
+  const moves = ply === 0 ? ctx.rootMoves : shortlist(ctx.judge, game, breadth(node, ctx), ctx);
   return select(node, moves, { exploration: explorationAt(game, ctx), amaf: ctx.amaf, rave: ctx.rave, puct: ctx.puct, implicit: ctx.implicit, fpu: ply > 0 ? ctx.fpu : undefined }, game.current);
 }
 
@@ -191,7 +192,7 @@ const guessedHands = (state, judge, seed, { infer, readings }) => (infer > 0 ? i
 function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration, ...settings }, deals) {
   const cfg = { ...ISMCTS, ...settings };
   const rootCap = resolveDiverse(cfg.rootDiverse ?? cfg.diverse, state);
-  const rootMoves = pickCandidates(scored, cfg.candidates, rootCap);
+  const rootMoves = pickCandidates(cfg.mirror > 0 ? withoutMirrors(state, scored) : scored, cfg.candidates, rootCap);
   const judge = (treePolicy ?? policy)(createRng(1));
   const phases = parseHalving(settings.halving);
   const rolloutRng = createRng(deals.int(2 ** 31));
@@ -203,7 +204,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
-    iterations: 0, diverse: treeDiverseOf(cfg.diverse),
+    iterations: 0, diverse: treeDiverseOf(cfg.diverse), mirror: cfg.mirror > 0,
   };
 }
 
@@ -303,7 +304,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1` (mirror.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -314,7 +315,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

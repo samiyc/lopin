@@ -496,9 +496,12 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   move, each tree bot's worker reporting its tree (`lab: true`: `progress` while it searches, then
   `rootStats` + `snapshotTree`, `src/sim/mcts/tree-snapshot.js`, read between steps so no move
   changes — 1.2, 1.0 and Oracle v1 fingerprints checked). Pure and tested: confidence, tree-layout,
-  tree-diagnosis, lab-text; DOM: lab-game, lab-panel, lab-parts, tree-view (SVG, wheel zoom, drag).
-  Workers capped at 4 (up to cores − 3). Next lots (`data/changelog-exp-1.3.json` « La suite »):
-  bot settings with guards, configs already measured, a move re-searched, the oracle, a profiler.
+  tree-diagnosis, lab-text; DOM: lab-game, lab-panel, lab-parts, tree-view (SVG, wheel zoom, drag;
+  3 children drawn per node, the rest in « +n », Sami 18/10). Workers capped at 4 (up to cores − 3).
+  The lots, done and to come, are in `docs/labo.md`: bot settings with guards, configs already
+  measured, a move re-searched, the oracle, a profiler. **`+mirror=1`** (`MirrorMoves`, mirror.js, off
+  by default, fingerprints unchanged): while nothing lies off the middle border, borders b and 8 − b
+  are one move, the tree keeps 1-4 (turn 1, rarely 2-3); its 1k@2k is queued.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):
   sorted at the deal, drawn cards appended, a sort applied from the position
   it was asked at. Both hands, via `handOrder` / `topOrder` of `tableView`.

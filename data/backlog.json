@@ -26,6 +26,76 @@
       "status": "todo"
     },
     {
+      "id": "VALIDATE_LONG_1_MirrorMoves",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+mirror=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "MirrorMoves (+mirror=1, src/sim/mcts/mirror.js, idée de Sami au Labo le 18/10) : tant que rien n'est posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les bornes 1 à 4, à la racine et dans les listes courtes. Ça ne joue qu'aux tours 1 à 3 (1,16 coup par partie dans les duels de la 1.2) ; au tour 1, les 8 candidats passent de 2,6 à 3,6 cartes différentes (30 donnes à 2 000). Tri du jour à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. Le protocole 1k@2k, donnes 1 sur 4, règle d'arrêt.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_2_MirrorMoves",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+mirror=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "MirrorMoves (+mirror=1, src/sim/mcts/mirror.js, idée de Sami au Labo le 18/10) : tant que rien n'est posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les bornes 1 à 4, à la racine et dans les listes courtes. Ça ne joue qu'aux tours 1 à 3 (1,16 coup par partie dans les duels de la 1.2) ; au tour 1, les 8 candidats passent de 2,6 à 3,6 cartes différentes (30 donnes à 2 000). Tri du jour à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. Le protocole 1k@2k, donnes 2 sur 4, règle d'arrêt.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_3_MirrorMoves",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+mirror=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "MirrorMoves (+mirror=1, src/sim/mcts/mirror.js, idée de Sami au Labo le 18/10) : tant que rien n'est posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les bornes 1 à 4, à la racine et dans les listes courtes. Ça ne joue qu'aux tours 1 à 3 (1,16 coup par partie dans les duels de la 1.2) ; au tour 1, les 8 candidats passent de 2,6 à 3,6 cartes différentes (30 donnes à 2 000). Tri du jour à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. Le protocole 1k@2k, donnes 3 sur 4, règle d'arrêt.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_4_MirrorMoves",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+mirror=1@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "MirrorMoves (+mirror=1, src/sim/mcts/mirror.js, idée de Sami au Labo le 18/10) : tant que rien n'est posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les bornes 1 à 4, à la racine et dans les listes courtes. Ça ne joue qu'aux tours 1 à 3 (1,16 coup par partie dans les duels de la 1.2) ; au tour 1, les 8 candidats passent de 2,6 à 3,6 cartes différentes (30 donnes à 2 000). Tri du jour à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. Le protocole 1k@2k, donnes 4 sur 4, règle d'arrêt.",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_MirrorMoves",
+            "VALIDATE_LONG_2_MirrorMoves"
+          ],
+          "below": 0.5
+        }
+      ],
+      "status": "todo"
+    },
+    {
       "id": "SEATS_1_Base",
       "command": "npm run deals -- --engine \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" --plays 1 --deals 4500 --offset 20 --out tmp/seats-20-base.json",
       "estimate": "1 h 20",

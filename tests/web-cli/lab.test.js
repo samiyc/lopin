@@ -72,6 +72,17 @@ describe("the Labo's tree drawing (tree-layout.js)", () => {
     assert.ok(nodes.some((entry) => entry.id === "1@0/5@1/2@2/3@3"));
   });
 
+  it("draws a node's 3 most visited children, the rest in its « +n » node until that node is widened", () => {
+    const wide = node("root", [30, 0], [1, 5, 2, 9, 3].map((visits, index) => node(`${index}@0`, [visits, 1])));
+    const at = (nodes, id) => nodes.find((entry) => entry.id === id);
+    const { nodes } = layoutTree(wide);
+    assert.deepEqual(nodes.filter((entry) => entry.depth === 1 && !entry.hidden).map((entry) => entry.key).sort(), ["1@0", "3@0", "4@0"]);
+    assert.deepEqual([at(nodes, "+").hidden, at(nodes, "+").visits, at(nodes, "+").wins], [2, 3, 2]);
+    const all = layoutTree(wide, { expanded: new Set(["+"]) }).nodes;
+    assert.equal(all.filter((entry) => entry.depth === 1).length, 5);
+    assert.equal(at(all, "+"), undefined);
+  });
+
   it("walks a path back from an id", () => {
     assert.deepEqual(pathTo(snapshot, "1@0/5@1/2@2").map((entry) => entry.key), ["1@0", "5@1", "2@2"]);
     assert.equal(nodeAt(snapshot, "").key, "root");

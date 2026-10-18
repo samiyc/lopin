@@ -96,7 +96,7 @@ chiffrée : ce qu'il examine, son rythme, son Elo lu dans tes replays
 - **« Recommencer »** : demande confirmation, puis abandonne la partie sans rien
   enregistrer.
 
-**Labo** (l'ancien Observer, 17/10). Deux robots de la gamme s'affrontent, avec les deux
+**Labo** (l'ancien Observer, 17/10 ; feuille de route : `docs/labo.md`). Deux robots de la gamme s'affrontent, avec les deux
 mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant », ou
 « En continu » jusqu'à « Pause ».
 - Pendant qu'un robot arbre (Expérimental, Oracle light) réfléchit, ses 8 candidats
@@ -118,8 +118,9 @@ mains visibles, **coup par coup** : « Nouvelle partie », puis « Coup suivant 
   70 % ou plus). Molette pour zoomer, glisser pour se déplacer, double-clic dans le
   vide (ou Échap) pour tout revoir ; clic sur un nœud pour son détail (la suite de
   coups en clair, taux, visites, disponibilité, suites), double-clic pour le déplier ;
-  clic sur un étage pour ses chiffres. « +205 » regroupe les coups trop peu visités
-  pour être dessinés. L'Oracle light montre ses deux arbres (« Arbres : 1 2 »).
+  clic sur un étage pour ses chiffres. Chaque nœud ne montre que ses 3 fils les plus
+  visités (Sami, 18/10) : « +205 » regroupe les autres, un double-clic sur lui les
+  dessine tous. L'Oracle light montre ses deux arbres (« Arbres : 1 2 »).
 - Coup par coup, le lecteur reste sur la position que le robot vient d'étudier :
   > montre son coup. En continu, il suit la partie jusqu'au bout.
 - « Fils pour les robots » : 4 workers au plus par défaut (jusqu'au nombre de cœurs

@@ -409,6 +409,12 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   dangereuse (une réponse adverse 15 points au-dessus des autres), plus visité ≠ meilleur taux,
   coup que le cœur classait 5ᵉ ou plus loin, candidat affamé (moins de 2 % des visites), arbre plat
   (plus de 60 % des nœuds du pli 3 à une visite), profondeur jamais atteinte.
+- **Les lots du Labo** (`docs/labo.md`) : 1, l'arbre en direct et les cartes colorées (fait le
+  17/10) ; 2, les réglages des bots, les configs déjà mesurées, un coup rejoué ; 3, l'oracle, le
+  profileur, l'export.
+- **Les coups miroirs** (`+mirror=1`, `src/sim/mcts/mirror.js`, Sami 18/10) : tant que rien n'est
+  posé hors de la borne du milieu, les bornes b et 8 − b se valent ; l'arbre ne garde que les
+  bornes 1 à 4. La version qui le teste s'appelle `MirrorMoves`.
 
 ## L'oracle
 
@@ -511,6 +517,7 @@ version :
 | `FinalMean` / `FinalLcb1` | la 1.2 qui joue, au lieu du candidat le plus visité, celui au meilleur taux de victoire moins c / √visites (Sami, 15/10 : `final=c`, `final-choice.js`) : c = 0, le meilleur taux ; c = 1, une borne basse à ~95 %. Pour les rangs 4 à 8 qu'Oracle3 trouve meilleurs (+2,5 ± 2,4) ; même coût par itération. Tri à 800 : 49,8 et 51,7 % ; premier duel long à 2 000 : 54,8 et 55,2 % ; la 1k@2k (15/10) : `FinalMean` 51,9 % (49,3 – 54,5), `FinalLcb1` 52,7 % (50,1 – 55,3), retombé à **51,5 % (49,4 – 53,7) sur 1 500 parties** avec la confirmation : pas de 1.3 | `ismcts+widen=7+depth=5+core=stfig6+exact=12+final=1@2000` |
 | `CommonDeals` | la 1.2 dont les candidats de la racine sont comparés sur les mêmes donnes : la k-ième visite de chacun joue la k-ième donne de la recherche et la k-ième suite de tirages des simulations (`crn=1`, `common-deals.js`, 16/10) ; UCB, l'arbre et le coup joué (le plus visité) inchangés, même coût par itération. Les « finalistes appariés » du panel du 16/10, étendus à tous les candidats (`docs/priorites-1.3.md`). Tri à 400 : 55,3 % ; 1k@2k (17/10) : **50,7 % (48,2 – 53,2)**, écarté | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1@2000` |
 | `CommonDeals-FinalLcb1` | `CommonDeals` qui joue, au lieu du plus visité, le meilleur taux moins 1 / √visites (`final=1`) : la décision lue sur des taux que les donnes communes rendent comparables. Sans objet depuis la 1k@2k de `CommonDeals` (17/10) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+crn=1+final=1@2000` |
+| `MirrorMoves` | codé le 18/10 (`src/sim/mcts/mirror.js`, idée de Sami au Labo) : tant que le plateau est son propre miroir (rien hors de la borne du milieu), la racine et les listes courtes ne gardent que les bornes 1 à 4 ; au tour 1, 3,6 cartes différentes parmi les 8 candidats au lieu de 2,6. Tri à 400 : 45,7 % (39,0 – 52,4) sur 162 parties ; la 1k@2k est en file | `ismcts+…+exact=12+mirror=1@2000` |
 | `ReplyFpu0` / `ReplyFpu1` | codé le 17/10 (`src/sim/mcts/first-play.js`, `docs/priorites-1.3.md` § 2) : sous la racine, une réponse jamais essayée vaut la moyenne des réponses déjà essayées du nœud, moins 0 ou 0,1 (le chiffre × 10), plus le bonus d'une visite, au lieu de passer avant toutes (first-play urgency) ; la racine garde son premier essai de chaque candidat. `ReplyFpu2` / `ReplyFpu3` : moins 0,2 / 0,3. De jour à 2 000 sur 250 parties : 45,6 / 53,6 / 48,4 / 45,6 % ; la 1k@2k de `ReplyFpu1` : 51,5 % (49,0 – 54,0), écarté | `ismcts+…+exact=12+fpu=1@2000` |
 | `Ensemble2x2000` | une mesure, pas une version : deux arbres de 2 000 (4 000 en tout), visites de la racine additionnées, contre la 1.2@2000. Ce que vaut le bruit du coup joué à qualité d'arbre égale, à comparer à `Budget4000` (un arbre de 4 000) sur les mêmes donnes. Nuit du 17/10, offsets 1 et 2 : **54,6 % (50,8 – 58,4) sur 500 parties**, autant que Budget4000 (54,4 %) : le bruit vaut des points, et des arbres indépendants le réduisent. Offsets 3 et 4 en file : s'il tient, la 1.2 sur deux workers dans la page | `ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000` |
 | `MarginBackup05` | `MarginBackup15` à 5 % (`margin=0.05`) : 51,4 % au tri à 400, gardé en réserve ; un duel long « dernière chance » à 2 000 (15/10) | `ismcts+…+exact=12+margin=0.05@2000` |

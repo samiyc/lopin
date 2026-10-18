@@ -94,6 +94,7 @@ const fact = (term, value) => [el("dt", {}, term), el("dd", {}, value)];
 
 /** A node's detail: the line of play it stands for, its rate and interval, visits, availability, what follows. */
 export function nodeDetail(snapshot, id, names) {
+  if (id === "+" || id.endsWith("/+")) return [el("h3", {}, "Les autres coups"), el("p", { class: "hint" }, "Seuls les 3 fils les plus visités sont dessinés : double-clic sur ce nœud pour les voir tous, et le détail du nœud parent pour leurs chiffres.")];
   const node = nodeAt(snapshot, id);
   if (!node) return [el("p", { class: "hint" }, "Ce nœud n'est plus dans l'arbre.")];
   if (id === "") return [el("h3", {}, "La position"), el("p", {}, `${count(node.visits)} itérations · ${node.size} nœuds gardés pour le dessin.`)];

@@ -605,4 +605,27 @@ Sami a demandé 250 parties à 2 000 de jour pour chaque marge, puis la 1k@2k de
 sur 1 000 parties. Écartée, au même score que `FinalLcb1`. Comme `CommonDeals` la veille, une idée qui change
 l'arbre sans ajouter de calcul ne bat pas la 1.2.
 
+### Les coups miroirs : `MirrorMoves` (Sami au Labo, 18/10)
+
+Au Labo, en début de partie entre l'Oracle light et la 1.2, Sami a vu dans les 8 candidats de la racine des coups
+symétriques : 2♠ sur la borne 1 et sur la borne 7. Les sept bornes se lisent pareil dans les deux sens (trois bornes
+voisines, la majorité, l'ordre de complétion), donc tant que rien n'est posé hors de la borne du milieu, jouer sur la
+borne b ou sur la borne 8 − b mène à deux parties miroirs de même valeur. Garder les deux, c'est chercher deux fois
+le même coup.
+
+- **Le code** : `+mirror=1` (`src/sim/mcts/mirror.js`, désactivé par défaut, empreinte de la 1.2 inchangée ;
+  `08ee30b6a91844a7` avec l'option). Quand le plateau est son propre miroir, la racine et chaque liste courte de
+  l'arbre ne gardent que les bornes 1 à 4. La première carte posée hors du milieu casse la symétrie pour toute la
+  partie : il n'y a rien à deviner.
+- **Où ça joue** : dans 750 parties de la 1.2 à 2 000 (duels du 14-15/10), le plateau est miroir 1,16 coup par
+  partie : au tour 1 toujours, au tour 2 dans 13 % des parties, au tour 3 dans 3 %. Sur ces coups, 35,6 % des 8
+  candidats sont sur les bornes 5 à 7, des doublons de leur miroir.
+- **Ce que ça change au tour 1** (`scripts/archive/mirror-turn1.js`, 30 donnes à 2 000) : les 8 candidats passent de
+  2,6 à 3,6 cartes différentes, le taux du coup joué ne bouge pas (49,9 → 50,2 %). La 1.2 rejoue le même coup (au
+  miroir près) dans 6 donnes sur 30 avec l'option, et dans 5 sur 30 sans elle avec une autre graine : son premier
+  coup est presque du bruit, l'arbre ne départage pas ses candidats.
+- **Tri à 400** : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. La 1k@2k (`VALIDATE_LONG_1..4_MirrorMoves`) est
+  en file pour la nuit. Comme l'idée n'agit qu'au tour 1 (rarement au-delà), il faut s'attendre à un écart d'un
+  point au plus : 1 000 parties ne le distingueront pas de zéro. Ce qu'il faut y lire, c'est qu'elle ne perd pas.
+
 [← le registre](../strategie.md) · [← 06/10 – 12/10](05-de-la-1.1-a-la-feuille-1.3.md)

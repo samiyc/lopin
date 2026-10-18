@@ -83,7 +83,7 @@ const names = (log) => [playerName(log.players[0]), playerName(log.players[1])];
 function renderDetail(log, tree) {
   const box = $("lab-detail");
   if (!panel.selection) {
-    box.replaceChildren(el("p", { class: "hint" }, "Clique un nœud ou un étage pour son détail ; double-clic pour déplier un nœud ; molette pour zoomer, glisser pour te déplacer, double-clic dans le vide (ou Échap) pour tout revoir."));
+    box.replaceChildren(el("p", { class: "hint" }, "Clique un nœud ou un étage pour son détail ; double-clic pour déplier un nœud (sur « +n » : tous ses fils, 3 seulement sont dessinés) ; molette pour zoomer, glisser pour te déplacer, double-clic dans le vide (ou Échap) pour tout revoir."));
     return;
   }
   const parts = panel.selection.kind === "node" ? nodeDetail(tree.snapshot, panel.selection.id, names(log)) : bandDetail(tree.snapshot, tree.levels, panel.selection.depth);
