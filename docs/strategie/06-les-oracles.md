@@ -657,5 +657,16 @@ plus de visites chacun (racine et listes courtes, donc `widen` réduit aux nœud
   cherche le premier coup de donnes neuves avec et sans la règle, deux graines chacun, et compte les fois où le favori
   sort de la fourchette de Wilson du deuxième coup (son jumeau exclu) et où les deux graines jouent le même coup.
   S'il ne sépare rien, la règle n'apporte rien au tour 1.
+- **Le pilote (19/10, de jour, `MIRROR_PILOT_1` et `2`)** :
+
+  | Moteur, donnes | Favori (visites) | Avance sur le 2e | Hors de sa fourchette | Même coup, deux graines |
+  |---|---|---|---|---|
+  | Oracle light en un arbre (`pwl=3`, 10 000), 300 | 21,9 → 31,8 % | 0,31 → 0,37 écart-type | 0 → 0 % | 27,3 → 26,7 % |
+  | La 1.2 à 2 000, 1 000 | 22,7 → 33,1 % | 0,31 → 0,37 écart-type | 0 → 0 % | 23,8 → 22,8 % |
+
+  La règle change le favori dans 73-74 % des donnes, autant qu'une autre graine (1 − 27 %). **Rien ne se sépare** :
+  les visites gagnées vont aux coups restants, mais au tour 1 ces coups se valent vraiment. L'Oracle light, à cinq
+  fois le budget de la 1.2, a la même avance médiane (0,31) : plus de calcul ne les départage pas. Pas de 1k@2k ;
+  `+mirror=2` reste.
 
 [← le registre](../strategie.md) · [← 06/10 – 12/10](05-de-la-1.1-a-la-feuille-1.3.md)

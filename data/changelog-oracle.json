@@ -535,9 +535,9 @@
    "text": "« L'avis des juges » sous chaque coup du Labo : l'Oracle light et Oracle3 jugent la décision avec ce que le robot savait, l'Omniscient 1.0 (la 1.2 avec +omniscient=1+exact=14) juge la donne, le solveur exact donne la vérité sur chaque coup une fois la pioche vide. Un coup que seul l'omniscient refuse a perdu à cause des cartes cachées."
   },
   {
-   "when": "En cours (19/10)",
+   "when": "Fait (19/10)",
    "title": "L'Oracle light contre Oracle3",
-   "text": "DEEP_DUEL_1_OracleLight-vs-Oracle3 : l'Oracle light (10 000, deux arbres) contre Oracle3 (20 000, 57,1 % contre la 1.2 sur 280 parties), 120 parties sur l'offset 15, un premier relevé. Ce que coûte la moitié du budget."
+   "text": "DEEP_DUEL_1, offset 15 : l'Oracle light de la page (deux arbres de 5 000, pwl=3) marque 47,5 % (39,0 – 56,0) sur 120 parties contre Oracle3 (20 000). Attendu d'après leurs scores contre la 1.2 (53,6 et 57,1 %) : la moitié du budget coûte peut-être 2 à 4 points, à ce nombre de parties rien de net."
   },
   {
    "when": "Ensuite",

@@ -512,7 +512,8 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   by default, fingerprints unchanged): while nothing lies off the middle border, borders b and 8 − b
   are one move, the tree keeps 1-4 (turn 1, rarely 2-3); its 1k@2k stopped after two duels at 47.8 % (44.2 – 51.4): rejected. **`+mirror=2`** (`MirrorPrune`, Sami 19/10) keeps the
   core's top 8 but drops each pair's second twin, nothing in its place (`mirrorPick`; the 1.2 and `mirror=1` fingerprints
-  unchanged); judged by its root at turn 1, not by duels (`scripts/archive/mirror-prune-pilot.js`).
+  unchanged); judged by its root at turn 1, not by duels (`scripts/archive/mirror-prune-pilot.js`): the favourite gets 22 → 32 % of the
+  visits but never clears the runner-up's interval nor repeats more across seeds — turn-1 moves are equal, no 1k@2k.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):
   sorted at the deal, drawn cards appended, a sort applied from the position
   it was asked at. Both hands, via `handOrder` / `topOrder` of `tableView`.

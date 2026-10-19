@@ -159,4 +159,5 @@ Le mode d'emploi est dans `docs/jouer.md`. Ce qui a été fait, et ce qui diffè
   parties miroirs de même valeur. L'arbre ne garde alors que les bornes 1 à 4, à la racine (les
   places libérées vont à d'autres cartes) et dans chaque liste courte (les réponses aussi). Sa
   1k@2k s'est arrêtée à 47,8 % (44,2 – 51,4) après deux duels, la nuit du 18-19/10 : écartée
-  (`docs/strategie/`, dernier chapitre).
+  (`docs/strategie/`, dernier chapitre). `MirrorPrune` (`+mirror=2`, 19/10 : les doublons retirés sans
+  remplaçant) ne départage pas mieux les coups du tour 1 : ils se valent.

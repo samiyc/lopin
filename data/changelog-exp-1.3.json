@@ -1186,6 +1186,11 @@
    "text": "MirrorMoves : 47,8 % (44,2 – 51,4) sur 500 parties, la 1k@2k arrêtée après deux duels ; la série sur l'Oracle light est annulée. Ensemble2x2000 : 51,4 % (48,7 – 54,1) sur 1 000 parties, pas de 1.2 à deux workers dans la page. Rien de ce qui a été essayé à calcul égal ou presque ne passe la 1.2 ; seul le budget brut a payé."
   },
   {
+   "when": "Fait (19/10)",
+   "title": "MirrorPrune : rien à séparer au tour 1",
+   "text": "+mirror=2 (Sami) garde le top 8 du cœur sans le second jumeau de chaque paire miroir. Jugé sans duel au premier coup de donnes neuves, deux graines par moteur : le favori passe de 22 à 32-33 % des visites, mais son avance sur le deuxième coup reste à 0,31 → 0,37 écart-type, il ne sort jamais de sa fourchette, et les deux graines jouent le même coup aussi souvent qu'avant (Oracle light à 10 000, 300 donnes : 27,3 → 26,7 % ; la 1.2 à 2 000, 1 000 donnes : 23,8 → 22,8 %). La règle change le favori dans 73-74 % des donnes, autant qu'une autre graine : au tour 1 les coups distincts se valent, plus de visites ne les départagent pas (l'Oracle light, à cinq fois le budget, n'en sépare pas plus que la 1.2). Pas de 1k@2k ; l'option reste."
+  },
+  {
    "when": "Depuis le 15/10",
    "title": "Changement de cap : l'oracle jouable",
    "text": "La 1.2 reste le plafond à 2 000 simulations, ni le bruit de la racine (CommonDeals, 50,7 %), ni deux arbres de 2 000 (Ensemble2x2000, 51,4 %), ni les coups miroirs (MirrorMoves, 47,8 %) ; même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation ; seul le budget a payé. La suite se joue sur les oracles, qui ont leur propre carnet (Versions → Changelog Oracle, npm run changelog -- oracle) : l'Oracle light (53,6 % contre la 1.2@2000 sur 420 parties dans sa version de la page, à deux arbres) est jouable dans la page depuis le 16/10. Ce carnet garde les essais faits pour faire évoluer la 1.2. Voir docs/1.3-to-oracle-shift.md."
