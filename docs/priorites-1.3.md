@@ -544,3 +544,21 @@ rattrapée que par le solveur.
   porteur des deux jokers plus pessimiste sur lui-même : ses simulations les gardent. La calibration
   n'est pas le but de la règle (le coup choisi l'est) : la 1k@2k décide (`VALIDATE_LONG_1..4_JokerWin`,
   file de nuit, règle d'arrêt).
+
+## 9. `JokerTheirHand` : les JK cachés chez l'adversaire (20/10)
+
+**L'idée de Sami**, pour la ligne qui restait à +10,5 : dans les donnes de l'arbre (nœuds et
+simulations), les JK que le joueur ne voit pas sont dans la main adverse jusqu'à preuve du contraire,
+jamais dans la pioche. `+jkHand=k` (`src/sim/mcts/deal.js`) : quand la pioche a `k` cartes ou moins,
+chaque JK tiré dans la pioche est échangé avec une vraie carte de la main adverse (`jkHand=40` :
+toujours ; 0 par défaut, empreintes inchangées).
+
+- Calibration sur les 18 541 fins de partie (pioche de 1 à 2 cartes, donc la règle s'y applique dès
+  `k` = 2) : écart global +3,6 → **+1,7 ± 0,7** ; aucun JK en main, deux cachés +10,5 → **+5,5 ± 1,9** ;
+  aucun JK en main, un caché +5,9 → +2,9 ; un et un +3,0 → +1,1 ; sans JK caché rien ne bouge (+0,1).
+  La moitié de l'optimisme venait de la place des jokers ; le reste, des simulations, où l'adversaire
+  garde les siens.
+- Tri du jour à 400 contre la 1.2 : `jkHand=40` (toujours) **46,6 % (41,6 – 51,6) sur 324 parties** ;
+  `jkHand=4` (fin de partie) **48,2 % (44,2 – 52,2) sur 396**. Rien de net : mieux estimer ne fait
+  pas jouer mieux, du moins à 400. En début de partie la règle est fausse — un JK resté dans une
+  pioche de 30 cartes revient au joueur une fois sur deux —, d'où `k`. Pas mis en file.

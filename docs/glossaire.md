@@ -431,6 +431,10 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   avec les bornes déjà gagnées, fait trois bornes de suite ou la majorité. Sinon il est refusé, à la
   racine, dans l'arbre et dans les simulations, pour les deux camps ; le solveur (pioche vide) voit
   toujours tous les coups. Le cœur qui le porte est `stfig6jw`, la version `JokerWin`.
+- **Les jokers chez l'adversaire** (`+jkHand=k`, `src/sim/mcts/deal.js`, Sami 20/10) : quand la pioche a `k`
+  cartes ou moins (40 : toujours), dans les donnes de l'arbre, les JK que le joueur ne voit pas vont dans la main adverse, jamais dans la pioche, jusqu'à
+  preuve du contraire ; ni les nœuds ni les simulations ne lui en font piocher un. La version qui le
+  teste s'appelle `JokerTheirHand`.
 
 ## L'oracle
 
@@ -538,6 +542,7 @@ version :
 | `ReplyFpu0` / `ReplyFpu1` | codé le 17/10 (`src/sim/mcts/first-play.js`, `docs/priorites-1.3.md` § 2) : sous la racine, une réponse jamais essayée vaut la moyenne des réponses déjà essayées du nœud, moins 0 ou 0,1 (le chiffre × 10), plus le bonus d'une visite, au lieu de passer avant toutes (first-play urgency) ; la racine garde son premier essai de chaque candidat. `ReplyFpu2` / `ReplyFpu3` : moins 0,2 / 0,3. De jour à 2 000 sur 250 parties : 45,6 / 53,6 / 48,4 / 45,6 % ; la 1k@2k de `ReplyFpu1` : 51,5 % (49,0 – 54,0), écarté | `ismcts+…+exact=12+fpu=1@2000` |
 | `Ensemble2x2000` | une mesure, pas une version : deux arbres de 2 000 (4 000 en tout), visites de la racine additionnées, contre la 1.2@2000. Ce que vaut le bruit du coup joué à qualité d'arbre égale, à comparer à `Budget4000` (un arbre de 4 000) sur les mêmes donnes. Nuit du 17/10, offsets 1 et 2 : **54,6 % (50,8 – 58,4) sur 500 parties**, autant que Budget4000 (54,4 %) : le bruit vaut des points, et des arbres indépendants le réduisent. Offsets 3 et 4 (nuit du 18-19/10) : 46,0 et 50,4 %, **51,4 % (48,7 – 54,1) sur 1 000 parties** : pas de 1.2 sur deux workers | `ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000` |
 | `JokerWin` | codé le 19/10 (Sami) : la 1.2 avec le cœur `stfig6jw` (le joker gagnant), à la racine, dans l'arbre et dans les simulations. Né des fins de partie mal jugées (`docs/priorites-1.3.md` § 7) : avec deux JK cachés la 1.2 se surestime de 10,5 points | `ismcts+widen=7+depth=5+core=stfig6jw+exact=12@2000` |
+| `JokerTheirHand` | codé le 20/10 (Sami) : la 1.2, les JK cachés donnés à l'adversaire dans les donnes de l'arbre (`+jkHand=k`, pioche de `k` cartes ou moins). Vise la ligne « aucun JK en main, deux cachés » des fins mal jugées : +10,5 → +5,5 points. Tri à 400 : `jkHand=40` 46,6 % (41,6 – 51,6), `jkHand=4` 48,2 % (44,2 – 52,2), rien de net, pas en file | `ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000` |
 | `MarginBackup05` | `MarginBackup15` à 5 % (`margin=0.05`) : 51,4 % au tri à 400, gardé en réserve ; un duel long « dernière chance » à 2 000 (15/10) | `ismcts+…+exact=12+margin=0.05@2000` |
 | `OracleLight-Pw1` / `-Pw2` / `-Pw3` | l'Oracle light (Sami, 15/10, `docs/1.3-to-oracle-shift.md`) : l'arbre d'Oracle3 à 10 000 itérations au lieu de 20 000, avec `pw=k` (k + √visites réponses), pour un oracle jouable dans la page ; le tri dit quel `k` va avec 10 000. Premier tri (15/10, 140 parties contre la 1.2@2000) : 50,7 / **57,9** / 51,4 % ; `OracleLight-Pw2` confirmé à **54,5 % (50,6 – 58,4) sur 420 parties** (= `pwl=2`) | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000` |
 | `ForkCut1` / `ForkCut2` | la double menace dans les simulations (`fork-cut.js`, 14/10) : arrêter une simulation à la première victoire sur les bornes remplies (1, exact), ou aussi à une fourche, compté gagné (2) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+forkCut=1@2000` |
