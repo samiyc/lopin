@@ -643,4 +643,19 @@ le même coup.
   les deux premiers duels. **Écartée.** Deux coups miroirs se valent bien, mais n'en garder qu'un ne fait pas gagner la
   1.2. La série sur l'Oracle light (`LIGHT_DUEL_1..4_OracleLight-Mirror`) est annulée ; `+mirror=1` reste.
 
+### Les coups miroirs, autrement : `MirrorPrune` (Sami, 19/10)
+
+MirrorMoves donnait la place des doublons à des coups hors du top 8 du cœur, qu'on sait moins bons (−0,2 ± 2,2 points
+d'après Oracle1). `+mirror=2` garde le top 8 et retire seulement le second jumeau de chaque paire : moins de candidats,
+plus de visites chacun (racine et listes courtes, donc `widen` réduit aux nœuds miroirs).
+
+- **Le stock** (visites seules, les duels ne gardent pas les taux) : au tour 1, aucune décision nette pour aucun
+  moteur. Le favori prend 23 % des visites de la 1.2 (22 % pour Oracle3, 21 % pour l'Oracle light), 4 points devant le
+  deuxième ; 2,9 paires miroirs parmi les 8 candidats, 5,1 coups distincts, et le jumeau le moins vu prend 26 % des
+  visites. Jumeaux réunis, le favori passe à 32-33 %.
+- **Le juge n'est pas un duel** : un effet du tour 1 se noie dans 35 coups. Le pilote (`scripts/archive/mirror-prune-pilot.js`)
+  cherche le premier coup de donnes neuves avec et sans la règle, deux graines chacun, et compte les fois où le favori
+  sort de la fourchette de Wilson du deuxième coup (son jumeau exclu) et où les deux graines jouent le même coup.
+  S'il ne sépare rien, la règle n'apporte rien au tour 1.
+
 [← le registre](../strategie.md) · [← 06/10 – 12/10](05-de-la-1.1-a-la-feuille-1.3.md)

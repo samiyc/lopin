@@ -21,3 +21,30 @@ export function withoutMirrors(state, entries, moveOf = (entry) => entry.move) {
     return !move || move.border <= middle;
   });
 }
+
+/**
+ * MirrorPrune (`+mirror=2`, Sami 19/10): the moves already picked (`moves`, the candidates or a shortlist) without the
+ * second of two mirror moves — the same card on b and on 8 − b, the better ranked kept. The freed places stay empty:
+ * their visits go to the moves left, never to a move past the core's top (MirrorMoves' refill, `+mirror=1`).
+ */
+export function prunedMirrors(state, moves) {
+  if (!isMirrored(state)) return moves;
+  const last = state.borders.length - 1;
+  const seen = new Set();
+  return moves.filter((move) => {
+    if (!move) return true;
+    const key = `${move.card}:${Math.min(move.border, last - move.border)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/**
+ * `pick` over `moves` (bare moves or scored entries) under the mirror rule `mirror`: 1 (MirrorMoves) keeps borders 1-4
+ * before picking, 2 (MirrorPrune) drops the second twin after, 0 picks as ever.
+ */
+export function mirrorPick(mirror, state, moves, pick) {
+  if (mirror === 1) return pick(withoutMirrors(state, moves, (entry) => ("move" in entry ? entry.move : entry)));
+  return mirror === 2 ? prunedMirrors(state, pick(moves)) : pick(moves);
+}

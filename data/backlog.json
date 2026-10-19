@@ -1,13 +1,29 @@
 {
-  "note": "Les traitements longs, à lancer la nuit : npm run backlog (npm run backlog -- --list pour voir la file). Aucun ne dépasse 2 h (limit, en minutes ; au-delà il est arrêté et marqué timeout). Chaque traitement fait est marqué avec sa date, sa durée et sa sortie (backlog-runs/, hors de git). Un traitement plus urgent se place en tête des « todo ».",
-  "jobs": [
-    {
-      "id": "DEEP_DUEL_1_OracleLight-vs-Oracle3",
-      "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000\" --long --games 60 --page --offset 15",
-      "estimate": "1 h 25",
-      "limit": 120,
-      "why": "Ce que coûte la moitié du budget (changelog des oracles, « Ensuite ») : l'Oracle light 1.0 de la page (deux arbres de 5 000, pwl=3) contre Oracle3 (20 000, pwl=4, 61,4 % puis 52,9 % contre la 1.2), 120 parties sur des donnes neuves (offset 15). 30 000 itérations par paire de coups au lieu de 12 000 : environ 2,5 fois un LIGHT_DUEL, d'où 60 donnes pour tenir sous 2 h. Un premier relevé, pas un verdict.",
-      "status": "todo"
-    }
-  ]
+ "note": "Les traitements longs, à lancer la nuit : npm run backlog (npm run backlog -- --list pour voir la file). Aucun ne dépasse 2 h (limit, en minutes ; au-delà il est arrêté et marqué timeout). Chaque traitement fait est marqué avec sa date, sa durée et sa sortie (backlog-runs/, hors de git). Un traitement plus urgent se place en tête des « todo ».",
+ "jobs": [
+  {
+   "id": "DEEP_DUEL_1_OracleLight-vs-Oracle3",
+   "command": "npm run duel -- \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pwl=3+trees=2@10000\" \"ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=1@20000\" --long --games 60 --page --offset 15",
+   "estimate": "1 h 25",
+   "limit": 120,
+   "why": "Ce que coûte la moitié du budget (changelog des oracles, « Ensuite ») : l'Oracle light 1.0 de la page (deux arbres de 5 000, pwl=3) contre Oracle3 (20 000, pwl=4, 61,4 % puis 52,9 % contre la 1.2), 120 parties sur des donnes neuves (offset 15). 30 000 itérations par paire de coups au lieu de 12 000 : environ 2,5 fois un LIGHT_DUEL, d'où 60 donnes pour tenir sous 2 h. Un premier relevé, pas un verdict.",
+   "status": "todo"
+  },
+  {
+   "id": "MIRROR_PILOT_1_MirrorPrune-OracleLight",
+   "command": "node scripts/archive/mirror-prune-pilot.js 300 10000 --offset 0",
+   "estimate": "20 min",
+   "limit": 60,
+   "why": "MirrorPrune (+mirror=2, Sami 19/10) jugé sans duel : au premier coup de 300 donnes neuves, l'Oracle light en un arbre (pwl=3, 10 000) avec et sans la règle, deux graines chacun. Le favori sort-il plus souvent de la fourchette du deuxième coup (jumeau exclu), et les deux graines jouent-elles plus souvent le même coup ? docs/strategie/06-les-oracles.md, dernière section.",
+   "status": "todo"
+  },
+  {
+   "id": "MIRROR_PILOT_2_MirrorPrune-1.2",
+   "command": "node scripts/archive/mirror-prune-pilot.js 1000 2000 --offset 0 --engine \"ismcts+widen=7+depth=5+core=stfig6+exact=12\"",
+   "estimate": "15 min",
+   "limit": 60,
+   "why": "Le même pilote sur la 1.2 à 2 000, 1 000 donnes : si la règle sépare les candidats ici aussi, elle vaut pour tous les arbres.",
+   "status": "todo"
+  }
+ ]
 }

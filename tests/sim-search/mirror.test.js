@@ -5,7 +5,7 @@ import { ORDERS } from "../../src/config/formations.js";
 import { createRng } from "../../src/core/random.js";
 import { engineFor } from "../../src/sim/bots.js";
 import { applyMove, createGame, legalMoves } from "../../src/sim/engine/game.js";
-import { isMirrored, withoutMirrors } from "../../src/sim/mcts/mirror.js";
+import { isMirrored, prunedMirrors, withoutMirrors } from "../../src/sim/mcts/mirror.js";
 
 const fresh = (seed) => createGame(DECKS.classique, { order: ORDERS.original, jokerRule: JOKER_RULES.colorless, rng: createRng(seed) });
 const play = (state, border) => applyMove(state, legalMoves(state).find((move) => move.border === border));
@@ -43,5 +43,20 @@ describe("mirror moves (mirror.js)", () => {
     for (const path of keysUnder(search.tree()).filter((keys) => keys.length === 2 && keys[0].endsWith("@3"))) {
       assert.ok(Number(path[1].split("@")[1]) <= 3, path.join(" / "));
     }
+  });
+
+  it("MirrorPrune (+mirror=2): the core's top 8 without the second twin, nothing in its place", () => {
+    const state = fresh(7);
+    const twin = (a, b) => a.card === b.card && a.border === 6 - b.border && a.border !== 3;
+    const plain = engineFor("ismcts+widen=7+depth=5+core=stfig6")(createRng(3)).searchFor(state, legalMoves(state), {});
+    plain.step();
+    const top = plain.candidates();
+    assert.ok(top.some((move) => top.some((other) => twin(move, other))), "this deal's top 8 holds a mirror pair");
+    const search = engineFor("ismcts+widen=7+depth=5+core=stfig6+mirror=2")(createRng(3)).searchFor(state, legalMoves(state), {});
+    for (let i = 0; i < 300; i += 1) search.step();
+    const roots = search.candidates();
+    assert.deepEqual(roots, prunedMirrors(state, top));
+    assert.ok(roots.length < 8);
+    assert.ok(roots.every((move) => !roots.some((other) => twin(move, other))));
   });
 });
