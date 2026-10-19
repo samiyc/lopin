@@ -469,3 +469,52 @@ fait **51,4 % (48,7 – 54,1)** : pas de « 1.2 sur deux workers ». Le point 2 
 joué vaut au plus 1 à 2 points à 2 000, pas 2,5. `OracleLight-Pwl2-Trees2` fait 56,0 % (51,7 – 60,2) sur 420 parties,
 +2,4 points (−3,4 – +8,2) sur la version de la page : pile à la barre, la décision revient à Sami. `MirrorMoves`
 s'arrête à 47,8 % (44,2 – 51,4) après deux duels.
+
+## 7. Les fins de partie mal jugées (19/10)
+
+**La question de Sami** (Labo, deux Oracle light en un arbre) : au tour 28-29, juste avant le solveur,
+le joueur du haut s'estime à 74 % et celui du bas à 32 %, et c'est le bas qui gagne, avec les deux JK.
+D'où vient l'écart, et est-ce général ?
+
+`node scripts/archive/misjudged-endgames.js` reprend les deux dernières recherches de l'arbre de chaque
+partie des duels gardés depuis le 15/10 (9 620 parties, 19 240 positions, pioche de 1 à 2 cartes presque
+toujours). Les duels ne gardent que les visites, donc chaque position est recherchée de nouveau par la
+1.2@2000 (14 min sur 18 fils). `--solve 60` résout exactement 60 positions de chaque sorte sur les donnes
+que le joueur ne peut pas distinguer ; `--trace` suit les simulations des positions surestimées, coup par
+coup, le solveur voyant tout, pour trouver le coup qui donne la victoire à tort.
+
+- **Hors de 40-60 %, l'arbre se trompe 1 fois sur 10** (10,3 % des 16 799 positions sûres), mais il est
+  trop optimiste en moyenne pour le joueur qui joue : +3,6 ± 0,7 points (54,1 % estimés, 50,5 % gagnés),
+  dans toutes les tranches de taux, des deux côtés du duel.
+- **Tout l'optimisme vient des jokers que le joueur ne voit pas.** Groupé selon ce qu'il voit (le
+  grouper selon la place réelle des jokers biaise par construction) :
+
+  | Le joueur tient | JK cachés | Positions | Estimé | Gagné | Écart |
+  | --- | --- | --- | --- | --- | --- |
+  | 0 JK | 0 | 864 | 52,7 % | 48,8 % | +3,9 ± 3,3 |
+  | 1 JK | 0 | 3 546 | 58,7 % | 57,5 % | +1,2 ± 1,6 |
+  | tous les cas | 0 | 6 684 | 59,0 % | 59,0 % | **+0,1 ± 1,2** |
+  | 0 JK | 1 | 3 671 | 49,7 % | 43,7 % | +5,9 ± 1,6 |
+  | 1 JK | 1 | 5 558 | 53,9 % | 50,9 % | +3,0 ± 1,3 |
+  | 0 JK | 2 | 2 628 | 48,3 % | 37,9 % | **+10,5 ± 1,9** |
+  | 2 JK | 0 | 2 274 | 61,9 % | 65,0 % | −3,1 ± 2,0 |
+
+  Sans joker caché, l'arbre est calibré ; chaque joker caché le rend plus optimiste ; quand il tient
+  les deux, il se sous-estime. Le camp qui tient les jokers est sous-évalué.
+- **Deux causes, dans le même sens.**
+  - *La place des jokers cachés* : les bots gardent leurs jokers, et un JK caché est dans la main
+    adverse 95 % du temps à une carte de pioche (85,7 % au hasard), 89 % à deux (75 %). Les
+    déterminisations le mettent au hasard.
+  - *La politique des simulations* : sur les positions surestimées, l'arbre dit 80,1 %, ses
+    simulations 81,9 %, le solveur exact sur les mêmes donnes **37,2 %** ; sur des positions bien
+    jugées, 62,9 % contre 61,1 %. Ce n'est donc pas la malchance de la donne réelle. Dans 201
+    simulations gagnées à tort, le coup fautif est l'adversaire dans 86 % des cas, **une fois la
+    pioche vide dans 85 %** (là où le vrai bot joue le solveur), un côté complété à tort dans 65 % ;
+    le fautif tient un joker dans 52 %, et dans 50 cas il garde le JK que le solveur aurait joué.
+- **Ce qu'on en tire** : l'estimation affichée au Labo est trop haute quand l'adversaire peut tenir les
+  jokers ; c'est l'erreur connue du cœur en fin de partie (`simExact`, 12/10 : 3,6 % des fins gagnées,
+  un tiers avec le joker), qui pèse sur les deux dernières recherches. Un biais de calibration ne change
+  le coup joué que s'il diffère d'un candidat à l'autre : rien n'est mesuré en duel. Pistes : placer les
+  jokers cachés dans la main adverse selon leur fréquence réelle (une inférence limitée aux jokers), ou
+  des simulations finies par le solveur à 1-2 cartes de pioche seulement (`simExact` à 4 cartes coûtait
+  37 % des itérations sur toute la partie).
