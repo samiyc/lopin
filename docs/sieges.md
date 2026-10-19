@@ -23,8 +23,9 @@ compensations de `src/config/seats.js`, éteintes par défaut. Le vocabulaire : 
 - **La recommandation : B, « Avant chacun de ses coups, le premier joueur regarde la carte du dessus de la pioche ».**
   Pour les trois robots rapides, elle ramène le premier joueur à 50,3 / 49,5 / 50,8 %, et son effet croît avec l'écart
   à combler (+4,3 / +2,4 / +1,5 points). Elle ne déplace ni la durée des parties, ni la part des victoires à la
-  majorité, ni le joker. **À confirmer cette nuit sur la 1.2 à 400 itérations**, où elle pourrait trop donner
-  (+5,3 ± 7,5 points sur 300 parties à 150 itérations).
+  majorité, ni le joker. **Sur la 1.2 à 400 itérations, elle donne trop** (nuit du 18-19/10, 9 000 donnes) : le premier
+  joueur passe de 48,6 à 52,2 % (+3,7 points, +2,4 – +5,0). Le réglage B(N), la carte vue pendant ses N premiers tours,
+  est la suite (§ 4).
 
 ## 1. D'où vient l'avantage du second
 
@@ -204,6 +205,21 @@ Le premier donne la part du premier joueur avec et sans B (± 1,0 point chacune)
 (± 1,2 point). Le second donne la part entre omniscients (± 1,4 point) et la différence avec la 1.2 à information cachée
 sur les mêmes donnes.
 
+**Les résultats (nuit du 18-19/10)**, avec les deux commandes ci-dessus :
+
+| Mesure | Premier joueur | Donne par donne |
+|---|---|---|
+| La 1.2@400 contre elle-même, 9 000 donnes (offsets 20 et 21 : 50,2 et 46,9 %) | **48,6 % (47,5 – 49,6)** | — |
+| La même avec B (`PeekAll`) | **52,2 % (51,2 – 53,3)** | **+3,7 points (+2,4 – +5,0)** |
+| Omniscient contre Omniscient, 5 000 donnes | **45,9 % (44,5 – 47,3)** | −1,8 point (−3,5 – −0,1) sur la 1.2 |
+
+- **B donne trop à la 1.2** : 52,2 %, au-dessus de 51 %. Chez les robots rapides, l'effet suivait l'écart à combler
+  (+4,3 / +2,4 / +1,5 points) ; la 1.2@400 a un petit écart (1,4 point) et en tire +3,7 : l'arbre se sert de la carte
+  vue bien mieux que le cœur. C'est la branche B(N) ci-dessous.
+- **Entre omniscients, le second a plus d'avance, pas moins** (54,1 % contre 51,4 %) : quand tout est vu, l'écart vient
+  des règles (le second complète en dernier), pas d'une carte d'information de plus. B corrige quand même, mais pas
+  pour la raison avancée au § 1 (voir § 5).
+
 **La nuit suivante, selon B** (à décider le matin, pas de `stopIf` pour ces jobs : il ne lit que les duels) :
 - **B à 49 – 51 %** : rien de plus ; B est la règle.
 - **B au-dessus de 51 %** : le réglage, sur les mêmes offsets. `SEATS_1_PeekTurns12`, `SEATS_2_PeekTurns12`, puis
@@ -234,5 +250,9 @@ pioche ensuite après son coup, comme d'habitude : en pratique, il sait toujours
     parties réelles (`data/irl/essais.json` n'en a que 10, sans les sièges) ou, dans la page, des parties où l'humain
     commence avec B. La page ne montre pas encore la carte du dessus : il faudrait l'afficher au joueur humain quand il
     commence (les robots s'en servent déjà, par le moteur).
+- **Ce que la nuit du 18-19/10 a dit** (§ 4) : la 1.2@400 avec B passe à 52,2 %, donc B(N) prend le relais, à
+  mesurer (N = 12 et 13, 4 jobs, ~5 h 20, pas encore en file). Les omniscients ont un écart plus grand que la 1.2
+  (45,9 % pour le premier) : l'avantage du second vient des règles. B reste une correction qui marche ; sa raison
+  est de rendre au premier une avance, pas de lui rendre une information perdue.
 - **La feuille de règles n'est pas modifiée** : la phrase attend la nuit et la décision de Sami. Pour l'imprimer, il
   suffira de l'ajouter au déroulement du tour de `regles/regles.html` (et de vérifier que les trois pages tiennent en A4).

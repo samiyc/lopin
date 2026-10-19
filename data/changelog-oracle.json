@@ -347,15 +347,15 @@
   {
    "bench": "duel",
    "when": "17/10",
-   "score": 57.9,
-   "lo": 52.3,
-   "hi": 63.4,
+   "score": 56,
+   "lo": 51.7,
+   "hi": 60.2,
    "verdict": "tendance",
    "family": "light",
    "id": "oracle-light-pwl2-trees2",
    "name": "OracleLight-Pwl2-Trees2 : 2 arbres de 5 000, pwl=2",
    "idea": "Des arbres plus petits demandent peut-être un niveau plus bas (Sami, 16/10).",
-   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 55,0 puis 60,7 %, 57,9 % (52,3 – 63,4) sur 280 parties, contre 53,9 % pour Pwl3-Trees2 et 52,5 % pour pwl=2 en un arbre sur les mêmes donnes : des arbres de 5 000 veulent un niveau plus bas. L'offset 14 est en file (nuit du 17-18/10) : au-dessus de 56 % sur 420 parties, l'Oracle light 1.1."
+   "note": "LIGHT_DUEL_1 et 2, offsets 12 et 13 : 55,0 puis 60,7 %, 57,9 % (52,3 – 63,4) sur 280 parties, contre 53,9 % pour Pwl3-Trees2 et 52,5 % pour pwl=2 en un arbre sur les mêmes donnes : des arbres de 5 000 veulent un niveau plus bas. LIGHT_DUEL_3, offset 14 (nuit du 18-19/10) : 52,1 %. Sur 420 parties : 56,0 % (51,7 – 60,2), contre 53,6 % (49,7 – 57,4) pour Pwl3-Trees2, la version de la page : +2,4 points (−3,4 – +8,2) donne par donne, pas d'écart net. Pile à la barre des 56 % fixée le 17/10."
   },
   {
    "family": "juge",
@@ -525,9 +525,9 @@
  },
  "next": [
   {
-   "when": "Cette nuit",
+   "when": "À décider",
    "title": "L'Oracle light 1.1 à pwl=2 ?",
-   "text": "LIGHT_DUEL_3_OracleLight-Pwl2-Trees2, offset 14 (en file la nuit du 18-19/10, après MirrorMoves) : 420 parties face aux 53,6 % de Pwl3-Trees2 et aux 56,0 % de l'arbre unique. Au-dessus de 56 % : l'Oracle light 1.1 passe à pwl=2 (un autre moteur, donc une version : bots.js, son Elo, ce carnet). Retenue par Sami le 17/10 parmi les trois pistes au meilleur rendement ; le Labo est fait. Tous les niveaux essayés : la section « L'élargissement progressif » de ce carnet."
+   "text": "Mesuré la nuit du 18-19/10 : OracleLight-Pwl2-Trees2 fait 56,0 % (51,7 – 60,2) sur 420 parties contre la 1.2@2000, la version de la page (pwl=3, deux arbres) 53,6 % (49,7 – 57,4) sur les mêmes donnes. L'écart donne par donne : +2,4 points (−3,4 – +8,2), dans le bruit ; seule la borne basse passe au-dessus de 50 %. La barre était « au-dessus de 56 % » : elle est atteinte, pas franchie. Passer à pwl=2 change le moteur, donc la version (bots.js, son Elo, ce carnet). Tous les niveaux essayés : la section « L'élargissement progressif » de ce carnet."
   },
   {
    "when": "Fait (18/10)",
@@ -535,9 +535,9 @@
    "text": "« L'avis des juges » sous chaque coup du Labo : l'Oracle light et Oracle3 jugent la décision avec ce que le robot savait, l'Omniscient 1.0 (la 1.2 avec +omniscient=1+exact=14) juge la donne, le solveur exact donne la vérité sur chaque coup une fois la pioche vide. Un coup que seul l'omniscient refuse a perdu à cause des cartes cachées."
   },
   {
-   "when": "Ensuite",
+   "when": "En cours (19/10)",
    "title": "L'Oracle light contre Oracle3",
-   "text": "Ce que coûte la moitié du budget : l'Oracle light (10 000) face à Oracle3 (20 000, 61,4 % contre la 1.2), en duel de nuit."
+   "text": "DEEP_DUEL_1_OracleLight-vs-Oracle3 : l'Oracle light (10 000, deux arbres) contre Oracle3 (20 000, 57,1 % contre la 1.2 sur 280 parties), 120 parties sur l'offset 15, un premier relevé. Ce que coûte la moitié du budget."
   },
   {
    "when": "Ensuite",

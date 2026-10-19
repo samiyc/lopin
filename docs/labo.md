@@ -157,5 +157,6 @@ Le mode d'emploi est dans `docs/jouer.md`. Ce qui a été fait, et ce qui diffè
 - **Les coups miroirs** (`+mirror=1`, Sami 18/10, `src/sim/mcts/mirror.js`) : tant qu'aucune carte
   n'est posée hors de la borne du milieu, jouer sur la borne b ou sur la borne 8 − b donne deux
   parties miroirs de même valeur. L'arbre ne garde alors que les bornes 1 à 4, à la racine (les
-  places libérées vont à d'autres cartes) et dans chaque liste courte (les réponses aussi). Le
-  résultat est dans `docs/strategie/` (dernier chapitre).
+  places libérées vont à d'autres cartes) et dans chaque liste courte (les réponses aussi). Sa
+  1k@2k s'est arrêtée à 47,8 % (44,2 – 51,4) après deux duels, la nuit du 18-19/10 : écartée
+  (`docs/strategie/`, dernier chapitre).

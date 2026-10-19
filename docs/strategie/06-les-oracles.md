@@ -637,8 +637,10 @@ le même coup.
   2,6 à 3,6 cartes différentes, le taux du coup joué ne bouge pas (49,9 → 50,2 %). La 1.2 rejoue le même coup (au
   miroir près) dans 6 donnes sur 30 avec l'option, et dans 5 sur 30 sans elle avec une autre graine : son premier
   coup est presque du bruit, l'arbre ne départage pas ses candidats.
-- **Tri à 400** : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. La 1k@2k (`VALIDATE_LONG_1..4_MirrorMoves`) est
-  en file pour la nuit. Comme l'idée n'agit qu'au tour 1 (rarement au-delà), il faut s'attendre à un écart d'un
-  point au plus : 1 000 parties ne le distingueront pas de zéro. Ce qu'il faut y lire, c'est qu'elle ne perd pas.
+- **Tri à 400** : 45,7 % (39,0 – 52,4) sur 162 parties, rien de net. Comme l'idée n'agit qu'au tour 1 (rarement
+  au-delà), il fallait s'attendre à un écart d'un point au plus ; ce qu'il fallait y lire, c'est qu'elle ne perd pas.
+- **La 1k@2k (nuit du 18-19/10)** : 48,0 puis 47,6 %, **47,8 % (44,2 – 51,4)** sur 500 parties, arrêtée sous 50 % après
+  les deux premiers duels. **Écartée.** Deux coups miroirs se valent bien, mais n'en garder qu'un ne fait pas gagner la
+  1.2. La série sur l'Oracle light (`LIGHT_DUEL_1..4_OracleLight-Mirror`) est annulée ; `+mirror=1` reste.
 
 [← le registre](../strategie.md) · [← 06/10 – 12/10](05-de-la-1.1-a-la-feuille-1.3.md)

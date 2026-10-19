@@ -463,3 +463,9 @@ Les 13 jobs ont tourné de 1 h 11 à 9 h 17 (`npm run versus`, intervalles par p
 
 **La suite** : la 1.3 de la page sera « la 1.2 sur deux workers » (`Ensemble2x2000`) si ses offsets 3 et 4 tiennent,
 ou la 1.2@4000. L'Oracle light reste au-dessus.
+
+**La nuit du 18-19/10** : les offsets 3 et 4 ne tiennent pas (46,0 et 50,4 %). Sur 1 000 parties, `Ensemble2x2000`
+fait **51,4 % (48,7 – 54,1)** : pas de « 1.2 sur deux workers ». Le point 2 du verdict est à revoir : le bruit du coup
+joué vaut au plus 1 à 2 points à 2 000, pas 2,5. `OracleLight-Pwl2-Trees2` fait 56,0 % (51,7 – 60,2) sur 420 parties,
++2,4 points (−3,4 – +8,2) sur la version de la page : pile à la barre, la décision revient à Sami. `MirrorMoves`
+s'arrête à 47,8 % (44,2 – 51,4) après deux duels.

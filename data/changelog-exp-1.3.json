@@ -792,13 +792,13 @@
    "name": "Ensemble2x2000 : deux arbres de 2 000, visites additionnées (une mesure)",
    "family": "arbre",
    "bench": "duel",
-   "score": 54.6,
-   "lo": 50.8,
-   "hi": 58.4,
-   "verdict": "tendance",
+   "score": 51.4,
+   "lo": 48.7,
+   "hi": 54.1,
+   "verdict": "neutre",
    "when": "17/10",
    "idea": "La qualité d'arbre de la 1.2 avec la moitié du bruit de son choix : ce que vaut ce bruit à 2 000, sur les donnes de Budget4000 (54,4 % sur les offsets 1 et 2).",
-   "note": "Offsets 1 et 2 (nuit du 17/10) : 54,0 puis 55,2 %, 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 sur les mêmes donnes (54,4 %). Le gain du budget ×2 est la baisse du bruit du coup joué, et ce bruit vient du chemin de chaque arbre : seuls des arbres indépendants le moyennent. Deux workers dans la page le donnent au temps de la 1.2. Offsets 3 et 4 en file (nuit du 17-18/10) pour la 1k@2k."
+   "note": "Offsets 1 et 2 (nuit du 17/10) : 54,0 puis 55,2 %, 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 sur les mêmes donnes (54,4 %). Le gain du budget ×2 est la baisse du bruit du coup joué, et ce bruit vient du chemin de chaque arbre : seuls des arbres indépendants le moyennent. Deux workers dans la page le donnent au temps de la 1.2. Offsets 3 et 4 (nuit du 18-19/10) : 46,0 puis 50,4 %. Sur les 1 000 parties : 51,4 % (48,7 – 54,1), la borne basse sous 50 % : pas de version de page à deux workers. Le premier relevé était un tirage favorable ; Budget4000 fait d'ailleurs 52,8 % sur 1 000."
   },
   {
    "id": "reply-fpu0",
@@ -870,26 +870,26 @@
    "name": "PeekAll (B) : le premier joueur voit la carte du dessus avant chaque coup",
    "family": "sieges",
    "bench": "duel",
-   "score": null,
-   "lo": null,
-   "hi": null,
-   "verdict": "attente",
+   "score": 52.2,
+   "lo": 51.2,
+   "hi": 53.3,
+   "verdict": "tendance",
    "when": "16/10",
    "idea": "Rendre au premier joueur la carte d'information que le second a de plus : une phrase de règle, rien à compter.",
-   "note": "Pour les trois robots rapides, le premier revient à 50,3 / 49,5 / 50,8 % ; elle ne change ni la durée, ni la façon de gagner, ni le joker. Écartées : regarder au seul premier tour (A), 7 cartes (C, dix fois trop : +14 points). À 150 itérations la 1.2 en tire +5,3 ± 7,5 points : à confirmer sur la 1.2@400 (jobs SEATS_ et DEALS_ de docs/sieges.md §4, ~6 h 40, en file pour la nuit du 17-18/10). La feuille de règles attend la décision de Sami."
+   "note": "Pour les trois robots rapides, le premier revient à 50,3 / 49,5 / 50,8 % ; elle ne change ni la durée, ni la façon de gagner, ni le joker. Écartées : regarder au seul premier tour (A), 7 cartes (C, dix fois trop : +14 points). À 150 itérations la 1.2 en tire +5,3 ± 7,5 points : confirmé sur la 1.2@400 (nuit du 18-19/10, 9 000 donnes, offsets 20 et 21) : le premier joueur passe de 48,6 % (47,5 – 49,6) à 52,2 % (51,2 – 53,3), +3,7 points (+2,4 – +5,0) donne par donne. Trop pour un bon joueur : le réglage B(N), la carte vue seulement pendant les N premiers tours, est la suite (docs/sieges.md § 4). La feuille de règles attend la décision de Sami."
   },
   {
    "id": "mirror-moves",
    "name": "MirrorMoves : les coups miroirs (+mirror=1)",
    "family": "racine",
    "bench": "duel",
-   "score": 45.7,
-   "lo": 39,
-   "hi": 52.4,
-   "verdict": "attente",
+   "score": 47.8,
+   "lo": 44.2,
+   "hi": 51.4,
+   "verdict": "neutre",
    "when": "18/10",
    "idea": "Idée de Sami au Labo (18/10) : tant que rien n'est posé hors de la borne du milieu, jouer sur la borne b ou sur la borne 8 − b donne deux parties miroirs de même valeur. La racine et chaque liste courte ne gardent que les bornes 1 à 4 (src/sim/mcts/mirror.js), les places libérées vont à d'autres cartes.",
-   "note": "Sur 750 parties de la 1.2, le plateau est miroir à 1,16 coup par partie (le tour 1 toujours, le 2 dans 13 %, le 3 dans 3 %) ; au tour 1, 3,6 cartes différentes parmi les 8 candidats au lieu de 2,6. Tri à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, sans écart net. La 1k@2k passe en tête de la file la nuit du 18-19/10 (VALIDATE_LONG_1 à 4_MirrorMoves). Empreinte de la 1.2 inchangée sans l'option."
+   "note": "Sur 750 parties de la 1.2, le plateau est miroir à 1,16 coup par partie (le tour 1 toujours, le 2 dans 13 %, le 3 dans 3 %) ; au tour 1, 3,6 cartes différentes parmi les 8 candidats au lieu de 2,6. Tri à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, sans écart net. La 1k@2k (nuit du 18-19/10, offsets 0 et 1) : 48,0 puis 47,6 %, 47,8 % (44,2 – 51,4) sur 500 parties, arrêtée sous 50 % après les deux premiers duels : écarté. La série sur l'Oracle light, qui en dépendait, est annulée. Deux coups miroirs se valent bien, mais ne garder que l'un des deux ne fait pas gagner la 1.2. L'option +mirror=1 reste. Empreinte de la 1.2 inchangée sans l'option."
   }
  ],
  "manualJobs": [],
@@ -1181,24 +1181,19 @@
  },
  "next": [
   {
-   "when": "Cette nuit",
-   "title": "MirrorMoves : la 1k@2k, en tête de la file",
-   "text": "VALIDATE_LONG_1 à 4_MirrorMoves contre la 1.2, offsets 0 à 3, environ 1 h 40 ; arrêt sous 47 % après le premier, sous 50 % après les deux premiers. La borne basse au-dessus de 50 % sur 1 000 parties : le miroir entre dans la 1.3, puis se mesure sur l'Oracle light."
+   "when": "Fait (nuit du 18-19/10)",
+   "title": "MirrorMoves et Ensemble2x2000 : écartés",
+   "text": "MirrorMoves : 47,8 % (44,2 – 51,4) sur 500 parties, la 1k@2k arrêtée après deux duels ; la série sur l'Oracle light est annulée. Ensemble2x2000 : 51,4 % (48,7 – 54,1) sur 1 000 parties, pas de 1.2 à deux workers dans la page. Rien de ce qui a été essayé à calcul égal ou presque ne passe la 1.2 ; seul le budget brut a payé."
   },
   {
    "when": "Depuis le 15/10",
    "title": "Changement de cap : l'oracle jouable",
-   "text": "La 1.2 reste le plafond à 2 000 simulations, sauf peut-être pour le bruit de la racine (CommonDeals, cette nuit) : même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation ; seul le budget a payé. La suite se joue sur les oracles, qui ont leur propre carnet (Versions → Changelog Oracle, npm run changelog -- oracle) : l'Oracle light (56,0 % contre la 1.2@2000 sur 420 parties) est jouable dans la page depuis le 16/10. Ce carnet garde les essais faits pour faire évoluer la 1.2. Voir docs/1.3-to-oracle-shift.md."
+   "text": "La 1.2 reste le plafond à 2 000 simulations, ni le bruit de la racine (CommonDeals, 50,7 %), ni deux arbres de 2 000 (Ensemble2x2000, 51,4 %), ni les coups miroirs (MirrorMoves, 47,8 %) ; même le choix final (FinalLcb1, 51,5 % sur 1 500 parties) ne passe pas la confirmation ; seul le budget a payé. La suite se joue sur les oracles, qui ont leur propre carnet (Versions → Changelog Oracle, npm run changelog -- oracle) : l'Oracle light (53,6 % contre la 1.2@2000 sur 420 parties dans sa version de la page, à deux arbres) est jouable dans la page depuis le 16/10. Ce carnet garde les essais faits pour faire évoluer la 1.2. Voir docs/1.3-to-oracle-shift.md."
   },
   {
-   "when": "Cette nuit",
-   "title": "La 1.2 sur deux workers : Ensemble2x2000 sur 1 000 parties",
-   "text": "NOISE_DUEL_3 et 4_Ensemble2x2000, offsets 3 et 4 (Budget4000 y faisait 51,6 et 50,8 %). Si la borne basse sur 1 000 parties reste au-dessus de 50 % : une version de page, deux arbres de 2 000 sur deux workers (le chemin de l'Oracle light), au temps de la 1.2. Du calcul en plus, pas une idée, mais à temps égal pour le joueur."
-  },
-  {
-   "when": "Cette nuit",
-   "title": "Les sièges : B sur la 1.2",
-   "text": "Toujours en file, derrière MirrorMoves et Ensemble2x2000, pour la nuit du 18-19/10 : les 6 jobs de docs/sieges.md § 4 (la 1.2@400 contre elle-même avec et sans B, et les omniscients, ~6 h 40). B entre 49 et 51 % pour la 1.2 devient la règle proposée ; au-dessus de 51 %, le réglage B(N) (« pendant ses N premiers tours », N ≈ 12-13). La page devra montrer la carte du dessus au joueur humain qui commence."
+   "when": "Ensuite",
+   "title": "Les sièges : B donne trop, le réglage B(N)",
+   "text": "La nuit du 18-19/10, la 1.2@400 contre elle-même sur 9 000 donnes : le premier joueur 48,6 % (47,5 – 49,6), 52,2 % (51,2 – 53,3) avec B, +3,7 points donne par donne. Au-dessus de 51 % : B(N), « pendant ses N premiers tours », N = 12 et 13 sur les mêmes donnes (4 jobs, ~5 h 20, docs/sieges.md § 4). Entre omniscients, le premier ne gagne que 45,9 % (44,5 – 47,3) sur 5 000 donnes : l'avantage du second vient des règles, pas de l'information. La page devra montrer la carte du dessus au joueur humain qui commence."
   },
   {
    "when": "Ensuite",
@@ -1218,7 +1213,7 @@
   {
    "when": "Plus tard",
    "title": "Un article compagnon, en anglais",
-   "text": "Pour partager le dépôt avec des chercheurs ISMCTS (piste D1 de l'audit du 17/10) : le bruit des donnes contre le bruit de trajectoire (CommonDeals 50,7 % contre Ensemble2x2000 54,6 %), budget × pwl × arbres, l'avantage du second joueur et sa compensation, le protocole 1k@2k et le catalogue des résultats négatifs. Écrit comme des observations, pas comme des découvertes : plusieurs arbres additionnés sont connus depuis 2008. Un peu tôt selon Sami ; à rapprocher d'un README.en.md."
+   "text": "Pour partager le dépôt avec des chercheurs ISMCTS (piste D1 de l'audit du 17/10) : le bruit des donnes contre le bruit de trajectoire (CommonDeals 50,7 %, Ensemble2x2000 54,6 % sur 500 parties puis 51,4 % sur 1 000), budget × pwl × arbres, l'avantage du second joueur et sa compensation, le protocole 1k@2k et le catalogue des résultats négatifs. Écrit comme des observations, pas comme des découvertes : plusieurs arbres additionnés sont connus depuis 2008. Un peu tôt selon Sami ; à rapprocher d'un README.en.md."
   },
   {
    "when": "Plus tard",
@@ -1238,7 +1233,7 @@
   {
    "when": "Fait",
    "title": "CommonDeals : la 1k@2k (nuit du 17/10)",
-   "text": "50,7 % (48,2 – 53,2) sur 1 000 parties : écarté, la piste des donnes communes est close. Ensemble2x2000, lui, fait 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 sur les mêmes donnes : le bruit du coup joué vaut 2 à 3 points à 2 000, mais il vient du chemin de chaque arbre (ses premières réponses adverses, ses simulations), pas des donnes de la racine. docs/priorites-1.3.md § 6."
+   "text": "50,7 % (48,2 – 53,2) sur 1 000 parties : écarté, la piste des donnes communes est close. Ensemble2x2000, lui, fait 54,6 % (50,8 – 58,4) sur 500 parties, autant que Budget4000 sur les mêmes donnes : le bruit du coup joué vaut 2 à 3 points à 2 000, mais il vient du chemin de chaque arbre (ses premières réponses adverses, ses simulations), pas des donnes de la racine. Sur 1 000 parties (nuit du 18-19/10), Ensemble2x2000 retombe à 51,4 % (48,7 – 54,1). docs/priorites-1.3.md § 6."
   },
   {
    "when": "Fait",
