@@ -518,3 +518,29 @@ coup, le solveur voyant tout, pour trouver le coup qui donne la victoire à tort
   jokers cachés dans la main adverse selon leur fréquence réelle (une inférence limitée aux jokers), ou
   des simulations finies par le solveur à 1-2 cartes de pioche seulement (`simExact` à 4 cartes coûtait
   37 % des itérations sur toute la partie).
+
+## 8. `JokerWin` : un JK seulement pour gagner (19/10)
+
+**L'idée de Sami**, tirée du § 7 : un JK joué tôt gaspille un joker qu'un brelan naturel aurait épargné
+et renseigne l'adversaire ; on ne le joue que s'il gagne la partie, et le solveur exact décide en fin
+de partie. Idée `jokerWin` (`src/sim/heuristics/joker-win.js`), cœur `stfig6jw` : le JK complète un
+côté, la borne est gagnée par théorème (`borderStatus`) et, avec les bornes déjà gagnées, fait trois
+bornes de suite ou la majorité ; sinon il est refusé, à la racine, dans l'arbre et dans les
+simulations, pour les deux camps. La pioche n'est pas touchée. Le cas « deux JK et une carte » est
+laissé au solveur : dans les 9 692 parties de duel depuis le 15/10, les 270 côtés à deux JK ont tous
+été commencés par lui, pioche vide. La défense obligée (seul le JK sauve notre dernière borne) n'est
+rattrapée que par le solveur.
+
+- Empreintes 1.2 et Oracle v1 inchangées ; `JokerWin` : `68285b68e3be574e`
+  (`"ismcts+widen=7+depth=5+core=stfig6jw+exact=12@150,greedy" 20`), +7 à 12 % de temps par partie,
+  mesuré à itérations égales (Sami : le temps n'est qu'un objectif).
+- `npm run policy` : coup gagnant gardé 93,3 % (86,7 % des délicates) contre 93,8 % (88,3 %) pour le
+  cœur de la 1.2, sur 402 fins à 9 cartes ou moins, où le vrai bot joue de toute façon le solveur.
+- Tri du jour à 400 contre la 1.2 : **51,7 % (44,3 – 59,0) sur 180 parties**, pas écarté.
+- Calibration sur les mêmes 18 541 fins de partie (`--engine …core=stfig6jw…`) : écart global +3,6 →
+  **+2,4 ± 0,7** ; un JK en main et un caché +3,0 → +1,5 ; aucun JK en main, un caché +5,9 → +4,3 ;
+  **deux JK cachés +10,5 → +10,5** ; deux JK en main −3,1 → **−6,7**. La règle ne corrige pas
+  l'optimisme face aux jokers adverses — l'adversaire simulé les joue encore moins — et rend le
+  porteur des deux jokers plus pessimiste sur lui-même : ses simulations les gardent. La calibration
+  n'est pas le but de la règle (le coup choisi l'est) : la 1k@2k décide (`VALIDATE_LONG_1..4_JokerWin`,
+  file de nuit, règle d'arrêt).

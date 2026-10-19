@@ -20,7 +20,7 @@ const ENGINE = option("--engine", "ismcts+widen=7+depth=5+core=stfig6+exact=12@2
 const SINCE = option("--since", "2026-10-15");
 const LIMIT = Number(option("--limit", Infinity));
 const DUELS = new URL("../../duels/", import.meta.url);
-const OUT = tmpFile("misjudged-endgames.json");
+const OUT = tmpFile(option("--out", "misjudged-endgames.json"));
 const BAND = Object.freeze({ low: 0.4, high: 0.6 });
 
 /** The turns a tree searched (they carry `tree`), the last two. */
@@ -47,11 +47,20 @@ const mean = (rows, f) => rows.reduce((sum, row) => sum + f(row), 0) / Math.max(
 const over = (row) => row.rate > BAND.high && !row.won;
 const under = (row) => row.rate < BAND.low && row.won;
 
-/** The share of `rows` where `test` holds, among all and among misjudged. */
-function line(label, rows, test) {
-  const sure = rows.filter((row) => row.rate > BAND.high || row.rate < BAND.low);
-  const wrong = sure.filter((row) => over(row) || under(row));
-  return `  ${label.padEnd(44)} toutes ${pc(rows.filter(test).length, rows.length).padStart(7)} · hors 40-60 ${pc(sure.filter(test).length, sure.length).padStart(7)} · en erreur ${pc(wrong.filter(test).length, wrong.length).padStart(7)}`;
+/** The tree's mean estimate against the share won, over `rows`, with the 95 % margin of the share. */
+function calibration(label, rows) {
+  const estimate = mean(rows, (row) => row.rate);
+  const won = mean(rows, (row) => (row.won ? 1 : 0));
+  const margin = 1.96 * Math.sqrt((won * (1 - won)) / Math.max(1, rows.length));
+  const gap = 100 * (estimate - won);
+  return `  ${label.padEnd(30)} ${String(rows.length).padStart(5)} positions · estimé ${(100 * estimate).toFixed(1)} % · gagné ${(100 * won).toFixed(1)} % · écart ${gap >= 0 ? "+" : ""}${gap.toFixed(1)} ± ${(100 * margin).toFixed(1)}`;
+}
+
+/** Calibration by what the mover sees of the jokers: those in their hand, those they cannot see (the opponent's or the pile's). */
+function byJokers(rows) {
+  const hidden = (row) => row.jokers.theirs + row.jokers.pile;
+  const groups = [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [0, 2]].map(([mine, unseen]) => calibration(`je tiens ${mine} JK, ${unseen} caché(s)`, rows.filter((row) => row.jokers.mine === mine && hidden(row) === unseen)));
+  return [calibration("toutes", rows), calibration("aucun JK caché", rows.filter((row) => hidden(row) === 0)), calibration("au moins un JK caché", rows.filter((row) => hidden(row) > 0)), ...groups];
 }
 
 function byPile(rows) {
@@ -86,11 +95,8 @@ function summary(rows) {
     "",
     ...byPile(decided),
     "",
-    "Les jokers (cartes réelles, pas ce que le joueur voit) :",
-    line("le joueur à jouer en tient au moins un", decided, (row) => row.jokers.mine > 0),
-    line("l'adversaire en tient au moins un", decided, (row) => row.jokers.theirs > 0),
-    line("un joker dans la pioche", decided, (row) => row.jokers.pile > 0),
-    line("aucun joker caché (adversaire ou pioche)", decided, (row) => row.jokers.theirs + row.jokers.pile === 0),
+    "Calibration selon ce que le joueur voit des jokers (pioche de 1 à 2 cartes) :",
+    ...byJokers(decided.filter((row) => row.pile >= 1 && row.pile <= 2)),
     "",
     ...causes(decided, "Surestimées", over),
     ...causes(decided, "Sous-estimées", under),

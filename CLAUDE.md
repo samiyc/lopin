@@ -514,6 +514,9 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   core's top 8 but drops each pair's second twin, nothing in its place (`mirrorPick`; the 1.2 and `mirror=1` fingerprints
   unchanged); judged by its root at turn 1, not by duels (`scripts/archive/mirror-prune-pilot.js`): the favourite gets 22 → 32 % of the
   visits but never clears the runner-up's interval nor repeats more across seeds — turn-1 moves are equal, no 1k@2k.
+- **JokerWin** (Sami, 19/10, `docs/priorites-1.3.md` § 7-8): duel endgames show the tree overrating its mover by +10.5
+  points with both jokers hidden (`scripts/archive/misjudged-endgames.js`). Idea `jokerWin` (core `stfig6jw`, joker-win.js):
+  a joker only where it wins the game, root, tree and rollouts, both sides; 1.2 fingerprint unchanged; 1k@2k queued.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):
   sorted at the deal, drawn cards appended, a sort applied from the position
   it was asked at. Both hands, via `handOrder` / `topOrder` of `tableView`.

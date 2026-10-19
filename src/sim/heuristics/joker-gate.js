@@ -1,4 +1,8 @@
 import { isJoker } from "../../core/cards.js";
+import { jokerWinOf } from "./joker-win.js";
+
+/** `context.jokerWin` (joker-win.js) when the `jokerWin` idea is on: may a joker go on that border? Only to win the game. */
+export const jokerWinGate = (state, player, ideas) => (ideas.has("jokerWin") ? jokerWinOf(state, player) : null);
 
 /** May one more joker join `side`? Asked once per side, not once per card (bots.js). */
 export function jokerGate(state, player) {

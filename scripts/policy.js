@@ -30,6 +30,8 @@ const POLICIES = {
   // The 1.2's simulations, and the same keeping `certain` (+simCertain=1, 12/10).
   "1.2 (stfig6)": rolloutPolicyOf(coreOf("stfig6")),
   "1.2 + certain (SimCertain)": rolloutPolicyOf({ ...coreOf("stfig6"), keepCertain: true }),
+  // JokerWin (19/10, joker-win.js): a joker only where it wins the game.
+  "1.2 JokerWin (stfig6jw)": rolloutPolicyOf(coreOf("stfig6jw")),
 };
 const MAX_CARDS = 9;
 const SEEDS = [1, 2, 3];

@@ -223,6 +223,8 @@ export const CORES = Object.freeze({
   ...Object.fromEntries([1, 2, 4, 10].map((tenths) => [`stfig6fork${tenths}`, { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "fork"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1, fork: tenths / 10 } }])),
   // The 1.2 tactical urgency core (Sami, 08/10, from the endgame traps): empty pile, priority to completing 2-card borders, urgency checks, no cardCost penalty (end-urgency.js).
   stfig6crit: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 }, endUrgency: true },
+  // JokerWin (Sami, 19/10, joker-win.js): the 1.2's core, a joker only where it wins the game — root, tree and rollouts.
+  stfig6jw: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "jokerWin"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
   v1nc: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas.filter((idea) => idea !== "connector"), "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
   // The 1.0's core with every weight tuned at once on the oracle's moves (npm run distill, distill.js; Sami, 04/10).
   dist1: {

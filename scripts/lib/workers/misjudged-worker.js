@@ -14,8 +14,9 @@ import { stateAt } from "../../../src/replay/core/log.js";
  * then where it comes from — the jokers' places, the rollout policy's win rate over random deals of the hidden cards
  * (what the tree believes, without its search) and on the true deal (what it would see with the cards shown).
  */
-const policyOf = rolloutPolicyOf(coreOf("stfig6"));
 const BELIEF_DEALS = 100;
+/** The rollout policy of `engine`: its `core=` (the 1.2's stfig6 when it names none). */
+const policyOf = (engine) => rolloutPolicyOf(coreOf(/[+]core=([^+@]+)/.exec(engine)?.[1] ?? "stfig6"));
 
 function searched(engine, state, seed) {
   const [, budget] = engine.split("@");
@@ -33,15 +34,15 @@ function rootOf(children, played) {
   return { rate: rateOf(mine) ?? rateOf(ranked[0][1]), visits: mine?.visits ?? 0, share: (mine?.visits ?? 0) / total, favourite: rateOf(ranked[0][1]), inTree: Boolean(mine) };
 }
 
-/** The policy's share of wins for `player` after `move`, over `deals` games made by `deal(rng)`. */
-function rolled(deal, move, player, deals) {
+/** The share of wins for `player` after `move`, `policy` playing both sides, over `deals` games made by `deal(rng)`. */
+function rolled(deal, { move, player, policy }, deals) {
   let wins = 0;
   for (let k = 0; k < deals; k += 1) {
     const rng = createRng(k + 1);
     const game = deal(rng);
     game.endMode = "final";
     applyMove(game, move);
-    const winner = game.over ? game.winner : playOut(game, policyOf(rng));
+    const winner = game.over ? game.winner : playOut(game, policy(rng));
     if (winner === player) wins += 1;
   }
   return wins / deals;
@@ -59,11 +60,12 @@ function measured({ log, turn, engine }) {
   const player = state.current;
   const played = legalMoves(state).find((move) => formatCard(state.spec, move.card) === entry.move.card && move.border === entry.move.border - 1);
   const root = rootOf(searched(engine, state, log.seed + turn), played);
+  const side = { move: played, player, policy: policyOf(engine) };
   return {
     turn, player, pile: state.pile.length, won: log.result.winner === player, decided: log.result.winner !== null, ...root,
     jokers: { mine: jokersIn(state.hands[player]), theirs: jokersIn(state.hands[1 - player]), pile: jokersIn(state.pile) },
-    belief: rolled((rng) => determinize(state, player, rng), played, player, BELIEF_DEALS),
-    truth: rolled(trueDeal(state), played, player, 1),
+    belief: rolled((rng) => determinize(state, player, rng), side, BELIEF_DEALS),
+    truth: rolled(trueDeal(state), side, 1),
   };
 }
 

@@ -11,7 +11,7 @@ import { phaseBot, phaseSettings } from "./search/phase.js";
 import { pickBest, pickSampled } from "./mcts/pick.js";
 import { searchBot } from "./search/search.js";
 import { HABITS, STRATEGY, strategistMoves } from "./heuristics/strategist.js";
-import { jokerGate } from "./heuristics/joker-gate.js";
+import { jokerGate, jokerWinGate } from "./heuristics/joker-gate.js";
 import { gameOdds, settledOdds } from "./mcts/truncate.js";
 import { tuningsOf } from "./heuristics/tuning.js";
 
@@ -141,7 +141,7 @@ function ideasContext(state, player, { ideas, gates, weights }, seen) {
     theirHand: state.hands[1 - player].length,
     owners: state.borders.map((border) => border.owner),
     turn: state.turn,
-    me: player,
+    me: player, jokerWin: jokerWinGate(state, player, ideas),
     chances: ["runs", "dump", "neighbors", "bait"].some((idea) => ideas.has(idea)) ? ownedOdds(state, player, borderChances(state, player, seen)) : null,  };
 }
 
