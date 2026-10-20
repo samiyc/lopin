@@ -595,3 +595,47 @@ TheirPairJoker par jokers obtenus (`npm run versus`) : 2 contre 0 63,5 %, 0 cont
 51,4), 1 contre 1 49,0 %. **Mieux estimer les fins de partie ne fait pas jouer mieux** : la calibration
 passe de +3,6 à +0,7 points sans gain en duel. Le code reste (désactivé par défaut) ; ne pas réessayer
 sans une raison nouvelle.
+
+**Les deux JK dans une main**, sur les mêmes donnes (les duels rejouent chaque donne des deux côtés :
+« 2 contre 0 » de la version et « 0 contre 2 » sont les mêmes donnes, places échangées) :
+
+| Duel contre la 1.2 | La version avec les 2 JK | La 1.2 avec les 2 JK | Donnes |
+|---|---|---|---|
+| `CommonDeals` (repère neutre) | 59,0 % | 59,4 % | 234 |
+| `TheirPairJoker` | 63,5 % | 60,7 % | 233 |
+| `JokerWin` | 65,0 % | 65,3 % | 117 |
+| `JokerWinHand6` | 66,7 % | 68,6 % | 117 |
+| `JokerTheirHand` | 61,2 % | 66,7 % | 116 |
+
+Les deux JK dans une main gagnent ~60 % quelle que soit la version : c'est la donne, pas la règle
+(+2,8 ± 6 points pour TheirPairJoker, du bruit). En « 1 contre 1 » les variantes font 48,8 à 52,3 %.
+
+**Les grands écarts sont surtout le hasard.** Tranche par tranche, sur les mêmes positions :
+
+| Estimation | 1.2 : gagné | TheirPairJoker : gagné |
+|---|---|---|
+| 0 – 5 % (≈ 1,5) | 1,2 % | 2,0 % |
+| 5 – 20 % (≈ 12,5) | 7,6 % | 10,3 % |
+| 20 – 40 % (≈ 29,6) | 23,8 % | 29,7 % |
+| 40 – 60 % (≈ 49,3) | 43,2 % | 48,6 % |
+| 60 – 80 % (≈ 68,9) | 63,1 % | 67,8 % |
+| 80 – 95 % (≈ 88,7) | 84,9 % | 88,8 % |
+| 95 – 100 % (≈ 99,3) | 97,3 % | 97,6 % |
+
+Hors 40-60, la 1.2 est démentie 10,3 % du temps, une estimation parfaite le serait 10,9 % : un 74 % perd
+une partie sur quatre. Les deux joueurs du Labo (74 % et 32 %) ne se contredisent pas non plus : chacun
+juge avec sa main ; leurs deux taux n'ont pas à faire 100 %. La 1.2 était trop haute de 4 à 6 points
+dans les tranches du milieu, d'un même biais pour tous les candidats, qui ne change pas le coup choisi.
+
+**Pistes qui restent** (aucune lancée) :
+- *Le coup, pas l'estimation* : sur les positions décisives (40-60 %, pioche 1-2), le solveur exact sur
+  toutes les places des cartes cachées (comme `--solve`) pour chaque candidat ; si le coup de l'arbre est
+  déjà le meilleur 95 % du temps, il n'y a rien à gagner dans ces tours-là.
+- *Les « sûres » perdues* : à 95-100 % estimés, 2 points de parties perdues (≈ 120 sur 6 000). Les
+  simulations sont jouées à la règle `final` et la partie à `claim-end` (91 % d'accord sur une partie
+  entière) : à regarder une par une avant toute idée.
+- *Les simulations finies par le solveur* (`simExact`) seulement quand la pioche a 1-2 cartes à la
+  racine : écartées à temps égal le 12/10 sur toute la partie (−37 % d'itérations), jamais mesurées en
+  fin de partie seule, où leur coût ne pèse que sur quelques coups.
+- *Le joueur qui tient les deux JK* se sous-estime (−3,1 avec la 1.2, −6,7 sous JokerWin) : sans effet
+  en duel, mais c'est le seul biais encore net.

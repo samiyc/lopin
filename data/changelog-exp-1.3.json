@@ -12,7 +12,8 @@
   "lecteur": "La page",
   "outils": "Les outils",
   "arbre": "La forme de l'arbre",
-  "sieges": "Les sièges"
+  "sieges": "Les sièges",
+  "jokers": "Les jokers en fin de partie"
  },
  "benches": {
   "cout": "temps d'un coup",
@@ -890,6 +891,58 @@
    "when": "18/10",
    "idea": "Idée de Sami au Labo (18/10) : tant que rien n'est posé hors de la borne du milieu, jouer sur la borne b ou sur la borne 8 − b donne deux parties miroirs de même valeur. La racine et chaque liste courte ne gardent que les bornes 1 à 4 (src/sim/mcts/mirror.js), les places libérées vont à d'autres cartes.",
    "note": "Sur 750 parties de la 1.2, le plateau est miroir à 1,16 coup par partie (le tour 1 toujours, le 2 dans 13 %, le 3 dans 3 %) ; au tour 1, 3,6 cartes différentes parmi les 8 candidats au lieu de 2,6. Tri à 400 : 45,7 % (39,0 – 52,4) sur 162 parties, sans écart net. La 1k@2k (nuit du 18-19/10, offsets 0 et 1) : 48,0 puis 47,6 %, 47,8 % (44,2 – 51,4) sur 500 parties, arrêtée sous 50 % après les deux premiers duels : écarté. La série sur l'Oracle light, qui en dépendait, est annulée. Deux coups miroirs se valent bien, mais ne garder que l'un des deux ne fait pas gagner la 1.2. L'option +mirror=1 reste. Empreinte de la 1.2 inchangée sans l'option."
+  },
+  {
+   "id": "joker-win",
+   "name": "JokerWin : un JK seulement s'il gagne la partie (cœur stfig6jw)",
+   "family": "jokers",
+   "bench": "duel",
+   "verdict": "neutre",
+   "score": 49,
+   "lo": 45.2,
+   "hi": 52.8,
+   "when": "19-20/10",
+   "idea": "Idée de Sami, née des fins de partie mal jugées (avec deux JK cachés la 1.2 se surestime de 10,5 points) : un JK n'est joué que s'il complète un côté gagné par théorème et donne trois bornes de suite ou la majorité, à la racine, dans l'arbre et dans les simulations, pour les deux camps ; le solveur voit toujours tout (src/sim/heuristics/joker-win.js).",
+   "note": "Calibration des fins de partie +3,6 → +2,4 points, mais deux JK cachés toujours +10,5 et deux JK tenus −3,1 → −6,7. Tri à 400 : 51,7 % (44,3 – 59,0) sur 180 parties. 1k@2k de jour (20/10) : 47,2 puis 50,8 %, 49,0 % (45,2 – 52,8) sur 500 parties, arrêtée sous 50 % : écarté. Avec les deux JK elle gagne 65,0 %, la 1.2 65,3 % sur les mêmes donnes."
+  },
+  {
+   "id": "joker-their-hand",
+   "name": "JokerTheirHand : les JK cachés dans la main adverse (+jkHand=4)",
+   "family": "jokers",
+   "bench": "duel",
+   "verdict": "neutre",
+   "score": 49.8,
+   "lo": 46.2,
+   "hi": 53.4,
+   "when": "20/10",
+   "idea": "Idée de Sami : dans les donnes de l'arbre, les JK que le joueur ne voit pas sont chez l'adversaire jusqu'à preuve du contraire, jamais dans la pioche, une fois la pioche à k cartes ou moins (src/sim/mcts/deal.js). Dans les duels gardés, un JK caché est chez l'adversaire 94,6 % du temps à 1 carte de pioche (85,7 % au hasard), 73,6 % à 6 (50 %).",
+   "note": "Calibration +3,6 → +1,7, deux JK cachés +10,5 → +5,5. Tris à 400 : jkHand=40 46,6 % (41,6 – 51,6), jkHand=4 48,2 % (44,2 – 52,2). 1k@2k de jour : 48,8 puis 50,8 %, 49,8 % (46,2 – 53,4) sur 500 parties, arrêtée : écarté. Elle défend mal sans JK face à deux : 33,3 % contre 39-41 % pour une version neutre."
+  },
+  {
+   "id": "their-pair-joker",
+   "name": "TheirPairJoker : JokerWin, jkHand=6, et l'adversaire simulé qui pose ses JK sur une paire (+theirs=stfig6jwp)",
+   "family": "jokers",
+   "bench": "duel",
+   "verdict": "neutre",
+   "score": 50.1,
+   "lo": 47.4,
+   "hi": 52.8,
+   "when": "20/10",
+   "idea": "Idée de Sami pour les +5,5 restants : l'adversaire du joueur qui cherche est joué par un autre cœur sous la racine et dans les simulations (src/sim/mcts/their-core.js) ; avec stfig6jwp il complète une paire par un JK même sans gain garanti, quand nous gardons les nôtres pour gagner.",
+   "note": "Calibration +3,6 → +0,7, deux JK cachés +10,5 → +3,7 : l'estimation est juste tranche par tranche. Tri à 400 : 50,0 % (44,4 – 55,6) sur 252 parties. 1k@2k de jour : 52,4 · 48,8 · 44,0 · 55,2 %, 50,1 % (47,4 – 52,8) sur 1 000 parties : écarté. Par jokers obtenus : 2 contre 0 63,5 % (la 1.2 60,7 % sur les mêmes donnes, la base d'une version neutre est 59-61 %), 1 contre 1 49,0 %."
+  },
+  {
+   "id": "joker-win-hand6",
+   "name": "JokerWinHand6 : JokerWin et jkHand=6, sans theirs",
+   "family": "jokers",
+   "bench": "duel",
+   "verdict": "neutre",
+   "score": 48.8,
+   "lo": 45,
+   "hi": 52.6,
+   "when": "20/10",
+   "idea": "TheirPairJoker sans l'adversaire qui joue ses JK, pour isoler ce que theirs apporte.",
+   "note": "1k@2k de jour : 48,4 puis 49,2 %, 48,8 % (45,0 – 52,6) sur 500 parties, arrêtée : écarté."
   }
  ],
  "manualJobs": [],
@@ -1180,6 +1233,11 @@
   ]
  },
  "next": [
+  {
+   "when": "Fait (19-20/10)",
+   "title": "Les jokers en fin de partie : mieux estimer ne fait pas mieux jouer",
+   "text": "Sur les deux dernières recherches de 9 620 duels gardés, la 1.2 surestimait son joueur de 3,6 points, 10,5 avec les deux JK cachés. Quatre variantes de Sami (JokerWin, JokerTheirHand, TheirPairJoker, JokerWinHand6) corrigent l'estimation jusqu'à +0,7 point, juste tranche par tranche, mais aucune ne bat la 1.2 sur la 1k@2k (48,8 à 50,1 %). Hors 40-60 %, la 1.2 n'est démentie que 10,3 % du temps quand une estimation parfaite le serait 10,9 % : les grands écarts sont surtout la chance des cartes cachées. Un biais commun à tous les candidats ne change pas le coup choisi ; une donne qui met les deux JK dans une main décide déjà 60 % des parties. Les options restent (jokerWin, jokerPair, +jkHand, +theirs), désactivées par défaut."
+  },
   {
    "when": "Fait (nuit du 18-19/10)",
    "title": "MirrorMoves et Ensemble2x2000 : écartés",
