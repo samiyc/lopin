@@ -639,3 +639,39 @@ dans les tranches du milieu, d'un même biais pour tous les candidats, qui ne ch
   fin de partie seule, où leur coût ne pèse que sur quelques coups.
 - *Le joueur qui tient les deux JK* se sous-estime (−3,1 avec la 1.2, −6,7 sous JokerWin) : sans effet
   en duel, mais c'est le seul biais encore net.
+
+## 12. Le coup joué en fin de partie, contre le solveur (20-21/10)
+
+**La question de Sami** : l'UCB, guidé par des estimations fausses, passe-t-il à côté d'un coup moins
+visité mais meilleur ? `scripts/archive/endgame-moves.js` reprend 600 des positions du § 7 (pioche 1-2,
+100 par tranche d'estimation, 200 dans 40-60 %), les cherche à nouveau avec la 1.2@2000, et juge
+**chaque coup légal** au solveur exact sur les mêmes donnes des cartes cachées (toutes les places de la
+carte de pioche, ou 12 donnes tirées à deux cartes) — un PIMC : il prête à l'adversaire la vue des
+cartes. 478 positions résolues (122 au-delà de 3 millions de nœuds, surtout à deux cartes de pioche).
+Coût : ~400 octets par nœud, 10 fils sous 13 Go, 4 h 05.
+
+| Tranche | Positions | L'arbre joue le meilleur | Perte moyenne | 1er du cœur = politique |
+|---|---|---|---|---|
+| toutes | 478 | **89,5 %** | 3,0 points | 82,6 % (4,2) |
+| < 20 % | 87 | 87,5 % | 1,8 | 75,0 % |
+| 20-40 % | 81 | 86,8 % | 3,7 | 78,9 % |
+| **40-60 %** | 161 | **86,0 %** | **4,0** | 82,8 % |
+| 60-80 % | 69 | 92,5 % | 2,4 | 80,6 % |
+| > 80 % | 80 | 98,6 % | 1,0 | 92,8 % |
+
+Les 43 coups manqués (perte moyenne 28 points chacun) :
+- **Ce n'est pas l'exploration.** Le meilleur coup est le 2e ou le 3e plus visité dans 67 % des cas
+  (17 % des visites contre 42 % au coup joué), et son taux d'arbre est **plus bas** que celui du coup
+  joué dans 95 % des cas (41,2 % contre 46,0 ; le solveur dit 55,7 contre 27,6). L'UCB suit bien les
+  taux ; ce sont les taux qui rangent mal ces deux coups : un biais des simulations qui diffère d'un
+  candidat à l'autre.
+- **23 % des meilleurs coups ne sont jamais visités** (hors des 8 candidats) : la liste courte du cœur.
+- **L'arbre quitte le bon favori du cœur** : dans 37 % des manqués (50 % en 40-60) le meilleur coup était
+  le 1er du cœur, que l'arbre a écarté ; le coup joué n'était le 1er du cœur que dans 12 %.
+- En 40-60, le coup joué pose un joker dans 36 % des manqués, le meilleur dans 18 % (22 cas).
+
+**Ce qu'on en tire** : à 2 000 itérations l'arbre perd en moyenne 3 à 4 points d'espérance sur chacune de
+ses deux dernières recherches, par une erreur d'environ 28 points une fois sur dix, que plus de visites ne
+corrigent pas (le mauvais coup a déjà le meilleur taux). La piste qui en découle : **juger au solveur les
+2-3 premiers candidats de l'arbre quand la pioche a une carte** (7 donnes exactes : 1 à 23 s pour tous
+les coups, bien moins pour trois), le PIMC choisissant parmi eux ; à mesurer au même banc, puis en duel.
