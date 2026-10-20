@@ -579,3 +579,19 @@ gagnant ou non). Moteur : `ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=
   tient ses deux JK, **−6,7 ± 2,0** comme sous JokerWin : il les garde pour un gain sûr et se sous-estime.
 - Tri du jour à 400 contre la 1.2 : **50,0 % (44,4 – 55,6) sur 252 parties**, rien d'écarté. La 1k@2k
   est en file (`VALIDATE_LONG_1..4_TheirPairJoker`, après celle de JokerWin).
+
+## 11. Les 1k@2k des variantes JK (de jour, 20/10)
+
+Lancées de jour par Sami, contre la 1.2@2000, règle d'arrêt habituelle (`data/backlog-done/2026-10.json`) :
+
+| Version | Duels (250 parties chacun) | Réunis | Verdict |
+|---|---|---|---|
+| `JokerWin` | 47,2 · 50,8 | 49,0 % sur 500 | arrêtée, écartée |
+| `TheirPairJoker` | 52,4 · 48,8 · 44,0 · 55,2 | **50,1 % (47,4 – 52,8) sur 1 000** | écartée |
+| `JokerTheirHand` (`jkHand=4`) | 48,8 · 50,8 | 49,8 % sur 500 | arrêtée, écartée |
+| `JokerWinHand6` | 48,4 · 49,2 | 48,8 % sur 500 | arrêtée, écartée |
+
+TheirPairJoker par jokers obtenus (`npm run versus`) : 2 contre 0 63,5 %, 0 contre 2 39,3 % (moyenne
+51,4), 1 contre 1 49,0 %. **Mieux estimer les fins de partie ne fait pas jouer mieux** : la calibration
+passe de +3,6 à +0,7 points sans gain en duel. Le code reste (désactivé par défaut) ; ne pas réessayer
+sans une raison nouvelle.
