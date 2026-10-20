@@ -140,6 +140,146 @@
           "below": 0.5
         }
       ]
+    },
+    {
+      "id": "VALIDATE_LONG_1_JokerTheirHand",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerTheirHand (Sami, 20/10, docs/priorites-1.3.md § 9, src/sim/mcts/deal.js) : la 1.2, pioche ≤ 4, les JK cachés dans la main adverse, jamais dans la pioche. Calibration : deux JK cachés +10,5 → +5,5, global +1,7. Tri du jour à 400 : 48,2 % (44,2 – 52,2) sur 396 parties. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 1 sur 4, règle d'arrêt.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_2_JokerTheirHand",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerTheirHand (Sami, 20/10, docs/priorites-1.3.md § 9, src/sim/mcts/deal.js) : la 1.2, pioche ≤ 4, les JK cachés dans la main adverse, jamais dans la pioche. Calibration : deux JK cachés +10,5 → +5,5, global +1,7. Tri du jour à 400 : 48,2 % (44,2 – 52,2) sur 396 parties. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 2 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerTheirHand"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_JokerTheirHand",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerTheirHand (Sami, 20/10, docs/priorites-1.3.md § 9, src/sim/mcts/deal.js) : la 1.2, pioche ≤ 4, les JK cachés dans la main adverse, jamais dans la pioche. Calibration : deux JK cachés +10,5 → +5,5, global +1,7. Tri du jour à 400 : 48,2 % (44,2 – 52,2) sur 396 parties. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 3 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerTheirHand"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerTheirHand",
+            "VALIDATE_LONG_2_JokerTheirHand"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_JokerTheirHand",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerTheirHand (Sami, 20/10, docs/priorites-1.3.md § 9, src/sim/mcts/deal.js) : la 1.2, pioche ≤ 4, les JK cachés dans la main adverse, jamais dans la pioche. Calibration : deux JK cachés +10,5 → +5,5, global +1,7. Tri du jour à 400 : 48,2 % (44,2 – 52,2) sur 396 parties. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 4 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerTheirHand"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerTheirHand",
+            "VALIDATE_LONG_2_JokerTheirHand"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_1_JokerWinHand6",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 0",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerWinHand6 (20/10, docs/priorites-1.3.md § 10) : TheirPairJoker sans theirs — JokerWin + jkHand=6, l'adversaire simulé garde la règle JokerWin. Sépare ce qu'apporte theirs=stfig6jwp. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 1 sur 4, règle d'arrêt.",
+      "status": "todo"
+    },
+    {
+      "id": "VALIDATE_LONG_2_JokerWinHand6",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 1",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerWinHand6 (20/10, docs/priorites-1.3.md § 10) : TheirPairJoker sans theirs — JokerWin + jkHand=6, l'adversaire simulé garde la règle JokerWin. Sépare ce qu'apporte theirs=stfig6jwp. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 2 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerWinHand6"
+          ],
+          "below": 0.47
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_3_JokerWinHand6",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 2",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerWinHand6 (20/10, docs/priorites-1.3.md § 10) : TheirPairJoker sans theirs — JokerWin + jkHand=6, l'adversaire simulé garde la règle JokerWin. Sépare ce qu'apporte theirs=stfig6jwp. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 3 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerWinHand6"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerWinHand6",
+            "VALIDATE_LONG_2_JokerWinHand6"
+          ],
+          "below": 0.5
+        }
+      ]
+    },
+    {
+      "id": "VALIDATE_LONG_4_JokerWinHand6",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6@2000\" \"ismcts+widen=7+depth=5+core=stfig6+exact=12@2000\" --long --games 125 --page --offset 3",
+      "estimate": "30 min",
+      "limit": 60,
+      "why": "JokerWinHand6 (20/10, docs/priorites-1.3.md § 10) : TheirPairJoker sans theirs — JokerWin + jkHand=6, l'adversaire simulé garde la règle JokerWin. Sépare ce qu'apporte theirs=stfig6jwp. Lancée de jour par Sami (20/10, toutes les variantes JK sur 1 000 parties). Le protocole 1k@2k, donnes 4 sur 4, règle d'arrêt.",
+      "status": "todo",
+      "stopIf": [
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerWinHand6"
+          ],
+          "below": 0.47
+        },
+        {
+          "after": [
+            "VALIDATE_LONG_1_JokerWinHand6",
+            "VALIDATE_LONG_2_JokerWinHand6"
+          ],
+          "below": 0.5
+        }
+      ]
     }
   ]
 }
