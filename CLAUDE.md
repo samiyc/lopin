@@ -517,6 +517,8 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
 - **JokerWin** (Sami, 19/10, `docs/priorites-1.3.md` § 7-8): duel endgames show the tree overrating its mover by +10.5
   points with both jokers hidden (`scripts/archive/misjudged-endgames.js`). Idea `jokerWin` (core `stfig6jw`, joker-win.js):
   a joker only where it wins the game, root, tree and rollouts, both sides; 1.2 fingerprint unchanged; 1k@2k queued.
+  `+jkHand=k` (deal.js) deals hidden jokers to the opponent once the pile holds ≤ k; `+theirs=core` (their-core.js) plays
+  the searcher's opponent with another core: TheirPairJoker (`jkHand=6+theirs=stfig6jwp`) +0.7 overall, 1k@2k queued.
 - **The replay player keeps hands in order with `followHands()`** (`hand.js`):
   sorted at the deal, drawn cards appended, a sort applied from the position
   it was asked at. Both hands, via `handOrder` / `topOrder` of `tableView`.

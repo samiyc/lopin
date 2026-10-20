@@ -16,12 +16,13 @@ import { colorOf, isJoker, valueOf } from "../../core/cards.js";
  *   show 94 % of borders won against 91 % at the ends).
  * - `jokerRuns`: the habit also lets a joker complete a suited run.
  * - `jokerWin` (19/10, joker-win.js): in place of the habit, a joker only where it wins the game.
+ * - `jokerPair` (20/10, with `jokerWin`): a joker on a pair too, win or not — the opponent's core under `+theirs` (their-core.js).
  * - `jokerTrap` (Sami's trap): with a joker in hand, the second card of a pair
  *   whose last two real cards are already on the board earns `jokerTrap`. The
  *   pair looks dead to the opponent; the joker makes it trips. In the kept
  *   games such pairs win their border 78 % of the time, live ones 74 %.
  */
-export const JOKER_IDEAS = Object.freeze(["jokerFull", "jokerWait", "jokerMid", "jokerRuns", "jokerTrap", "jokerWin"]);
+export const JOKER_IDEAS = Object.freeze(["jokerFull", "jokerWait", "jokerMid", "jokerRuns", "jokerTrap", "jokerWin", "jokerPair"]);
 
 const realCards = (side) => side.filter((card) => !isJoker(card));
 

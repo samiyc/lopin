@@ -225,6 +225,8 @@ export const CORES = Object.freeze({
   stfig6crit: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 }, endUrgency: true },
   // JokerWin (Sami, 19/10, joker-win.js): the 1.2's core, a joker only where it wins the game — root, tree and rollouts.
   stfig6jw: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "jokerWin"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
+  // TheirPairJoker (Sami, 20/10, their-core.js): JokerWin, plus a joker on a pair even without a win — the simulated opponent of `+theirs=stfig6jwp`.
+  stfig6jwp: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas, "stay", "jokerWin", "jokerPair"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
   v1nc: { ...EXPERIMENT, ideas: [...EXPERIMENT.ideas.filter((idea) => idea !== "connector"), "stay"], weights: { ...EXPERIMENT.weights, stay: 0.6, stayFigure: 1 } },
   // The 1.0's core with every weight tuned at once on the oracle's moves (npm run distill, distill.js; Sami, 04/10).
   dist1: {

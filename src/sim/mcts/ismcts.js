@@ -13,6 +13,7 @@ import { createReader, inferredHands } from "../search/infer.js";
 import { unseenList } from "../search/lookahead.js";
 import { parseDiverse, pickCandidates, resolveDiverse, treeDiverseOf } from "./pick.js";
 import { rolloutOf } from "./rollouts.js";
+import { seatPolicies } from "./their-core.js";
 import { dealFor } from "./deal.js";
 import { mirrorPick } from "./mirror.js";
 import { untriedScore } from "./first-play.js";
@@ -202,16 +203,15 @@ const iterateTimed = timedIteration({ begin, walk, finish, backUp });
 /** `infer`: the opponent's hand guessed from their moves (infer.js), from a seed of its own so the deals stay a plain search's when it is off. */
 const guessedHands = (state, judge, seed, { infer, readings }) => (infer > 0 ? inferredHands(state, judge, createRng(seed ^ 0x5bd1e995), { size: infer, readings }) : null);
 
-function resolveCtx(state, scored, { seed, treePolicy, policy, firstExploration, ...settings }, deals) {
+function resolveCtx(state, scored, { seed, treePolicy, policy, theirPolicy, firstExploration, ...settings }, deals) {
   const cfg = { ...ISMCTS, ...settings };
   const rootCap = resolveDiverse(cfg.rootDiverse ?? cfg.diverse, state);
   const rootMoves = mirrorPick(cfg.mirror ?? 0, state, scored, (kept) => pickCandidates(kept, cfg.candidates, rootCap));
-  const judge = (treePolicy ?? policy)(createRng(1));
   const phases = parseHalving(settings.halving);
-  const rolloutRng = createRng(deals.int(2 ** 31));
+  const { judge, rollout, rolloutRng } = seatPolicies(state, { treePolicy, policy, theirPolicy }, deals);
   return {
     state, player: state.current, unseen: unseenList(state, state.current), deals, rootMoves, judge,
-    rollout: policy(rolloutRng), rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
+    rollout, rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
     pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0, fpu: cfg.fpu, jkHand: cfg.jkHand ?? 0,
     amaf: cfg.rave > 0 ? new Map() : null,
@@ -320,7 +320,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` (deal.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` (deal.js), `+theirs=core` (their-core.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -329,7 +329,7 @@ export function ismctsSettings(name) {
   return Object.fromEntries(
     changes.map((change) => {
       const [key, value] = change.split("=");
-      if (["core", "shortlist", "rollout", "halving"].includes(key)) return [key, value];
+      if (["core", "shortlist", "rollout", "theirs", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
       if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror", "jkHand"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];

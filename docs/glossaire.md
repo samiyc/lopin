@@ -435,6 +435,11 @@ Du plus rapide au plus sûr. Aucune étape rapide ne suffit à adopter une versi
   cartes ou moins (40 : toujours), dans les donnes de l'arbre, les JK que le joueur ne voit pas vont dans la main adverse, jamais dans la pioche, jusqu'à
   preuve du contraire ; ni les nœuds ni les simulations ne lui en font piocher un. La version qui le
   teste s'appelle `JokerTheirHand`.
+- **L'adversaire simulé joue ses JK sur une paire** (`+theirs=cœur`, `src/sim/mcts/their-core.js`, idée
+  `jokerPair`, Sami 20/10) : l'adversaire du joueur qui cherche est joué par un autre cœur, dans l'arbre
+  sous la racine et dans les simulations. Avec `theirs=stfig6jwp` (JokerWin plus `jokerPair`), il pose
+  un JK sur une paire même sans gagner la partie, quand le joueur, lui, garde les siens pour gagner. La
+  version qui l'essaie, avec JokerWin et `jkHand=6`, s'appelle `TheirPairJoker`.
 
 ## L'oracle
 
@@ -543,6 +548,7 @@ version :
 | `Ensemble2x2000` | une mesure, pas une version : deux arbres de 2 000 (4 000 en tout), visites de la racine additionnées, contre la 1.2@2000. Ce que vaut le bruit du coup joué à qualité d'arbre égale, à comparer à `Budget4000` (un arbre de 4 000) sur les mêmes donnes. Nuit du 17/10, offsets 1 et 2 : **54,6 % (50,8 – 58,4) sur 500 parties**, autant que Budget4000 (54,4 %) : le bruit vaut des points, et des arbres indépendants le réduisent. Offsets 3 et 4 (nuit du 18-19/10) : 46,0 et 50,4 %, **51,4 % (48,7 – 54,1) sur 1 000 parties** : pas de 1.2 sur deux workers | `ismcts+widen=7+depth=5+core=stfig6+exact=12+trees=2@4000` |
 | `JokerWin` | codé le 19/10 (Sami) : la 1.2 avec le cœur `stfig6jw` (le joker gagnant), à la racine, dans l'arbre et dans les simulations. Né des fins de partie mal jugées (`docs/priorites-1.3.md` § 7) : avec deux JK cachés la 1.2 se surestime de 10,5 points | `ismcts+widen=7+depth=5+core=stfig6jw+exact=12@2000` |
 | `JokerTheirHand` | codé le 20/10 (Sami) : la 1.2, les JK cachés donnés à l'adversaire dans les donnes de l'arbre (`+jkHand=k`, pioche de `k` cartes ou moins). Vise la ligne « aucun JK en main, deux cachés » des fins mal jugées : +10,5 → +5,5 points. Tri à 400 : `jkHand=40` 46,6 % (41,6 – 51,6), `jkHand=4` 48,2 % (44,2 – 52,2), rien de net, pas en file | `ismcts+widen=7+depth=5+core=stfig6+exact=12+jkHand=4@2000` |
+| `TheirPairJoker` | codé le 20/10 (Sami) : JokerWin, `jkHand=6` et `theirs=stfig6jwp` (l'adversaire simulé pose ses JK sur une paire). Calibration : deux JK cachés +10,5 → +3,7, global +0,7. Tri à 400 : 50,0 % (44,4 – 55,6) sur 252 parties ; 1k@2k en file | `ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6+theirs=stfig6jwp@2000` |
 | `MarginBackup05` | `MarginBackup15` à 5 % (`margin=0.05`) : 51,4 % au tri à 400, gardé en réserve ; un duel long « dernière chance » à 2 000 (15/10) | `ismcts+…+exact=12+margin=0.05@2000` |
 | `OracleLight-Pw1` / `-Pw2` / `-Pw3` | l'Oracle light (Sami, 15/10, `docs/1.3-to-oracle-shift.md`) : l'arbre d'Oracle3 à 10 000 itérations au lieu de 20 000, avec `pw=k` (k + √visites réponses), pour un oracle jouable dans la page ; le tri dit quel `k` va avec 10 000. Premier tri (15/10, 140 parties contre la 1.2@2000) : 50,7 / **57,9** / 51,4 % ; `OracleLight-Pw2` confirmé à **54,5 % (50,6 – 58,4) sur 420 parties** (= `pwl=2`) | `ismcts+widen=7+depth=10+core=stfig6+exact=12+pw=2@10000` |
 | `ForkCut1` / `ForkCut2` | la double menace dans les simulations (`fork-cut.js`, 14/10) : arrêter une simulation à la première victoire sur les bornes remplies (1, exact), ou aussi à une fourche, compté gagné (2) | `ismcts+widen=7+depth=5+core=stfig6+exact=12+forkCut=1@2000` |

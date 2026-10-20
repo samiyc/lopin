@@ -562,3 +562,20 @@ toujours ; 0 par défaut, empreintes inchangées).
   `jkHand=4` (fin de partie) **48,2 % (44,2 – 52,2) sur 396**. Rien de net : mieux estimer ne fait
   pas jouer mieux, du moins à 400. En début de partie la règle est fausse — un JK resté dans une
   pioche de 30 cartes revient au joueur une fois sur deux —, d'où `k`. Pas mis en file.
+
+## 10. `TheirPairJoker` : JokerWin, `jkHand=6` et l'adversaire qui joue ses JK (20/10)
+
+**L'idée de Sami** : combiner les deux précédentes et corriger les +5,5 restants en laissant
+l'adversaire simulé compléter une paire avec un JK, même sans victoire garantie. `+theirs=cœur`
+(`src/sim/mcts/their-core.js`) fait jouer l'adversaire du joueur qui cherche par un autre cœur, sous la
+racine et dans les simulations ; `stfig6jwp` est JokerWin plus l'idée `jokerPair` (un JK sur une paire,
+gagnant ou non). Moteur : `ismcts+widen=7+depth=5+core=stfig6jw+exact=12+jkHand=6+theirs=stfig6jwp@2000`.
+
+- **`jkHand=6`, trop tôt ?** Dans les duels gardés, un JK que le joueur ne voit pas est chez
+  l'adversaire 94,6 % du temps avec 1 carte en pioche (85,7 % au hasard), 79,8 % à 4 (60 %), 73,6 % à 6
+  (50 %), 66,4 % à 8 (42,9 %) : à 6 la règle se trompe une fois sur quatre, mieux que le hasard.
+- Calibration sur les 18 541 fins de partie : global +3,6 → **+0,7 ± 0,7** ; aucun JK en main, deux
+  cachés +10,5 → **+3,7 ± 1,9** ; un caché +5,9 → +1,5 ; un et un +3,0 → +0,8. Reste le joueur qui
+  tient ses deux JK, **−6,7 ± 2,0** comme sous JokerWin : il les garde pour un gain sûr et se sous-estime.
+- Tri du jour à 400 contre la 1.2 : **50,0 % (44,4 – 55,6) sur 252 parties**, rien d'écarté. La 1k@2k
+  est en file (`VALIDATE_LONG_1..4_TheirPairJoker`, après celle de JokerWin).

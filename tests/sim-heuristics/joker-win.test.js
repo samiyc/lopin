@@ -62,4 +62,10 @@ describe("jokerWin: a joker only where it wins the game", () => {
     assert.deepEqual(jokers(position()), [2]);
     assert.deepEqual(jokers(position({ owned: false })), []);
   });
+
+  it("the stfig6jwp core (jokerPair) also lays it on a pair that wins nothing yet", () => {
+    const state = position({ owned: false });
+    const jokers = strategistBot(createRng(1), coreOf("stfig6jwp")).scoreMoves(state, legalMoves(state)).filter((entry) => isJoker(entry.move.card));
+    assert.deepEqual(jokers.map((entry) => entry.move.border), [2]);
+  });
 });

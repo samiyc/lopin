@@ -82,9 +82,9 @@ function habitsBonus(context, side, card) {
   return bonus;
 }
 
-/** Whether the strategist lays a joker on `side`: with `jokerWin` (joker-win.js) only to win the game, else on a pair (the habit). */
+/** Whether the strategist lays a joker on `side`: with `jokerWin` (joker-win.js) only to win the game (`jokerPair`: or on a pair), else on a pair (the habit). */
 function jokerAllowed(side, context, border) {
-  if (context.jokerWin) return context.jokerWin(border);
+  if (context.jokerWin) return context.jokerWin(border) || (context.ideas.has("jokerPair") && jokerCompletesTrips(context.spec, side));
   const runs = Boolean(context.ideas?.has("jokerRuns")) && jokerCompletesRun(context.spec, side);
   return !context.habits.has("joker") || jokerCompletesTrips(context.spec, side) || runs;
 }
