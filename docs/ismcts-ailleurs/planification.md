@@ -96,6 +96,28 @@ La différence : ici, la priorité elle-même est incertaine, et elle peut chang
 épidémie) : en temps normal, les règles du tri suffisent. Le scénario de démonstration est donc une
 crise : 40 arrivées en deux heures pour 10 box et 2 blocs, avec des ambulances annoncées.
 
+**Dans un deuxième temps : l'hôpital en plan** (Sami, 22/10). Une fois l'ordonnancement en place, les
+patients et les soignants se déplacent dans un hôpital factice « standard », proche de ce qu'on trouve sur
+le terrain :
+- **les salles** : l'entrée à pied et l'entrée des ambulances, l'accueil et le tri, la salle d'attente, les
+  box, la salle de déchocage pour les patients les plus graves, l'imagerie, le bloc, l'unité
+  d'hospitalisation de courte durée, et les couloirs entre elles ;
+- **les déplacements** : patients, brancardiers, soignants. Les trajets viennent d'A* avec réservations,
+  le moteur de l'entrepôt ([`entrepot.md`](entrepot.md)). Un couloir a une capacité : un brancard qui
+  croise un autre ralentit, et **les bouchons** apparaissent d'eux-mêmes ;
+- **les salles d'attente qui saturent** : une capacité par salle ; au-delà, les patients attendent dans
+  le couloir, et le couloir se bouche à son tour ;
+- **l'optimisation des salles**, à deux échelles : en temps réel, quel patient dans quelle salle ; hors
+  ligne, comparer plusieurs plans d'hôpital sur les mêmes crises simulées ;
+- **les conflits** : chaque patient a une impatience qui monte avec l'attente. Elle est cachée, comme une
+  main : on ne voit que les signes. Au-delà d'un seuil, un incident devient possible ; **les agents de
+  sécurité** sont une ressource limitée, qui met du temps à arriver. Le planificateur peut alors préférer
+  voir plus tôt un patient vert qui attend depuis 3 h, ou envoyer un agent avant l'incident.
+
+Les urgences rejoignent alors les deux familles : l'ordonnancement (A) et les déplacements (B), plus des
+patients qui agissent selon un état caché. C'est le projet le plus complet de la liste, donc le dernier :
+l'impatience et les incidents y sont des règles de jeu, pas un modèle validé du comportement humain.
+
 **Ce qui se fait vraiment.** Les services d'urgences s'appuient sur des échelles de triage, des règles et
 de la **simulation à événements discrets** pour dimensionner les équipes. La recherche y ajoute de
 l'optimisation stochastique. Une recherche rapide (22/10) n'a trouvé aucun travail publié avec un MCTS

@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { localTimestamp } from "../src/replay/core/log.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
+import { nextJob as pickNext, planNight } from "./lib/domain/backlog-order.js";
 import { stopReason } from "./lib/domain/backlog-stop.js";
 import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
 
@@ -36,6 +37,10 @@ import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
  * `skipped`, with its reason — when the duels it names, done, pool under a bar:
  * a series of long duels that started badly stops there (scripts/lib/domain/backlog-stop.js).
  *
+ * The next job (Sami, 22/10, scripts/lib/domain/backlog-order.js): its prerequisites (`after`, and the
+ * duels its `stopIf` reads) finished, then a `due` it would otherwise miss, then Smith's rule on
+ * `priority` and `estimate`. `--fifo` keeps the file order. `--list` shows the night so planned.
+ *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to
  * data/runs-laptop/, which git carries back: `git pull`, run, then commit and
@@ -48,6 +53,7 @@ const queue = args.includes("--queue") ? args[args.indexOf("--queue") + 1] : nul
 // The jobs are child processes: they inherit the variable their pools read.
 applyThreadsOption(args);
 const threads = workerCount();
+const order = { fifo: args.includes("--fifo") };
 if (queue !== null && !/^[a-z0-9-]+$/.test(queue)) throw new Error(`File inconnue : « ${queue} »`);
 const suffix = queue ? `-${queue}` : "";
 const RUNS_DIR = queue ? `data/runs${suffix}/` : "backlog-runs/";
@@ -91,22 +97,32 @@ const statusOf = (code) => {
   return code === 0 ? "done" : "failed";
 };
 
-/** May `job` start now? A "todo" job always; a "scheduled" one once its `notBefore` has come. */
-const ready = (job) => job.status === "todo" || (job.status === "scheduled" && Date.now() >= Date.parse(job.notBefore));
 
 const SHOWN_DONE = 3;
 
-function lineOf(job) {
+/** What a job's line says beyond its id: priority when not normal, due time, prerequisites. */
+const tagsOf = (job) =>
+  [job.priority && job.priority !== 2 ? `priorité ${job.priority}` : "", job.due ? `pour ${job.due}` : "", job.after?.length ? `après ${job.after.join(", ")}` : ""]
+    .filter(Boolean)
+    .map((tag) => ` (${tag})`)
+    .join("");
+
+function lineOf(job, note = "") {
   const done = job.doneAt ? " (fait le " + job.doneAt + ", " + job.minutes + " min)" : "";
-  const wait = job.status === "scheduled" ? ` (pas avant ${job.notBefore})` : "";
   const why = job.reason ? ` (${job.reason})` : "";
-  return `[${job.status}] ${job.id} — ${job.estimate} — ${job.command}${done}${wait}${why}`;
+  return `${note}[${job.status}] ${job.id} — ${job.estimate} — ${job.command}${tagsOf(job)}${done}${why}`;
 }
+
+const hhmm = (ms) => new Date(ms).toTimeString().slice(0, 5);
 
 if (args.includes("--list")) {
   const archived = await readArchive();
   if (archived.length > SHOWN_DONE) console.log(`(${archived.length - SHOWN_DONE} traitements finis plus anciens dans data/backlog-done${suffix}/)`);
-  for (const job of [...archived.slice(-SHOWN_DONE), ...(await readBacklog()).jobs]) console.log(lineOf(job));
+  for (const job of archived.slice(-SHOWN_DONE)) console.log(lineOf(job));
+  const { order: night, waiting } = planNight((await readBacklog()).jobs, archived, Date.now(), order);
+  if (night.length > 0) console.log(`Ordre prévu${order.fifo ? " (ordre du fichier)" : ""}, si chaque job tient son estimation :`);
+  for (const { job, start, end, late } of night) console.log(lineOf(job, `${hhmm(start)} → ${hhmm(end)}${late ? " EN RETARD" : ""}  `));
+  for (const { job, blocked, reason } of waiting) console.log(lineOf(job, `${blocked ? "bloqué" : "attend"} : ${reason}  `));
   process.exit(0);
 }
 
@@ -116,13 +132,13 @@ if (args.includes("--archive")) {
   console.log(`${moved} traitement(s) fini(s) rangé(s) dans data/backlog-done${suffix}/.`);
   process.exit(0);
 }
-const pending = (await readBacklog()).jobs.filter(ready);
+const planned = planNight((await readBacklog()).jobs, await readArchive(), Date.now(), order);
 await mkdir(RUNS, { recursive: true });
 const onThreads = `, sur ${threads} fils`;
-console.log(`${pending.length} traitement(s) à faire${onThreads}.`);
+console.log(`${planned.order.length} traitement(s) à faire${onThreads}, ${planned.waiting.length} en attente.`);
 // The next job is read from the file each time: one added while another ran is played too.
 const tried = new Set();
-const nextJob = async () => (await readBacklog()).jobs.find((job) => ready(job) && !tried.has(job.id));
+const nextJob = async () => pickNext((await readBacklog()).jobs.filter((job) => !tried.has(job.id)), await readArchive(), Date.now(), order);
 /** A finished job's output, for `stopIf`: empty when it cannot be read. */
 const outputOf = (job) => {
   try {

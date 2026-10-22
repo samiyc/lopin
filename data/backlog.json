@@ -1,4 +1,4 @@
 {
-  "note": "Les traitements longs, à lancer la nuit : npm run backlog (npm run backlog -- --list pour voir la file). Aucun ne dépasse 2 h (limit, en minutes ; au-delà il est arrêté et marqué timeout). Chaque traitement fait est marqué avec sa date, sa durée et sa sortie (backlog-runs/, hors de git). Un traitement plus urgent se place en tête des « todo ».",
+  "note": "Les traitements longs, à lancer la nuit : npm run backlog (npm run backlog -- --list pour voir la file). Aucun ne dépasse 2 h (limit, en minutes ; au-delà il est arrêté et marqué timeout). Chaque traitement fait est marqué avec sa date, sa durée et sa sortie (backlog-runs/, hors de git). L'ordre : un job attend ses prérequis (after), puis passe devant s'il manquerait son échéance (due), sinon le plus de poids par minute (priority 1 urgent, 2 normal, 3 peut attendre ; la durée lue dans estimate). --fifo garde l'ordre du fichier.",
   "jobs": []
 }

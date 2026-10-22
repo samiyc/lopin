@@ -273,7 +273,7 @@ forme :
 
 Les étapes du § 6 restent, mais l'ordonnanceur passe devant, sans MCTS d'abord :
 1. **Les champs `priority`, `due` et `after`** dans le lanceur, avec la règle de Smith. Encore un job à la
-   fois. Tests purs : quel job est prêt, lequel passe devant.
+   fois. Tests purs : quel job est prêt, lequel passe devant. **Fait le 22/10** (§ 9.7).
 2. **Le journal de jobs** (§ 8) : chaque job y écrit ses fils, sa durée et sa RAM.
 3. **La mesure du débit selon les fils** (§ 8), de jour à 400 itérations.
 4. **Plusieurs jobs côte à côte**, si la mesure le justifie : un budget de fils (18) et de RAM (libre
@@ -283,3 +283,23 @@ Les étapes du § 6 restent, mais l'ordonnanceur passe devant, sans MCTS d'abord
 
 Les étapes 1 et 2 apportent les priorités et les enchaînements dès la première semaine, sans aucun
 algorithme de recherche.
+
+### 9.7 Ce qui est fait (22/10)
+
+L'étape 1 est dans le lanceur : `scripts/lib/domain/backlog-order.js`, pur et testé
+(`tests/web-cli/backlog-order.test.js`), qui n'importe rien du jeu.
+- **Le choix du job suivant** : ses prérequis d'abord (`after`, et les duels que lit son `stopIf`, pour
+  que le duel 2 ne parte jamais avant le duel 1), puis un job qui manquerait son `due`, puis la règle de
+  Smith. Les durées sont lues dans `estimate` (« 40 min », « 1 h 30 », « ≤ 2 h »).
+- **`npm run backlog -- --list`** affiche la nuit prévue, avec les heures de début et de fin si chaque job
+  tient son estimation, « EN RETARD » sur un `due` manqué, puis les jobs qui attendent ou sont bloqués et
+  pourquoi.
+- **`--fifo`** garde l'ordre du fichier, comme avant.
+
+**Un changement à connaître** : sans priorité ni échéance, le job le plus court passe maintenant devant.
+Les duels d'une même série restent dans l'ordre (leur `stopIf`), mais une file qui comptait sur l'ordre du
+fichier doit passer `--fifo` ou des `after`.
+
+Vérifié sur une file factice (`--queue`, des commandes `echo`) : un job urgent de 10 min part en premier,
+le duel 2 est annulé par son `stopIf`, l'analyse part ensuite sur le duel joué, le job de 2 h à
+priorité 3 finit la nuit, et un job au prérequis inconnu reste bloqué avec sa raison.

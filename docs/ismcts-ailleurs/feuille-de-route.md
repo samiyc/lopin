@@ -14,10 +14,14 @@ signatures, servira à tous. Les adversaires cachés passent après.
    reprennent toutes les pièces : la couleur du bracelet est une priorité, son délai maximal une échéance,
    le parcours du patient une suite de prérequis, les box et les blocs des ressources
    ([`planification.md`](planification.md) § 3). Elles ajoutent l'état caché (la gravité réelle) et les
-   arrivées, sans grille ni trajets.
+   arrivées, sans grille ni trajets dans un premier temps.
 3. **Les déplacements** : l'entrepôt puis la cuisine, un moteur de grille pour les deux (§ 2). C'est la
    famille B.
-4. **Les adversaires cachés** (famille C) : seulement si un défi CodinGame en temps réel plaît (§ 5).
+4. **L'hôpital en plan** (Sami, 22/10) : les urgences reprennent le moteur de grille. Les patients et
+   les soignants se déplacent entre les salles, la salle d'attente sature, les couloirs se bouchent, les
+   patients impatients peuvent causer un incident et l'on appelle la sécurité
+   ([`planification.md`](planification.md) § 3, « Dans un deuxième temps »).
+5. **Les adversaires cachés** (famille C) : seulement si un défi CodinGame en temps réel plaît (§ 5).
 
 La bibliothèque commune (§ 4) naît pendant l'étape 1 et sort du dépôt au début de l'étape 2.
 
@@ -25,10 +29,10 @@ La bibliothèque commune (§ 4) naît pendant l'étape 1 et sort du dépôt au d
 
 | | Les urgences | L'entrepôt | La cuisine |
 |---|---|---|---|
-| **Le moteur** | celui de l'ordonnanceur : des ressources, des tâches, des événements ; pas de grille | une grille, A* avec réservations | la même grille |
+| **Le moteur** | celui de l'ordonnanceur : des ressources, des tâches, des événements ; la grille dans un deuxième temps (l'hôpital en plan) | une grille, A* avec réservations | la même grille |
 | **Les tâches** | des patients à soigner, dans l'ordre de leur parcours | des colis à porter au camion | des plats à préparer et à servir |
 | **Ce qui est incertain** | **l'état réel des patients**, que la couleur estime ; les arrivées | les allées bloquées, découvertes en arrivant (le voyageur canadien) | les commandes qui arrivent |
-| **La difficulté propre** | la priorité change pendant l'attente ; la crise, quand l'afflux dépasse les ressources | les embouteillages entre robots | **les recettes s'enchaînent** : couper, cuire, dresser |
+| **La difficulté propre** | la priorité change pendant l'attente ; la crise, quand l'afflux dépasse les ressources ; puis la salle d'attente qui sature et les patients impatients | les embouteillages entre robots | **les recettes s'enchaînent** : couper, cuire, dresser |
 | **Ce que fait l'humain** | il coordonne : il décide qui passe, l'assistant propose | un cariste qui prend des commandes | un cuisinier, comme dans *Overcooked* |
 
 L'entrepôt passe avant la cuisine : il est plus simple, et le plan de 17 × 7 est prêt dans
@@ -54,7 +58,8 @@ C'est ce qui rend les thèmes parlants, et c'est là que l'expérience de Lopin 
 ## 4. La bibliothèque commune
 
 **Où.** Elle commence dans ce dépôt, dans un dossier `lib/` qui n'importe rien du jeu (ni `src/sim`, ni
-le cœur), pendant l'ordonnanceur. Elle sort dans son propre dépôt quand l'étape 2 commence. Lopin pourra
+le cœur), pendant l'ordonnanceur. Sa première pièce, le futur module `schedule`, est
+`scripts/lib/domain/backlog-order.js` (22/10), qui n'importe déjà rien du jeu. Elle sort dans son propre dépôt quand l'étape 2 commence. Lopin pourra
 en devenir un client si son empreinte ne bouge pas ([`README.md`](README.md) § 4).
 
 **Les modules.**

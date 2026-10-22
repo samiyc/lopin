@@ -195,7 +195,9 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   seconds and are not concerned. Night jobs stay under 2 h each.
   `data/backlog.json` holds only the jobs to come (Sami, 17/10): a finished one
   moves at once to `data/backlog-done/YYYY-MM.json`; a reader of finished jobs
-  (stopIf, changelogs) goes through `backlogFiles()` (`scripts/lib/domain/backlog-files.js`).
+  (stopIf, changelogs) goes through `backlogFiles()` (`scripts/lib/domain/backlog-files.js`). The next job
+  (22/10, `backlog-order.js`): prerequisites (`after`, a `stopIf`'s duels), a `due` it would miss, then
+  Smith's rule on `priority` / `estimate`; `--fifo` keeps the file order, `--list` prints the planned night.
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.
