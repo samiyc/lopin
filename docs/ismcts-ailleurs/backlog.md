@@ -176,3 +176,110 @@ L'hypothèse, à mesurer : 12 fils donnent déjà 85 à 90 % du débit de 18. Le
 Si l'hypothèse tient, le coup du planificateur (§ 4) devient **(quel job, combien de fils)** : un job
 long à 12 fils et un court à 6 feraient plus de travail qu'un seul à 18, et laisseraient le PC plus
 fluide. La règle « la somme des fils ne dépasse pas 18 » reste la même.
+
+## 9. L'ordonnanceur : ce qu'il apporte, les priorités, les enchaînements
+
+Sami (22/10) : on commence par l'ordonnanceur, dans ce dépôt. Avant de l'écrire, qu'apporte-t-il au
+lanceur actuel ? Et comment régler des priorités et des tâches qui s'enchaînent ?
+
+### 9.1 Ce que fait le lanceur aujourd'hui
+
+`npm run backlog` lance **un job après l'autre, dans l'ordre du fichier**. Il sait déjà :
+- attendre une heure (`notBefore`) ;
+- annuler un duel quand ceux d'avant ont mal commencé (`stopIf`) ;
+- arrêter un job au bout de sa limite (2 h par défaut) ;
+- donner à chaque job le même nombre de fils (`--threads`).
+
+Il ne connaît ni priorité, ni échéance, ni prérequis, et ne fait jamais tourner deux jobs à la fois.
+
+### 9.2 Ce qu'il apporterait, attente par attente
+
+| L'attente de Sami | La réponse |
+|---|---|
+| **Mieux répartir les tâches sur les cœurs** | Oui, mais seulement en faisant tourner **plusieurs jobs côte à côte**, ce que le lanceur ne fait pas. Le gain vient des petits duels qui n'occupent que 12,5 fils sur 18 et des 12 vrais cœurs, à mesurer d'abord (§ 8). Un duel seul ne va pas plus vite. |
+| **Prévenir les blocages** | Oui, c'est le gain **le plus sûr** : ne jamais dépasser la RAM (Claude Code avait tué `endgame-moves` le 20/10), ne pas lancer à 7 h un job de 2 h, ne pas lancer une analyse dont un prérequis a échoué. |
+| **Remplir les 18 fils** | Oui, en logeant un job court à côté d'un job limité par la RAM (10 fils occupés sur 18 pour `endgame-moves`), ou dans le temps mort de la fin d'un duel. |
+| **Ajuster les priorités** | Oui, c'est **le vrai changement de comportement** : aujourd'hui seul l'ordre du fichier compte (§ 9.3). |
+| **Enchaîner des tâches** | Oui : une analyse part dès que ses duels sont finis, sans attendre la fin de la nuit ni un réveil (§ 9.4). |
+
+### 9.3 Les priorités et les échéances
+
+Deux champs de plus pour chaque job :
+- **`priority`** : 1 urgent, 2 normal (par défaut), 3 peut attendre ;
+- **`due`**, facultatif : l'heure à laquelle le résultat doit être là, par exemple « 8 h 30 » pour le lire
+  au réveil.
+
+**La règle de base, celle de Smith** (glossaire) : lancer d'abord le job qui a **le plus de poids par
+minute**. Le poids vient de la priorité (1 → 4, 2 → 2, 3 → 1). Un exemple :
+
+| Job | Durée | Priorité | Poids par minute |
+|---|---|---|---|
+| une analyse rapide demandée pour ce soir | 10 min | 1 (poids 4) | 0,40 |
+| un duel 1k@2k | 40 min | 2 (poids 2) | 0,05 |
+| une mesure longue sans urgence | 120 min | 3 (poids 1) | 0,008 |
+
+L'analyse passe en premier : elle ne retarde le duel que de 10 min, alors que l'inverse la retarderait de
+40. Un job dont l'échéance approche passe devant les autres, s'il peut encore la tenir. Un job lancé n'est
+jamais interrompu (sauf par sa limite) : la priorité ne joue qu'au moment de choisir le suivant.
+
+### 9.4 Les enchaînements
+
+Un champ **`after`** : la liste des jobs qui doivent être finis avant celui-ci (ses **prérequis**,
+glossaire). Un job n'est prêt que lorsque tous ses prérequis sont finis.
+- **Un prérequis sauté par un `stopIf` compte comme fini** : l'analyse se fait sur les duels qui ont été
+  joués. C'est le cas courant (une série 1k@2k s'arrête après 2 duels dans 41 % des cas, § 2).
+- **Un prérequis en échec ou en dépassement bloque la suite**, et le lanceur l'écrit dans `--list` au
+  lieu de lancer une analyse sur des données manquantes.
+
+**L'exemple de Sami : des duels, leur analyse, puis le rapport.**
+
+```json
+{ "id": "VALIDATE_LONG_1_JokerWin", "command": "npm run duel -- … --offset 0", "estimate": "40 min", "priority": 2 },
+{ "id": "VALIDATE_LONG_2_JokerWin", "command": "npm run duel -- … --offset 1", "estimate": "40 min", "priority": 2,
+  "stopIf": { "…": "les règles actuelles" } },
+{ "id": "VALIDATE_LONG_3_JokerWin", "…": "idem, offset 2" },
+{ "id": "VALIDATE_LONG_4_JokerWin", "…": "idem, offset 3" },
+{ "id": "VERSUS_JokerWin", "command": "npm run versus -- <moteur> <moteur de la 1.2> --label JokerWin",
+  "after": ["VALIDATE_LONG_1_JokerWin", "VALIDATE_LONG_2_JokerWin", "VALIDATE_LONG_3_JokerWin", "VALIDATE_LONG_4_JokerWin"],
+  "estimate": "1 min", "priority": 1 },
+{ "id": "CHANGELOG_1.3", "command": "npm run changelog -- 1.3", "after": ["VERSUS_JokerWin"], "estimate": "1 min", "priority": 1 }
+```
+
+- Les 4 duels d'une version s'enchaînent déjà : le `stopIf` du 2e lit le 1er, celui du 3e les deux
+  premiers. Un `stopIf` est un prérequis implicite. Avec deux jobs côte à côte, ce sont les duels de
+  **deux versions différentes** qui tournent ensemble.
+- `VERSUS_JokerWin` part dès que le dernier duel joué est fini, même au milieu de la nuit.
+- **La mise à jour des docs** (le carnet, le changelog écrit) n'est pas un job : elle demande de lire et
+  de juger. Le lanceur peut seulement noter « prêt à relire », et le réveil suivant de Claude s'en charge.
+
+**Le chemin critique** (glossaire). Avec des enchaînements, l'ordre compte même sans échéance pour savoir
+**quand** chaque résultat arrive. Deux versions à valider (4 duels + analyse chacune) et une mesure de 2 h
+indépendante : lancer d'abord les premiers duels des deux versions donne les deux verdicts plus tôt,
+parce que les `stopIf` décident vite (§ 2 : 15 % des séries s'arrêtent après le 1er duel). La mesure de
+2 h vient ensuite, ou à côté si les fils le permettent.
+
+### 9.5 Et l'ISMCTS dans tout ça
+
+Les priorités, les échéances et les prérequis entrent dans le planificateur du § 4 sans changer sa
+forme :
+- **les coups** ne sont que les jobs prêts (prérequis finis, fils et RAM disponibles) ;
+- **la récompense** additionne les poids des jobs finis, et retire un retard sur `due` ;
+- **le tirage** décide, scénario par scénario, si une série s'arrête après 1, 2 ou 4 duels, et donc
+  quand son analyse sera prête. C'est là que l'arbre apporte quelque chose qu'une règle ne voit pas :
+  « cette série va probablement s'arrêter après 2 duels, son rapport arrivera tôt ; la mesure longue peut
+  partir maintenant ».
+
+### 9.6 Les étapes, revues
+
+Les étapes du § 6 restent, mais l'ordonnanceur passe devant, sans MCTS d'abord :
+1. **Les champs `priority`, `due` et `after`** dans le lanceur, avec la règle de Smith. Encore un job à la
+   fois. Tests purs : quel job est prêt, lequel passe devant.
+2. **Le journal de jobs** (§ 8) : chaque job y écrit ses fils, sa durée et sa RAM.
+3. **La mesure du débit selon les fils** (§ 8), de jour à 400 itérations.
+4. **Plusieurs jobs côte à côte**, si la mesure le justifie : un budget de fils (18) et de RAM (libre
+   moins 5 Go), un pic de RAM estimé par type de job à partir du journal.
+5. **Le simulateur et le planificateur ISMCTS** (§ 6, étapes 1 à 5), jugés contre la règle de Smith sur
+   les mêmes scénarios.
+
+Les étapes 1 et 2 apportent les priorités et les enchaînements dès la première semaine, sans aucun
+algorithme de recherche.

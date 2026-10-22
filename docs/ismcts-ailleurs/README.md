@@ -11,6 +11,7 @@ ne contient pas de code.
 | [`backlog.md`](backlog.md) | la nuit de jobs vue comme une partie, avec les chiffres d'octobre |
 | [`entrepot.md`](entrepot.md) | les robots d'entrepôt : quelles actions, où est l'incertitude, A* et MCTS ensemble |
 | [`autres-usages.md`](autres-usages.md) | d'autres usages réels, larges, et quand une autre méthode fait mieux |
+| [`feuille-de-route.md`](feuille-de-route.md) | l'ordre (l'ordonnanceur, puis les déplacements), un moteur pour l'entrepôt, la cuisine et les secours, la coopération humain-robots, la bibliothèque commune et ses signatures |
 | [`planification.md`](planification.md) | le calendrier, les urgences, la cuisine à la *Overcooked* ; les trois familles de projets ; solveur d'optimisation ou minimax |
 
 ## 1. Ce que fait l'ISMCTS, avec les mots de Lopin

@@ -608,6 +608,14 @@ largeurs ; seuls les jobs lancés en groupe gardent le même gabarit.
   moins un (pour aller plus vite, ou sur un serveur). Plus de pause de 15 min entre deux jobs. Le
   nombre de fils découpe certains calculs (`selfplay`, `distill`, les vagues d'un duel) : deux
   mesures se comparent à nombre de fils égal.
+- **Les prérequis d'un job** (proposé le 22/10, champ `after`) : les jobs qui doivent être finis avant
+  qu'il parte, par exemple les 4 duels avant leur `npm run versus`. Un `stopIf` en est un implicite.
+- **La priorité et l'échéance d'un job** (proposées le 22/10, champs `priority` et `due`) : 1 urgent,
+  2 normal, 3 peut attendre ; l'heure à laquelle le résultat doit être là.
+- **La règle de Smith** : lancer d'abord le job qui a le plus de poids par minute (sa priorité divisée
+  par sa durée). La règle de base de l'ordonnanceur, celle qu'un planificateur doit battre.
+- **Le chemin critique** : la plus longue chaîne de prérequis ; retarder un job qui en fait partie
+  retarde la fin de tout.
 
 ## L'ISMCTS ailleurs
 
