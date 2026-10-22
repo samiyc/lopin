@@ -45,9 +45,15 @@ d'une recherche en ligne (septembre 2026).
 
 ## Le choix
 
-- **Le jeu s'appelle Bornage.** C'est le nom de la fiche de règles
-  (`regles/regles.html`) : dans le `<title>`, le grand titre et les pieds de page.
-- **Le projet s'appelle Lopin n°742** : un lopin de terre, 7 bornes, 42 cartes.
-  C'est le nom du dossier. Le `°` ne gêne aucun outil du projet. Seule précaution :
-  ne pas le confondre avec son sosie `º` (indicateur ordinal), qui est un autre
-  caractère. Le clavier AZERTY tape toujours le bon.
+**Un seul nom depuis le 22/10 : Lopin**, pour le jeu comme pour le projet. C'est le
+nom qui parle le plus à Sami : un lopin de terre, 7 bornes, 42 cartes. Il est dans la
+fiche de règles (`regles/regles.html` : le `<title>`, le grand titre et les pieds de
+page), la page du jeu, les rapports, le README et le nom du paquet.
+
+Jusque-là, il y en avait trois :
+- **Bornage** pour le jeu (septembre-octobre), le n° 1 du trio ci-dessus ;
+- **Lopin n°742** pour le projet et le dossier ;
+- **lupin** pour le dépôt GitHub, une faute de frappe.
+
+Le dossier et le dépôt GitHub se renomment à la main, hors du code (Sami). Les
+anciens prompts de `docs/Prompt/` et l'audit du 17/10 gardent les noms de leur date.

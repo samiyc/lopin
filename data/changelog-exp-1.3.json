@@ -760,7 +760,7 @@
    "verdict": "perd",
    "when": "16/10",
    "idea": "Séparer les arbres des deux joueurs pour ne plus fusionner les stratégies sur les mains cachées (Cowling 2012).",
-   "note": "Écarté sur le papier (docs/priorites-1.3.md, docs/strategie.md « Tentatives écartées ») : à Bornage un coup (une carte sur une borne) est public, seules la donne et les pioches sont cachées, et elles sont tirées à la racine ; les arbres de MO-ISMCTS seraient ceux de la 1.2, et sa racine adverse fusionne aussi les mains. La fusion de stratégies n'explique d'ailleurs aucun échec du tableau."
+   "note": "Écarté sur le papier (docs/priorites-1.3.md, docs/strategie.md « Tentatives écartées ») : à Lopin un coup (une carte sur une borne) est public, seules la donne et les pioches sont cachées, et elles sont tirées à la racine ; les arbres de MO-ISMCTS seraient ceux de la 1.2, et sa racine adverse fusionne aussi les mains. La fusion de stratégies n'explique d'ailleurs aucun échec du tableau."
   },
   {
    "id": "jokers-control-variate",

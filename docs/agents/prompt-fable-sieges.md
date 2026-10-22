@@ -15,7 +15,7 @@
 
 ## Ta mission
 
-Explique **d'où vient l'avantage du second joueur** dans Bornage, à la règle de la page, et propose **une compensation
+Explique **d'où vient l'avantage du second joueur** dans Lopin, à la règle de la page, et propose **une compensation
 simple** qui ramène le premier joueur à 50 % ± 1 point. Elle doit tenir en une phrase sur la feuille de règles, lue par
 une grand-mère. Tu ne joues pas de duels longs toi-même : tu analyses, tu écris le code minimal pour tester, et tu
 prépares les jobs de nuit avec leurs commandes exactes.

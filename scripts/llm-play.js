@@ -7,7 +7,7 @@ import { RULES_LINE } from "./lib/cli/cli-view.js";
 
 /**
  * `npm run llm-play -- [--games 10] [--model llama3.2] [--host http://127.0.0.1:11434] [--bot experimental] [--seed 50000] [--out duels/agents/llama]`:
- * a local model (Ollama) plays Bornage against a line-up bot through the CLI's
+ * a local model (Ollama) plays Lopin against a line-up bot through the CLI's
  * step mode (Sami, 12/10: the Sonnet agents cost too much of the quota). Each
  * move: the screen and the legal moves go to the model, which answers
  * `{"coup": "8♠ 4", "raison": "…"}`; an answer outside the legal moves is
@@ -52,7 +52,7 @@ const examples = examplesFile === undefined ? [] : JSON.parse(readFileSync(resol
 const contextSize = examples.length > 0 ? { num_ctx: 8192 } : {};
 
 const SYSTEM = [
-  "Tu joues à Bornage (Schotten Totten) contre un robot. Tu poses une carte de ta main sur ton côté d'une borne.",
+  "Tu joues à Lopin (Schotten Totten) contre un robot. Tu poses une carte de ta main sur ton côté d'une borne.",
   RULES_LINE,
   "Conseils : compte les cartes encore dehors avant de viser une combinaison ; garde le joker pour finir un Brelan ou une Suite, mais pose-le : un joker gardé jusqu'à la fin ne sert à rien ; ne jette pas de carte sur une borne déjà perdue ; défends la borne qui donnerait au robot 3 bornes voisines.",
   'Réfléchis d\'abord, puis choisis. Réponds uniquement en JSON : {"raison": "<une phrase sur la position>", "coup": "<exactement un coup de la liste>"}.',

@@ -12,7 +12,7 @@ Tous les chiffres viennent de `data/backlog-done/2026-10.json` et des sorties `b
 | Le terme de Sami | Ce qui tient | Ce qu'il faut corriger |
 |---|---|---|
 | **La pioche = les jobs déjà lancés** | l'historique est précieux | il ne se pioche pas : il **donne les lois** (durées, arrêts, pannes). Ce qui est caché, c'est **l'avenir des jobs en file** : combien de temps ils prendront, quel score ils sortiront. Une déterminisation, c'est **un scénario de nuit** tiré de ces lois (§ 4). |
-| **La main = la todo** | oui | toute la todo est visible : pas 6 cartes, toutes. La pioche à la Bornage, avec des cartes qui arrivent en cours de route, n'existe que si des jobs **arrivent pendant la nuit** : c'est le cas des tickets d'une équipe (§ 7). |
+| **La main = la todo** | oui | toute la todo est visible : pas 6 cartes, toutes. La pioche à la Lopin, avec des cartes qui arrivent en cours de route, n'existe que si des jobs **arrivent pendant la nuit** : c'est le cas des tickets d'une équipe (§ 7). |
 | **Les bornes = les files** | il faut une ressource à répartir | les fils ne sont pas rangés côte à côte : réserver « les files 1 à 3 » ou « 3 files » revient au même. La ressource se compte : **18 fils, et de la RAM** (§ 3). |
 | **L'action « passer 20-30 min »** | le temps doit avancer | inutile comme coup : on ne décide **qu'à un événement**, quand un job finit et libère des fils. Le temps saute d'un événement au suivant. La profondeur de l'arbre devient le nombre de jobs, pas 8 h découpées en tranches de 20 min. |
 | **La récompense = tâches finies en T** | il faut une récompense | compter les tâches pousse à lancer les jobs courts, et ne dit rien de ce qu'on a appris. Mieux : **les décisions obtenues au matin** (une version écartée ou validée, une mesure faite), pondérées par la priorité de Sami, avec une pénalité si un job déborde sur la matinée ou si la RAM sature. |
@@ -121,7 +121,7 @@ Rien n'est lancé ; chaque étape se mesure avant la suivante.
    comportement que si Sami le décide.
 
 **Où le mettre** : dans ce dépôt, `scripts/backlog-planner/`, puisque le lanceur et les données y sont.
-Le noyau MCTS n'importe rien de Bornage, pour pouvoir le sortir plus tard (`README.md`, § 4).
+Le noyau MCTS n'importe rien de Lopin, pour pouvoir le sortir plus tard (`README.md`, § 4).
 
 ## 7. La même idée ailleurs : les tickets, la renderfarm
 

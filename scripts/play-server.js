@@ -161,5 +161,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  process.stdout.write(`Lopin n°742 — http://127.0.0.1:${PORT}/  (Ctrl+C pour arrêter)\n`);
+  process.stdout.write(`Lopin — http://127.0.0.1:${PORT}/  (Ctrl+C pour arrêter)\n`);
 });

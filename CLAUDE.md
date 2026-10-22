@@ -9,11 +9,12 @@ the statistics that justify the adaptation, and a web game to play it
 against bots (`npm run play`). Outputs: an exact /
 simulated statistics report (`out/deck-options.{md,html}`, « Deck options »), a printable rules
 sheet (`regles/regles.{html,pdf}`, read by the owner's grandmother, so large
-type and plain French), and name proposals (`docs/noms.md`). The game is
-called **Bornage** (rules sheet `<title>`, masthead, footers, README); the
-project folder is **`Lopin n°742`** (7 borders, 42 cards).
+type and plain French), and name proposals (`docs/noms.md`). The game and
+the project have one name, **Lopin** (Sami, 22/10; the game was Bornage, the
+project Lopin n°742): rules sheet `<title>`, masthead, footers, README, package.
+The folder and the GitHub repo (`lupin`) are renamed by Sami.
 
-The folder name holds a space and a non-ASCII `°`: keep going through
+Paths may hold spaces and non-ASCII characters (the folder was `Lopin n°742`): keep going through
 `pathToFileURL` / `fileURLToPath` / `new URL(..., import.meta.url)` for every
 path, as the scripts do, and never build a `file://` URL by string
 concatenation.
@@ -446,7 +447,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   page — but on 1 000 games (night of 18-19/10) it fell to 51.4 % (48.7 – 54.1): no 1.2 on two workers. The Oracle light in two trees prefers `pwl=2` (56.0 %, 51.7 – 60.2, over 420 games against 53.6 % for the page's `pwl=3` on the same decks:
   +2.4 points, −3.4 – +8.2, at the 56 % bar; the Oracle light 1.1 is Sami's call); Oracle3 in two trees adds nothing (55.4 %). Read from the replays' `tree`,
   the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
-  reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Bornage's
+  reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Lopin's
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.
 - **ReplyFpu** (17/10, `src/sim/mcts/first-play.js`, `docs/priorites-1.3.md` § 2): `+fpu=d` scores an untried move below
   the root at its tried siblings' mean minus d / 10 plus one visit's UCB bonus, instead of +∞ (off by default, the
@@ -462,7 +463,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   is ten times too much. On the 1.2@400 (night of 18-19/10, 9 000 deals) `PeekAll` overshoots: 48.6 → 52.2 %
   (+3.7 points, +2.4 – +5.0), so B(N) is next; between omniscients the first player wins 45.9 %, the edge is the rules'. Measure with `npm run deals -- --engine E --plays 1 --seat X --paired base.json`; the
   kept duels with `npm run seats`.
-- **Bornage in a terminal** (`npm run cli`, Sami 12/10, `docs/cli.md`): the base game at the claim
+- **Lopin in a terminal** (`npm run cli`, Sami 12/10, `docs/cli.md`): the base game at the claim
   rule against a line-up bot, a move typed « card border » (« 7h4 », Sami's screen of 14/10: suits
   P H T C, so `c` is carreau, or S H C D with `--gb`; cards right-aligned on 3 characters and a
   fixed-width header up to the exchange; « 3 5 » by hand position still reads). `--machine` keeps the old

@@ -11,7 +11,7 @@ import { HELP, claimText, endText, formatJson, handOrder, jsonView, machineView,
 import { REPLAY_DIRS, replayFileName } from "./lib/domain/replay-files.js";
 
 /**
- * `npm run cli`: Bornage in a terminal, against a bot of the line-up (Sami,
+ * `npm run cli`: Lopin in a terminal, against a bot of the line-up (Sami,
  * 12/10; docs/cli.md). The base game only, at the page's claim rule; a move is
  * typed « card border » (« 7h4 », Sami's template of 14/10). The finished game is a replay in replays/,
  * as from the page.
@@ -217,7 +217,7 @@ async function interactive() {
   const input = createInterface({ input: process.stdin, terminal: false });
   const lines = input[Symbol.asyncIterator]();
   const session = newSession({ ...sessionOptions("agent"), name: await nameFrom(lines) });
-  if (!machine) console.log(`Bornage contre ${BOT_LINEUP[session.bot.id].label} ${BOT_LINEUP[session.bot.id].version}. ${HELP}`);
+  if (!machine) console.log(`Lopin contre ${BOT_LINEUP[session.bot.id].label} ${BOT_LINEUP[session.bot.id].version}. ${HELP}`);
   botTurns(session);
   show(session);
   let asked = performance.now();

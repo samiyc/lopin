@@ -1,4 +1,4 @@
-# Bornage dans la console (`npm run cli`)
+# Lopin dans la console (`npm run cli`)
 
 Jouer contre les robots sans navigateur (Chrome reste libre), et laisser un programme ou un
 agent (un LLM) jouer en tour par tour. Le jeu de base seulement (pas d'extension), à la règle de
@@ -198,7 +198,7 @@ partie contient l'ordre de la pioche : un agent ne doit lire que la sortie de la
 
 **Une consigne prête à coller pour un agent** :
 
-> Tu joues à Bornage (Schotten Totten) contre l'Expérimental 1.2. Lance
+> Tu joues à Lopin (Schotten Totten) contre l'Expérimental 1.2. Lance
 > `npm run cli -- --new tmp/agent.json --json --name claude`, puis, tant que `terminee` est faux,
 > choisis une carte de `main` et une borne de `bornes_jouables` (`"7♠ 5"`) et lance
 > `npm run cli -- --step tmp/agent.json "<coup>" --json`.

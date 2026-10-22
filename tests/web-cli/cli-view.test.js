@@ -16,7 +16,7 @@ function position() {
   return state;
 }
 
-describe("Bornage in a terminal (scripts/lib/cli/cli-view.js, Sami 12/10)", () => {
+describe("Lopin in a terminal (scripts/lib/cli/cli-view.js, Sami 12/10)", () => {
   it("draws Sami's template (14/10): the exchange in the header, the suit letters P H T C, a framed board, the corners of won borders", () => {
     const state = position();
     const last = { toi: "9♠ → borne 1", robot: "4♦ → borne 3", revendications: ["tu revendiques la borne 1"] };

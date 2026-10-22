@@ -118,7 +118,7 @@ Elle existe à deux endroits de la 1.2, qui est un ISMCTS à un seul observateur
 jeux où un coup cache quelque chose à l'adversaire, une carte posée face cachée par exemple. Chaque joueur choisit
 alors dans un arbre qui distingue ce qu'il a vu.
 
-- **Dans Bornage, un coup est public** (une carte sur une borne). Seules la donne et les pioches sont cachées, et ce
+- **Dans Lopin, un coup est public** (une carte sur une borne). Seules la donne et les pioches sont cachées, et ce
   sont des tirages, que l'ISMCTS fait à la racine. Avec des coups publics, les arbres de chaque joueur suivent les
   mêmes chemins et reçoivent les mêmes résultats : ils sont l'arbre de la 1.2.
 - **Faire des pioches des nœuds de hasard** séparerait mes nœuds de l'étage 3 par ma pioche, un étage que la 1.2
@@ -260,7 +260,7 @@ C'est ce qui manque pour trancher entre « plafond » et « bruit encore exploit
 
 | Idée | Pourquoi |
 | --- | --- |
-| **MO-ISMCTS** (le panel) | Les coups de Bornage sont publics : ses arbres sont celui de la 1.2. Il ne sépare pas non plus les mains adverses (section 1, « La fusion de stratégies ») |
+| **MO-ISMCTS** (le panel) | Les coups de Lopin sont publics : ses arbres sont celui de la 1.2. Il ne sépare pas non plus les mains adverses (section 1, « La fusion de stratégies ») |
 | Séparer les nœuds adverses par sa main (la vraie cure de la fusion) | 3 ou 4 visites par réponse à 2 000, à partager entre les mains : rien n'y apprendrait. Une piste pour un oracle à 20 000, pas pour la 1.3 |
 | Retirer la chance des jokers des résultats (variable de contrôle) | Mesuré : corrélation −0,04 avec les jokers de la main adverse tirée, +0,12 avec ceux de mes pioches (30 positions, 300 donnes chacune). Au plus 1,5 % de la variance |
 | Partager les réponses adverses entre candidats (« coup tueur ») | La famille de RAVE (l. 39, 44,4 %) ; une réponse forte contre un candidat peut être parée par un autre |

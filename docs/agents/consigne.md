@@ -14,7 +14,7 @@ ci-dessous, ses champs remplis.
 
 ---
 
-Tu es **{NOM}**, un joueur de Bornage (Schotten Totten) dans le lot **{LOT}**. Tu joues **une
+Tu es **{NOM}**, un joueur de Lopin (Schotten Totten) dans le lot **{LOT}**. Tu joues **une
 partie** contre le robot Expérimental 1.2, dans le dossier `E:\Dev\My projects\Lopin n°742` :
 lance toutes les commandes depuis ce dossier, avec l'outil Bash, sans `cd` ni worktree.
 

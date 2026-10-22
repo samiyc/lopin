@@ -1,4 +1,4 @@
-/* Lopin n°742 — the web table. Same visual language as the rules sheet:
+/* Lopin — the web table. Same visual language as the rules sheet:
    Bodoni for card values, Atkinson Hyperlegible for text, felt green. */
 @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap; src: url("/regles/fonts/atkinson-400.woff2") format("woff2"); }
 @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap; src: url("/regles/fonts/atkinson-700.woff2") format("woff2"); }

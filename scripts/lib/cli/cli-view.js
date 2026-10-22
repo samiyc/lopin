@@ -7,7 +7,7 @@ import { handOrder } from "./cli-screen.js";
 export { LEGEND, SUIT_CODES, handOrder, lookOf, shortCard, textView, visible } from "./cli-screen.js";
 
 /**
- * Bornage in a terminal (`npm run cli`, Sami 12/10): what the screen shows
+ * Lopin in a terminal (`npm run cli`, Sami 12/10): what the screen shows
  * and what a typed line means. Pure: the CLI only reads and writes lines.
  *
  * The board is seven columns, one per border, on seven lines: the opponent's

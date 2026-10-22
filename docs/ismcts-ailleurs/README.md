@@ -1,7 +1,7 @@
-# L'ISMCTS ailleurs que dans Bornage
+# L'ISMCTS ailleurs que dans Lopin
 
 Réponse au prompt de Sami du 21/10 (`docs/Prompt/Application rélles ISMCTS.md`) : peut-on reprendre
-l'algorithme des robots de Bornage pour **la file de jobs** (la backlog) et pour **les trajets de robots
+l'algorithme des robots de Lopin pour **la file de jobs** (la backlog) et pour **les trajets de robots
 dans un entrepôt**, et ailleurs ? Ce dossier explique, corrige le schéma proposé et donne des exemples. Il
 ne contient pas de code.
 
@@ -13,12 +13,12 @@ ne contient pas de code.
 | [`autres-usages.md`](autres-usages.md) | d'autres usages réels, larges, et quand une autre méthode fait mieux |
 | [`planification.md`](planification.md) | le calendrier, les urgences, la cuisine à la *Overcooked* ; les trois familles de projets ; solveur d'optimisation ou minimax |
 
-## 1. Ce que fait l'ISMCTS, avec les mots de Bornage
+## 1. Ce que fait l'ISMCTS, avec les mots de Lopin
 
 Le détail pas à pas est dans `docs/glossaire.md`, section « Comment le robot choisit un coup ». En
 résumé, pour choisir **un** coup :
 
-| Brique | Dans Bornage | En général |
+| Brique | Dans Lopin | En général |
 |---|---|---|
 | **L'ensemble d'information** | ce que le joueur voit : sa main, les bornes, le nombre de cartes en pioche | tout ce qu'on sait au moment de décider |
 | **La déterminisation** (le tirage) | `determinize` distribue au hasard la main adverse et la pioche | on tire **un monde possible** compatible avec ce qu'on sait |
@@ -47,7 +47,7 @@ Trois cousins, tous fondés sur des simulations :
 | Famille | Quand | Exemple |
 |---|---|---|
 | **MCTS** | tout est visible, seul le hasard reste (dés, durées, pannes) | backgammon ; une file de jobs dont on connaît tout sauf les durées |
-| **ISMCTS** | **un autre joueur** cache quelque chose, et il agit lui aussi | Bornage, les jeux de cartes, un adversaire qui patrouille |
+| **ISMCTS** | **un autre joueur** cache quelque chose, et il agit lui aussi | Lopin, les jeux de cartes, un adversaire qui patrouille |
 | **POMCP** | **on est seul**, mais l'état du monde est caché et se révèle peu à peu | un robot qui ne sait pas quelles allées sont bloquées avant d'y arriver |
 
 Les deux cas de Sami sont surtout du **« seul contre le hasard »** : personne n'y cache de cartes
@@ -70,7 +70,7 @@ pas du jeu :
 3. **Un tri rapide élimine, il ne valide pas.** Un essai court qui semble gagner doit être confirmé sur
    des données neuves (la règle du 03/10).
 4. **D'abord le simulateur et des règles simples de référence.** Sans simulateur fidèle, impossible de
-   savoir si l'algorithme bat la règle « bête ». Dans Bornage, c'est le moteur de règles et le cœur ; hors
+   savoir si l'algorithme bat la règle « bête ». Dans Lopin, c'est le moteur de règles et le cœur ; hors
    jeu, c'est le premier chantier, et souvent le plus long.
 
 ## 4. Les dépôts git
@@ -80,21 +80,21 @@ Les questions de Sami : un autre dépôt pour la backlog ? pour l'entrepôt ?
 - **La backlog : commencer ici.** Le lanceur (`scripts/backlog.js`), la file (`data/backlog.json`) et
   tout l'historique (`data/backlog-done/`) sont dans ce dépôt ; le planificateur doit les lire. Un
   dossier `scripts/backlog-planner/` suffit, avec une règle : **son noyau MCTS n'importe rien de
-  Bornage** (ni `src/sim`, ni le cœur). Le jour où un deuxième usage arrive (une renderfarm, des tickets),
+  Lopin** (ni `src/sim`, ni le cœur). Le jour où un deuxième usage arrive (une renderfarm, des tickets),
   ce noyau part dans son propre dépôt sans rien réécrire.
 - **L'entrepôt : un dépôt à part dès le départ.** Rien du jeu ne s'y réutilise tel quel : `src/sim/mcts`
-  est lié au cœur, à `determinize` et aux règles de Bornage. Ce qui se reprend, ce sont **les idées**
+  est lié au cœur, à `determinize` et aux règles de Lopin. Ce qui se reprend, ce sont **les idées**
   (le tirage, la liste courte par une règle rapide, la politique de simulation, le budget, le choix du
   plus visité) et la méthode de mesure (tri, puis validation sur données neuves).
 
-**Une bibliothèque générique, et Bornage ?** Le noyau sorti du dépôt prendrait un **adaptateur de jeu** :
+**Une bibliothèque générique, et Lopin ?** Le noyau sorti du dépôt prendrait un **adaptateur de jeu** :
 les coups légaux, jouer un coup, tirer un scénario, la liste courte, la politique de simulation, le
-résultat. Bornage pourrait en devenir un client, à une condition qu'il sait déjà vérifier : avec la
-bibliothèque et un adaptateur Bornage, `npm run fingerprint` doit redonner `1d041613cd7bcd8d` pour la 1.2.
-Si l'empreinte tient, c'est la meilleure preuve que la bibliothèque est juste. Sinon, Bornage garde son
+résultat. Lopin pourrait en devenir un client, à une condition qu'il sait déjà vérifier : avec la
+bibliothèque et un adaptateur Lopin, `npm run fingerprint` doit redonner `1d041613cd7bcd8d` pour la 1.2.
+Si l'empreinte tient, c'est la meilleure preuve que la bibliothèque est juste. Sinon, Lopin garde son
 arbre, réglé depuis un mois (`exact`, l'élargissement, `+jkHand`, `+theirs`), et la bibliothèque s'en
 inspire sans l'imposer. L'ordre conseillé : écrire la bibliothèque sur un petit jeu neuf, puis tenter la
-migration de Bornage, jamais l'inverse.
+migration de Lopin, jamais l'inverse.
 
 ## 5. Les technologies
 

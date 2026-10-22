@@ -13,13 +13,13 @@ décide un étage au-dessus.
 
 En théorie, oui : chaque robot a 6 actions par tour (4 directions, attendre, prendre ou déposer). Mais :
 - **4 robots jouent ensemble** : 6⁴ = **1 296 actions jointes** par tour, à comparer aux 42 coups au plus
-  d'une position de Bornage ;
+  d'une position de Lopin ;
 - **une journée, ce sont des centaines de tours.** Un aller-retour sur le plan de Sami fait déjà une
   trentaine de pas ;
 - **une simulation au hasard ne livre presque jamais un colis.** Des pas tirés au hasard tournent en
   rond, et la récompense reste nulle : l'arbre n'apprend rien.
 
-Bornage marche parce que le cœur ne propose que 8 coups sensés, et que la partie finit en 35 coups. Il
+Lopin marche parce que le cœur ne propose que 8 coups sensés, et que la partie finit en 35 coups. Il
 faut retrouver ces deux conditions ici.
 
 ## 2. Deux étages : l'affectation et les chemins
@@ -31,7 +31,7 @@ faut retrouver ces deux conditions ici.
 
 Avec ce découpage :
 - **un coup** = « le robot 2 prend la commande G » : une dizaine de choix au plus, comme les candidats de
-  Bornage ;
+  Lopin ;
 - **la liste courte** = une règle simple, « la commande la plus proche d'abord », qui joue le rôle du
   cœur ;
 - **la simulation** = la même règle jusqu'à la fin de la journée, les chemins calculés par A* dans le
@@ -61,7 +61,7 @@ stratégies, `README.md` § 1).
 
 **L'ISMCTS au sens propre**, avec quelqu'un qui cache quelque chose, apparaît seulement :
 - si les robots **ne partagent pas leurs plans**, par exemple deux flottes de deux fabricants, ou des
-  chariots conduits par des humains. Chacun devine les intentions des autres, comme l'arbre de Bornage
+  chariots conduits par des humains. Chacun devine les intentions des autres, comme l'arbre de Lopin
   devine la main adverse (et comme `+theirs` fait jouer l'adversaire par un autre cœur) ;
 - face à un adversaire : la sécurité, la patrouille (`autres-usages.md`).
 
@@ -128,7 +128,7 @@ Les chiffres de cet exemple sont à mesurer, pas à croire : c'est le rôle du s
 
 ## 7. Un dépôt à part, et dans quel ordre
 
-Ce projet sort du cadre de Bornage : **un dépôt à part**, qui reprend les idées et pas le code.
+Ce projet sort du cadre de Lopin : **un dépôt à part**, qui reprend les idées et pas le code.
 
 1. **Un simulateur de grille** : le plan, les robots, les commandes, les blocages tirés au hasard. Pur et
    testé, comme le moteur de règles du jeu.

@@ -1,6 +1,6 @@
-# Bornage — les règles pour un agent
+# Lopin — les règles pour un agent
 
-Bornage est Schotten Totten joué avec un jeu de cartes ordinaire. Tu joues contre un robot
+Lopin est Schotten Totten joué avec un jeu de cartes ordinaire. Tu joues contre un robot
 (l'Expérimental 1.2) dans la console : tu lis la position (un JSON), tu choisis une carte de `main` et une borne de `bornes_jouables`.
 
 ## Le matériel

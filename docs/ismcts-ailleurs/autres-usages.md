@@ -27,7 +27,7 @@ Il est moins indiqué :
 
 | Domaine | Ce qui est caché ou aléatoire | Ce qu'on décide | Le MCTS y sert-il ? |
 |---|---|---|---|
-| **Jeux de cartes et de société** (tarot, belote, bridge, Hanabi, Scotland Yard) | les mains des autres ; dans Hanabi, sa propre main | le coup | **Oui, c'est le domaine d'origine de l'ISMCTS** (Cowling et al. 2012). Bornage en est un exemple complet. |
+| **Jeux de cartes et de société** (tarot, belote, bridge, Hanabi, Scotland Yard) | les mains des autres ; dans Hanabi, sa propre main | le coup | **Oui, c'est le domaine d'origine de l'ISMCTS** (Cowling et al. 2012). Lopin en est un exemple complet. |
 | **Tester l'équilibre d'un jeu** | les donnes | rien en direct : on fait jouer des bots pour mesurer | **Oui, et ce projet le fait** : l'équilibre de l'extension (`npm run extension`), les compensations de siège (`docs/sieges.md`). Un usage large, des jeux de société aux jeux vidéo. |
 | **IA de jeux vidéo avec brouillard de guerre** | ce que l'adversaire prépare | les ordres des unités | Oui en recherche, et dans certains jeux ; souvent combiné à des règles écrites à la main. |
 | **Patrouille, sécurité** (gardes-forestiers contre braconniers, contrôles) | où l'adversaire frappera | le trajet des patrouilles | Rarement : ce domaine utilise surtout la théorie des jeux (les jeux de sécurité de Stackelberg). L'ISMCTS est pertinent quand la patrouille réagit à ce qu'elle observe en route. |
@@ -47,7 +47,7 @@ Il est moins indiqué :
 
 Si Sami veut un deuxième terrain d'essai après la backlog, trois idées concrètes, chacune avec un
 simulateur facile à écrire :
-1. **Un jeu de cartes connu** (belote, tarot, un jeu de plis) : tout ce que Bornage a appris se
+1. **Un jeu de cartes connu** (belote, tarot, un jeu de plis) : tout ce que Lopin a appris se
    transpose directement ; les mains cachées sont le cas d'école de l'ISMCTS.
 2. **La batterie d'une maison** : un simulateur de 50 lignes (soleil, consommation, prix heure par
    heure), une règle simple à battre (« charger quand le prix est bas »), et une incertitude qui se

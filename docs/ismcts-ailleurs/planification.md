@@ -11,7 +11,7 @@ bataille sous brouillard, et dit ce que chacune demande.
 |---|---|---|---|
 | **A. Ordonnancer sous incertitude** | les durées, les arrivées, les annulations ; personne ne cache rien exprès | MCTS sur des scénarios ; POMCP si un état caché se révèle (la gravité d'un patient) | la backlog, **le calendrier**, **les urgences**, la renderfarm, les tickets |
 | **B. Affecter, puis se déplacer** | les mêmes, plus les chemins (allées bloquées, routes coupées) | deux étages : MCTS pour « qui fait quoi », A* pour les trajets (`entrepot.md`) | l'entrepôt, **la cuisine**, les secours après une catastrophe |
-| **C. Un adversaire qui cache** | ce que l'autre a en main ou prépare | ISMCTS ; CFR si le bluff compte | Bornage, la bataille sous brouillard façon CodinGame, la patrouille |
+| **C. Un adversaire qui cache** | ce que l'autre a en main ou prépare | ISMCTS ; CFR si le bluff compte | Lopin, la bataille sous brouillard façon CodinGame, la patrouille |
 
 La cuisine est à cheval sur A et B : les commandes arrivent comme des jobs, et les cuisiniers se
 déplacent comme des robots. Les urgences sont une famille A avec un état caché, la gravité, que le triage
@@ -46,7 +46,7 @@ réarrangement candidat sur ces mêmes suites, et propose celui qui tient le mie
 
 **L'information cachée** apparaît avec plusieurs personnes : les préférences et les autres engagements de
 chacun ne sont pas tous visibles. Négocier un créneau entre plusieurs agendas, c'est deviner ce que
-l'autre acceptera, comme l'arbre de Bornage devine la main adverse.
+l'autre acceptera, comme l'arbre de Lopin devine la main adverse.
 
 **Pourquoi c'est un bon projet de vitrine** : tout le monde a un agenda, l'image tient en une phrase
 (« il réorganise ma semaine quand une réunion déborde »), et l'interface se montre dans un navigateur.
@@ -93,7 +93,7 @@ le bot changer de plan quand l'humain prend une tâche.
 Sami demande si CP-SAT et HiGHS ressemblent au minimax des échecs. Le point commun est réel, la
 différence aussi :
 
-| | Minimax (échecs, le solveur de fin de partie de Bornage) | Solveur d'optimisation (CP-SAT, HiGHS) |
+| | Minimax (échecs, le solveur de fin de partie de Lopin) | Solveur d'optimisation (CP-SAT, HiGHS) |
 |---|---|---|
 | **Qui décide** | deux joueurs, chacun à son tour | un seul décideur |
 | **L'arbre** | les coups, puis les réponses | les choix de valeurs des variables (« la réunion R le mardi à 10 h ») |
