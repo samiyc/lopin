@@ -6,6 +6,7 @@ import { pauseLab, showLab, wireLab } from "./lab/lab-game.js";
 import { hasGame, playInput, render as renderPlay, setVisible, wirePlayControls } from "./play/play.js";
 import { puzzleInput, render as renderPuzzle, showPuzzles, wirePuzzles } from "./puzzles/puzzles.js";
 import { renderStats } from "./stats.js";
+import { renderScheduler } from "./scheduler/scheduler-tab.js";
 import { clearTable, wireSuitBar } from "./board/table.js";
 import { loaded, pause, render as renderViewer, wirePlayer } from "./replays/viewer.js";
 
@@ -37,6 +38,7 @@ const PANELS = {
   replays: ["panel-replays", "player", "explain", "lab-view"],
   puzzles: ["panel-puzzles"],
   stats: [],
+  scheduler: [],
 };
 
 const EMPTY_MESSAGES = {
@@ -45,6 +47,7 @@ const EMPTY_MESSAGES = {
   replays: "Choisis une partie dans la liste.",
   puzzles: "Chargement des puzzles…",
   stats: "",
+  scheduler: "",
 };
 
 /** Folding the sidebar (« / »): Jouer only, remembered in this browser. */
@@ -70,6 +73,7 @@ $("btn-fold").addEventListener("click", () => {
 
 function redraw(tab) {
   if (tab === "stats") return renderStats();
+  if (tab === "scheduler") return renderScheduler();
   if (tab === "puzzles") return renderPuzzle();
   const live = tab === "play" ? hasGame() : loaded();
   if (!live) return clearTable(EMPTY_MESSAGES[tab]);
@@ -83,12 +87,14 @@ function show(tab) {
   const visible = new Set(PANELS[tab]);
   for (const id of new Set(Object.values(PANELS).flat())) $(id).hidden = !visible.has(id);
   pause();
-  // Stats take the table's place and the sidebar's: no board, no pile, no
+  // Stats and the Ordonnanceur take the table's place and the sidebar's: no board, no pile, no
   // turn counter, and no empty 300px column pushing them to the right.
-  $("table").hidden = tab === "stats";
-  $("counters").hidden = tab === "stats";
-  document.querySelector(".sidebar").hidden = tab === "stats";
+  const fullWidth = tab === "stats" || tab === "scheduler";
+  $("table").hidden = fullWidth;
+  $("counters").hidden = fullWidth;
+  document.querySelector(".sidebar").hidden = fullWidth;
   $("stats-view").hidden = tab !== "stats";
+  $("scheduler-view").hidden = tab !== "scheduler";
   applyFold();
   setVisible(tab === "play");
   showPuzzles(tab === "puzzles");

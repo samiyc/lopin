@@ -34,9 +34,9 @@ côte, gagne.
   désignent le même vainqueur 91 fois sur 100 : une borne fermée change les coups
   possibles, donc parfois l'issue.
 
-## Les cinq onglets
+## Les six onglets
 
-Dans l'ordre : Jouer, Labo (l'ancien Observer), Puzzles, Replays, Stats.
+Dans l'ordre : Jouer, Labo (l'ancien Observer), Puzzles, Replays, Stats, Ordonnanceur.
 
 **Jouer.** « Nouvelle partie », sur deux colonnes : à gauche ton adversaire,
 à droite qui commence, les cartes bonus de l'extension (0 à 6), l'option
@@ -250,6 +250,23 @@ la main adverse, ce sont les cartes vues nulle part.
   - L'astuce qui revient : **poser une carte n'importe où** pour la sortir du jeu,
     ce qui rend une autre borne prouvable. Dans trois puzzles, la même carte
     gagne sur quatre bornes différentes.
+
+**Ordonnanceur** (Sami, 22/10). La file de nuit (`npm run backlog`) jouée en simulation, pour
+essayer l'ordonnanceur sans lancer un seul job (`src/schedule/night.js`, `docs/ismcts-ailleurs/backlog.md` § 9).
+- **Trois exemples** : une nuit de validation (trois versions en 1k@2k, un peu trop de travail pour la
+  nuit), une soirée avec échéances, des imprévus en série (un job urgent qui arrive à 1 h, un job fragile,
+  un job qui touche sa limite, un autre qui attend 4 h).
+- **Chaque nuit tire ce que la vraie cache** : la durée réelle des jobs (autour de 0,9 fois l'estimation,
+  comme en octobre), leurs échecs, et le score des duels de chaque version, donc les `stopIf`. « Nuit
+  suivante » en tire une autre ; la variabilité des durées, le taux d'échec et la durée de la nuit se
+  règlent.
+- **Les deux ordres jouent la même nuit** : l'ordre du fichier (`--fifo`) et la règle de Smith avec
+  prérequis et échéances, une barre par job. Gris : annulé par son `stopIf` ; rouge : en échec ; orange :
+  arrêté à sa limite ; contour rouge : fini après son échéance (le trait jaune).
+- **« Comparer sur 500 nuits »** : les moyennes des deux ordres sur les mêmes nuits, l'écart de poids fait
+  avant le matin avec son intervalle, et les échéances manquées.
+- **« Modifier la file (JSON) »** : le format de `data/backlog.json`, plus `version`, `arrivesAt` et
+  `failRate` pour la simulation.
 
 **Stats.** Tout est tiré de tes replays, anciens compris (`/api/stats`,
 `src/replay/stats/stats.js`).

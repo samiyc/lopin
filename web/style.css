@@ -262,6 +262,46 @@ html[data-colors="4"] .suits i[data-suit="♣"] { color: var(--suit-club); }
 .stats-view .bar { display: inline-block; height: 10px; border-radius: 3px; background: var(--felt-2); vertical-align: middle; }
 .stats-view .bar.human { background: var(--focus); }
 .stats-view .scroll { overflow-x: auto; }
+
+/* The Ordonnanceur tab (web/app/scheduler/): simulated nights of the backlog, one bar a job. */
+.scheduler-view { display: grid; gap: 10px; align-content: start; min-width: 0; grid-column: 1 / -1; width: 100%; max-width: 1100px; justify-self: center; }
+.scheduler-view h2 { margin: 0; font: 700 1.6rem var(--display); }
+.scheduler-view h3 { margin: 12px 0 0; font-size: 1rem; }
+.scheduler-controls { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; }
+.scheduler-controls label { display: grid; gap: 2px; font-size: 0.8rem; color: var(--ink-2); }
+.scheduler-controls input { width: 6em; }
+.scheduler-note { margin: 0; font-size: 0.9rem; }
+.gantt { display: grid; gap: 3px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px; overflow-x: auto; }
+.gantt-row { display: grid; grid-template-columns: 220px minmax(420px, 1fr); gap: 8px; align-items: center; min-height: 20px; }
+.gantt-label { font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gantt-label.p1 { font-weight: 700; }
+.gantt-label.p3 { color: var(--ink-2); }
+.gantt-track { position: relative; height: 18px; border-bottom: 1px dashed var(--line); }
+.gantt-axis .gantt-track { border-bottom: 1px solid var(--line); }
+.gantt-tick { position: absolute; bottom: 2px; transform: translateX(-50%); font-size: 0.65rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.gantt-tick:first-child { transform: none; }
+.gantt-tick:last-child:not(:first-child) { transform: translateX(-100%); }
+.gantt-bar { position: absolute; top: 3px; height: 12px; border-radius: 3px; background: var(--felt-2); }
+.gantt-bar.skipped { background: var(--stone); }
+.gantt-bar.failed { background: var(--lost); }
+.gantt-bar.timeout { background: var(--discard); }
+.gantt-bar.late { outline: 2px solid var(--lost); outline-offset: 1px; }
+.gantt-due { position: absolute; top: 0; width: 2px; height: 18px; background: var(--focus); }
+.gantt-morning { position: absolute; top: -2px; width: 0; height: 22px; border-left: 2px dotted var(--ink-2); }
+.gantt-note { position: absolute; top: 2px; right: 0; font-size: 0.65rem; color: var(--ink-2); background: var(--panel); padding: 0 4px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scheduler-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+.scheduler-legend .legend-item { display: inline-flex; gap: 6px; align-items: center; }
+.scheduler-legend .gantt-bar, .scheduler-legend .gantt-due, .scheduler-legend .gantt-morning { position: static; display: inline-block; }
+.scheduler-legend .gantt-bar { width: 22px; }
+.scheduler-legend .gantt-due, .scheduler-legend .gantt-morning { height: 14px; }
+.scheduler-view table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--panel); }
+.scheduler-view th, .scheduler-view td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.scheduler-view th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+.scheduler-view td.num { font-variant-numeric: tabular-nums; }
+.scheduler-view .scroll { overflow-x: auto; }
+.scheduler-editor textarea { width: 100%; font: 0.8rem/1.35 ui-monospace, Consolas, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; }
+.scheduler-actions { display: flex; gap: 8px; margin-top: 6px; }
+.scheduler-error { color: var(--lost); margin: 6px 0 0; }
 .elo h3 { margin: 10px 0 4px; font-size: 0.85rem; color: var(--ink-2); }
 .elo table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
 .elo td { padding: 2px 4px; border-bottom: 1px solid var(--line); }

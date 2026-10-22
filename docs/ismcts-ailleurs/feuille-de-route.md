@@ -59,7 +59,8 @@ C'est ce qui rend les thèmes parlants, et c'est là que l'expérience de Lopin 
 
 **Où.** Elle commence dans ce dépôt, dans un dossier `lib/` qui n'importe rien du jeu (ni `src/sim`, ni
 le cœur), pendant l'ordonnanceur. Sa première pièce, le futur module `schedule`, est
-`scripts/lib/domain/backlog-order.js` (22/10), qui n'importe déjà rien du jeu. Elle sort dans son propre dépôt quand l'étape 2 commence. Lopin pourra
+`src/schedule/` (22/10 : l'ordre, les `stopIf`, la nuit simulée), qui n'importe déjà rien du jeu et tourne
+aussi dans la page (l'onglet Ordonnanceur). Elle sort dans son propre dépôt quand l'étape 2 commence. Lopin pourra
 en devenir un client si son empreinte ne bouge pas ([`README.md`](README.md) § 4).
 
 **Les modules.**

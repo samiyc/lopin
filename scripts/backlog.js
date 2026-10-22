@@ -1,13 +1,14 @@
-import { spawn } from "node:child_process";
-import { createWriteStream, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import os from "node:os";
 import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { localTimestamp } from "../src/replay/core/log.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
-import { nextJob as pickNext, planNight } from "./lib/domain/backlog-order.js";
-import { stopReason } from "./lib/domain/backlog-stop.js";
-import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
+import { nextJob as pickNext, planNight } from "../src/schedule/order.js";
+import { stopReason } from "../src/schedule/stop.js";
+import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js";
+import { runCommand } from "./lib/cli/run-command.js";
+import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
 
 /**
  * `npm run backlog [-- --list]`: the long jobs kept for the night
@@ -35,11 +36,15 @@ import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
  *
  * `stopIf` (Sami, 05/10): a job may be cancelled before it starts — marked
  * `skipped`, with its reason — when the duels it names, done, pool under a bar:
- * a series of long duels that started badly stops there (scripts/lib/domain/backlog-stop.js).
+ * a series of long duels that started badly stops there (src/schedule/stop.js).
  *
- * The next job (Sami, 22/10, scripts/lib/domain/backlog-order.js): its prerequisites (`after`, and the
+ * The next job (Sami, 22/10, src/schedule/order.js): its prerequisites (`after`, and the
  * duels its `stopIf` reads) finished, then a `due` it would otherwise miss, then Smith's rule on
  * `priority` and `estimate`. `--fifo` keeps the file order. `--list` shows the night so planned.
+ *
+ * A job may carry `threads`: its own `LOPIN_THREADS`, over `--threads`. Every job writes its line to
+ * the job log (scripts/lib/domain/job-log.js, data/job-log/): kind, engines, threads, minutes, games,
+ * free memory at its lowest.
  *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to
@@ -60,37 +65,8 @@ const RUNS_DIR = queue ? `data/runs${suffix}/` : "backlog-runs/";
 const RUNS = `${ROOT}${RUNS_DIR}`;
 const { readQueue: readBacklog, saveQueue: saveBacklog, readArchive, archiveFinished } = backlogFiles({ suffix });
 
-/** Stops `child` and everything it started (on Windows the shell's children outlive it otherwise). */
-function stopTree(child) {
-  if (process.platform === "win32") spawn(path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "taskkill.exe"), ["/pid", String(child.pid), "/T", "/F"]);
-  else child.kill("SIGTERM");
-}
-
-/** Runs `command` in a shell, its output both on screen and in `outFile`; resolves with the exit code, or "timeout". */
-function run(command, outFile, minutes) {
-  const out = createWriteStream(outFile);
-  return new Promise((resolve) => {
-    const child = spawn(command, { cwd: ROOT, shell: true });
-    let timedOut = false;
-    const timer = setTimeout(() => {
-      timedOut = true;
-      out.write(`
-[backlog] arrêté au bout de ${minutes} min
-`);
-      stopTree(child);
-    }, minutes * 60_000);
-    for (const stream of [child.stdout, child.stderr]) {
-      stream.on("data", (chunk) => {
-        process.stdout.write(chunk);
-        out.write(chunk);
-      });
-    }
-    child.on("close", (code) => {
-      clearTimeout(timer);
-      out.end(() => resolve(timedOut ? "timeout" : code));
-    });
-  });
-}
+/** A job's threads: its own `threads`, else the run's. */
+const threadsOf = (job) => (job.threads ? threadsFrom(String(job.threads), os.cpus().length) : threads);
 
 const statusOf = (code) => {
   if (code === "timeout") return "timeout";
@@ -167,7 +143,9 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   const stamp = localTimestamp().slice(0, 16).replace(/[:T]/g, "-");
   const output = `${RUNS_DIR}${stamp}_${job.id}.txt`;
   console.log(`\n▶ ${job.id} (${job.estimate}) : ${job.command}`);
-  const code = await run(job.command, `${ROOT}${output}`, job.limit ?? LIMIT);
+  const memory = watchMemory();
+  const env = job.threads ? { LOPIN_THREADS: String(job.threads) } : {};
+  const code = await runCommand(job.command, { outFile: `${ROOT}${output}`, minutes: job.limit ?? LIMIT, env });
   // Re-read the file: someone may have added jobs while this one ran.
   const fresh = await readBacklog();
   const entry = fresh.jobs.find((candidate) => candidate.id === job.id);
@@ -175,4 +153,6 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   await saveBacklog(fresh);
   await archiveFinished();
   console.log(`■ ${job.id} : ${entry.status}, ${entry.minutes} min → ${output}`);
+  const line = { id: job.id, command: job.command, threads: threadsOf(job), started: new Date(started), ended: new Date(), status: entry.status };
+  await appendJobLog(jobLine({ ...line, output: outputOf({ output }), memory: memory.stop(), source: "backlog", queue: queue ?? "" }));
 }

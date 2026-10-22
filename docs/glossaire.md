@@ -612,6 +612,10 @@ largeurs ; seuls les jobs lancés en groupe gardent le même gabarit.
   qu'il parte, par exemple les 4 duels avant leur `npm run versus`. Un `stopIf` en est un implicite.
 - **La priorité et l'échéance d'un job** (22/10, champs `priority` et `due`) : 1 urgent,
   2 normal, 3 peut attendre ; l'heure à laquelle le résultat doit être là.
+- **Le journal de jobs** (22/10, `data/job-log/`) : une ligne par job, de la backlog ou de `npm run job` :
+  son type, ses moteurs, ses fils, ses minutes, ses parties, la RAM libre au plus bas.
+- **Une nuit simulée** (22/10, l'onglet Ordonnanceur, `src/schedule/night.js`) : la file jouée sur un
+  scénario tiré (durées, échecs, scores des duels), sans lancer un seul job.
 - **La règle de Smith** : lancer d'abord le job qui a le plus de poids par minute (sa priorité divisée
   par sa durée). La règle de base de l'ordonnanceur, celle qu'un planificateur doit battre.
 - **Le chemin critique** : la plus longue chaîne de prérequis ; retarder un job qui en fait partie

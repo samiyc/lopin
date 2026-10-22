@@ -23,7 +23,7 @@ plus de temps quand les 18 fils travaillent : 64 s contre 29 s au tour 1).
 | **réunis** (108 parties) | **48,1 %** | ≈ 40,4 – 55,9 % |
 
 Égalité dans les marges : le cœur, le solveur et la largeur de la 1.2 ne font pas un meilleur juge.
-Le `stopIf` (nouveau seuil `atLeast`, `scripts/lib/domain/backlog-stop.js`) a gardé **Oracle1** ; l'oracle
+Le `stopIf` (nouveau seuil `atLeast`, `src/schedule/stop.js` depuis le 22/10) a gardé **Oracle1** ; l'oracle
 reste en version 1.
 
 **La relecture** (`READ_V12_Oracle1`, 55 min) : les parties 1.2@4000 contre 1.2@2000 (les duels

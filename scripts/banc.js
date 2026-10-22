@@ -3,7 +3,7 @@ import { V1_ENGINE } from "../src/config/bots.js";
 import { againstBase, bancVerdict, judge, pairedDiff, rankCorrelation, summarizeBanc } from "../src/replay/oracle/banc.js";
 import { ORACLE } from "../src/replay/oracle/oracle.js";
 import { loadGame, readIndex } from "./lib/domain/game-index.js";
-import { stopIfFor } from "./lib/domain/backlog-stop.js";
+import { stopIfFor } from "../src/schedule/stop.js";
 import { applyThreadsOption, runPool } from "./lib/cli/pool.js";
 
 /**
@@ -148,7 +148,7 @@ async function queueDuels() {
   const offset = (n) => ` --offset ${n + 1}`;
   // Fixed-width columns on the left, the version on the right (docs/glossaire.md, Sami 05/10).
   const ids = [1, 2, 3, 4].map((n) => `VALIDATE_LONG_${n}_${name}`);
-  // A series that starts badly stops there (stopIf, scripts/lib/domain/backlog-stop.js).
+  // A series that starts badly stops there (stopIf, src/schedule/stop.js).
   const duel = (n) => ({ id: ids[n], command: `npm run duel -- "${tested}" "${against}" --long --games 125 --page${offset(n)}`, estimate: "30 min", limit: 45, why: `Passée au banc de similitude (npm run banc) : le jeu de donnes ${n + 1} sur 4 des duels longs qui décident (fourchette basse réunie au-dessus de 50 %, npm run versus).`, status: "todo", stopIf: stopIfFor(ids, n + 1) });
   const jobs = [0, 1, 2, 3].map(duel);
   backlog.jobs.push(...jobs);

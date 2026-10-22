@@ -110,7 +110,7 @@ que ce qui aura été **observé** : tant que A n'a pas joué, tous les scénari
 Rien n'est lancé ; chaque étape se mesure avant la suivante.
 
 1. **Le simulateur** : `simulateNight(queue, policy, scenario)`, pur et testé. Il rejoue l'ordre des
-   événements, les fils, la RAM, les stopIf (`stopReason`, `scripts/lib/domain/backlog-stop.js`, se
+   événements, les fils, la RAM, les stopIf (`stopReason`, `src/schedule/stop.js`, se
    réutilise tel quel).
 2. **Le tireur de scénarios**, à partir de `backlog-done` : les durées par moteur, la force des
    versions, les pannes.
@@ -286,8 +286,8 @@ algorithme de recherche.
 
 ### 9.7 Ce qui est fait (22/10)
 
-L'étape 1 est dans le lanceur : `scripts/lib/domain/backlog-order.js`, pur et testé
-(`tests/web-cli/backlog-order.test.js`), qui n'importe rien du jeu.
+L'étape 1 est dans le lanceur : `src/schedule/order.js`, pur et testé (`tests/schedule/order.test.js`),
+qui n'importe rien du jeu.
 - **Le choix du job suivant** : ses prérequis d'abord (`after`, et les duels que lit son `stopIf`, pour
   que le duel 2 ne parte jamais avant le duel 1), puis un job qui manquerait son `due`, puis la règle de
   Smith. Les durées sont lues dans `estimate` (« 40 min », « 1 h 30 », « ≤ 2 h »).

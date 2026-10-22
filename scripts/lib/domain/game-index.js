@@ -1,4 +1,5 @@
 import { readFile, readdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { analyseGame, gameKey } from "../../../src/replay/core/game-analysis.js";
 import { jokersOf } from "../../../src/replay/core/jokers-held.js";
@@ -10,7 +11,11 @@ import { shortTag } from "../../../src/config/bots.js";
  * (`src/replay/core/game-analysis.js`). Games are picked from the index without
  * reading them (`npm run games`), then loaded one file at a time.
  */
-export const DUELS_DIR = fileURLToPath(new URL("../../../duels/", import.meta.url));
+// LOPIN_DUELS_DIR: another folder, for runs whose games must stay out of duels/ (the thread bench
+// replays the same decks on purpose, and duels/ keeps a game once).
+export const DUELS_DIR = process.env.LOPIN_DUELS_DIR
+  ? `${path.resolve(process.env.LOPIN_DUELS_DIR)}${path.sep}`
+  : fileURLToPath(new URL("../../../duels/", import.meta.url));
 const INDEX = `${DUELS_DIR}index.json`;
 
 /** The index row of game `game` of `file`. */

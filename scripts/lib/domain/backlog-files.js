@@ -1,4 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { isFinished } from "../../../src/schedule/order.js";
+
+export { FINISHED, isFinished } from "../../../src/schedule/order.js";
 
 /**
  * The backlog's two places (Sami, 17/10): data/backlog.json holds only the jobs
@@ -8,8 +11,6 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
  * another machine's queue (`--queue laptop` → backlog-laptop.json, backlog-done-laptop/);
  * `root`: the folder holding data/ (the tests point it elsewhere).
  */
-export const FINISHED = Object.freeze(["done", "failed", "timeout", "skipped"]);
-export const isFinished = (job) => FINISHED.includes(job.status);
 
 /** The month file a finished job goes to: its `doneAt`'s year and month. */
 export const monthOf = (job) => (job.doneAt ?? "undated").slice(0, 7);

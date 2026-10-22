@@ -1,13 +1,13 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { holdOf, indexJobs, minutesOf, nextJob, planNight, smithOrder } from "../../scripts/lib/domain/backlog-order.js";
+import { holdOf, indexJobs, minutesOf, nextJob, planNight, smithOrder } from "../../src/schedule/order.js";
 
 const NOW = Date.parse("2026-10-22T22:00");
 const job = (id, estimate, extra = {}) => ({ id, command: `echo ${id}`, estimate, status: "todo", ...extra });
 const ids = (jobs) => jobs.map((one) => one.id);
 const next = (jobs, archive = [], now = NOW, options) => nextJob(jobs, archive, now, options)?.id;
 
-describe("the backlog's order: prerequisites, priorities, due times (backlog-order.js, Sami 22/10)", () => {
+describe("the backlog's order: prerequisites, priorities, due times (src/schedule/order.js, Sami 22/10)", () => {
   it("reads the estimates the queue writes", () => {
     assert.equal(minutesOf("40 min"), 40);
     assert.equal(minutesOf("~25 min"), 25);

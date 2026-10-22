@@ -1,9 +1,12 @@
-import { isFinished } from "./backlog-files.js";
+/** A job that has ended, one way or another: it leaves the queue for the archive (scripts/lib/domain/backlog-files.js). */
+export const FINISHED = Object.freeze(["done", "failed", "timeout", "skipped"]);
+export const isFinished = (job) => FINISHED.includes(job.status);
 
 /**
  * Which job of the backlog runs next (Sami, 22/10, docs/ismcts-ailleurs/backlog.md § 9). Pure: the
- * runner (scripts/backlog.js) hands the queue, the archive and the time. Nothing here knows the game,
- * so it can move to a shared scheduling library later (docs/ismcts-ailleurs/feuille-de-route.md § 4).
+ * runner (scripts/backlog.js) and the Ordonnanceur tab (web/app/scheduler/) hand the queue, the archive
+ * and the time. src/schedule/ knows nothing of the game: the seed of a shared scheduling library
+ * (docs/ismcts-ailleurs/feuille-de-route.md § 4).
  *
  * - `after`: ids of jobs that must be finished first, its prerequisites. One skipped by its `stopIf`
  *   counts as finished (the analysis runs on the duels played); one failed or timed out blocks the job.

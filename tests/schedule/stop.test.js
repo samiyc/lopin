@@ -1,11 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { pairsOf, pooledMean, stopIfFor, stopReason } from "../../scripts/lib/domain/backlog-stop.js";
+import { pairsOf, pooledMean, stopIfFor, stopReason } from "../../src/schedule/stop.js";
 
 const duel = (id, mean, status = "done") => ({ id, status, output: `${id}.txt`, text: `  paires : n = 125, moyenne ${mean.toFixed(4)}, écart-type 0.3100 (donnes décalées de 1)` });
 const outputOf = (job) => job.text ?? "";
 
-describe("stopIf: a series of long duels that starts badly stops there (backlog-stop.js)", () => {
+describe("stopIf: a series of long duels that starts badly stops there (src/schedule/stop.js)", () => {
   it("reads a duel's pairs and pools several", () => {
     assert.deepEqual(pairsOf("  paires : n = 125, moyenne 0.4840, écart-type 0.3171"), { n: 125, mean: 0.484 });
     assert.equal(pairsOf("rien"), null);

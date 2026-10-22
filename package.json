@@ -51,6 +51,7 @@
     "error-impact": "node scripts/error-impact.js",
     "retrospective": "node scripts/retrospective.js",
     "backlog": "node scripts/backlog.js",
+    "job": "node scripts/job.js",
     "core-test": "node scripts/core-test.js",
     "ab": "node scripts/ab.js",
     "rules": "node scripts/rules.js",

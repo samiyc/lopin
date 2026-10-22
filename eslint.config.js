@@ -47,7 +47,7 @@ export default [
   {
     // Shared with the web game, which imports these modules in the browser:
     // no Node built-in may creep in.
-    files: ["src/core/**/*.js", "src/sim/**/*.js", "src/config/**/*.js", "src/replay/**/*.js"],
+    files: ["src/core/**/*.js", "src/sim/**/*.js", "src/config/**/*.js", "src/replay/**/*.js", "src/schedule/**/*.js"],
     languageOptions: { globals: {} },
     rules: {
       "no-restricted-imports": ["error", { patterns: [{ group: ["node:*"], message: "Code partagé avec le navigateur : pas de module Node." }] }],
