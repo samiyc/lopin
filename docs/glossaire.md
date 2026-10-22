@@ -608,3 +608,14 @@ largeurs ; seuls les jobs lancés en groupe gardent le même gabarit.
   moins un (pour aller plus vite, ou sur un serveur). Plus de pause de 15 min entre deux jobs. Le
   nombre de fils découpe certains calculs (`selfplay`, `distill`, les vagues d'un duel) : deux
   mesures se comparent à nombre de fils égal.
+
+## L'ISMCTS ailleurs
+
+Le dossier `docs/ismcts-ailleurs/` (Sami, 21-22/10) applique l'algorithme hors du jeu : la backlog,
+les robots d'entrepôt, d'autres usages.
+- **Un scénario** : la déterminisation hors du jeu. Un monde possible tiré de ce qu'on sait, par exemple
+  les durées et les scores des jobs à venir, au lieu de la main adverse et de la pioche.
+- **POMCP** : le cousin de l'ISMCTS pour un joueur **seul** face à un état caché qui se révèle peu à peu
+  (Silver et Veness, 2010) ; l'ISMCTS est pour le cas où **un autre joueur** cache quelque chose.
+- **La fusion de stratégies**, hors du jeu : planifier comme si on connaissait déjà le scénario (« ne lance
+  pas ce duel, il va échouer »). L'arbre rangé par ce qui a été observé l'évite.
