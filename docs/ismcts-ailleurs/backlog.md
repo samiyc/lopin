@@ -319,14 +319,27 @@ elle-même : personne ne relance la file à 3 h du matin. Pour qu'elle reparte s
   connexion, qui lance `npm run backlog`. On peut aussi éviter ce redémarrage : les heures d'activité de
   Windows Update couvrent jusqu'à 18 h, de 20 h à 14 h par exemple, ou on suspend les mises à jour une
   semaine de validation ;
-- **la chaleur** : une garde dans le lanceur. Elle lit la température entre deux minutes. Au-dessus du
-  seuil d'alerte, elle arrête le job et attend que le CPU repasse sous le seuil de reprise, puis la file
-  repart. Le Ryzen 9 3900X de la machine bride à 95 °C (son Tjmax) ; sous charge complète, 80 à 90 °C est
-  courant. Une alerte à 90 °C tenue une minute, et une reprise sous 75 °C, sont des points de départ.
+- **la chaleur** : la garde thermique du lanceur, branchée le 22/10 (voir plus bas).
 
-Windows ne donne pas la température du CPU sans aide. L'outil gratuit est **LibreHardwareMonitor**, libre,
-lancé en administrateur. `scripts/lib/cli/machine.js` (`hottest()`) lit déjà ses capteurs par WMI ; il n'est
-pas installé ici. Une fois installé, on vérifie d'abord ce qu'il publie, puis on branche la garde.
+**La garde thermique, en vrai** (`scripts/lib/cli/machine.js`, `tests/web-cli/machine.test.js`) :
+- **La lecture.** Windows ne donne pas la température du CPU sans aide. Sami a installé
+  **LibreHardwareMonitor** 0.9.6 (le zip .NET Framework, dans `C:\Outils\LibreHardwareMonitor`), lancé en
+  administrateur. Cette version ne publie plus ses capteurs par WMI ; on les lit sur son serveur web local,
+  `http://127.0.0.1:8085/data.json` (Options → Remote Web Server → Run, au démarrage de Windows).
+- **Un seul capteur, celui du CPU**, `Core (Tctl/Tdie)` sur ce Ryzen. La carte mère annonce « AUX 2 » à
+  109 °C, une entrée sans sonde, et le SSD publie ses seuils (84 °C) comme des températures : la plus haute de
+  toutes aurait déclenché l'alerte en permanence. Au premier essai, le CPU était à 78 °C sous le banc à
+  12 fils.
+- **La règle.** Une lecture toutes les 30 s pendant chaque job. À 90 °C deux lectures de suite, le job est
+  arrêté et reste dans la file ; la file repart quand le CPU repasse sous 75 °C (30 min d'attente au plus). Un
+  job arrêté 3 fois finit `failed`, avec sa raison. Le Ryzen 9 3900X bride lui-même à 95 °C (son Tjmax) : la
+  garde protège surtout d'une panne de refroidissement (la pompe du watercooling).
+- **Les réglages** : `LOPIN_HEAT_ALERT` (0 coupe la garde), `LOPIN_HEAT_RESUME`, `LOPIN_HEAT_EVERY` (secondes).
+  Sans le serveur, le lanceur le dit au départ et tourne sans garde.
+- **Le journal de jobs** garde la température de chaque job, au départ et au plus haut (`cpuStartC`,
+  `cpuMaxC`), de la backlog comme de `npm run job` : de quoi régler le seuil sur des nuits réelles.
+- **Vérifié** sur une file factice, avec une alerte à 60 °C : trois arrêts, puis le job en échec avec sa
+  raison, et son analyse bloquée.
 
 **Ce que simule l'onglet** (`src/schedule/incidents.js`, tiré à part du scénario des jobs, les deux ordres
 voient les mêmes) :

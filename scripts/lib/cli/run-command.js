@@ -14,20 +14,21 @@ export function stopTree(child) {
 /**
  * Runs `command` in a shell from the project's root, its output both on screen (unless `quiet`) and in
  * `outFile`; resolves with the exit code, or "timeout" once `minutes` have passed (the whole process
- * tree is stopped). `env` is added to the inherited environment (a job's own `LOPIN_THREADS`).
+ * tree is stopped). `env` is added to the inherited environment (a job's own `LOPIN_THREADS`). `signal`
+ * (an AbortSignal: the heat guard) stops it too, and it resolves with "aborted".
  */
-export function runCommand(command, { outFile, minutes = Infinity, env = {}, quiet = false }) {
+export function runCommand(command, { outFile, minutes = Infinity, env = {}, quiet = false, signal }) {
   const out = createWriteStream(outFile);
   return new Promise((resolve) => {
     const child = spawn(command, { cwd: ROOT, shell: true, env: { ...process.env, ...env } });
-    let timedOut = false;
-    const timer = Number.isFinite(minutes)
-      ? setTimeout(() => {
-          timedOut = true;
-          out.write(`\n[backlog] arrêté au bout de ${minutes} min\n`);
-          stopTree(child);
-        }, minutes * 60_000)
-      : null;
+    let ended = null;
+    const stop = (why, note) => {
+      ended = why;
+      out.write(`\n[backlog] ${note}\n`);
+      stopTree(child);
+    };
+    const timer = Number.isFinite(minutes) ? setTimeout(() => stop("timeout", `arrêté au bout de ${minutes} min`), minutes * 60_000) : null;
+    signal?.addEventListener("abort", () => stop("aborted", `arrêté : ${signal.reason}`), { once: true });
     for (const stream of [child.stdout, child.stderr]) {
       stream.on("data", (chunk) => {
         if (!quiet) process.stdout.write(chunk);
@@ -36,7 +37,7 @@ export function runCommand(command, { outFile, minutes = Infinity, env = {}, qui
     }
     child.on("close", (code) => {
       clearTimeout(timer);
-      out.end(() => resolve(timedOut ? "timeout" : code));
+      out.end(() => resolve(ended ?? code));
     });
   });
 }

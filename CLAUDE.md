@@ -201,7 +201,8 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   (22/10, `src/schedule/order.js`): prerequisites (`after`, a `stopIf`'s duels), a `due` it would miss, then
   Smith's rule on `priority` / `estimate`; `--fifo` keeps the file order, `--list` prints the planned night.
   `src/schedule/` (order, stop, night, incidents: heat, restarts, preemption) imports nothing of the game and runs in the page's
-  Ordonnanceur tab (`web/app/scheduler/`). Every job, backlog or `npm run job`, logs a line to `data/job-log/`.
+  Ordonnanceur tab (`web/app/scheduler/`). Every job, backlog or `npm run job`, logs a line to `data/job-log/`, with
+  the CPU's temperature; the heat guard (`scripts/lib/cli/machine.js`, LibreHardwareMonitor's web server) stops a job at 90 °C.
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.

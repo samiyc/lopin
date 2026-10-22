@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { localTimestamp } from "../src/replay/core/log.js";
 import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
+import { heatSettings, watchHeat } from "./lib/cli/machine.js";
 import { runCommand } from "./lib/cli/run-command.js";
 import { appendJobLog, jobKind, jobLine, watchMemory } from "./lib/domain/job-log.js";
 import { readFileSync } from "node:fs";
@@ -13,7 +14,8 @@ import { readFileSync } from "node:fs";
  *
  *   npm run job -- --threads 6 "npm run duel -- ismcts@400 strategist --games 50 --page"
  *
- * Its output goes to the screen and to backlog-runs/<date>_<id>.txt (ignored by git).
+ * Its output goes to the screen and to backlog-runs/<date>_<id>.txt (ignored by git). The CPU's temperature is
+ * logged when readable; no heat guard here: a job started by hand has someone to watch it.
  */
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
@@ -30,11 +32,12 @@ const id = args.includes("--id") ? args[args.indexOf("--id") + 1] : `${jobKind(c
 const output = `backlog-runs/${stamp}_${id}.txt`;
 await mkdir(`${ROOT}backlog-runs/`, { recursive: true });
 const memory = watchMemory();
+const temperature = watchHeat({ settings: { ...heatSettings(), alert: 0 } });
 const started = new Date();
 const code = await runCommand(command, { outFile: `${ROOT}${output}` });
 const status = code === 0 ? "done" : "failed";
 const text = readFileSync(`${ROOT}${output}`, "utf8");
-const line = jobLine({ id, command, threads: workerCount(), started, ended: new Date(), status, output: text, memory: memory.stop(), source: "job" });
+const line = jobLine({ id, command, threads: workerCount(), started, ended: new Date(), status, output: text, memory: memory.stop(), temperature: temperature.stop(), source: "job" });
 await appendJobLog(line);
 console.log(`■ ${id} : ${status}, ${line.minutes} min, ${line.threads} fils → ${output} (journal : data/job-log/)`);
 process.exit(typeof code === "number" ? code : 1);

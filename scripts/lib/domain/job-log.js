@@ -5,7 +5,8 @@ import os from "node:os";
  * The job log (Sami, 22/10, docs/ismcts-ailleurs/backlog.md § 8): one line per job, by day or by night,
  * from the backlog (`source: "backlog"`), `npm run job` (`"job"`, a job started by hand) or a bench.
  * What the history lacked to learn a thread count per kind of job: the kind, the engines, the threads
- * asked, the minutes, the games played, and the free memory at its lowest. One file per month,
+ * asked, the minutes, the games played, the free memory at its lowest, and the CPU's temperature at the
+ * start and at its highest when LibreHardwareMonitor serves it (scripts/lib/cli/machine.js). One file per month,
  * data/job-log/YYYY-MM.jsonl, so none nears data/'s 500 KB.
  */
 const GB = 1024 ** 3;
@@ -57,8 +58,8 @@ export function watchMemory(everyMs = 5_000) {
   };
 }
 
-/** One line of the log. `started` and `ended` are Dates; `memory` comes from `watchMemory().stop()`. */
-export function jobLine({ id, command, threads, started, ended, status, output = "", memory = {}, source, queue = "" }) {
+/** One line of the log. `started` and `ended` are Dates; `memory` comes from `watchMemory().stop()`, `temperature` from `watchHeat().stop()`. */
+export function jobLine({ id, command, threads, started, ended, status, output = "", memory = {}, temperature = {}, source, queue = "" }) {
   const minutes = (ended - started) / 60_000;
   const games = gamesOf(output);
   return {
@@ -75,6 +76,7 @@ export function jobLine({ id, command, threads, started, ended, status, output =
     status,
     ...(games ? { games, gamesPerHour: round((60 * games) / Math.max(minutes, 1 / 60)) } : {}),
     ...memory,
+    ...temperature,
   };
 }
 

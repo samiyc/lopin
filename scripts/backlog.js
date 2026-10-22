@@ -7,6 +7,7 @@ import { backlogFiles } from "./lib/domain/backlog-files.js";
 import { nextJob as pickNext, planNight } from "../src/schedule/order.js";
 import { stopReason } from "../src/schedule/stop.js";
 import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js";
+import { heatSettings, readCpuTemperature, waitUntilCool, watchHeat } from "./lib/cli/machine.js";
 import { runCommand } from "./lib/cli/run-command.js";
 import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
 
@@ -44,7 +45,12 @@ import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
  *
  * A job may carry `threads`: its own `LOPIN_THREADS`, over `--threads`. Every job writes its line to
  * the job log (scripts/lib/domain/job-log.js, data/job-log/): kind, engines, threads, minutes, games,
- * free memory at its lowest.
+ * free memory at its lowest, the CPU's temperature.
+ *
+ * The heat guard (Sami, 22/10, scripts/lib/cli/machine.js, docs/ismcts-ailleurs/backlog.md § 9.8): with
+ * LibreHardwareMonitor's web server running, the CPU's temperature is read every 30 s; at 90 °C twice in a
+ * row the job is stopped, left in the queue, and the queue goes on once the CPU is back under 75 °C. A job
+ * stopped `HEAT_STOPS` times ends `failed`. Without the server the run says so and goes on unguarded.
  *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to
@@ -52,6 +58,7 @@ import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
  * `git push` (docs/cloud.md).
  */
 const LIMIT = 120;
+const HEAT_STOPS = 3;
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const args = process.argv.slice(2);
 const queue = args.includes("--queue") ? args[args.indexOf("--queue") + 1] : null;
@@ -64,6 +71,9 @@ const suffix = queue ? `-${queue}` : "";
 const RUNS_DIR = queue ? `data/runs${suffix}/` : "backlog-runs/";
 const RUNS = `${ROOT}${RUNS_DIR}`;
 const { readQueue: readBacklog, saveQueue: saveBacklog, readArchive, archiveFinished } = backlogFiles({ suffix });
+
+const heat = heatSettings();
+const heatStops = new Map();
 
 /** A job's threads: its own `threads`, else the run's. */
 const threadsOf = (job) => (job.threads ? threadsFrom(String(job.threads), os.cpus().length) : threads);
@@ -112,6 +122,7 @@ const planned = planNight((await readBacklog()).jobs, await readArchive(), Date.
 await mkdir(RUNS, { recursive: true });
 const onThreads = `, sur ${threads} fils`;
 console.log(`${planned.order.length} traitement(s) à faire${onThreads}, ${planned.waiting.length} en attente.`);
+console.log(heatLine(await readCpuTemperature(heat)));
 // The next job is read from the file each time: one added while another ran is played too.
 const tried = new Set();
 const nextJob = async () => pickNext((await readBacklog()).jobs.filter((job) => !tried.has(job.id)), await readArchive(), Date.now(), order);
@@ -136,6 +147,31 @@ async function skipped(job) {
   console.log(`■ ${job.id} : annulé — ${reason}`);
   return true;
 }
+/** 77.9 → « 77,9 °C ». A declaration, hoisted: the run's first line reads it before this point. */
+function degrees(celsius) {
+  return `${String(celsius).replace(".", ",")} °C`;
+}
+
+/** What the run says of its heat guard, from a first reading. */
+function heatLine(reading) {
+  if (!reading) return "Température du CPU illisible (le serveur web de LibreHardwareMonitor, docs/ismcts-ailleurs/backlog.md § 9.8) : pas de garde thermique.";
+  const now = `CPU à ${degrees(reading.celsius)} (${reading.sensor})`;
+  return heat.alert > 0 ? `Garde thermique : ${now}, alerte à ${heat.alert} °C sur deux lectures, reprise sous ${heat.resume} °C.` : `${now}, garde thermique coupée.`;
+}
+
+/** After the heat guard stopped `job`: true when it goes back to the queue once the CPU has cooled, false once stopped too often. */
+async function heatStopped(job, line) {
+  const count = (heatStops.get(job.id) ?? 0) + 1;
+  heatStops.set(job.id, count);
+  if (count >= HEAT_STOPS) return false;
+  await appendJobLog(jobLine({ ...line, status: "heat" }));
+  console.log(`■ ${job.id} : arrêté par la garde thermique (${count}/${HEAT_STOPS}), CPU jusqu'à ${degrees(line.temperature.cpuMaxC)} ; reprise sous ${heat.resume} °C`);
+  const reading = await waitUntilCool({ settings: heat });
+  console.log(`  CPU à ${reading ? degrees(reading.celsius) : "? °C"} : la file repart`);
+  tried.delete(job.id);
+  return true;
+}
+
 for (let job = await nextJob(); job; job = await nextJob()) {
   tried.add(job.id);
   if (await skipped(job)) continue;
@@ -144,15 +180,19 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   const output = `${RUNS_DIR}${stamp}_${job.id}.txt`;
   console.log(`\n▶ ${job.id} (${job.estimate}) : ${job.command}`);
   const memory = watchMemory();
+  const guard = new AbortController();
+  const temperature = watchHeat({ settings: heat, onAlert: (celsius) => guard.abort(`garde thermique, CPU à ${degrees(celsius)}`) });
   const env = job.threads ? { LOPIN_THREADS: String(job.threads) } : {};
-  const code = await runCommand(job.command, { outFile: `${ROOT}${output}`, minutes: job.limit ?? LIMIT, env });
+  const code = await runCommand(job.command, { outFile: `${ROOT}${output}`, minutes: job.limit ?? LIMIT, env, signal: guard.signal });
+  const run = { id: job.id, command: job.command, threads: threadsOf(job), started: new Date(started), ended: new Date(), output: outputOf({ output }), memory: memory.stop(), temperature: temperature.stop(), source: "backlog", queue: queue ?? "" };
+  if (code === "aborted" && (await heatStopped(job, run))) continue;
   // Re-read the file: someone may have added jobs while this one ran.
   const fresh = await readBacklog();
   const entry = fresh.jobs.find((candidate) => candidate.id === job.id);
   Object.assign(entry, { status: statusOf(code), doneAt: localTimestamp().slice(0, 16), minutes: Math.round((Date.now() - started) / 60000), output });
+  if (code === "aborted") entry.reason = `arrêté ${HEAT_STOPS} fois par la garde thermique`;
   await saveBacklog(fresh);
   await archiveFinished();
   console.log(`■ ${job.id} : ${entry.status}, ${entry.minutes} min → ${output}`);
-  const line = { id: job.id, command: job.command, threads: threadsOf(job), started: new Date(started), ended: new Date(), status: entry.status };
-  await appendJobLog(jobLine({ ...line, output: outputOf({ output }), memory: memory.stop(), source: "backlog", queue: queue ?? "" }));
+  await appendJobLog(jobLine({ ...run, status: entry.status }));
 }

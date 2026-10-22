@@ -622,8 +622,9 @@ largeurs ; seuls les jobs lancés en groupe gardent le même gabarit.
   retarde la fin de tout.
 - **Les imprévus de la machine** (22/10, `src/schedule/incidents.js`) : une alerte chaleur, un
   redémarrage de Windows, une coupure de courant. Le job en cours est perdu et rejoué depuis le début.
-- **La garde thermique** : le lanceur arrête le job quand le CPU passe le seuil d'alerte, attend qu'il
-  repasse sous le seuil de reprise, puis repart. Elle demande LibreHardwareMonitor ; pas encore branchée.
+- **La garde thermique** (22/10, `scripts/lib/cli/machine.js`) : le lanceur arrête le job quand le CPU
+  passe le seuil d'alerte (90 °C, deux lectures de suite), attend qu'il repasse sous le seuil de reprise
+  (75 °C), puis repart. Elle lit LibreHardwareMonitor par son serveur web local.
 - **La reprise automatique** : la file repart seule après un redémarrage (le PC qui se rallume, une
   tâche planifiée qui lance `npm run backlog`). Sans elle, la nuit s'arrête au premier redémarrage.
 - **L'interruption** : un job arrivé pendant la nuit arrête le job en cours parce qu'il manquerait son
