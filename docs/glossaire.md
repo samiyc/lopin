@@ -635,5 +635,8 @@ les robots d'entrepôt, d'autres usages.
   battre la meilleure trouvée. Pas d'adversaire, pas de hasard : l'inverse d'une simulation.
 - **L'ordonnancement en ligne** : décider au fil des événements (un job finit, un patient arrive) sans
   connaître la suite, au lieu de tout planifier d'avance. C'est le terrain du MCTS hors du jeu.
+- **Le tri** (aux urgences) : à l'entrée, chaque patient reçoit une couleur selon sa gravité estimée,
+  avec un délai maximal d'attente par couleur. C'est une priorité et une échéance, mais incertaines :
+  l'état réel peut être pire, et changer pendant l'attente.
 - **La simulation à événements discrets** : un simulateur qui saute d'un événement au suivant (un patient
   arrive, un job finit) au lieu d'avancer minute par minute. C'est la forme du simulateur de la backlog.

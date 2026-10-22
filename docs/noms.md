@@ -55,5 +55,6 @@ Jusque-là, il y en avait trois :
 - **Lopin n°742** pour le projet et le dossier ;
 - **lupin** pour le dépôt GitHub, une faute de frappe.
 
-Le dossier et le dépôt GitHub se renomment à la main, hors du code (Sami). Les
-anciens prompts de `docs/Prompt/` et l'audit du 17/10 gardent les noms de leur date.
+Sami a renommé le dossier (`lopin`) et le dépôt GitHub (`samiyc/lopin`) le même
+jour. Les anciens prompts de `docs/Prompt/` et l'audit du 17/10 gardent les noms de
+leur date.

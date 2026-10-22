@@ -129,7 +129,7 @@ rapporte.
 
 **Une seule fois, sur le portable** :
 1. Installer **Node 20 LTS** (installateur de nodejs.org) et **Git pour Windows**.
-2. Cloner le dépôt : `git clone https://github.com/samiyc/lupin.git`, puis se
+2. Cloner le dépôt : `git clone https://github.com/samiyc/lopin.git`, puis se
    connecter à GitHub pour pouvoir pousser.
 3. Copier le dossier `duels/` du PC fixe (37 Mo, absent de git) dans le
    dossier cloné, par une clé USB par exemple. À refaire seulement si de

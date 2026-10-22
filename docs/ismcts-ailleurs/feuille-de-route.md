@@ -1,41 +1,42 @@
 # Feuille de route hors du jeu
 
-Sami (22/10) : d'abord l'ordonnanceur, dans ce dépôt ; ensuite les déplacements, avec trois thèmes
-concrets (l'entrepôt, la cuisine, les secours), et dans les trois **un humain qui coopère avec des
-robots**. Une bibliothèque commune, avec des signatures, servira à tous. Les adversaires cachés passent
-après.
+Sami (22/10) : d'abord l'ordonnanceur, dans ce dépôt ; ensuite trois thèmes concrets, l'entrepôt, la
+cuisine et **les urgences d'un hôpital** (pas les secours sur le terrain, trop vastes pour un petit
+projet). Dans les trois, **un humain coopère avec des robots**. Une bibliothèque commune, avec des
+signatures, servira à tous. Les adversaires cachés passent après.
 
 ## 1. L'ordre
 
 1. **L'ordonnanceur de la backlog**, ici : les priorités, les échéances, les prérequis, puis plusieurs
    jobs côte à côte et le planificateur ([`backlog.md`](backlog.md), § 9.6). C'est la famille A de
    [`planification.md`](planification.md).
-2. **Les déplacements**, dans un dépôt à part : un moteur, trois habillages (§ 2), la coopération avec un
-   humain (§ 3). C'est la famille B.
-3. **Les adversaires cachés** (famille C) : seulement si un défi CodinGame en temps réel plaît (§ 5).
+2. **Les urgences**, dans un dépôt à part. Conseillé juste après l'ordonnanceur, parce qu'elles en
+   reprennent toutes les pièces : la couleur du bracelet est une priorité, son délai maximal une échéance,
+   le parcours du patient une suite de prérequis, les box et les blocs des ressources
+   ([`planification.md`](planification.md) § 3). Elles ajoutent l'état caché (la gravité réelle) et les
+   arrivées, sans grille ni trajets.
+3. **Les déplacements** : l'entrepôt puis la cuisine, un moteur de grille pour les deux (§ 2). C'est la
+   famille B.
+4. **Les adversaires cachés** (famille C) : seulement si un défi CodinGame en temps réel plaît (§ 5).
 
 La bibliothèque commune (§ 4) naît pendant l'étape 1 et sort du dépôt au début de l'étape 2.
 
-## 2. Un moteur, trois habillages
+## 2. Trois thèmes, deux moteurs
 
-L'entrepôt, la cuisine et les secours sont **le même problème** : des agents sur une grille, des tâches
-qui apparaissent, des chemins qui peuvent se fermer. Un seul simulateur suffit, avec un générateur de
-tâches et une apparence par thème. Ce qui change, c'est la difficulté propre à chacun :
-
-| | L'entrepôt | La cuisine | Les secours |
+| | Les urgences | L'entrepôt | La cuisine |
 |---|---|---|---|
-| **Les tâches** | des colis à porter au camion | des plats à préparer et à servir | des victimes à trouver et à évacuer |
-| **Ce qui est incertain** | les allées bloquées, découvertes en arrivant (le voyageur canadien) | les commandes qui arrivent | **où sont les victimes** : un état caché qui se révèle (POMCP) |
-| **La difficulté propre** | les embouteillages entre robots (A* avec réservations) | **les recettes s'enchaînent** : couper, cuire, dresser, comme les prérequis de la backlog (§ 9.4) | explorer ou évacuer : chercher encore, ou ramener ceux qu'on a trouvés |
-| **Ce que fait l'humain** | un cariste qui prend des commandes | un cuisinier, comme dans *Overcooked* | un chef d'équipe sur le terrain |
+| **Le moteur** | celui de l'ordonnanceur : des ressources, des tâches, des événements ; pas de grille | une grille, A* avec réservations | la même grille |
+| **Les tâches** | des patients à soigner, dans l'ordre de leur parcours | des colis à porter au camion | des plats à préparer et à servir |
+| **Ce qui est incertain** | **l'état réel des patients**, que la couleur estime ; les arrivées | les allées bloquées, découvertes en arrivant (le voyageur canadien) | les commandes qui arrivent |
+| **La difficulté propre** | la priorité change pendant l'attente ; la crise, quand l'afflux dépasse les ressources | les embouteillages entre robots | **les recettes s'enchaînent** : couper, cuire, dresser |
+| **Ce que fait l'humain** | il coordonne : il décide qui passe, l'assistant propose | un cariste qui prend des commandes | un cuisinier, comme dans *Overcooked* |
 
-L'ordre conseillé : **l'entrepôt d'abord** (le plus simple, et le plan de 17 × 7 est prêt dans
-[`entrepot.md`](entrepot.md)), puis **la cuisine** (elle ajoute les enchaînements), puis **les secours**
-(ils ajoutent l'état caché).
+L'entrepôt passe avant la cuisine : il est plus simple, et le plan de 17 × 7 est prêt dans
+[`entrepot.md`](entrepot.md). La cuisine y ajoute les enchaînements.
 
 ## 3. La coopération entre un humain et des robots
 
-C'est ce qui rend les trois thèmes parlants, et c'est là que l'expérience de Lopin sert directement.
+C'est ce qui rend les thèmes parlants, et c'est là que l'expérience de Lopin sert directement.
 - **Les robots ne commandent pas l'humain** : il fait ce qu'il veut. Ses intentions sont cachées, comme la
   main adverse dans Lopin. Les robots tirent ce qu'il va probablement faire et replanifient à chaque
   événement.
@@ -43,10 +44,12 @@ C'est ce qui rend les trois thèmes parlants, et c'est là que l'expérience de 
   (NeurIPS 2019, [`planification.md`](planification.md) § 4) l'ont mesuré : un agent qui ne s'est entraîné
   qu'avec lui-même coordonne mal avec un humain. Au départ, trois humains simulés suffisent : celui qui
   prend la tâche la plus proche, celui qui prend la plus urgente, celui qui joue au hasard.
-- **Montrer le plan** : chaque robot affiche sur l'écran la tâche qu'il vise. L'humain s'organise mieux
-  avec des robots lisibles, et la démonstration s'explique toute seule.
+- **Montrer le plan** : chaque robot affiche la tâche qu'il vise, l'assistant des urgences dit pourquoi il
+  propose un patient. L'humain s'organise mieux avec des robots lisibles, et la démonstration s'explique
+  toute seule.
 - **La mesure** : le score de l'équipe avec chaque humain simulé, puis avec de vrais joueurs dans le
-  navigateur, contre des robots qui suivent la règle simple.
+  navigateur. Aux urgences, trois manières de jouer la même crise : l'humain seul, l'humain aidé par
+  l'assistant, l'assistant seul. L'écart entre les deux premières est l'argument de la démonstration.
 
 ## 4. La bibliothèque commune
 
@@ -60,8 +63,9 @@ en devenir un client si son empreinte ne bouge pas ([`README.md`](README.md) § 
 |---|---|---|
 | `random` | le tirage reproductible, à partir d'une graine (celui de `src/core/random.js`) | tous |
 | `events` | la simulation à événements discrets : une file d'événements datés | l'ordonnanceur, les trois thèmes |
+| `schedule` | les ressources, les priorités, les échéances, les prérequis, la règle de Smith | l'ordonnanceur, les urgences |
 | `mcts` | la recherche : le tirage d'un scénario, la liste courte, la descente, la simulation, le coup le plus visité | tous |
-| `grid` | A*, la table de réservations | les trois thèmes |
+| `grid` | A*, la table de réservations | l'entrepôt, la cuisine |
 | `measure` | les intervalles de Wilson, la comparaison par paires sur les mêmes scénarios | tous |
 
 **Les signatures de `mcts`.** Un problème décrit ce que la recherche doit savoir faire ; la recherche ne
@@ -90,6 +94,8 @@ Les autres modules, plus simples :
 
 ```js
 export function createEvents() {}                   // { schedule(at, event), next(), now }
+export function readyTasks(tasks, done, free) {}    // prerequisites finished, resources free
+export function smithOrder(tasks) {}                // most weight per minute first
 export function astar(grid, from, to, options) {}   // options: { cost(cell, unit), reserved }
 export function createReservations() {}             // { reserve(path, start), isFree(cell, t) }
 export function wilson(wins, games) {}              // { low, high }
@@ -109,8 +115,9 @@ la vitrine** :
   un autre bot demande d'expliquer le jeu d'abord.
 
 **Mais la compétence ne se perd pas** : deviner ce que l'autre cache est exactement ce que demande la
-coopération avec un humain (§ 3). Lopin est l'argument pour la cuisine et les secours : « mes robots
-devinent les intentions du joueur comme mon bot devine la main adverse ».
+coopération avec un humain (§ 3), et deviner la gravité réelle d'un patient derrière sa couleur est le même
+geste que deviner une main derrière les cartes posées. Lopin est l'argument : « mes robots devinent ce
+qu'ils ne voient pas, comme mon bot devine la main adverse ».
 
 **CodinGame** reste une bonne idée si un défi en temps réel plaît : un classement public donne un
 résultat comparable aux autres, et la plateforme sert aussi au recrutement. Ce n'est pas une étape de la

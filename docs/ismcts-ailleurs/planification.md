@@ -10,12 +10,12 @@ bataille sous brouillard, et dit ce que chacune demande.
 | Famille | Ce qui est incertain | L'outil | Les projets |
 |---|---|---|---|
 | **A. Ordonnancer sous incertitude** | les durées, les arrivées, les annulations ; personne ne cache rien exprès | MCTS sur des scénarios ; POMCP si un état caché se révèle (la gravité d'un patient) | la backlog, **le calendrier**, **les urgences**, la renderfarm, les tickets |
-| **B. Affecter, puis se déplacer** | les mêmes, plus les chemins (allées bloquées, routes coupées) | deux étages : MCTS pour « qui fait quoi », A* pour les trajets (`entrepot.md`) | l'entrepôt, **la cuisine**, les secours après une catastrophe |
+| **B. Affecter, puis se déplacer** | les mêmes, plus les chemins (allées bloquées, routes coupées) | deux étages : MCTS pour « qui fait quoi », A* pour les trajets (`entrepot.md`) | l'entrepôt, **la cuisine** ; les secours sur le terrain, trop vastes pour un petit projet |
 | **C. Un adversaire qui cache** | ce que l'autre a en main ou prépare | ISMCTS ; CFR si le bluff compte | Lopin, la bataille sous brouillard façon CodinGame, la patrouille |
 
 La cuisine est à cheval sur A et B : les commandes arrivent comme des jobs, et les cuisiniers se
-déplacent comme des robots. Les urgences sont une famille A avec un état caché, la gravité, que le triage
-révèle.
+déplacent comme des robots. Les urgences sont une famille A avec un état caché : la gravité réelle, que le
+bracelet de couleur ne fait qu'estimer.
 
 Tout ce qui est en A et B est de l'**ordonnancement en ligne** (glossaire) : on ne planifie pas la journée
 entière, on décide à chaque événement.
@@ -53,11 +53,48 @@ l'autre acceptera, comme l'arbre de Lopin devine la main adverse.
 
 ## 3. Les urgences d'un hôpital
 
-- **Les ressources** : les lits, les box, les médecins, les infirmiers, le scanner.
-- **L'incertitude** : les arrivées (combien, quand), la gravité de chaque patient avant le triage, la durée
-  des soins, le temps d'attente d'un lit dans un autre service.
-- **Les décisions** : quel patient voir maintenant, dans quel box, faut-il appeler un renfort, libérer un
-  lit en transférant un patient.
+Sami (22/10) précise le cadre : **les urgences, pas les secours sur le terrain**. Les secours hors de
+l'hôpital (routes, recherche des victimes) sont trop vastes pour un petit projet ; l'hôpital, lui, tient
+dans un simulateur. Référence de Sami : une vidéo récente de Michelle Khare avec Doctor Mike sur les
+urgences (https://www.youtube.com/watch?v=50yM5jpd1lk).
+
+**Le cadre** :
+- **les ressources limitées** : les lits et les box, les médecins, les infirmiers, les blocs opératoires,
+  le matériel (scanner, respirateurs) ;
+- **les arrivées** : à pied, ou en ambulance par les pompiers, qui annoncent un premier bilan avant
+  d'arriver ;
+- **le tri** : à l'entrée, chaque patient reçoit un bracelet de couleur selon sa gravité. Les couleurs et
+  les délais varient d'un pays et d'un hôpital à l'autre. L'échelle de Manchester en est un exemple :
+  rouge (immédiat), orange (10 min), jaune (60 min), vert (120 min), bleu (240 min) ;
+- **les décisions** : quel patient voir maintenant, avec quel médecin, dans quel box ; qui passe au bloc et
+  dans quel ordre ; faut-il appeler des renforts, ouvrir des lits, transférer un patient.
+
+**Ce qui est caché.** La couleur est une estimation faite en quelques minutes : l'état réel du patient
+peut être pire ou meilleur, et il change avec le temps. Les arrivées des prochaines heures sont inconnues,
+sauf les ambulances annoncées. Une déterminisation tire **l'état réel de chaque patient**, compatible avec
+sa couleur, et **les arrivées à venir**. C'est la famille du POMCP : un seul décideur face à un état caché
+qui se révèle (un examen, une aggravation). La précaution de l'ISMCTS vaut ici : ne pas planifier comme si
+l'on savait déjà quel patient jaune va s'aggraver.
+
+**C'est l'ordonnanceur de la backlog avec des patients.** Les pièces de `backlog.md` § 9 se retrouvent
+une à une :
+
+| La backlog | Les urgences |
+|---|---|
+| un job | un patient et ses soins |
+| les fils et la RAM | les box, les médecins, les blocs, le matériel |
+| la priorité (`priority`) | la couleur du bracelet |
+| l'échéance (`due`) | le délai maximal de sa couleur |
+| les prérequis (`after`) | le parcours : tri, examen, imagerie, bloc, lit d'hospitalisation |
+| la durée incertaine d'un duel | la durée des soins |
+| les jobs qui arrivent | les ambulances annoncées et les arrivées à pied |
+| un `stopIf` | un patient qui s'aggrave et change de couleur, ou qui part sans attendre |
+
+La différence : ici, la priorité elle-même est incertaine, et elle peut changer pendant l'attente.
+
+**La crise.** Le planificateur sert surtout quand l'afflux dépasse les ressources (un accident, une
+épidémie) : en temps normal, les règles du tri suffisent. Le scénario de démonstration est donc une
+crise : 40 arrivées en deux heures pour 10 box et 2 blocs, avec des ambulances annoncées.
 
 **Ce qui se fait vraiment.** Les services d'urgences s'appuient sur des échelles de triage, des règles et
 de la **simulation à événements discrets** pour dimensionner les équipes. La recherche y ajoute de
@@ -65,12 +102,13 @@ l'optimisation stochastique. Une recherche rapide (22/10) n'a trouvé aucun trav
 pour les lits des urgences ; la recherche de Daldoul et al. sur le personnel et les lits utilise une
 simulation de Monte-Carlo, sans arbre.
 
-**Ce que ça veut dire pour un projet** :
-- c'est un très bon sujet de démonstration, parce que l'enjeu se comprend tout de suite ;
-- le simulateur est à écrire à partir de chiffres publics (arrivées par heure, parts de chaque niveau de
-  triage), jamais avec des données de patients ;
-- un outil de ce genre reste une **aide à la décision**, qui propose et explique, jamais un décideur
-  automatique : une erreur y est grave (`autres-usages.md`, § 1).
+**Les limites, posées dès le départ** :
+- **le robot ne donne jamais d'avis médical** : la couleur et les soins restent décidés par les soignants.
+  Il aide à organiser les files d'attente, les box, les blocs et les médecins, surtout en crise ;
+- c'est une **aide à la décision** qui propose et explique (« ce patient orange attend depuis 8 min, le
+  box 3 se libère dans 5 ») ; l'humain qui coordonne décide ;
+- le simulateur s'écrit à partir de chiffres publics (arrivées par heure, part de chaque couleur, durées
+  moyennes), jamais avec des données de patients.
 
 ## 4. La cuisine à la *Overcooked*
 
@@ -117,5 +155,9 @@ Vérifiées le 22/10.
 - Carroll, Shah, Ho, Griffiths, Seshia, Abbeel et Dragan, « On the Utility of Learning about Humans for
   Human-AI Coordination », NeurIPS 2019 ; le code de l'environnement est public (`overcooked_ai`,
   HumanCompatibleAI).
+- L'échelle de tri de Manchester : cinq couleurs, de rouge (immédiat) à bleu (240 min) ; certains pays
+  en adaptent les délais.
+- La vidéo citée par Sami (22/10) : Michelle Khare et Doctor Mike, sur les urgences,
+  https://www.youtube.com/watch?v=50yM5jpd1lk (non vue par Claude).
 - Daldoul et al. (LGI2A, université d'Artois) : planification des médecins, infirmiers et lits d'un
   service d'urgences, par un programme stochastique résolu avec une simulation de Monte-Carlo.

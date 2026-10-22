@@ -12,7 +12,7 @@ sheet (`regles/regles.{html,pdf}`, read by the owner's grandmother, so large
 type and plain French), and name proposals (`docs/noms.md`). The game and
 the project have one name, **Lopin** (Sami, 22/10; the game was Bornage, the
 project Lopin n°742): rules sheet `<title>`, masthead, footers, README, package.
-The folder and the GitHub repo (`lupin`) are renamed by Sami.
+The folder is `lopin` and the GitHub repo `samiyc/lopin` (renamed by Sami on 22/10).
 
 Paths may hold spaces and non-ASCII characters (the folder was `Lopin n°742`): keep going through
 `pathToFileURL` / `fileURLToPath` / `new URL(..., import.meta.url)` for every

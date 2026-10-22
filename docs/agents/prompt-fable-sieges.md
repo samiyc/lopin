@@ -1,6 +1,6 @@
 # Prompt pour Fable : l'avantage du siège et sa compensation
 
-> À coller tel quel dans une session Claude Code (modèle Fable), ouverte dans le dépôt `Lopin n°742`. Préparé le 16/10
+> À coller tel quel dans une session Claude Code (modèle Fable), ouverte dans le dépôt `lopin`. Préparé le 16/10
 > (`docs/agents/revue-2026-10-16.md`). Tu réponds en français ; le code et ses commentaires restent en anglais.
 
 ## Si tu es lancé pendant que le backlog tourne (la nuit du 16-17/10)
