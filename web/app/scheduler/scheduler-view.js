@@ -1,3 +1,4 @@
+import { CAUSE_LABELS } from "../../../src/schedule/incidents.js";
 import { weightOf } from "../../../src/schedule/order.js";
 
 /**
@@ -13,13 +14,13 @@ const decimal = (value, digits = 1) => value.toFixed(digits).replace(".", ",");
 /** "1 duel annulé", "3 duels annulés": every word of `words` takes the plural. */
 const plural = (count, words) => `${count} ${words.split(" ").map((word) => word + (count > 1 ? "s" : "")).join(" ")}`;
 
-export const STATUS_LABELS = Object.freeze({ done: "fait", skipped: "annulé par son stopIf", failed: "en échec", timeout: "arrêté à sa limite" });
+export const STATUS_LABELS = Object.freeze({ done: "fait", skipped: "annulé par son stopIf", failed: "en échec", timeout: "arrêté à sa limite", interrupted: "interrompu, travail perdu" });
 export const PRIORITY_LABELS = Object.freeze({ 1: "urgent", 2: "normal", 3: "peut attendre" });
 
 /** The scale the charts share: from the start to the later of the morning and the last end, a tick an hour. */
 export function scaleOf(start, nightMinutes, nights) {
   const morning = start + nightMinutes * MINUTE;
-  const end = Math.max(morning, ...nights.flatMap((night) => night.steps.map((step) => step.end)));
+  const end = Math.max(morning, ...nights.flatMap((night) => [...night.steps, ...(night.downs ?? [])].map((span) => span.end)));
   const at = (time) => (100 * (time - start)) / (end - start);
   const ticks = [];
   for (let time = start; time <= end; time += HOUR) ticks.push({ left: at(time), label: hhmm(time) });
@@ -34,28 +35,62 @@ function noteOf(job, step, waiting) {
   return job.arrivesAt ? `arrivé ${job.arrivesAt} min après le début` : "";
 }
 
-/** One chart row per job, in the file's order: its bar (or none), its due time's mark, its note. */
+/** Why a bar ended early or late, in words: what interrupted it, or its missed due. */
+function afterwordOf(step) {
+  if (step.status === "interrupted") return step.by ? `, pour laisser passer ${step.by}` : ` (${CAUSE_LABELS[step.cause]})`;
+  return step.late ? ", après son échéance" : "";
+}
+
+/** One bar of a row: a job's run, or the part of it an incident or an urgent job cut short. */
+function barOf(id, step, scale) {
+  return {
+    left: scale.at(step.start),
+    width: Math.max(scale.at(step.end) - scale.at(step.start), 0.4),
+    status: step.status,
+    late: Boolean(step.late),
+    title: `${id} : ${hhmm(step.start)} → ${hhmm(step.end)}, ${STATUS_LABELS[step.status]}${afterwordOf(step)}`,
+  };
+}
+
+/**
+ * One chart row per job, in the file's order: its bars (a job cut short has one per run), its due time's mark,
+ * the mark of its arrival (a job added during the night), its note.
+ */
 export function ganttRows(jobs, night, scale) {
   return jobs.map((job) => {
-    const step = night.steps.find((one) => one.id === job.id);
-    const bar = step && {
-      left: scale.at(step.start),
-      width: Math.max(scale.at(step.end) - scale.at(step.start), 0.4),
-      status: step.status,
-      late: Boolean(step.late),
-      title: `${job.id} : ${hhmm(step.start)} → ${hhmm(step.end)}, ${STATUS_LABELS[step.status]}${step.late ? ", après son échéance" : ""}`,
-    };
+    const steps = night.steps.filter((one) => one.id === job.id);
     return {
       id: job.id,
       priority: job.priority ?? 2,
-      bar: bar ?? null,
+      bars: steps.map((step) => barOf(job.id, step, scale)),
       due: job.due ? Math.min(scale.at(Date.parse(job.due)), 100) : null,
-      note: noteOf(job, step, night.waiting),
+      arrival: job.arrivesAt ? scale.at(scale.start + job.arrivesAt * MINUTE) : null,
+      note: noteOf(job, steps.at(-1), night.waiting),
     };
   });
 }
 
-/** A night in one line: done by morning, weight, due times, skips, failures, overrun and waiting. */
+/** The times the machine was down, as bands across the chart: what stopped it, from when to when. */
+export function downBands(night, scale) {
+  return (night.downs ?? []).map((down) => ({
+    left: scale.at(down.start),
+    width: Math.max(scale.at(down.end) - scale.at(down.start), 0.4),
+    kind: down.kind,
+    title: `${CAUSE_LABELS[down.kind]} : ${hhmm(down.start)} → ${hhmm(down.end)}${down.kind === "heat" ? ", le CPU refroidit" : ", la machine redémarre"}`,
+  }));
+}
+
+/** What the incidents cost a night, in words: jobs cut short, work lost, machine down, queue stopped. */
+function incidentParts(metrics) {
+  const halt = metrics.halt;
+  return [
+    metrics.restarts ? `${plural(metrics.restarts, "job interrompu")}, ${Math.round(metrics.lost)} min de calcul perdu` : "",
+    metrics.down ? `machine arrêtée ${Math.round(metrics.down)} min` : "",
+    halt ? `file arrêtée à ${hhmm(halt.at)} par la ${CAUSE_LABELS[halt.kind]}, jamais relancée` : "",
+  ];
+}
+
+/** A night in one line: done by morning, weight, due times, skips, failures, overrun, waiting and incidents. */
 export function summaryOf(metrics, scale) {
   const s = metrics.late > 1 ? "s" : "";
   const parts = [
@@ -66,23 +101,30 @@ export function summaryOf(metrics, scale) {
     metrics.failed ? `${metrics.failed} en échec` : "",
     metrics.overrun ? `${Math.round(metrics.overrun)} min après le matin` : "",
     metrics.idle ? `${Math.round(metrics.idle)} min d'attente` : "",
+    ...incidentParts(metrics),
   ];
   return parts.filter(Boolean).join(" · ");
 }
 
+/** The comparison's measures; `incident` ones are shown only when an incident happened. `factor` 100: a share in %. */
 const MEASURES = [
-  ["value", "Poids fait avant le matin", 1],
-  ["done", "Jobs faits avant le matin", 1],
-  ["late", "Échéances manquées", 2],
-  ["skipped", "Duels annulés par un stopIf", 1],
-  ["failed", "Jobs en échec", 2],
-  ["overrun", "Minutes après le matin", 0],
-  ["idle", "Minutes d'attente", 0],
+  { key: "value", label: "Poids fait avant le matin", digits: 1 },
+  { key: "done", label: "Jobs faits avant le matin", digits: 1 },
+  { key: "late", label: "Échéances manquées", digits: 2 },
+  { key: "skipped", label: "Duels annulés par un stopIf", digits: 1 },
+  { key: "failed", label: "Jobs en échec", digits: 2 },
+  { key: "overrun", label: "Minutes après le matin", digits: 0 },
+  { key: "idle", label: "Minutes d'attente", digits: 0 },
+  { key: "restarts", label: "Jobs interrompus", digits: 2, incident: true },
+  { key: "lost", label: "Minutes de calcul perdues", digits: 0, incident: true },
+  { key: "down", label: "Minutes machine arrêtée", digits: 0, incident: true },
+  { key: "stopped", label: "Nuits où la file reste arrêtée (%)", digits: 0, incident: true, factor: 100 },
 ];
 
 /** The comparison's table: each measure's mean over the nights, file order against Smith's rule. */
 export function comparisonRows(compared) {
-  return MEASURES.map(([key, label, digits]) => ({ label, fifo: decimal(compared.fifo[key], digits), smith: decimal(compared.smith[key], digits) }));
+  const shown = MEASURES.filter(({ key, incident }) => !incident || compared.fifo[key] > 0 || compared.smith[key] > 0);
+  return shown.map(({ key, label, digits, factor = 1 }) => ({ label, fifo: decimal(compared.fifo[key] * factor, digits), smith: decimal(compared.smith[key] * factor, digits) }));
 }
 
 /**

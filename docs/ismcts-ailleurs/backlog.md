@@ -303,3 +303,62 @@ fichier doit passer `--fifo` ou des `after`.
 Vérifié sur une file factice (`--queue`, des commandes `echo`) : un job urgent de 10 min part en premier,
 le duel 2 est annulé par son `stopIf`, l'analyse part ensuite sur le duel joué, le job de 2 h à
 priorité 3 finit la nuit, et un job au prérequis inconnu reste bloqué avec sa raison.
+
+### 9.8 Les imprévus de la machine (22/10)
+
+Sami : la chaleur, les mises à jour de Windows et les coupures de courant arrêtent aussi la file ; il faut
+simuler la reprise après une coupure, et un job urgent qui arrive en cours de nuit et pousse les autres.
+
+**Ce que fait le lanceur aujourd'hui, en vrai.** `npm run backlog` n'écrit la fin d'un job qu'à sa fin. Un
+redémarrage laisse donc le job en cours à `todo` dans `data/backlog.json` : relancer `npm run backlog` le
+rejoue depuis le début, et sa sortie partielle reste dans `backlog-runs/`. Ce qui manque, c'est la relance
+elle-même : personne ne relance la file à 3 h du matin. Pour qu'elle reparte seule, il faut :
+- **une coupure de courant** : le BIOS doit rallumer le PC au retour du courant (le réglage s'appelle
+  souvent « Restore on AC Power Loss ») ;
+- **un redémarrage de Windows** : il faut une session qui s'ouvre et une tâche planifiée, ouverte à la
+  connexion, qui lance `npm run backlog`. On peut aussi éviter ce redémarrage : les heures d'activité de
+  Windows Update couvrent jusqu'à 18 h, de 20 h à 14 h par exemple, ou on suspend les mises à jour une
+  semaine de validation ;
+- **la chaleur** : une garde dans le lanceur. Elle lit la température entre deux minutes. Au-dessus du
+  seuil d'alerte, elle arrête le job et attend que le CPU repasse sous le seuil de reprise, puis la file
+  repart. Le Ryzen 9 3900X de la machine bride à 95 °C (son Tjmax) ; sous charge complète, 80 à 90 °C est
+  courant. Une alerte à 90 °C tenue une minute, et une reprise sous 75 °C, sont des points de départ.
+
+Windows ne donne pas la température du CPU sans aide. L'outil gratuit est **LibreHardwareMonitor**, libre,
+lancé en administrateur. `scripts/lib/cli/machine.js` (`hottest()`) lit déjà ses capteurs par WMI ; il n'est
+pas installé ici. Une fois installé, on vérifie d'abord ce qu'il publie, puis on branche la garde.
+
+**Ce que simule l'onglet** (`src/schedule/incidents.js`, tiré à part du scénario des jobs, les deux ordres
+voient les mêmes) :
+
+| Imprévu | Taux réglable | Ce qu'il coûte |
+|---|---|---|
+| alerte chaleur | en moyenne par nuit, seulement pendant un job | le job en cours, puis 8 à 15 min au frais ; la file repart seule |
+| mise à jour de Windows | part des nuits, à une heure tirée | le job en cours, 15 à 40 min de redémarrage |
+| coupure de courant | part des nuits | le job en cours, 2 min à 3 h sans courant, plus 3 min de démarrage |
+
+Après un redémarrage, la file repart seulement avec la **reprise automatique** ; sinon la nuit s'arrête là.
+Un job interrompu est perdu et revient à sa place dans la file. Le choix suivant peut en prendre un autre.
+
+**L'interruption par un job pressé.** Un job ajouté pendant la nuit (`arrivesAt`) pousse déjà les autres :
+il passe devant dès que le job en cours finit. Avec la case « Un job pressé interrompt le job en cours », il
+l'arrête tout de suite, s'il manquerait son `due` en attendant la fin estimée du job en cours et s'il le
+tient en partant maintenant. Il faut aussi que ses prérequis soient finis. C'est **l'interruption**. Le travail
+du job arrêté est perdu, parce qu'un duel ou une mesure ne reprennent pas en cours de route. Sous l'ordre du
+fichier, il n'y a jamais d'interruption : cet ordre ne connaît pas les échéances et rejouerait d'abord le job
+arrêté.
+
+**Ce que disent 500 nuits**, sur l'exemple « Une machine qui flanche » : 0,6 alerte chaleur par nuit, une
+mise à jour 35 nuits sur 100, une coupure 20 sur 100, des taux bien plus hauts qu'en vrai. Le poids total
+est de 23.
+
+| Lanceur | Poids fait (fichier / Smith) | Échéances manquées | Calcul perdu | Nuits où la file s'arrête |
+|---|---|---|---|---|
+| sans reprise, sans interruption | 14,8 / 16,8 | 1,24 / 1,06 | 14 / 12 min | 28 % |
+| avec reprise | 19,5 / 19,6 | 0,99 / 0,90 | 15 / 15 min | 0 |
+| avec reprise et interruption | 19,5 / 19,6 | 0,99 / **0,12** | 15 / 46 min | 0 |
+
+- **La reprise automatique vaut à elle seule environ 4 points de poids sur 23** (de 14,8 à 19,5 dans l'ordre
+  du fichier) : c'est le réglage le plus rentable, et il ne coûte qu'une tâche planifiée et un réglage du BIOS.
+- **L'interruption tient presque toutes les échéances du correctif** (0,90 → 0,12 manquée par nuit), au prix
+  d'environ 30 min de calcul perdu par nuit. Sans aucune coupure, la même règle passe de 0,96 à 0,05.

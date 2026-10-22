@@ -1,22 +1,36 @@
+import { CALM_MACHINE, drawIncidents } from "../../../src/schedule/incidents.js";
 import { DEFAULT_KNOBS, comparePolicies, drawScenario, simulateNight } from "../../../src/schedule/night.js";
 import { NIGHT_START, PRESETS } from "../../../src/schedule/presets.js";
 import { $, el } from "../board/dom.js";
-import { STATUS_LABELS, comparisonRows, ganttRows, gapText, scaleOf, summaryOf, weightLabel } from "./scheduler-view.js";
+import { STATUS_LABELS, comparisonRows, downBands, ganttRows, gapText, scaleOf, summaryOf, weightLabel } from "./scheduler-view.js";
 
 /**
  * The Ordonnanceur tab (Sami, 22/10): example backlogs played as simulated nights
  * (src/schedule/night.js), the file order against Smith's rule on the same night, then on 500 drawn
- * nights. The queue can be edited as JSON, in data/backlog.json's format. What it shows is computed in
- * scheduler-view.js; this module only draws and listens (event delegation on the tab's section).
+ * nights. The machine may falter (src/schedule/incidents.js: heat, Windows restarts, power cuts), the runner
+ * may resume after a restart and let a pressed job interrupt the one running. The queue can be edited as
+ * JSON, in data/backlog.json's format. What it shows is computed in scheduler-view.js; this module only
+ * draws and listens (event delegation on the tab's section).
  */
 const START = Date.parse(NIGHT_START);
 const NIGHTS = 500;
 const copy = (jobs) => JSON.parse(JSON.stringify(jobs));
-const state = { preset: PRESETS[0].id, jobs: copy(PRESETS[0].jobs), hours: 8, spread: 11, failRate: 1, seed: 1, compared: null, error: "" };
+const state = { preset: PRESETS[0].id, hours: 8, spread: 11, failRate: 1, seed: 1, compared: null };
 let wired = false;
 
 const knobs = () => ({ ...DEFAULT_KNOBS, spread: state.spread / 100, failRate: state.failRate / 100 });
+const machine = () => ({ heat: state.heat / 100, update: state.update / 100, power: state.power / 100 });
+const runner = () => ({ autoResume: state.autoResume, preempt: state.preempt });
 const presetOf = (id) => PRESETS.find((preset) => preset.id === id);
+
+/** A preset's queue, with its machine and runner (calm, and today's runner, when it sets none). */
+function usePreset(id) {
+  const preset = presetOf(id);
+  const rates = { ...CALM_MACHINE, ...preset.machine };
+  Object.assign(state, { preset: id, jobs: copy(preset.jobs), error: "", autoResume: false, preempt: false, ...preset.runner });
+  Object.assign(state, { heat: rates.heat * 100, update: rates.update * 100, power: rates.power * 100 });
+}
+usePreset(state.preset);
 
 function option(value, label, selected) {
   return el("option", { value, selected: selected || null }, label);
@@ -40,41 +54,66 @@ function controls() {
   );
 }
 
-function chart(rows, scale) {
+function checkbox(label, name) {
+  return el("label", { class: "check" }, el("input", { type: "checkbox", "data-knob": name, checked: state[name] || null }), label);
+}
+
+/** The machine's incidents (as exaggerated as one likes) and how the runner answers them. */
+function machineControls() {
+  return el(
+    "div",
+    { class: "scheduler-controls" },
+    numberField("Alertes chaleur par nuit (%) ", "heat", state.heat, { min: 0, max: 300 }),
+    numberField("Mise à jour de Windows (% des nuits) ", "update", state.update, { min: 0, max: 100 }),
+    numberField("Coupure de courant (% des nuits) ", "power", state.power, { min: 0, max: 100 }),
+    checkbox("Reprise automatique après un redémarrage", "autoResume"),
+    checkbox("Un job pressé interrompt le job en cours", "preempt"),
+  );
+}
+
+const span = (className, left, width, title) => el("span", { class: className, style: `left:${left}%;width:${width}%`, title });
+
+function chart(rows, scale, bands) {
   const axis = el("div", { class: "gantt-row gantt-axis" }, el("span", { class: "gantt-label" }), el("div", { class: "gantt-track" }, ...scale.ticks.map((tick) => el("span", { class: "gantt-tick", style: `left:${tick.left}%` }, tick.label))));
   const morning = `left:${scale.at(scale.morning)}%`;
   const lines = rows.map((row) => {
-    const bar = row.bar && el("span", { class: `gantt-bar ${row.bar.status}${row.bar.late ? " late" : ""}`, style: `left:${row.bar.left}%;width:${row.bar.width}%`, title: row.bar.title });
+    const downs = bands.map((band) => span(`gantt-down ${band.kind}`, band.left, band.width, band.title));
+    const bars = row.bars.map((bar) => span(`gantt-bar ${bar.status}${bar.late ? " late" : ""}`, bar.left, bar.width, bar.title));
     const due = row.due === null ? null : el("span", { class: "gantt-due", style: `left:${row.due}%`, title: "échéance" });
+    const arrival = row.arrival === null ? null : el("span", { class: "gantt-arrival", style: `left:${row.arrival}%`, title: "ajouté à la file pendant la nuit" });
     return el(
       "div",
       { class: "gantt-row" },
       el("span", { class: `gantt-label p${row.priority}`, title: weightLabel(state.jobs.find((job) => job.id === row.id)) }, row.id),
-      el("div", { class: "gantt-track" }, el("span", { class: "gantt-morning", style: morning }), bar, due, row.note ? el("small", { class: "gantt-note" }, row.note) : null),
+      el("div", { class: "gantt-track" }, ...downs, el("span", { class: "gantt-morning", style: morning }), ...bars, due, arrival, row.note ? el("small", { class: "gantt-note" }, row.note) : null),
     );
   });
   return el("div", { class: "gantt" }, axis, ...lines);
 }
 
 function legend() {
-  const swatch = (status) => el("span", { class: "legend-item" }, el("span", { class: `gantt-bar ${status}` }), STATUS_LABELS[status]);
+  const item = (mark, label) => el("span", { class: "legend-item" }, mark, label);
+  const swatch = (status) => item(el("span", { class: `gantt-bar ${status}` }), STATUS_LABELS[status]);
   return el(
     "p",
     { class: "scheduler-legend hint" },
-    ...["done", "skipped", "failed", "timeout"].map(swatch),
-    el("span", { class: "legend-item" }, el("span", { class: "gantt-due" }), "échéance"),
-    el("span", { class: "legend-item" }, el("span", { class: "gantt-morning" }), "le matin"),
+    ...["done", "skipped", "failed", "timeout", "interrupted"].map(swatch),
+    item(el("span", { class: "gantt-due" }), "échéance"),
+    item(el("span", { class: "gantt-morning" }), "le matin"),
+    item(el("span", { class: "gantt-arrival" }), "ajouté pendant la nuit"),
+    item(el("span", { class: "gantt-down" }), "machine redémarrée"),
+    item(el("span", { class: "gantt-down heat" }), "le CPU refroidit"),
     " Libellé en gras : urgent ; en clair : peut attendre.",
   );
 }
 
 function nightsBlock() {
   const scenario = drawScenario(state.jobs, state.seed, knobs());
-  const options = { start: START, nightMinutes: state.hours * 60 };
+  const options = { ...runner(), start: START, nightMinutes: state.hours * 60, incidents: drawIncidents(state.seed, machine(), state.hours * 60) };
   const fifo = simulateNight(state.jobs, scenario, { ...options, fifo: true });
   const smith = simulateNight(state.jobs, scenario, options);
   const scale = scaleOf(START, options.nightMinutes, [fifo, smith]);
-  const block = (title, night) => [el("h3", {}, title), el("p", { class: "hint" }, summaryOf(night.metrics, scale)), chart(ganttRows(state.jobs, night, scale), scale)];
+  const block = (title, night) => [el("h3", {}, title), el("p", { class: "hint" }, summaryOf(night.metrics, scale)), chart(ganttRows(state.jobs, night, scale), scale, downBands(night, scale))];
   return [...block("L'ordre du fichier (--fifo)", fifo), ...block("La règle de Smith, avec prérequis et échéances", smith), legend()];
 }
 
@@ -109,7 +148,7 @@ const ACTIONS = {
     state.seed += 1;
   },
   compare: () => {
-    state.compared = comparePolicies(state.jobs, { nights: NIGHTS, seed: 1, knobs: knobs(), start: START, nightMinutes: state.hours * 60 });
+    state.compared = comparePolicies(state.jobs, { nights: NIGHTS, seed: 1, knobs: knobs(), start: START, nightMinutes: state.hours * 60, machine: machine(), runner: runner() });
   },
   apply: () => {
     try {
@@ -121,20 +160,15 @@ const ACTIONS = {
     }
   },
   reset: () => {
-    state.jobs = copy(presetOf(state.preset).jobs);
-    state.error = "";
+    usePreset(state.preset);
     state.compared = null;
   },
 };
 
 function onKnob(name, value) {
-  if (name === "preset") {
-    state.preset = value;
-    state.jobs = copy(presetOf(value).jobs);
-    state.error = "";
-  } else {
-    state[name] = Math.max(0, Number(value) || 0);
-  }
+  if (name === "preset") usePreset(value);
+  else if (typeof value === "boolean") state[name] = value;
+  else state[name] = Math.max(0, Number(value) || 0);
   state.compared = null;
 }
 
@@ -142,7 +176,7 @@ function wire(view) {
   view.addEventListener("change", (event) => {
     const name = event.target.dataset?.knob;
     if (!name) return;
-    onKnob(name, event.target.value);
+    onKnob(name, event.target.type === "checkbox" ? event.target.checked : event.target.value);
     renderScheduler();
   });
   view.addEventListener("click", (event) => {
@@ -165,6 +199,7 @@ export function renderScheduler() {
     el("h2", {}, "Ordonnanceur"),
     el("p", { class: "hint" }, "La file de nuit (npm run backlog) jouée en simulation : chaque nuit tire la durée réelle des jobs, leurs échecs et les scores des duels, donc les stopIf. Les deux ordres jouent la même nuit."),
     controls(),
+    machineControls(),
     el("p", { class: "scheduler-note" }, presetOf(state.preset)?.note ?? ""),
     ...nightsBlock(),
     ...comparisonBlock(),

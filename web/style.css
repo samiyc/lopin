@@ -270,6 +270,8 @@ html[data-colors="4"] .suits i[data-suit="♣"] { color: var(--suit-club); }
 .scheduler-controls { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; }
 .scheduler-controls label { display: grid; gap: 2px; font-size: 0.8rem; color: var(--ink-2); }
 .scheduler-controls input { width: 6em; }
+.scheduler-controls label.check { display: flex; gap: 6px; align-items: center; align-self: center; }
+.scheduler-controls label.check input { width: auto; }
 .scheduler-note { margin: 0; font-size: 0.9rem; }
 .gantt { display: grid; gap: 3px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px; overflow-x: auto; }
 .gantt-row { display: grid; grid-template-columns: 220px minmax(420px, 1fr); gap: 8px; align-items: center; min-height: 20px; }
@@ -286,12 +288,17 @@ html[data-colors="4"] .suits i[data-suit="♣"] { color: var(--suit-club); }
 .gantt-bar.failed { background: var(--lost); }
 .gantt-bar.timeout { background: var(--discard); }
 .gantt-bar.late { outline: 2px solid var(--lost); outline-offset: 1px; }
+.gantt-bar.interrupted { background: repeating-linear-gradient(135deg, var(--felt-2) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--felt-2); }
+.gantt-down { position: absolute; top: -2px; height: 22px; background: color-mix(in srgb, var(--lost) 16%, transparent); }
+.gantt-down.heat { background: color-mix(in srgb, var(--discard) 22%, transparent); }
+.gantt-arrival { position: absolute; top: 0; width: 0; height: 0; transform: translateX(-50%); border: 5px solid transparent; border-top: 7px solid var(--focus); border-bottom: 0; }
 .gantt-due { position: absolute; top: 0; width: 2px; height: 18px; background: var(--focus); }
 .gantt-morning { position: absolute; top: -2px; width: 0; height: 22px; border-left: 2px dotted var(--ink-2); }
 .gantt-note { position: absolute; top: 2px; right: 0; font-size: 0.65rem; color: var(--ink-2); background: var(--panel); padding: 0 4px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .scheduler-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
 .scheduler-legend .legend-item { display: inline-flex; gap: 6px; align-items: center; }
-.scheduler-legend .gantt-bar, .scheduler-legend .gantt-due, .scheduler-legend .gantt-morning { position: static; display: inline-block; }
+.scheduler-legend .gantt-bar, .scheduler-legend .gantt-due, .scheduler-legend .gantt-morning, .scheduler-legend .gantt-down, .scheduler-legend .gantt-arrival { position: static; display: inline-block; transform: none; }
+.scheduler-legend .gantt-down { width: 16px; height: 14px; }
 .scheduler-legend .gantt-bar { width: 22px; }
 .scheduler-legend .gantt-due, .scheduler-legend .gantt-morning { height: 14px; }
 .scheduler-view table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: var(--panel); }

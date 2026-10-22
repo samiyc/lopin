@@ -68,7 +68,7 @@ src/sim/      bots.js (random, greedy, strategist + one-habit and one-idea
   search/     lookahead (rollouts: the line-up's Stratège 2), search (the 0.7),
               ponder, phase, infer
   puzzles/    traps, trap-bench
-src/schedule/ order, stop, night (a simulated night), presets: the backlog's scheduler, no game
+src/schedule/ order, stop, night (a simulated night), incidents (heat, restarts), presets: no game
 src/irl/      cards (reads data/irl/essais.json), analysis (tallies the real
               games, Wilson intervals)
 src/report/   data (exact + starting hands), tasks (pool tasks: rows, duels,
@@ -200,7 +200,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   (stopIf, changelogs) goes through `backlogFiles()` (`scripts/lib/domain/backlog-files.js`). The next job
   (22/10, `src/schedule/order.js`): prerequisites (`after`, a `stopIf`'s duels), a `due` it would miss, then
   Smith's rule on `priority` / `estimate`; `--fifo` keeps the file order, `--list` prints the planned night.
-  `src/schedule/` (order, stop, night: a simulated night) imports nothing of the game and runs in the page's
+  `src/schedule/` (order, stop, night, incidents: heat, restarts, preemption) imports nothing of the game and runs in the page's
   Ordonnanceur tab (`web/app/scheduler/`). Every job, backlog or `npm run job`, logs a line to `data/job-log/`.
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3

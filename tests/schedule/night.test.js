@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { drawIncidents } from "../../src/schedule/incidents.js";
 import { comparePolicies, drawScenario, metricsOf, outcomeOf, simulateNight } from "../../src/schedule/night.js";
 import { NIGHT_START, PRESETS } from "../../src/schedule/presets.js";
 
@@ -67,6 +68,70 @@ describe("a simulated night of the backlog (src/schedule/night.js, Sami 22/10)",
     const compared = comparePolicies(deadlines, { nights: 60, seed: 3, start: START });
     assert.ok(compared.smith.late < compared.fifo.late, `${compared.smith.late} contre ${compared.fifo.late}`);
     assert.equal(compared.wins + compared.ties + compared.losses, 60);
+  });
+
+  it("draws the machine's incidents per kind: none on a calm machine, the same from the same seed", () => {
+    assert.deepEqual(drawIncidents(5), []);
+    const stormy = drawIncidents(5, { heat: 3, update: 1, power: 0 }, 480);
+    assert.deepEqual(stormy, drawIncidents(5, { heat: 3, update: 1, power: 0 }, 480));
+    assert.ok(stormy.every((one, i) => one.at >= 0 && one.at < 480 && (i === 0 || one.at >= stormy[i - 1].at)));
+    const update = stormy.filter((one) => one.kind === "update");
+    assert.equal(update.length, 1);
+    assert.ok(update[0].down >= 15 && update[0].down <= 40);
+    // Another heat rate leaves the update where it was.
+    assert.deepEqual(drawIncidents(5, { heat: 0, update: 1, power: 0 }, 480), update);
+  });
+
+  it("stops the night at a power cut without auto-resume, the job running lost", () => {
+    const jobs = [job("a", "1 h"), job("b", "1 h"), job("c", "10 min", { arrivesAt: 200 })];
+    const incidents = [{ kind: "power", at: 30, down: 20 }];
+    const night = simulateNight(jobs, scenarioOf(jobs), { start: START, incidents });
+    assert.deepEqual(ids(night.steps), ["a:interrupted"]);
+    assert.equal(night.steps[0].cause, "power");
+    assert.deepEqual(night.stopped, { kind: "power", at: START + 30 * 60_000 });
+    assert.deepEqual(night.waiting.map((one) => one.id), ["a", "b", "c"]);
+    assert.match(night.waiting[0].reason, /file arrêtée par la coupure de courant, sans reprise automatique/);
+    assert.equal(night.metrics.stopped, 1);
+    assert.equal(night.metrics.lost, 30);
+    assert.equal(night.metrics.down, 20);
+  });
+
+  it("plays the lost job again after the restart with auto-resume", () => {
+    const jobs = [job("a", "1 h"), job("b", "1 h")];
+    const incidents = [{ kind: "update", at: 30, down: 20 }];
+    const night = simulateNight(jobs, scenarioOf(jobs), { start: START, incidents, autoResume: true });
+    assert.deepEqual(ids(night.steps), ["a:interrupted", "a:done", "b:done"]);
+    assert.equal(night.steps[1].start, START + 50 * 60_000);
+    assert.equal(night.metrics.restarts, 1);
+    assert.equal(night.metrics.stopped, 0);
+    assert.equal(night.metrics.end, START + 170 * 60_000);
+  });
+
+  it("ignores a heat alert while idle, and lets the CPU cool then goes on by itself after one during a job", () => {
+    const jobs = [job("a", "30 min", { arrivesAt: 60 })];
+    const incidents = [
+      { kind: "heat", at: 10, down: 10 },
+      { kind: "heat", at: 70, down: 10 },
+    ];
+    const night = simulateNight(jobs, scenarioOf(jobs), { start: START, incidents });
+    assert.deepEqual(ids(night.steps), ["a:interrupted", "a:done"]);
+    assert.deepEqual(night.downs.map((one) => [one.kind, (one.start - START) / 60_000]), [["heat", 70]]);
+    assert.equal(night.steps[1].start, START + 80 * 60_000);
+    assert.equal(night.metrics.idle, 60);
+  });
+
+  it("with preempt, a job come during the night interrupts the one running to keep its due", () => {
+    const jobs = [job("long", "1 h 30", { priority: 3 }), job("fix", "20 min", { priority: 1, arrivesAt: 30, due: "2026-10-22T23:00" })];
+    const patient = simulateNight(jobs, scenarioOf(jobs), { start: START });
+    assert.deepEqual(ids(patient.steps), ["long:done", "fix:done"]);
+    assert.equal(patient.metrics.late, 1);
+    const hurried = simulateNight(jobs, scenarioOf(jobs), { start: START, preempt: true });
+    assert.deepEqual(ids(hurried.steps), ["long:interrupted", "fix:done", "long:done"]);
+    assert.equal(hurried.steps[0].by, "fix");
+    assert.equal(hurried.metrics.late, 0);
+    assert.equal(hurried.metrics.lost, 30);
+    // Without a due, or able to wait, it never interrupts.
+    assert.deepEqual(ids(simulateNight([jobs[0], { ...jobs[1], due: undefined }], scenarioOf(jobs), { start: START, preempt: true }).steps), ["long:done", "fix:done"]);
   });
 
   it("ships example queues whose prerequisites all exist", () => {

@@ -4,7 +4,8 @@ import { stopIfFor } from "./stop.js";
  * Example queues for the Ordonnanceur tab (Sami, 22/10), in data/backlog.json's format plus what only the
  * simulator reads: `version` (a duel of that version: its score is drawn, its series' `stopIf` apply),
  * `arrivesAt` (minutes after the start: a job added during the night), `failRate` (this job's own chance
- * to fail). Lengths and series come from October's backlog (docs/ismcts-ailleurs/backlog.md § 2).
+ * to fail). Lengths and series come from October's backlog (docs/ismcts-ailleurs/backlog.md § 2). A preset may
+ * set the machine's incidents (`machine`, incidents.js) and the runner's answers to them (`runner`).
  */
 export const NIGHT_START = "2026-10-22T22:00";
 const at = (time) => `2026-10-2${time < "12:00" ? 3 : 2}T${time}`;
@@ -69,6 +70,21 @@ export const PRESETS = Object.freeze([
       versus("ReplyFpu"),
       job("NIGHT_ONLY", "40 min", { status: "scheduled", notBefore: at("04:00"), command: "npm run deals -- …" }),
       job("URGENT", "20 min", { priority: 1, arrivesAt: 180, due: at("02:00"), command: "npm run duel -- … --games 50" }),
+    ],
+  },
+  {
+    id: "machine",
+    label: "Une machine qui flanche",
+    note: "Une série à valider, une lecture de l'oracle, une longue mesure ; un correctif urgent arrive à 0 h 30, attendu pour 1 h. La machine flanche bien plus souvent qu'en vrai (alertes chaleur, mises à jour, coupures) : essayez avec et sans reprise automatique, avec et sans interruption.",
+    machine: { heat: 0.6, update: 0.35, power: 0.2 },
+    runner: { autoResume: false, preempt: false },
+    jobs: [
+      job("LONG_MEASURE", "1 h 30", { priority: 3, command: "node scripts/archive/thread-bench.js" }),
+      job("ORACLE_READ", "1 h", { command: "npm run oracle -- --read …" }),
+      ...series("CommonDeals2", "35 min"),
+      versus("CommonDeals2"),
+      job("CHANGELOG", "2 min", { priority: 1, after: ["VERSUS_CommonDeals2"], due: at("07:00"), command: "npm run changelog -- 1.3" }),
+      job("HOTFIX", "20 min", { priority: 1, arrivesAt: 150, due: at("01:00"), command: "npm run duel -- … --games 50" }),
     ],
   },
 ]);

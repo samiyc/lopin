@@ -253,9 +253,10 @@ la main adverse, ce sont les cartes vues nulle part.
 
 **Ordonnanceur** (Sami, 22/10). La file de nuit (`npm run backlog`) jouée en simulation, pour
 essayer l'ordonnanceur sans lancer un seul job (`src/schedule/night.js`, `docs/ismcts-ailleurs/backlog.md` § 9).
-- **Trois exemples** : une nuit de validation (trois versions en 1k@2k, un peu trop de travail pour la
+- **Quatre exemples** : une nuit de validation (trois versions en 1k@2k, un peu trop de travail pour la
   nuit), une soirée avec échéances, des imprévus en série (un job urgent qui arrive à 1 h, un job fragile,
-  un job qui touche sa limite, un autre qui attend 4 h).
+  un job qui touche sa limite, un autre qui attend 4 h), une machine qui flanche (des coupures bien plus
+  fréquentes qu'en vrai, et un correctif urgent).
 - **Chaque nuit tire ce que la vraie cache** : la durée réelle des jobs (autour de 0,9 fois l'estimation,
   comme en octobre), leurs échecs, et le score des duels de chaque version, donc les `stopIf`. « Nuit
   suivante » en tire une autre ; la variabilité des durées, le taux d'échec et la durée de la nuit se
@@ -263,8 +264,14 @@ essayer l'ordonnanceur sans lancer un seul job (`src/schedule/night.js`, `docs/i
 - **Les deux ordres jouent la même nuit** : l'ordre du fichier (`--fifo`) et la règle de Smith avec
   prérequis et échéances, une barre par job. Gris : annulé par son `stopIf` ; rouge : en échec ; orange :
   arrêté à sa limite ; contour rouge : fini après son échéance (le trait jaune).
+- **La machine peut flancher** (Sami, 22/10, `src/schedule/incidents.js`) : alertes chaleur, redémarrages
+  de Windows, coupures de courant, chacun à son taux. Le job en cours est perdu (barre hachurée), la bande
+  colorée montre la machine arrêtée. La case « Reprise automatique » relance la file après un redémarrage,
+  sinon la nuit s'arrête là. La case « Un job pressé interrompt le job en cours » laisse passer un job
+  arrivé pendant la nuit (le triangle) qui manquerait son échéance en attendant.
 - **« Comparer sur 500 nuits »** : les moyennes des deux ordres sur les mêmes nuits, l'écart de poids fait
-  avant le matin avec son intervalle, et les échéances manquées.
+  avant le matin avec son intervalle, et les échéances manquées ; avec des coupures, les jobs interrompus,
+  le calcul perdu, la machine arrêtée et les nuits où la file ne repart pas.
 - **« Modifier la file (JSON) »** : le format de `data/backlog.json`, plus `version`, `arrivesAt` et
   `failRate` pour la simulation.
 
