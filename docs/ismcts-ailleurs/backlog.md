@@ -49,7 +49,8 @@ vrai de l'ordre de ± 3 points.
 
 **Le débit total ne change pas.** Un duel répartit ses parties entre les fils : sur 9 fils, il prend à peu
 près deux fois plus longtemps que sur 18. Deux files de 9 fils font autant de parties à l'heure qu'une file
-de 18. Découper ne crée pas de temps de calcul.
+de 18. Découper ne crée pas de temps de calcul. C'est une première approximation : au-delà des 12 vrais cœurs du PC, chaque fil
+rapporte moins, et les petits duels perdent des fils en fin de course (§ 8).
 
 **Ce que découper apporte quand même** :
 - **des ressources différentes.** L'analyse `endgame-moves` du 20/10 était limitée par la RAM : 10 fils
@@ -131,3 +132,47 @@ Le noyau MCTS n'importe rien de Bornage, pour pouvoir le sortir plus tard (`READ
 - **Une renderfarm** : des images à calculer, des durées incertaines, des priorités et une heure de
   livraison. C'est la backlog avec plus de machines, et le cas où la répartition des ressources pèse le
   plus.
+
+## 8. Les jobs de jour, et combien de fils pour quel job
+
+Sami (22/10) : ajouter aux jobs de la backlog tout ce qui a tourné de jour, sur 4 ou 6 fils, pour
+apprendre un nombre de fils idéal par type de job.
+
+**Ce que l'historique contient.** Les changelogs gardent les essais et leurs verdicts, mais ni les durées
+ni les fils. La source utile est `duels/` : chaque partie y a son heure de début et de fin, de jour comme
+de nuit. On en déduit les **fils occupés** de chaque duel (glossaire) :
+
+| Fils occupés | Duels (sur 260) |
+|---|---|
+| 16 ou plus (médiane 17,2) | 193 |
+| 11 à 16 | 65 |
+| ~11 | 1 |
+| ~4 | 1 |
+
+- **De jour comme de nuit, presque tout a tourné à 18 fils** : 16,2 fils occupés en moyenne sur 164 duels
+  de jour, 16,3 sur 96 de nuit.
+- **Les petits jobs perdent des fils** : les duels de moins de 10 min n'en occupent que 12,5 sur 18, ceux
+  de 10 à 30 min 16,9. En fin de duel, il reste moins de parties que de fils, et ce temps mort pèse plus
+  sur un job court.
+- **Les activités à 4-6 fils** (le Labo, les analyses lancées avec `LOPIN_THREADS`) n'ont laissé ni
+  durée ni nombre de fils.
+
+L'historique ne peut donc pas dire quel nombre de fils est le meilleur : il n'a presque jamais varié.
+Deux pièces manquent.
+
+**1. Un journal de jobs.** Que chaque job, de jour comme de nuit, écrive une ligne dans
+`data/job-log.jsonl` : le type (duel, analyse, oracle), les moteurs, les fils demandés, la durée, le pic
+de RAM, et le nombre de parties ou de positions. Les cas variés s'accumulent alors d'eux-mêmes, et le
+tireur de scénarios (§ 6, étape 2) y lit les durées par moteur **et** par nombre de fils.
+
+**2. Une mesure du débit selon les fils.** Le PC (Ryzen 9 3900X) a **12 vrais cœurs et 24 fils** :
+au-delà de 12, deux fils partagent un cœur, et chaque fil de plus rapporte bien moins qu'un cœur entier.
+L'hypothèse, à mesurer : 12 fils donnent déjà 85 à 90 % du débit de 18. Le protocole :
+- le même duel de 250 parties de la 1.2 contre elle-même à 400 itérations (faisable de jour), à 6, 9, 12
+  et 18 fils ;
+- mesurer les parties par heure, et les fils occupés ;
+- puis deux jobs côte à côte, 12 + 6 et 9 + 9, et comparer leur débit cumulé à celui d'un seul job à 18.
+
+Si l'hypothèse tient, le coup du planificateur (§ 4) devient **(quel job, combien de fils)** : un job
+long à 12 fils et un court à 6 feraient plus de travail qu'un seul à 18, et laisseraient le PC plus
+fluide. La règle « la somme des fils ne dépasse pas 18 » reste la même.

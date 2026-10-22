@@ -619,3 +619,13 @@ les robots d'entrepôt, d'autres usages.
   (Silver et Veness, 2010) ; l'ISMCTS est pour le cas où **un autre joueur** cache quelque chose.
 - **La fusion de stratégies**, hors du jeu : planifier comme si on connaissait déjà le scénario (« ne lance
   pas ce duel, il va échouer »). L'arbre rangé par ce qui a été observé l'évite.
+- **Les fils occupés** d'un duel : le temps de calcul de toutes ses parties divisé par sa durée réelle,
+  lus dans `duels/`. Un duel lancé sur 18 fils en occupe ~17 : en fin de duel, il reste moins de parties
+  que de fils.
+- **Un solveur d'optimisation** (CP-SAT d'OR-Tools, HiGHS) : on décrit le problème entier (variables,
+  contraintes, objectif) et il cherche la meilleure solution, en coupant les branches qui ne peuvent pas
+  battre la meilleure trouvée. Pas d'adversaire, pas de hasard : l'inverse d'une simulation.
+- **L'ordonnancement en ligne** : décider au fil des événements (un job finit, un patient arrive) sans
+  connaître la suite, au lieu de tout planifier d'avance. C'est le terrain du MCTS hors du jeu.
+- **La simulation à événements discrets** : un simulateur qui saute d'un événement au suivant (un patient
+  arrive, un job finit) au lieu d'avancer minute par minute. C'est la forme du simulateur de la backlog.

@@ -11,6 +11,7 @@ ne contient pas de code.
 | [`backlog.md`](backlog.md) | la nuit de jobs vue comme une partie, avec les chiffres d'octobre |
 | [`entrepot.md`](entrepot.md) | les robots d'entrepôt : quelles actions, où est l'incertitude, A* et MCTS ensemble |
 | [`autres-usages.md`](autres-usages.md) | d'autres usages réels, larges, et quand une autre méthode fait mieux |
+| [`planification.md`](planification.md) | le calendrier, les urgences, la cuisine à la *Overcooked* ; les trois familles de projets ; solveur d'optimisation ou minimax |
 
 ## 1. Ce que fait l'ISMCTS, avec les mots de Bornage
 
@@ -86,6 +87,31 @@ Les questions de Sami : un autre dépôt pour la backlog ? pour l'entrepôt ?
   (le tirage, la liste courte par une règle rapide, la politique de simulation, le budget, le choix du
   plus visité) et la méthode de mesure (tri, puis validation sur données neuves).
 
+**Une bibliothèque générique, et Bornage ?** Le noyau sorti du dépôt prendrait un **adaptateur de jeu** :
+les coups légaux, jouer un coup, tirer un scénario, la liste courte, la politique de simulation, le
+résultat. Bornage pourrait en devenir un client, à une condition qu'il sait déjà vérifier : avec la
+bibliothèque et un adaptateur Bornage, `npm run fingerprint` doit redonner `1d041613cd7bcd8d` pour la 1.2.
+Si l'empreinte tient, c'est la meilleure preuve que la bibliothèque est juste. Sinon, Bornage garde son
+arbre, réglé depuis un mois (`exact`, l'élargissement, `+jkHand`, `+theirs`), et la bibliothèque s'en
+inspire sans l'imposer. L'ordre conseillé : écrire la bibliothèque sur un petit jeu neuf, puis tenter la
+migration de Bornage, jamais l'inverse.
+
+## 5. Les technologies
+
+Node, JavaScript, HTML et CSS suffisent pour tous ces projets :
+- les simulateurs, le MCTS et les mesures tournent en Node, avec `worker_threads` pour les fils, comme ici ;
+- la démonstration se joue dans un navigateur sans rien installer : le meilleur argument devant un
+  recruteur ou un public non technique ;
+- CodinGame accepte le JavaScript.
+
+Deux limites à connaître :
+- **CP-SAT (OR-Tools) n'a pas de version JavaScript officielle**, seulement C++, Python, Java et C#.
+  **HiGHS** existe compilé en WebAssembly (le paquet npm `highs`) et tourne en Node comme dans le
+  navigateur ;
+- **dans les offres d'emploi**, Python domine la recherche opérationnelle et l'apprentissage, C++ les
+  systèmes embarqués et la défense. Rester en JavaScript pour les projets est raisonnable ; écrire un jour
+  un petit modèle CP-SAT en Python montrerait qu'on sait passer de l'un à l'autre.
+
 ## Références
 
 Toutes vérifiées le 22/10.
@@ -96,3 +122,5 @@ Toutes vérifiées le 22/10.
   vue d'ensemble du MCTS.
 - Silver et Veness, « Monte-Carlo Planning in Large POMDPs », NIPS 2010 : le POMCP, testé entre autres
   sur la bataille navale 10 × 10.
+- OR-Tools (Google) : écrit en C++, avec des versions officielles pour Python, Java et C# ; HiGHS
+  (université d'Édimbourg), compilé en WebAssembly dans le paquet npm `highs`.

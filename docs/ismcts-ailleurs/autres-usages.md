@@ -66,3 +66,6 @@ Vérifiées le 22/10.
   « pilot » sur les grandes.
 - « DyRo-MCTS: A Robust Monte Carlo Tree Search Approach to Dynamic Job Shop Scheduling », arXiv
   2509.21902 (2025) : le MCTS en ligne, état par état.
+
+Trois autres idées de Sami (22/10), le calendrier, les urgences et la cuisine à la *Overcooked*, sont
+rangées par famille dans [`planification.md`](planification.md).
