@@ -177,6 +177,38 @@ Si l'hypothèse tient, le coup du planificateur (§ 4) devient **(quel job, comb
 long à 12 fils et un court à 6 feraient plus de travail qu'un seul à 18, et laisseraient le PC plus
 fluide. La règle « la somme des fils ne dépasse pas 18 » reste la même.
 
+**Mesuré le 22/10** (`scripts/archive/thread-bench.js`, 2 h 20 de jour ; le journal de jobs en garde les
+8 lignes, `source: "bench"`). Le même duel de la 1.2 contre elle-même à 400 itérations, 500 parties à
+chaque fois, sur des decks identiques ; chaque mesure dans son propre dossier de duels :
+
+| Fils demandés | Minutes | Fils occupés | Parties par heure | Part du débit à 18 fils |
+|---|---|---|---|---|
+| 18 | 13,8 | 12,9 | 2 182 | 100 % |
+| 12 | 16,3 | 8,2 | 1 839 | 84 % |
+| 9 | 19,3 | 5,8 | 1 553 | 71 % |
+| 6 | 19,5 | 4,6 | 1 536 | 70 % |
+| **12 + 6, côte à côte** | 18,3 et 26,1 | 9,0 + 4,8 | **2 720 ensemble** | **125 %** |
+| 9 + 9, côte à côte | 25,4 et 25,0 | 6,5 + 6,5 | 2 379 ensemble | 109 % |
+
+- **L'hypothèse tient** : 12 fils donnent 84 % du débit de 18.
+- **Un duel n'occupe qu'environ 70 % des fils qu'on lui donne** (12,9 sur 18, 8,2 sur 12). Le reste
+  attend la fin d'une vague de parties. Deux jobs côte à côte remplissent ces trous.
+- **Deux jobs à 12 + 6 font 25 % de travail en plus** qu'un seul à 18, pour la même somme de fils. Le 9 + 9
+  ne gagne que 9 % : le job à 12 fils profite des 12 vrais cœurs, deux jobs à 9 se les disputent.
+- **6 fils font presque le débit de 9** (1 536 contre 1 553 parties par heure). Chaque partie va plus vite
+  (10,8 s contre 13,5), parce que chaque fil a son cœur. Un job de jour à 6 fils laisse le PC fluide pour
+  presque rien.
+- **La chaleur ne bouge pas.** Le CPU (Core (Tctl/Tdie), lu toutes les 30 s par LibreHardwareMonitor)
+  reste à 72-75 °C en médiane à chaque palier, 84 °C au plus. L'alerte de la garde thermique, à 90 °C,
+  garde 15 °C de marge.
+- **La RAM** reste large : 12,6 Go libres au plus bas.
+- **Une réserve honnête** : pendant les deux paires, mon propre travail tournait à côté (des tests et des
+  simulations des projets `mcts-*`, un fil à la fois, quelques minutes). Cela pèse plutôt contre les paires.
+
+**Ce que ça change** : l'étape 4 de § 9.6 (plusieurs jobs côte à côte) est justifiée, sous la forme
+**un job long à 12 fils et un job court à 6**. Le coup du planificateur devient bien (quel job, combien de
+fils), avec 18 fils au total.
+
 ## 9. L'ordonnanceur : ce qu'il apporte, les priorités, les enchaînements
 
 Sami (22/10) : on commence par l'ordonnanceur, dans ce dépôt. Avant de l'écrire, qu'apporte-t-il au
@@ -274,10 +306,13 @@ forme :
 Les étapes du § 6 restent, mais l'ordonnanceur passe devant, sans MCTS d'abord :
 1. **Les champs `priority`, `due` et `after`** dans le lanceur, avec la règle de Smith. Encore un job à la
    fois. Tests purs : quel job est prêt, lequel passe devant. **Fait le 22/10** (§ 9.7).
-2. **Le journal de jobs** (§ 8) : chaque job y écrit ses fils, sa durée et sa RAM.
-3. **La mesure du débit selon les fils** (§ 8), de jour à 400 itérations.
+2. **Le journal de jobs** (§ 8) : chaque job y écrit ses fils, sa durée et sa RAM. **Fait le 22/10**
+   (`data/job-log/`, avec la température du CPU).
+3. **La mesure du débit selon les fils** (§ 8), de jour à 400 itérations. **Faite le 22/10** : 12 + 6
+   côte à côte font 25 % de plus qu'un job à 18.
 4. **Plusieurs jobs côte à côte**, si la mesure le justifie : un budget de fils (18) et de RAM (libre
-   moins 5 Go), un pic de RAM estimé par type de job à partir du journal.
+   moins 5 Go), un pic de RAM estimé par type de job à partir du journal. **La mesure le justifie**
+   (§ 8) : un job long à 12 fils et un court à 6.
 5. **Le simulateur et le planificateur ISMCTS** (§ 6, étapes 1 à 5), jugés contre la règle de Smith sur
    les mêmes scénarios.
 
