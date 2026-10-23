@@ -4,7 +4,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { appendJobLog, enginesOf, gamesOf, jobKind, jobLine, readJobLog } from "../../scripts/lib/domain/job-log.js";
+import { appendJobLog, enginesOf, gamesOf, jobKind, jobLine, memoryFloorGb, readJobLog, watchMemory } from "../../scripts/lib/domain/job-log.js";
 
 const DUEL = 'npm run duel -- "ismcts+widen=7+depth=5+core=stfig6+exact=12@400" "ismcts+widen=7+depth=5+core=stfig6+exact=12@400" --games 125 --page --offset 0';
 const OUTPUT = "A contre B — 250 parties (125 de chaque côté), règle claim-end, profil 125 parties, 360.0 s";
@@ -41,5 +41,19 @@ describe("the job log: one line per job, by day or by night (scripts/lib/domain/
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
+  });
+
+  it("stops a job when the free memory stays under the floor twice in a row, once, and keeps the lowest", () => {
+    const GB = 1024 ** 3;
+    const frees = [9, 4.5, 6, 4.8, 4.2, 3.9, 3].map((gb) => gb * GB);
+    let i = 0;
+    const lows = [];
+    const memory = watchMemory({ everyMs: 1e9, floorGb: 5, read: () => frees[Math.min(i++, frees.length - 1)], onLow: (gb) => lows.push(gb) });
+    for (let k = 0; k < 5; k += 1) memory.sample();
+    assert.deepEqual(lows, [4.2]);
+    assert.deepEqual(memory.stop(), { freeGbStart: 9, freeGbLow: 3 });
+    assert.equal(memoryFloorGb({}), 5);
+    assert.equal(memoryFloorGb({ LOPIN_RAM_FLOOR: "0" }), 0);
+    assert.equal(memoryFloorGb({ LOPIN_RAM_FLOOR: "x" }), 5);
   });
 });

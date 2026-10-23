@@ -42,17 +42,40 @@ export function gamesOf(output) {
   return found ? Number(found[1]) : null;
 }
 
-/** Samples the free memory every `everyMs` until `stop()`, which returns the free memory at the start and at its lowest, in GB. */
-export function watchMemory(everyMs = 5_000) {
-  const start = os.freemem();
+/**
+ * The memory guard's floor (Sami, 23/10): a job is stopped when the free memory stays under `LOPIN_RAM_FLOOR`
+ * GB (5 by default, the margin the solver pools keep; 0 turns the guard off) for `holds` samples in a row.
+ */
+export function memoryFloorGb(env = process.env) {
+  const value = Number(env.LOPIN_RAM_FLOOR ?? 5);
+  return Number.isFinite(value) && value >= 0 ? value : 5;
+}
+
+/**
+ * Samples the free memory every `everyMs` until `stop()`, which returns the free memory at the start and at its
+ * lowest, in GB. With a `floorGb` above 0, `onLow(gb)` is called once when the free memory stays under it for
+ * `holds` samples in a row. `read` gives the free bytes (os.freemem; a test passes its own).
+ */
+export function watchMemory({ everyMs = 5_000, floorGb = 0, holds = 2, onLow = () => {}, read = () => os.freemem() } = {}) {
+  const start = read();
   let low = start;
-  const timer = setInterval(() => {
-    low = Math.min(low, os.freemem());
-  }, everyMs);
+  let under = 0;
+  let fired = false;
+  const sample = () => {
+    const free = read();
+    low = Math.min(low, free);
+    under = floorGb > 0 && free < floorGb * GB ? under + 1 : 0;
+    if (!fired && under >= holds) {
+      fired = true;
+      onLow(round(free / GB));
+    }
+  };
+  const timer = setInterval(sample, everyMs);
   return {
+    sample,
     stop() {
       clearInterval(timer);
-      low = Math.min(low, os.freemem());
+      low = Math.min(low, read());
       return { freeGbStart: round(start / GB), freeGbLow: round(low / GB) };
     },
   };

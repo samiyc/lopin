@@ -9,7 +9,7 @@ import { stopReason } from "../src/schedule/stop.js";
 import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js";
 import { heatSettings, readCpuTemperature, waitUntilCool, watchHeat } from "./lib/cli/machine.js";
 import { runCommand } from "./lib/cli/run-command.js";
-import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
+import { appendJobLog, jobLine, memoryFloorGb, watchMemory } from "./lib/domain/job-log.js";
 
 /**
  * `npm run backlog [-- --list]`: the long jobs kept for the night
@@ -52,6 +52,10 @@ import { appendJobLog, jobLine, watchMemory } from "./lib/domain/job-log.js";
  * row the job is stopped, left in the queue, and the queue goes on once the CPU is back under 75 °C. A job
  * stopped `HEAT_STOPS` times ends `failed`. Without the server the run says so and goes on unguarded.
  *
+ * The memory guard (Sami, 23/10): the free memory is read every 5 s; under `LOPIN_RAM_FLOOR` GB (5 by
+ * default, 0 turns it off) twice in a row, the job is stopped and ends `failed` at once, with its reason: run
+ * again, it would fill the memory again. The queue goes on with the next job.
+ *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to
  * data/runs-laptop/, which git carries back: `git pull`, run, then commit and
@@ -73,6 +77,7 @@ const RUNS = `${ROOT}${RUNS_DIR}`;
 const { readQueue: readBacklog, saveQueue: saveBacklog, readArchive, archiveFinished } = backlogFiles({ suffix });
 
 const heat = heatSettings();
+const ramFloor = memoryFloorGb();
 const heatStops = new Map();
 
 /** A job's threads: its own `threads`, else the run's. */
@@ -123,6 +128,7 @@ await mkdir(RUNS, { recursive: true });
 const onThreads = `, sur ${threads} fils`;
 console.log(`${planned.order.length} traitement(s) à faire${onThreads}, ${planned.waiting.length} en attente.`);
 console.log(heatLine(await readCpuTemperature(heat)));
+console.log(ramFloor > 0 ? `Garde mémoire : un job s'arrête sous ${ramFloor} Go de RAM libre (${(os.freemem() / 1024 ** 3).toFixed(1).replace(".", ",")} Go libres maintenant).` : "Garde mémoire coupée.");
 // The next job is read from the file each time: one added while another ran is played too.
 const tried = new Set();
 const nextJob = async () => pickNext((await readBacklog()).jobs.filter((job) => !tried.has(job.id)), await readArchive(), Date.now(), order);
@@ -179,18 +185,25 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   const stamp = localTimestamp().slice(0, 16).replace(/[:T]/g, "-");
   const output = `${RUNS_DIR}${stamp}_${job.id}.txt`;
   console.log(`\n▶ ${job.id} (${job.estimate}) : ${job.command}`);
-  const memory = watchMemory();
   const guard = new AbortController();
+  let memoryStop = null;
+  const memory = watchMemory({
+    floorGb: ramFloor,
+    onLow: (gb) => {
+      memoryStop = `arrêté par la garde mémoire : ${String(gb).replace(".", ",")} Go libres, sous ${ramFloor} Go`;
+      guard.abort(memoryStop);
+    },
+  });
   const temperature = watchHeat({ settings: heat, onAlert: (celsius) => guard.abort(`garde thermique, CPU à ${degrees(celsius)}`) });
   const env = job.threads ? { LOPIN_THREADS: String(job.threads) } : {};
   const code = await runCommand(job.command, { outFile: `${ROOT}${output}`, minutes: job.limit ?? LIMIT, env, signal: guard.signal });
   const run = { id: job.id, command: job.command, threads: threadsOf(job), started: new Date(started), ended: new Date(), output: outputOf({ output }), memory: memory.stop(), temperature: temperature.stop(), source: "backlog", queue: queue ?? "" };
-  if (code === "aborted" && (await heatStopped(job, run))) continue;
+  if (code === "aborted" && !memoryStop && (await heatStopped(job, run))) continue;
   // Re-read the file: someone may have added jobs while this one ran.
   const fresh = await readBacklog();
   const entry = fresh.jobs.find((candidate) => candidate.id === job.id);
   Object.assign(entry, { status: statusOf(code), doneAt: localTimestamp().slice(0, 16), minutes: Math.round((Date.now() - started) / 60000), output });
-  if (code === "aborted") entry.reason = `arrêté ${HEAT_STOPS} fois par la garde thermique`;
+  if (code === "aborted") entry.reason = memoryStop ?? `arrêté ${HEAT_STOPS} fois par la garde thermique`;
   await saveBacklog(fresh);
   await archiveFinished();
   console.log(`■ ${job.id} : ${entry.status}, ${entry.minutes} min → ${output}`);

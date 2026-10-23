@@ -25,6 +25,19 @@ signatures, servira à tous. Les adversaires cachés passent après.
 
 La bibliothèque commune (§ 4) naît pendant l'étape 1 et sort du dépôt au début de l'étape 2.
 
+**L'ordonnanceur, sorti de Lopin** (Sami, 23/10) : les urgences, l'entrepôt et la cuisine auront aussi leurs
+mesures longues (balayages de réglages, recherche sur des centaines de gardes ou de journées). Le lanceur
+devra donc servir plusieurs dépôts. Le plus simple :
+- `src/schedule/` passe dans `mcts-commun` (module `schedule`), puisqu'il n'importe déjà rien du jeu ;
+- le lanceur (`scripts/backlog.js`, le journal de jobs, la garde thermique) devient un outil
+  `mcts-backlog` dans `mcts-commun/bin/` ;
+- une seule file pour la machine, et chaque job y dit dans quel dossier il tourne (`cwd`). La règle des
+  18 fils et de la RAM reste ainsi globale : deux dépôts ne lancent jamais chacun leur job à 18 fils en
+  même temps.
+
+Lopin garde ses `stopIf` sur les duels, qui restent un réglage propre au jeu. On le fait une fois la
+validation du 23/10 finie (`backlog.md` § 9.9).
+
 ## 2. Trois thèmes, deux moteurs
 
 | | Les urgences | L'entrepôt | La cuisine |

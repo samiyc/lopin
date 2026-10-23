@@ -410,3 +410,28 @@ est de 23.
   du fichier) : c'est le réglage le plus rentable, et il ne coûte qu'une tâche planifiée et un réglage du BIOS.
 - **L'interruption tient presque toutes les échéances du correctif** (0,90 → 0,12 manquée par nuit), au prix
   d'environ 30 min de calcul perdu par nuit. Sans aucune coupure, la même règle passe de 0,96 à 0,05.
+
+### 9.9 La validation du 23/10, en vrai
+
+Sami (23/10) : valider l'ordonnanceur en journée, avant de lui confier des nuits. Une file à part
+(`--queue validation`) de vrais jobs courts, à 400 itérations au plus ; le compte rendu de chaque job reste
+dans `data/backlog-done-validation/`.
+
+| Ce qu'on vérifiait | Ce qui s'est passé |
+|---|---|
+| **L'échéance** (`due`) | VAL_FINGERPRINT (10 min annoncées, échéance 16 min plus tard) est parti le premier, devant deux duels de 5 min : derrière eux, il l'aurait manquée. Son empreinte est celle de la 1.2 (`1d041613cd7bcd8d`). |
+| **Le `stopIf`** | Série perdante (greedy contre la 1.2 à 400) : 7,5 % au duel 1, le duel 2 annulé avec sa raison. Série gagnante : le duel 2 est parti. |
+| **Les prérequis** (`after`) | VAL_VERSUS (2 min, le plus court) a attendu ses deux duels. Un job au prérequis inconnu est resté bloqué, avec sa raison dans `--list`. |
+| **La priorité** | VAL_LOW (priorité 3) est passé en dernier. |
+| **La coupure** | Le lanceur tué en plein duel, avec toute son arborescence de processus, comme lors d'une coupure : à la relance, le duel en cours est rejoué depuis le début, et rien d'autre ne bouge. Attention : arrêter seulement le terminal ne suffit pas toujours, il faut tuer l'arborescence (`taskkill /T`). |
+| **La garde thermique** (seuil abaissé à 78 °C) | Un duel à 18 fils monte à 82-84 °C : il a été arrêté deux fois, et la file est repartie à chaque fois sous 75 °C (en 1 à 2 min). Au troisième essai, le duel a fini sans atteindre le seuil deux lectures de suite. L'échec au 3ᵉ arrêt avait été vérifié le 22/10 sur une file factice. |
+| **La garde mémoire** (ajoutée le 23/10, seuil exprès à 200 Go) | Le job a été arrêté au bout de deux lectures et a fini `failed`, avec « arrêté par la garde mémoire : 19,3 Go libres, sous 200 Go ». Le job suivant est parti. |
+| **Le journal de jobs** | Une ligne par job, avec les fils, les minutes et la température. Les duels à 18 fils et 400 itérations chauffent le CPU à 77-84 °C. |
+
+**La garde mémoire** (Sami, 23/10) : toutes les 5 s, le lanceur lit la RAM libre. Sous 5 Go deux lectures de
+suite, il arrête le job, qui finit `failed` avec sa raison ; la file continue. Le job n'est pas relancé :
+relancé, il remplirait de nouveau la mémoire. `LOPIN_RAM_FLOOR=N` change le seuil, et 0 coupe la garde.
+
+**Verdict** : chaque règle du lanceur fait ce qu'elle annonce sur de vrais jobs. Ce qui reste pour les nuits
+sans surveillance, ce sont les réglages de la machine (§ 9.8, à faire par Sami) : la reprise après coupure
+(le réglage du BIOS) et après redémarrage (une tâche planifiée).

@@ -1,0 +1,133 @@
+{
+  "note": "Les traitements de nuit finis, sortis de la file dès leur fin (scripts/backlog.js), un fichier par mois de doneAt.",
+  "jobs": [
+    {
+      "id": "VAL_FINGERPRINT",
+      "command": "npm run fingerprint -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12@150,greedy\" 20",
+      "estimate": "10 min",
+      "due": "2026-10-23T09:27",
+      "status": "done",
+      "why": "Échéance proche : doit passer en premier. Empreinte attendue de la 1.2 : 1d041613cd7bcd8d.",
+      "doneAt": "2026-10-23T09:17",
+      "minutes": 2,
+      "output": "data/runs-validation/2026-10-23-09-15_VAL_FINGERPRINT.txt"
+    },
+    {
+      "id": "VAL_DUEL_1_Weak",
+      "command": "npm run duel -- greedy \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" --long --games 60 --page --offset 0",
+      "estimate": "5 min",
+      "limit": 20,
+      "status": "done",
+      "why": "Série perdante : son duel 1 doit faire sauter le duel 2.",
+      "doneAt": "2026-10-23T09:19",
+      "minutes": 2,
+      "output": "data/runs-validation/2026-10-23-09-17_VAL_DUEL_1_Weak.txt"
+    },
+    {
+      "id": "VAL_DUEL_2_Weak",
+      "command": "npm run duel -- greedy \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" --long --games 60 --page --offset 1",
+      "estimate": "5 min",
+      "limit": 20,
+      "status": "skipped",
+      "stopIf": [
+        {
+          "after": [
+            "VAL_DUEL_1_Weak"
+          ],
+          "below": 0.47
+        }
+      ],
+      "why": "Doit être sauté (stopIf).",
+      "doneAt": "2026-10-23T09:19",
+      "minutes": 0,
+      "reason": "VAL_DUEL_1_Weak : 7.5 % réunis, sous 47 %"
+    },
+    {
+      "id": "VAL_DUEL_1_Strong",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" strategist --long --games 60 --page --offset 0",
+      "estimate": "5 min",
+      "limit": 20,
+      "status": "done",
+      "why": "Série gagnante : le runner sera coupé pendant ce job, puis relancé (reprise).",
+      "doneAt": "2026-10-23T09:22",
+      "minutes": 2,
+      "output": "data/runs-validation/2026-10-23-09-20_VAL_DUEL_1_Strong.txt"
+    },
+    {
+      "id": "VAL_DUEL_2_Strong",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" strategist --long --games 60 --page --offset 1",
+      "estimate": "5 min",
+      "limit": 20,
+      "status": "done",
+      "stopIf": [
+        {
+          "after": [
+            "VAL_DUEL_1_Strong"
+          ],
+          "below": 0.47
+        }
+      ],
+      "why": "Doit partir (stopIf non déclenché).",
+      "doneAt": "2026-10-23T09:25",
+      "minutes": 2,
+      "output": "data/runs-validation/2026-10-23-09-22_VAL_DUEL_2_Strong.txt"
+    },
+    {
+      "id": "VAL_VERSUS_Strong",
+      "command": "npm run versus -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" strategist",
+      "estimate": "2 min",
+      "after": [
+        "VAL_DUEL_1_Strong",
+        "VAL_DUEL_2_Strong"
+      ],
+      "status": "done",
+      "why": "Le plus court, mais attend ses deux prérequis.",
+      "doneAt": "2026-10-23T09:25",
+      "minutes": 0,
+      "output": "data/runs-validation/2026-10-23-09-25_VAL_VERSUS_Strong.txt"
+    },
+    {
+      "id": "VAL_LOW",
+      "command": "npm run duel -- strategist greedy --games 200",
+      "estimate": "10 min",
+      "priority": 3,
+      "status": "done",
+      "why": "Priorité 3 : doit passer en dernier malgré sa vraie durée courte.",
+      "doneAt": "2026-10-23T09:25",
+      "minutes": 0,
+      "output": "data/runs-validation/2026-10-23-09-25_VAL_LOW.txt"
+    },
+    {
+      "id": "VAL_HEAT",
+      "command": "npm run duel -- \"ismcts+widen=7+depth=5+core=stfig6+exact=12@400\" strategist --long --games 150 --page --offset 2",
+      "estimate": "8 min",
+      "limit": 40,
+      "status": "done",
+      "why": "Test de la garde thermique, lancé avec LOPIN_HEAT_ALERT=78 : le job doit être arrêté, la file attendre sous 75 °C, le relancer, et le marquer failed au 3e arrêt.",
+      "doneAt": "2026-10-23T09:46",
+      "minutes": 4,
+      "output": "data/runs-validation/2026-10-23-09-42_VAL_HEAT.txt"
+    },
+    {
+      "id": "VAL_RAM",
+      "command": "node -e \"setTimeout(() => {}, 30000)\"",
+      "estimate": "1 min",
+      "status": "failed",
+      "why": "Garde mémoire, lancée avec LOPIN_RAM_FLOOR=200 : arrêtée au bout de deux lectures, failed avec sa raison.",
+      "doneAt": "2026-10-23T09:50",
+      "minutes": 0,
+      "output": "data/runs-validation/2026-10-23-09-50_VAL_RAM.txt",
+      "reason": "arrêté par la garde mémoire : 19,3 Go libres, sous 200 Go"
+    },
+    {
+      "id": "VAL_AFTER_RAM",
+      "command": "echo la file continue",
+      "estimate": "1 min",
+      "status": "done",
+      "why": "La file continue après un arrêt de la garde mémoire.",
+      "doneAt": "2026-10-23T09:50",
+      "minutes": 0,
+      "output": "data/runs-validation/2026-10-23-09-50_VAL_AFTER_RAM.txt"
+    }
+  ]
+}
