@@ -151,6 +151,8 @@ postes, la cuisson sans surveillance, les comptoirs en relais, le chef au clavie
 `docs/modele.md` et un journal des versions dans sa page (`web/changelog.html`). L'étape 4 n'est pas
 commencée : le plan animé des urgences ne fait que montrer la garde.
 
+**Le 23/10 tard** : les premières parties de Sami aux urgences (la garde, le médecin et l'infirmier sur le plan, `docs/modele.md` des urgences) ; dans la cuisine, les bugs du chef au clavier retrouvés un par un avec ses replays (le robot qui attendait le chef, les tours perdus avant la soupe) ; l'allure commune des trois pages (`mcts-commun/web/theme.css`) : rouge et blanc pour les urgences, bleu-gris pour l'entrepôt, orange pour la cuisine.
+
 **La suite, dans l'ordre que Sami a validé :**
 
 1. **L'ordonnanceur en commun** — **fait le 23/10** : `mcts-backlog` dans mcts-commun (`bin/backlog.js`, l'ordre de `src/schedule.js` repris de Lopin, `node/machine.js` pour les fils et les gardes), des jobs côte à côte tant que leurs fils tiennent dans le budget, et des créneaux partagés avec le lanceur de Lopin (`~/.mcts-backlog/slots.json`) ; chaque dépôt a son `night.json`. Une file pour
