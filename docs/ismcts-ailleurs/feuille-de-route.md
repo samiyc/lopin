@@ -158,16 +158,16 @@ commencée : le plan animé des urgences ne fait que montrer la garde.
    alors leurs mesures de nuit : la recherche contre les règles sur des centaines de journées, de gardes ou
    de services (aujourd'hui 8 à 40), et les réglages de la recherche (budget, profondeur), en particulier
    pour l'entrepôt à 80 % de blocage.
-2. **Les replays avec un humain**, pour analyser les écarts : enregistrer les parties jouées dans les pages
+2. **Les replays avec un humain** — **faits le 23/10** pour la cuisine (le chef au clavier, « Analyser les écarts ») et les urgences (« Jouer la garde vous-même », seul ou aidé), gardés d'eux-mêmes dans `replays/` (hors de git) ; reste le cariste de l'entrepôt (point 4). Pour analyser les écarts : enregistrer les parties jouées dans les pages
    (le chef au clavier en cuisine, les choix aux urgences, le cariste de l'entrepôt), les rejouer pas à pas,
    et comparer à chaque décision ce que l'humain a fait et ce que la recherche aurait fait. Puis les trois
    manières de jouer du § 3 : l'humain seul, aidé par l'assistant, l'assistant seul. Les replays servent
    aussi à ajuster le modèle de l'humain sur de vraies parties.
-3. **Le plan de l'hôpital** (l'étape 4) : les urgences sur la grille de l'entrepôt, les patients et les
+3. **Le plan de l'hôpital** (l'étape 4) — **fait le 23/10 au soir** (`mcts-urgences`, « Le service en plan » : 6 s par case, un médecin ou l'infirmier de tri au clavier, la garde contre un robot à sa place) : les urgences sur la grille de l'entrepôt, les patients et les
    soignants qui se déplacent, la salle d'attente qui sature. Sami : **un médecin ou un infirmier joué au
    clavier** (Z Q S D et E, comme le chef), qui ajoute l'aléa d'un vrai joueur.
 4. **L'entrepôt, la suite** :
-   - **le transfert de colis entre deux robots bloqués** dans une allée étroite : une case libre sert un
+   - **le transfert de colis entre deux robots bloqués** — **fait le 23/10 au soir** (les relais : aux trois quais, le dernier colis au tour 119 au lieu de 126) — dans une allée étroite : une case libre sert un
      moment de zone d'attente, le robot le plus proche du camion fait les allers-retours courts, les autres
      repartent chercher ;
    - **un personnage au clavier** (Z Q S D et E) qui prend et pose des colis ;
