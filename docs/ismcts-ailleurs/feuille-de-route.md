@@ -141,3 +141,37 @@ qu'ils ne voient pas, comme mon bot devine la main adverse ».
 **CodinGame** reste une bonne idée si un défi en temps réel plaît : un classement public donne un
 résultat comparable aux autres, et la plateforme sert aussi au recrutement. Ce n'est pas une étape de la
 feuille de route, plutôt un terrain d'entraînement pour la bibliothèque.
+
+## 6. Où on en est, et la suite (Sami, 23/10 au soir)
+
+**L'état.** L'étape 1 est validée (l'ordonnanceur, `backlog.md` § 9.9), il reste à le sortir de Lopin. Les
+étapes 2 et 3 tournent : les urgences (la réévaluation, le plan animé de la garde), l'entrepôt (les quais,
+les zones d'attente, un chargeur par zone, les allées qui se bloquent encore et encore) et la cuisine (les
+postes, la cuisson sans surveillance, les comptoirs en relais, le chef au clavier). Chaque dépôt a sa
+`docs/modele.md` et un journal des versions dans sa page (`web/changelog.html`). L'étape 4 n'est pas
+commencée : le plan animé des urgences ne fait que montrer la garde.
+
+**La suite, dans l'ordre que Sami a validé :**
+
+1. **L'ordonnanceur en commun** (le paragraphe « L'ordonnanceur, sorti de Lopin » plus haut) : une file pour
+   la machine, un `cwd` par job, la garde thermique et la garde mémoire pour tous. Les trois dépôts lancent
+   alors leurs mesures de nuit : la recherche contre les règles sur des centaines de journées, de gardes ou
+   de services (aujourd'hui 8 à 40), et les réglages de la recherche (budget, profondeur), en particulier
+   pour l'entrepôt à 80 % de blocage.
+2. **Les replays avec un humain**, pour analyser les écarts : enregistrer les parties jouées dans les pages
+   (le chef au clavier en cuisine, les choix aux urgences, le cariste de l'entrepôt), les rejouer pas à pas,
+   et comparer à chaque décision ce que l'humain a fait et ce que la recherche aurait fait. Puis les trois
+   manières de jouer du § 3 : l'humain seul, aidé par l'assistant, l'assistant seul. Les replays servent
+   aussi à ajuster le modèle de l'humain sur de vraies parties.
+3. **Le plan de l'hôpital** (l'étape 4) : les urgences sur la grille de l'entrepôt, les patients et les
+   soignants qui se déplacent, la salle d'attente qui sature. Sami : **un médecin ou un infirmier joué au
+   clavier** (Z Q S D et E, comme le chef), qui ajoute l'aléa d'un vrai joueur.
+4. **L'entrepôt, la suite** :
+   - **le transfert de colis entre deux robots bloqués** dans une allée étroite : une case libre sert un
+     moment de zone d'attente, le robot le plus proche du camion fait les allers-retours courts, les autres
+     repartent chercher ;
+   - **un personnage au clavier** (Z Q S D et E) qui prend et pose des colis ;
+   - **une zone d'assemblage** (Sami, à préciser) : une commande faite de plusieurs colis, réunis sur une
+     zone avant de partir au camion, comme les recettes à plusieurs ingrédients de la cuisine.
+5. **La vitrine** : les journaux des versions, et une page de résultats par dépôt qui chiffre ce que gagne
+   la recherche (ISMCTS) contre les règles, avec ses intervalles, mesurés de nuit (point 1).
