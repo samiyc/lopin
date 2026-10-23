@@ -6,7 +6,8 @@ import { localTimestamp } from "../src/replay/core/log.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
 import { nextJob as pickNext, planNight } from "../src/schedule/order.js";
 import { stopReason } from "../src/schedule/stop.js";
-import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js";
+import { applyThreadsOption, defaultThreads, threadsFrom, workerCount } from "./lib/cli/pool.js";
+import { waitForSlot } from "./lib/cli/machine-slots.js";
 import { heatSettings, readCpuTemperature, waitUntilCool, watchHeat } from "./lib/cli/machine.js";
 import { runCommand } from "./lib/cli/run-command.js";
 import { appendJobLog, jobLine, memoryFloorGb, watchMemory } from "./lib/domain/job-log.js";
@@ -56,6 +57,10 @@ import { appendJobLog, jobLine, memoryFloorGb, watchMemory } from "./lib/domain/
  * default, 0 turns it off) twice in a row, the job is stopped and ends `failed` at once, with its reason: run
  * again, it would fill the memory again. The queue goes on with the next job.
  *
+ * The machine's slots (Sami, 23/10, scripts/lib/cli/machine-slots.js): before it starts, a job takes its threads in
+ * ~/.mcts-backlog/slots.json, which mcts-commun's `mcts-backlog` (the other projects' night measures) reads too;
+ * it waits while they would pass what the machine lends (the default rule: every core but 3, 18 at most).
+ *
  * `--queue laptop`: another machine's own queue, data/backlog-laptop.json,
  * so that two machines never write the same file. Its outputs go to
  * data/runs-laptop/, which git carries back: `git pull`, run, then commit and
@@ -103,6 +108,9 @@ function lineOf(job, note = "") {
   const why = job.reason ? ` (${job.reason})` : "";
   return `${note}[${job.status}] ${job.id} — ${job.estimate} — ${job.command}${tagsOf(job)}${done}${why}`;
 }
+
+/** A job running on the machine, as the wait for threads tells it. */
+const slotLabel = (slot) => `${slot.id} (${slot.runner}, ${slot.threads} fils)`;
 
 const hhmm = (ms) => new Date(ms).toTimeString().slice(0, 5);
 
@@ -196,7 +204,9 @@ for (let job = await nextJob(); job; job = await nextJob()) {
   });
   const temperature = watchHeat({ settings: heat, onAlert: (celsius) => guard.abort(`garde thermique, CPU à ${degrees(celsius)}`) });
   const env = job.threads ? { LOPIN_THREADS: String(job.threads) } : {};
+  const slot = await waitForSlot({ id: job.id, threads: threadsOf(job), budget: defaultThreads(os.cpus().length), onWait: (slots) => console.log("  attend des fils libres : " + slots.map(slotLabel).join(", ")) });
   const code = await runCommand(job.command, { outFile: `${ROOT}${output}`, minutes: job.limit ?? LIMIT, env, signal: guard.signal });
+  await slot.release();
   const run = { id: job.id, command: job.command, threads: threadsOf(job), started: new Date(started), ended: new Date(), output: outputOf({ output }), memory: memory.stop(), temperature: temperature.stop(), source: "backlog", queue: queue ?? "" };
   if (code === "aborted" && !memoryStop && (await heatStopped(job, run))) continue;
   // Re-read the file: someone may have added jobs while this one ran.

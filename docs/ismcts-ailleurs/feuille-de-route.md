@@ -153,7 +153,7 @@ commencée : le plan animé des urgences ne fait que montrer la garde.
 
 **La suite, dans l'ordre que Sami a validé :**
 
-1. **L'ordonnanceur en commun** (le paragraphe « L'ordonnanceur, sorti de Lopin » plus haut) : une file pour
+1. **L'ordonnanceur en commun** — **fait le 23/10** : `mcts-backlog` dans mcts-commun (`bin/backlog.js`, l'ordre de `src/schedule.js` repris de Lopin, `node/machine.js` pour les fils et les gardes), des jobs côte à côte tant que leurs fils tiennent dans le budget, et des créneaux partagés avec le lanceur de Lopin (`~/.mcts-backlog/slots.json`) ; chaque dépôt a son `night.json`. Une file pour
    la machine, un `cwd` par job, la garde thermique et la garde mémoire pour tous. Les trois dépôts lancent
    alors leurs mesures de nuit : la recherche contre les règles sur des centaines de journées, de gardes ou
    de services (aujourd'hui 8 à 40), et les réglages de la recherche (budget, profondeur), en particulier
