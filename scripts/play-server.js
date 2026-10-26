@@ -18,7 +18,8 @@ import { REPLAY_DIRS, isReplayDir, isSafeName, replayFileName, replayHeader } fr
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const PORT = Number(process.env.PORT ?? 4742);
 // out/: the changelogs and documents of the Versions menu (web/index.html).
-const STATIC_PREFIXES = ["web/", "src/", "regles/fonts/", "regles/regles.pdf", "out/"];
+// mcts-commun's modules too (Sami, 26/10/2026: the scheduler lives there now), for the Ordonnanceur tab.
+const STATIC_PREFIXES = ["web/", "src/", "regles/fonts/", "regles/regles.pdf", "out/", "node_modules/mcts-commun/src/"];
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",

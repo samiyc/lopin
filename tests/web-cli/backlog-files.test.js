@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { pathToFileURL } from "node:url";
-import { backlogFiles } from "../../scripts/lib/domain/backlog-files.js";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { backlogFiles, outputUrl } from "../../scripts/lib/domain/backlog-files.js";
 
 const job = (id, status, doneAt) => ({ id, command: "npm run duel", status, ...(doneAt && { doneAt }) });
 
@@ -13,7 +13,7 @@ async function sandbox(jobs) {
   const dir = await mkdtemp(join(tmpdir(), "lopin-backlog-"));
   await mkdir(join(dir, "data"));
   await writeFile(join(dir, "data", "backlog.json"), JSON.stringify({ note: "la file", jobs }));
-  return { dir, files: backlogFiles({ root: pathToFileURL(`${dir}/`) }) };
+  return { dir, files: backlogFiles({ root: pathToFileURL(`${dir}/`), machineHome: null }) };
 }
 
 describe("the backlog keeps only the jobs to come, the finished ones go to data/backlog-done/ (backlog-files.js)", () => {
@@ -43,6 +43,27 @@ describe("the backlog keeps only the jobs to come, the finished ones go to data/
       assert.deepEqual((await files.readQueue()).jobs, []);
     } finally {
       await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("reads lopin's jobs in the machine's archive too, after its own, their outputs absolute (mcts-backlog, Sami 26/10)", async () => {
+    const { dir } = await sandbox([]);
+    const home = await mkdtemp(join(tmpdir(), "machine-"));
+    try {
+      await mkdir(join(dir, "data", "backlog-done"));
+      await writeFile(join(dir, "data", "backlog-done", "2026-10.json"), JSON.stringify({ jobs: [job("old", "done", "2026-10-20T01:00")] }));
+      await mkdir(join(home, "done"));
+      const elsewhere = { ...job("cuisine", "done", "2026-10-26T22:00"), cwd: join(tmpdir(), "mcts-cuisine") };
+      const duel = { ...job("DUEL_1", "done", "2026-10-26T23:00"), cwd: `${dir}/`, output: join("runs", "2026-10-26-22-00_DUEL_1.txt") };
+      await writeFile(join(home, "done", "2026-10.json"), JSON.stringify([elsewhere, duel]));
+      const archive = await backlogFiles({ root: pathToFileURL(`${dir}/`), machineHome: home }).readArchive();
+      assert.deepEqual(archive.map((entry) => entry.id), ["old", "DUEL_1"]);
+      assert.equal(archive[1].output, join(home, "runs", "2026-10-26-22-00_DUEL_1.txt"));
+      assert.equal(fileURLToPath(outputUrl(archive[1])), archive[1].output);
+      assert.equal(fileURLToPath(outputUrl({ output: "backlog-runs/x.txt" }, pathToFileURL(`${dir}/`))), join(dir, "backlog-runs", "x.txt"));
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+      await rm(home, { recursive: true, force: true });
     }
   });
 });

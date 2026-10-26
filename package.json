@@ -67,6 +67,9 @@
     "features": "node scripts/features.js",
     "banc": "node scripts/banc.js"
   },
+  "dependencies": {
+    "mcts-commun": "file:../mcts-commun"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "eslint": "^9.39.5",

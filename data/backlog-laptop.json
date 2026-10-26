@@ -1,4 +1,0 @@
-{
-  "note": "La file du portable (Sami, 03/10) : git pull, puis LOPIN_THREADS=4 npm run backlog -- --queue laptop, puis commit et git push de data/. Les sorties vont dans data/runs-laptop/. Des traitements qui ne recoupent pas ceux du PC fixe (pas d'oracle sur les deux machines à la fois : chacune a ses positions). docs/cloud.md.",
-  "jobs": []
-}

@@ -2,7 +2,7 @@ import { readFile, readdir, writeFile } from "node:fs/promises";
 import { BOT_LINEUP, V1_ENGINE } from "../src/config/bots.js";
 import { duelNumbers, quantiles } from "../src/replay/stats/tree-norms.js";
 import { normalizeEngine } from "../src/sim/mcts/engine-id.js";
-import { backlogFiles } from "./lib/domain/backlog-files.js";
+import { backlogFiles, outputUrl } from "./lib/domain/backlog-files.js";
 import { pairedInterval, pointsOf } from "./lib/domain/duel-plan.js";
 import { DUELS_DIR } from "./lib/domain/game-index.js";
 
@@ -74,7 +74,7 @@ function summary({ a, b, games, points, decks, files }) {
 async function jobPairs(job) {
   const [, first, second] = DUEL.exec(job.command ?? "") ?? [];
   if (!first || job.status !== "done" || !job.output) return null;
-  const text = await readFile(new URL(`../${job.output}`, import.meta.url), "utf8").catch(() => "");
+  const text = await readFile(outputUrl(job), "utf8").catch(() => "");
   const found = /paires : n = (\d+), moyenne ([\d.]+), écart-type ([\d.]+)/.exec(text);
   if (!found) return null;
   const [a, b] = [normalizeEngine(first), normalizeEngine(second)];

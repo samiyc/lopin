@@ -195,14 +195,16 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   for validation**, and those duels and simulations go to the night backlog
   (`data/backlog.json`, `"status": "scheduled"`). Core-against-core duels take
   seconds and are not concerned. Night jobs stay under 2 h each.
-  `data/backlog.json` holds only the jobs to come (Sami, 17/10): a finished one
-  moves at once to `data/backlog-done/YYYY-MM.json`; a reader of finished jobs
-  (stopIf, changelogs) goes through `backlogFiles()` (`scripts/lib/domain/backlog-files.js`). The next job
-  (22/10, `src/schedule/order.js`): prerequisites (`after`, a `stopIf`'s duels), a `due` it would miss, then
-  Smith's rule on `priority` / `estimate`; `--fifo` keeps the file order, `--list` prints the planned night.
-  `src/schedule/` (order, stop, night, incidents: heat, restarts, preemption) imports nothing of the game and runs in the page's
-  Ordonnanceur tab (`web/app/scheduler/`). Every job, backlog or `npm run job`, logs a line to `data/job-log/`, with
-  the CPU's temperature; the heat guard (`scripts/lib/cli/machine.js`, LibreHardwareMonitor's web server) stops a job at 90 °C, the memory guard under 5 GB free (`LOPIN_RAM_FLOOR`); a job takes its threads in the machine's slots (`~/.mcts-backlog/slots.json`, shared with mcts-commun's `mcts-backlog`).
+  **The runner is mcts-commun's** (Sami, 26/10/2026): `npm run backlog` hands `data/backlog.json`'s jobs to the
+  machine's queue (`mcts-backlog`, every project's long jobs side by side within the machine's threads, the heat and
+  memory guards) and plays it unless a runner already does; `npm run backlog -- --list` (or `--tui`) shows it. A
+  job keeps its id, `after`, `due`, `priority`, `stopIf` (the order waits for its duels; `scripts/stop-check.js`,
+  its `skipIf`, cancels it with src/schedule/stop.js); its outputs go to `~/.mcts-backlog/runs/`, the finished jobs
+  to `~/.mcts-backlog/done/`, which `backlogFiles().readArchive()` reads after lopin's own archive
+  (`data/backlog-done/`); `outputUrl(job)` finds an output either way. `src/schedule/order.js` re-exports
+  mcts-commun's `schedule` (lopin depends on `file:../mcts-commun`; the page through its import map); stop, night
+  and incidents stay here and run in the Ordonnanceur tab (`web/app/scheduler/`). `npm run job` still logs to
+  `data/job-log/`; the backlog's jobs log to `~/.mcts-backlog/job-log/`.
 - **Threads** (Sami, 07/10): every pool takes `workerCount()`
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.
