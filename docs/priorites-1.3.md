@@ -675,3 +675,35 @@ ses deux dernières recherches, par une erreur d'environ 28 points une fois sur 
 corrigent pas (le mauvais coup a déjà le meilleur taux). La piste qui en découle : **juger au solveur les
 2-3 premiers candidats de l'arbre quand la pioche a une carte** (7 donnes exactes : 1 à 23 s pour tous
 les coups, bien moins pour trois), le PIMC choisissant parmi eux ; à mesurer au même banc, puis en duel.
+
+## 13. `EndPimc3` : le solveur choisit parmi les 3 premiers de l'arbre, pioche à une carte (27/10)
+
+**Le code** (`src/sim/mcts/pimc.js`, `+pimc=k`, éteint par défaut, empreintes inchangées) : après la
+recherche, quand la pioche a une carte, les k candidats les plus visités sont résolus sur chaque place de
+cette carte (une donne par carte invisible, le reste dans la main adverse : 7 donnes), et le bot joue celui
+qui gagne le plus de donnes, à égalité le plus visité. Si une donne dépasse 400 000 nœuds (`EXACT.nodes`),
+le coup de l'arbre reste joué.
+
+**Le banc** (`node scripts/archive/endgame-moves.js --summary --pimc 4`, sans calcul : les valeurs du § 12) ;
+pioche 1, 227 positions où le coup compte :
+
+| Candidats jugés | Meilleur coup | Perte moyenne | Manqués corrigés (sur 23) |
+|---|---|---|---|
+| 1 (la 1.2) | 89,9 % | 2,6 points | — |
+| 2 | 94,3 % | 1,4 | 10 |
+| **3** | **96,0 %** | **1,0** | **14** |
+| 4 | 96,9 % | 0,5 | 16 |
+
+Une borne haute : le banc juge sur les mêmes donnes, avec le même PIMC qui prête la vue des cartes à
+l'adversaire.
+
+**Le coût** (`--pimc-cost 3 --nodes N`, par la file de la machine, 4 fils, 296 positions à pioche 1) :
+
+| Plafond par donne | Résolues | Médiane | p90 | Max |
+|---|---|---|---|---|
+| **400 000** | **90,5 %** | **4,5 s** | **29,7 s** | 82 s |
+| 1 000 000 | 98,0 % | 4,6 s | 58,8 s | 172 s |
+
+Le plafond reste à 400 000 : 1 M double la queue pour 7,5 % de positions en plus. Une partie de la 1.2@2000
+dure 173 s en médiane (35 coups, duel du 20/10) et PIMC ne joue qu'un coup, dans la moitié des parties :
+environ 3 % du temps d'une partie, au seuil de la règle « itérations ou temps égaux ».
