@@ -525,9 +525,9 @@
  },
  "next": [
   {
-   "when": "À décider",
-   "title": "L'Oracle light 1.1 à pwl=2 ?",
-   "text": "Mesuré la nuit du 18-19/10 : OracleLight-Pwl2-Trees2 fait 56,0 % (51,7 – 60,2) sur 420 parties contre la 1.2@2000, la version de la page (pwl=3, deux arbres) 53,6 % (49,7 – 57,4) sur les mêmes donnes. L'écart donne par donne : +2,4 points (−3,4 – +8,2), dans le bruit ; seule la borne basse passe au-dessus de 50 %. La barre était « au-dessus de 56 % » : elle est atteinte, pas franchie. Passer à pwl=2 change le moteur, donc la version (bots.js, son Elo, ce carnet). Tous les niveaux essayés : la section « L'élargissement progressif » de ce carnet."
+   "when": "Décidé (27/10)",
+   "title": "Pas d'Oracle light 1.1",
+   "text": "Sami, 27/10 : l'Oracle light 1.0 reste celui de la page (pwl=3, deux arbres). OracleLight-Pwl2-Trees2 avait fait 56,0 % (51,7 – 60,2) sur 420 parties contre la 1.2@2000, soit +2,4 points (−3,4 – +8,2) sur la version de la page sur les mêmes donnes : dans le bruit. Et les niveaux ne dessinent aucune tendance : à 20 000, Oracle3 fait 57,1 / 59,3 / 61,4 / 57,1 % de pwl=2 à pwl=5. D'autres duels sur pwl coûteraient des nuits sans direction à suivre. La 1.2 reste la référence. Tous les niveaux essayés : la section « L'élargissement progressif » de ce carnet."
   },
   {
    "when": "Fait (18/10)",

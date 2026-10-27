@@ -711,3 +711,23 @@ environ 3 % du temps d'une partie, au seuil de la règle « itérations ou temps
 **Pas de duel** (Sami, 27/10) : PIMC ne touche qu'un coup par partie, dans la moitié des parties ; avec 1,6 point
 gagné sur ce coup là où il compte, le duel attendu est à ≈ +0,6 point, hors de portée d'un 1k@2k (±3). Les
 quatre `VALIDATE_LONG_*_EndPimc3` sont retirés de la file. L'option reste, éteinte par défaut.
+
+## 14. La décision du 27/10 : la 1.2 reste la référence
+
+Sami garde la 1.2 comme référence.
+- **Pas de 1.3 par le budget pour l'instant.**
+- **Pas d'Oracle light 1.1.** `OracleLight-Pwl2-Trees2` gagne +2,4 points (−3,4 – +8,2) sur la version de la
+  page, ce qui reste dans le bruit. Et les niveaux `pwl` ne dessinent aucune tendance : à 20 000, Oracle3 fait
+  57,1 / 59,3 / 61,4 / 57,1 % de `pwl=2` à `pwl=5`. D'autres nuits de duels n'auraient pas de direction à suivre.
+
+**La piste suivante : `final` contre `claim-end`** (« les sûres perdues », § 11). La partie se joue à
+`claim-end` : une borne prouvée est revendiquée et fermée, et la partie s'arrête à la première victoire. Mais
+`determinize` (`src/sim/search/lookahead.js`) passe chaque donne de la recherche à `final`, où les bornes ne se
+règlent qu'à la fin, dans l'ordre où elles se sont remplies : l'arbre comme les simulations. C'est pour la
+vitesse (prouver les revendications à chaque coup simulé coûtait un tiers des itérations). Les deux règles ne
+donnent le même vainqueur que dans 91 % des parties entières. Un tel décalage biaise chaque coup, pas un seul
+par partie. D'abord le lire sur les parties « sûres » (95-100 % estimés) perdues, environ 2 %, avant toute
+variante. Les variantes possibles ensuite :
+- `claim-end` dans l'arbre seulement (5 plis), `final` dans les simulations ;
+- `claim-end` partout quand la pioche est basse ;
+- les jugées à temps égal, puisqu'elles coûtent des itérations.

@@ -454,7 +454,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   scored 54.6 % (50.8 – 58.4) on Budget4000's decks (54.4 %): the noise worth points is each tree's own path, which
   only independent trees average out, not the root's deals — more computation, at equal time on two workers in the
   page — but on 1 000 games (night of 18-19/10) it fell to 51.4 % (48.7 – 54.1): no 1.2 on two workers. The Oracle light in two trees prefers `pwl=2` (56.0 %, 51.7 – 60.2, over 420 games against 53.6 % for the page's `pwl=3` on the same decks:
-  +2.4 points, −3.4 – +8.2, at the 56 % bar; the Oracle light 1.1 is Sami's call); Oracle3 in two trees adds nothing (55.4 %). Read from the replays' `tree`,
+  +2.4 points, −3.4 – +8.2, at the 56 % bar; Sami, 27/10: no Oracle light 1.1, no trend across pwl levels, the 1.2 stays the reference); Oracle3 in two trees adds nothing (55.4 %). Read from the replays' `tree`,
   the 1.2 at 2 000 is a bandit of 8 candidates over a bandit of ~55 opponent replies each (22 % of its iterations try a
   reply for the first time, 65 % stop at the 3rd level on the core's move). MO-ISMCTS is rejected on paper: Lopin's
   moves are public, so its trees would be the 1.2's, and its opponent root merges the hands too.

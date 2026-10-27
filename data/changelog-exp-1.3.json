@@ -1256,6 +1256,11 @@
  },
  "next": [
   {
+   "when": "Décidé (27/10)",
+   "title": "La 1.2 reste la référence ; la piste suivante : les règles final et claim-end",
+   "text": "Sami garde la 1.2 comme référence : pas de 1.3 par le budget pour l'instant, ni d'Oracle light 1.1 (les niveaux pwl ne montrent aucune tendance). La piste suivante : la recherche joue ses donnes à la règle final (les bornes réglées à la fin) pour aller plus vite, alors que la partie se joue à claim-end (une borne prouvée est fermée et la partie s'arrête à la première victoire). Les deux règles ne donnent le même vainqueur que dans 91 % des parties : regarder une à une les parties « sûres » (estimées à 95-100 %) perdues, environ 2 %, pour voir si ce décalage en est la cause."
+  },
+  {
    "when": "Fait (27/10)",
    "title": "EndPimc3 : le solveur au dernier coup avant la pioche vide",
    "text": "Le § 12 (20-21/10) avait montré que la 1.2@2000 joue le meilleur coup dans 89,5 % des fins de partie et que ses erreurs ne viennent pas de l'exploration : les taux de l'arbre rangent mal deux coups proches. +pimc=3 résout ses 3 premiers candidats sur toutes les places de la carte de pioche : sur le banc, meilleur coup 96,0 %, perte 1,0 point au lieu de 2,6, pour 4,5 s médian. Une vraie correction, mais d'un seul coup par partie : ≈ +0,6 point de taux de victoire, qu'aucun 1k@2k ne verrait. Pas de duel ; l'option reste."
