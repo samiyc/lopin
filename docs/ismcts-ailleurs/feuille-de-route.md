@@ -144,7 +144,8 @@ feuille de route, plutôt un terrain d'entraînement pour la bibliothèque.
 
 ## 6. Où on en est, et la suite (Sami, 23/10 au soir)
 
-**L'état.** L'étape 1 est validée (l'ordonnanceur, `backlog.md` § 9.9), il reste à le sortir de Lopin. Les
+**L'état.** L'étape 1 est faite (l'ordonnanceur, `backlog.md` § 9.9) : sorti de Lopin le 26/10, c'est
+`mcts-backlog` de mcts-commun, la file de la machine pour tous les dépôts mcts-* (point 1 ci-dessous). Les
 étapes 2 et 3 tournent : les urgences (la réévaluation, le plan animé de la garde), l'entrepôt (les quais,
 les zones d'attente, un chargeur par zone, les allées qui se bloquent encore et encore) et la cuisine (les
 postes, la cuisson sans surveillance, les comptoirs en relais, le chef au clavier). Chaque dépôt a sa
@@ -155,7 +156,7 @@ commencée : le plan animé des urgences ne fait que montrer la garde.
 
 **La suite, dans l'ordre que Sami a validé :**
 
-1. **L'ordonnanceur en commun** — **fait le 23/10** : `mcts-backlog` dans mcts-commun (`bin/backlog.js`, l'ordre de `src/schedule.js` repris de Lopin, `node/machine.js` pour les fils et les gardes), des jobs côte à côte tant que leurs fils tiennent dans le budget, et des créneaux partagés avec le lanceur de Lopin (`~/.mcts-backlog/slots.json`) ; chaque dépôt a son `night.json`. Une file pour
+1. **L'ordonnanceur en commun** — **fait le 23/10** : `mcts-backlog` dans mcts-commun (`bin/backlog.js`, l'ordre de `src/schedule.js` repris de Lopin, `node/machine.js` pour les fils et les gardes), des jobs côte à côte tant que leurs fils tiennent dans le budget (`~/.mcts-backlog/slots.json`) ; chaque dépôt a son `night.json`. **Le 26/10, Lopin n'a plus de lanceur à lui** (`5f573d4`) : `npm run backlog` verse ses jobs dans `mcts-backlog`, et un nouveau job s'y ajoute par sa CLI (`--add`, `--add-file`, `mcts-commun/docs/backlog.md`) ; ses `stopIf` restent à Lopin (`scripts/stop-check.js`, le `skipIf` du job). Une file pour
    la machine, un `cwd` par job, la garde thermique et la garde mémoire pour tous. Les trois dépôts lancent
    alors leurs mesures de nuit : la recherche contre les règles sur des centaines de journées, de gardes ou
    de services (aujourd'hui 8 à 40), et les réglages de la recherche (budget, profondeur), en particulier
