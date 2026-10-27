@@ -13,7 +13,8 @@
   "outils": "Les outils",
   "arbre": "La forme de l'arbre",
   "sieges": "Les sièges",
-  "jokers": "Les jokers en fin de partie"
+  "jokers": "Les jokers en fin de partie",
+  "fins": "Le coup de fin de partie"
  },
  "benches": {
   "cout": "temps d'un coup",
@@ -943,6 +944,19 @@
    "when": "20/10",
    "idea": "TheirPairJoker sans l'adversaire qui joue ses JK, pour isoler ce que theirs apporte.",
    "note": "1k@2k de jour : 48,4 puis 49,2 %, 48,8 % (45,0 – 52,6) sur 500 parties, arrêtée : écarté."
+  },
+  {
+   "id": "end-pimc3",
+   "name": "EndPimc3 : le solveur choisit parmi les 3 premiers de l'arbre, pioche à une carte",
+   "family": "fins",
+   "bench": "positions",
+   "score": null,
+   "lo": null,
+   "hi": null,
+   "verdict": "tendance",
+   "when": "27/10",
+   "idea": "Au dernier coup avant la pioche vide, l'arbre se trompe une fois sur dix (~28 points) alors que le meilleur coup est déjà 2e ou 3e en visites (docs/priorites-1.3.md § 12). Résoudre ses 3 candidats les plus visités sur les 7 places de la carte de pioche et jouer celui qui gagne le plus de donnes (PIMC, +pimc=3).",
+   "note": "Banc des fins de partie, pioche 1, 227 positions où le coup compte : meilleur coup 89,9 → 96,0 %, perte 2,6 → 1,0 point, 14 manqués sur 23 corrigés (borne haute : même PIMC, mêmes donnes). Coût par la file (4 fils) : 400 000 nœuds par donne, 90,5 % résolues, 4,5 s médian, 29,7 s au p90 ; 1 M : 98,0 %, 58,8 s au p90, le plafond reste à 400 000. Environ 3 % d'une partie. Gain attendu en duel ≈ +0,6 point : hors de portée d'un 1k@2k (±3), les quatre duels sont retirés de la file (Sami, 27/10). L'option reste, éteinte par défaut ; ni la page ni le Labo ne la branchent."
   }
  ],
  "manualJobs": [],
@@ -1230,9 +1244,22 @@
   "f14c059": [
    "outils",
    "La nuit : MirrorMoves en tête de la file"
+  ],
+  "e267302": [
+   "fins",
+   "EndPimc3 : le solveur juge les 3 premiers de l'arbre, pioche à une carte"
+  ],
+  "b67215a": [
+   "fins",
+   "EndPimc3 : son coût mesuré par la file, 4,5 s médian"
   ]
  },
  "next": [
+  {
+   "when": "Fait (27/10)",
+   "title": "EndPimc3 : le solveur au dernier coup avant la pioche vide",
+   "text": "Le § 12 (20-21/10) avait montré que la 1.2@2000 joue le meilleur coup dans 89,5 % des fins de partie et que ses erreurs ne viennent pas de l'exploration : les taux de l'arbre rangent mal deux coups proches. +pimc=3 résout ses 3 premiers candidats sur toutes les places de la carte de pioche : sur le banc, meilleur coup 96,0 %, perte 1,0 point au lieu de 2,6, pour 4,5 s médian. Une vraie correction, mais d'un seul coup par partie : ≈ +0,6 point de taux de victoire, qu'aucun 1k@2k ne verrait. Pas de duel ; l'option reste."
+  },
   {
    "when": "Fait (19-20/10)",
    "title": "Les jokers en fin de partie : mieux estimer ne fait pas mieux jouer",

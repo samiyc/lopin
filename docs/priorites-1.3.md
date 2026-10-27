@@ -707,3 +707,7 @@ l'adversaire.
 Le plafond reste à 400 000 : 1 M double la queue pour 7,5 % de positions en plus. Une partie de la 1.2@2000
 dure 173 s en médiane (35 coups, duel du 20/10) et PIMC ne joue qu'un coup, dans la moitié des parties :
 environ 3 % du temps d'une partie, au seuil de la règle « itérations ou temps égaux ».
+
+**Pas de duel** (Sami, 27/10) : PIMC ne touche qu'un coup par partie, dans la moitié des parties ; avec 1,6 point
+gagné sur ce coup là où il compte, le duel attendu est à ≈ +0,6 point, hors de portée d'un 1k@2k (±3). Les
+quatre `VALIDATE_LONG_*_EndPimc3` sont retirés de la file. L'option reste, éteinte par défaut.
