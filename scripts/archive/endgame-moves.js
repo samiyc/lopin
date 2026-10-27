@@ -14,6 +14,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { applyThreadsOption, runPool } from "../lib/cli/pool.js";
+import { progress } from "mcts-commun/trace.js";
 import { tmpFile } from "../lib/domain/tmp.js";
 
 const args = process.argv.slice(2);
@@ -134,7 +135,13 @@ async function pimcCost(results, k, nodes) {
   const games = new Map();
   for (const file of new Set(rows.map((row) => row.file))) games.set(file, JSON.parse(readFileSync(new URL(file, DUELS), "utf8")).games);
   const tasks = rows.map((row) => ({ log: slim(games.get(row.file)[row.game]), turn: row.turn, cost: { k, nodes, visits: Object.fromEntries(row.moves.map((move) => [move.key, move.visits])) } }));
-  const out = await runPool(new URL("../lib/workers/endgame-moves-worker.js", import.meta.url), tasks);
+  const started = Date.now();
+  // Where it stands, for the machine's queue (mcts-commun's progress) and on stderr (the 27/10 run said nothing for 21 min).
+  const onProgress = (done) => {
+    progress("pimc-cost", done, tasks.length, { unit: "position" });
+    if (done % 10 === 0) console.error(`  ${done} / ${tasks.length}, ${Math.round((Date.now() - started) / 1000)} s`);
+  };
+  const out = await runPool(new URL("../lib/workers/endgame-moves-worker.js", import.meta.url), tasks, { onProgress });
   const times = out.map((entry) => entry.ms).sort((a, b) => a - b);
   const at = (q) => times[Math.min(times.length - 1, Math.floor(q * times.length))];
   const complete = out.filter((entry) => entry.complete).length;
