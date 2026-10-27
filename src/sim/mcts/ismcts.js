@@ -19,6 +19,7 @@ import { mirrorPick } from "./mirror.js";
 import { untriedScore } from "./first-play.js";
 import { withTreeStats } from "./tree-stats.js";
 import { probed, timedIteration } from "./probe.js";
+import { pimcOf } from "./pimc.js";
 import { moveKey } from "../search/search.js";
 
 /**
@@ -48,7 +49,6 @@ import { moveKey } from "../search/search.js";
 export const ISMCTS = Object.freeze({ budget: 400, candidates: 8, widen: 4, depth: 3, exploration: 0.7, diverse: 0, pw: 0, rave: 0, trunc: 0, oddsOf: null, puct: 0, trees: 1, simExact: 0, margin: 0, forkCut: 0, implicit: 0 });
 
 const newNode = () => ({ visits: 0, wins: 0, avail: 0, children: new Map() });
-
 
 /** The core's `count` best moves where `state` stands, or a pass when there is none; `mirror`: one of two mirror moves (mirror.js). */
 function shortlist(judge, state, count, { diverse = 0, mirror = 0 } = {}) {
@@ -279,12 +279,11 @@ function memoryOf(memory) {
  * by default), capped at `EXACT.nodes` positions past 8; `pivot` multiplies
  * the budget on the move after the opponent has started all seven borders.
  * `hope`: when the solver finds no win, search anyway — every lost move is
- * equal to the solver, not to an opponent who may still slip.
+ * equal to the solver, not to an opponent who may still slip. `pimc`: pimc.js.
  */
-export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.budget, budgetMs = Infinity, exact = EXACT.maxCards, pivot = 1, hope = 0, late, early, smart, memory, ...settings }) {
+export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.budget, budgetMs = Infinity, exact = EXACT.maxCards, pivot = 1, hope = 0, pimc, late, early, smart, memory, ...settings }) {
   const seed = rng.int(2 ** 31);
-  const searchFor = (state, moves, options, extra = {}) =>
-    createIsmcts(state, base.scoreMoves(state, moves, options), { policy, seed: seed ^ Math.imul(state.turn + 1, 2654435761), ...settings, ...extra });
+  const searchFor = (state, moves, options, extra = {}) => createIsmcts(state, base.scoreMoves(state, moves, options), { policy, seed: seed ^ Math.imul(state.turn + 1, 2654435761), ...settings, ...extra });
   // `budgetMs`: a clock instead of a count, to compare variants of unequal speed at equal time; `late`, `early`, `smart`: budget.js.
   const { run, usage } = createBudget({ budget, budgetMs, late, early, smart });
   const recall = memoryOf(memory);
@@ -304,8 +303,8 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
     const exactly = solved(state, moves, options);
     if (exactly) return exactly;
     const search = reuse.remember(state, run(searchFor(state, moves, options, { ...recall(state), root: reuse.rootFor(state) }), state.turn, isPivot(state) ? pivot : 1));
-    // The tree's shape by level, for the replays (tree-stats.js).
-    return withTreeStats(search.scored(), search);
+    // The tree's shape by level, for the replays (tree-stats.js); `pimc` may then choose another candidate.
+    return pimcOf(pimc)(state, withTreeStats(search.scored(), search));
   };
   // `pick` is `choose` with the scores it chose from, for the replays to keep (bot-games.js).
   const pick = (state, moves) => {
@@ -319,7 +318,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
 /**
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
- * `+pivot=4`, `+hope=1` (`ismctsBot`), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
+ * `+pivot=4`, `+hope=1`, `+pimc=3` (`ismctsBot`, pimc.js), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
  * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` (deal.js), `+theirs=core` (their-core.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
@@ -331,7 +330,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "theirs", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror", "jkHand"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror", "jkHand", "pimc"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

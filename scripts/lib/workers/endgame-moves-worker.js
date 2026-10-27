@@ -6,7 +6,8 @@ import { engineFor, rolloutPolicyOf, strategistBot } from "../../../src/sim/bots
 import { legalMoves } from "../../../src/sim/engine/game.js";
 import { solveEndgame } from "../../../src/sim/eval/endgame.js";
 import { coreOf } from "../../../src/sim/heuristics/experimental.js";
-import { cloneState, determinize, unseenList } from "../../../src/sim/search/lookahead.js";
+import { pileDeals, pimcRated } from "../../../src/sim/mcts/pimc.js";
+import { cloneState, determinize } from "../../../src/sim/search/lookahead.js";
 import { moveKey } from "../../../src/sim/search/search.js";
 
 /**
@@ -21,12 +22,8 @@ const SAMPLED = 12;
 const NODES = 3_000_000;
 const ENGINE = "ismcts+widen=7+depth=5+core=stfig6+exact=12";
 
-function dealsOf(state, player) {
-  if (state.pile.length !== 1) return Array.from({ length: SAMPLED }, (_, k) => determinize(state, player, createRng(k + 1)));
-  const unseen = unseenList(state, player);
-  const handsWithout = (k) => state.hands.map((hand, seat) => (seat === player ? [...hand] : [...unseen.slice(0, k), ...unseen.slice(k + 1)]));
-  return unseen.map((card, k) => Object.assign(cloneState(state), { pile: [card], hands: handsWithout(k) }));
-}
+/** Every place of the pile card (pimc.js, the deals EndPimc3 plays), or `SAMPLED` random deals with two in the pile. */
+const dealsOf = (state, player) => (state.pile.length === 1 ? pileDeals(state, player) : Array.from({ length: SAMPLED }, (_, k) => determinize(state, player, createRng(k + 1))));
 
 /** The mover's result per move on `deal` (1 won, else 0), one solve for every move so they share the memo; null if it ran out. */
 function solvedDeal(deal, moves) {
@@ -64,8 +61,22 @@ function shapeOf(state, move, player) {
   return { joker: isJoker(move.card), fills: side.length === 2, opens: side.length === 0 };
 }
 
-parentPort?.on("message", ({ log, turn, budget }) => {
+/** `--pimc-cost`: EndPimc3's choice timed on a kept position, the tree's visits read back from the bench (no search). */
+function pimcCost(state, { k, nodes, visits }) {
+  const rated = legalMoves(state).map((move) => ({ move, gain: visits[moveKey(move)] ?? 0 }));
+  const started = performance.now();
+  const rerated = pimcRated(state, rated, k, { maxNodes: nodes });
+  const ms = performance.now() - started;
+  const chosen = rerated && rerated.reduce((a, b) => (b.gain > a.gain ? b : a)).move;
+  return { ms, complete: Boolean(rerated), chosen: chosen ? moveKey(chosen) : null };
+}
+
+parentPort?.on("message", ({ log, turn, budget, cost }) => {
   const state = stateAt(log, turn);
+  if (cost) {
+    parentPort.postMessage(pimcCost(state, cost));
+    return;
+  }
   const player = state.current;
   const moves = legalMoves(state);
   const children = treeOf(state, moves, turn * 7919 + 1, budget);

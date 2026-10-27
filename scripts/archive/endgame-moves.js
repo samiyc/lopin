@@ -7,12 +7,17 @@
  * the better move fared in the tree (visits, rank, rate) and what both moves do (joker, third card, fresh border).
  * `node scripts/archive/endgame-moves.js [--per 150] [--budget 2000]`; `--summary` rereads tmp/endgame-moves.json; `--recore` ranks
  * the core's moves again in it (the first run of 20/10 kept `scoreMoves`' unsorted order).
+ * EndPimc3 (27/10, src/sim/mcts/pimc.js): `--summary --pimc K` adds, with one card in the pile, the move the solver would
+ * choose among the tree's 1 to K most visited — on the same deals as the bench, so an upper bound; `--pimc-cost K
+ * [--nodes N]` times that choice on those positions (the tree's visits read back, no search) and counts the solves the
+ * node cap stops.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { runPool } from "../lib/cli/pool.js";
+import { applyThreadsOption, runPool } from "../lib/cli/pool.js";
 import { tmpFile } from "../lib/domain/tmp.js";
 
 const args = process.argv.slice(2);
+applyThreadsOption(args);
 const option = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);
 const PER = Number(option("--per", 150));
 const BUDGET = Number(option("--budget", 2000));
@@ -110,12 +115,41 @@ async function recore(results) {
   });
 }
 
-if (args.includes("--recore")) {
+/** With one card in the pile, the solver choosing among the tree's k most visited (ties to the most visited). */
+function pimcLines(results, most) {
+  const rows = results.map(readPosition).filter((row) => row && row.pile === 1 && row.best - row.worst > EPS);
+  const lines = ["", `EndPimc : pioche 1, ${rows.length} positions où le coup compte (borne haute : le banc juge sur les mêmes donnes)`];
+  for (let k = 1; k <= most; k += 1) {
+    const pick = (row) => row.ranked.slice(0, k).reduce((a, b) => (b.exact > a.exact + EPS ? b : a));
+    const fixed = rows.filter((row) => row.tree.exact < row.best - EPS && pick(row).exact >= row.best - EPS).length;
+    const label = `les ${k} premiers de l'arbre au solveur`;
+    lines.push(`${picks(label, rows, pick)} · manqués corrigés ${fixed}`);
+  }
+  return lines;
+}
+
+/** `--pimc-cost`: EndPimc's choice timed on every pile-1 position of the bench. */
+async function pimcCost(results, k, nodes) {
+  const rows = results.filter((row) => row.pile === 1);
+  const games = new Map();
+  for (const file of new Set(rows.map((row) => row.file))) games.set(file, JSON.parse(readFileSync(new URL(file, DUELS), "utf8")).games);
+  const tasks = rows.map((row) => ({ log: slim(games.get(row.file)[row.game]), turn: row.turn, cost: { k, nodes, visits: Object.fromEntries(row.moves.map((move) => [move.key, move.visits])) } }));
+  const out = await runPool(new URL("../lib/workers/endgame-moves-worker.js", import.meta.url), tasks);
+  const times = out.map((entry) => entry.ms).sort((a, b) => a - b);
+  const at = (q) => times[Math.min(times.length - 1, Math.floor(q * times.length))];
+  const complete = out.filter((entry) => entry.complete).length;
+  console.log(`EndPimc${k}, ${nodes} nœuds par donne : ${rows.length} positions, terminées ${pc(complete, rows.length)} · temps médian ${Math.round(at(0.5))} ms, p90 ${Math.round(at(0.9))} ms, max ${Math.round(times.at(-1))} ms`);
+}
+
+if (args.includes("--pimc-cost")) {
+  await pimcCost(JSON.parse(readFileSync(OUT, "utf8")), Number(option("--pimc-cost", 3)), Number(option("--nodes", 400_000)));
+} else if (args.includes("--recore")) {
   const results = await recore(JSON.parse(readFileSync(OUT, "utf8")));
   writeFileSync(OUT, JSON.stringify(results));
   console.log(summary(results));
 } else if (args.includes("--summary")) {
-  console.log(summary(JSON.parse(readFileSync(OUT, "utf8"))));
+  const results = JSON.parse(readFileSync(OUT, "utf8"));
+  console.log([summary(results), ...(args.includes("--pimc") ? pimcLines(results, Number(option("--pimc", 3))) : [])].join("\n"));
 } else {
   const tasks = tasksOf();
   console.log(`${tasks.length} positions à juger`);
