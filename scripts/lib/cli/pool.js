@@ -18,8 +18,8 @@ export function threadsFrom(asked, cores) {
   return count > 0 ? Math.floor(count) : defaultThreads(cores);
 }
 
-/** How many worker threads to run (docs/cloud.md). */
-export const workerCount = () => threadsFrom(process.env.LOPIN_THREADS, os.cpus().length);
+/** How many worker threads to run (docs/cloud.md): `LOPIN_THREADS`, else `MCTS_THREADS` (the threads `mcts-backlog --slot N` gives). */
+export const workerCount = () => threadsFrom(process.env.LOPIN_THREADS ?? process.env.MCTS_THREADS, os.cpus().length);
 
 /** A script's `--threads N|max`, handed to `LOPIN_THREADS`, which the jobs a script starts inherit too. */
 export function applyThreadsOption(args) {

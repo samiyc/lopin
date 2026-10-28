@@ -209,7 +209,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   (`scripts/lib/cli/pool.js`) — half the logical cores up to 6, every core but 3
   above, **18 at most**, day and night, so the PC stays usable.
   `LOPIN_THREADS=N` or `--threads N` forces a count, `max` takes every core but
-  one (to go faster, or on a server). No pause jobs between heavy jobs any more
+  one (to go faster, or on a server); else `MCTS_THREADS` (`mcts-backlog --slot N`). No pause jobs any more
   (the 15-minute `cooldown` is gone).
 - **A 400 screen rejects, it never promotes** (Sami, 03/10): three 10-minute
   screens promoted ideas that did not hold (stay 0.4 at 58.3 %, connector from

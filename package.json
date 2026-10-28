@@ -8,8 +8,8 @@
     "node": ">=20.9"
   },
   "scripts": {
-    "test": "node --test \"tests/**/*.js\"",
-    "test:coverage": "node --test --experimental-test-coverage \"tests/**/*.js\"",
+    "test": "node scripts/test.js",
+    "test:coverage": "node scripts/test.js --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check": "npm run lint && npm test",

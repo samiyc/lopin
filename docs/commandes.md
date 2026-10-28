@@ -50,7 +50,7 @@ seul (`core:<nom>`, les cœurs de `CORES` dans `src/sim/heuristics/experimental.
 | Commande | Ce qu'elle fait | Écrit |
 | --- | --- | --- |
 | `npm run check` | lint puis tests : avant chaque commit | — |
-| `npm run test` | les tests (`node --test "tests/**/*.js"`, Node 24) | — |
+| `npm run test` | les tests (`node --test "tests/**/*.js"`, Node 24), 4 fichiers à la fois (`TEST_CONCURRENCY`, sinon les fils de `--slot N`) | `scripts/test.js` |
 | `npm run test:coverage` | les tests avec la couverture du code | — |
 | `npm run lint` | ESLint sur tout le projet (limites de complexité, voir `CLAUDE.md`) | — |
 | `npm run lint:fix` | ESLint, en corrigeant ce qui peut l'être tout seul | les fichiers corrigés |
