@@ -20,7 +20,7 @@ path, as the scripts do, and never build a `file://` URL by string
 concatenation.
 
 Prose docs are in French, matching how the owner works. Code, comments and
-identifiers are English. Node 20.10 on this machine; no Python.
+identifiers are English. Node 24.22.1 LTS on this machine (since 28/10/2026; `node --test "tests/**/*.js"`, a bare `tests/` is read as a file from Node 22); no Python.
 
 ## Commands
 
