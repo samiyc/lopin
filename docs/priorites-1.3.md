@@ -731,3 +731,38 @@ variante. Les variantes possibles ensuite :
 - `claim-end` dans l'arbre seulement (5 plis), `final` dans les simulations ;
 - `claim-end` partout quand la pioche est basse ;
 - les jugées à temps égal, puisqu'elles coûtent des itérations.
+
+## 15. Les « sûres » perdues, lues sous les deux règles (28/10)
+
+`node scripts/archive/sure-lost.js` reprend les positions de `tmp/misjudged-endgames.json` (§ 7 : les deux
+dernières recherches de 9 620 parties de duel, revues par la 1.2@2000). Il en garde trois sortes : les 166
+positions estimées à 95 % ou plus et perdues, les 31 estimées à 5 % ou moins et gagnées, et 120 sûres gagnées
+comme témoins. Après le coup joué, chacune est mesurée sous `final` et sous `claim-end` de trois façons : le
+solveur exact sur les donnes que le joueur ne distingue pas, le solveur sur la vraie donne, et la politique des
+simulations sur 100 donnes.
+
+| Pour le camp dont l'arbre était sûr | Sûres perdues (166) | Sûres gagnées (120) |
+|---|---|---|
+| L'arbre (ses donnes à `final`) | 98,7 % | 99,4 % |
+| La politique, à `final` / à `claim-end` | 99,5 / **73,8 %** | 99,9 / 97,8 % |
+| Le solveur sur les donnes, `final` / `claim-end` | 70,1 / **27,6 %** | 99,1 / 98,5 % |
+| Le solveur sur la vraie donne, `final` / `claim-end` | 56,4 / **0 %** | 100 / 99,2 % |
+
+- **La moitié des sûres perdues viennent de l'écart des règles** (52 %, 86 positions) : la position est gagnée à
+  `final` (75 % des donnes ou plus) et pas à `claim-end`. Dans 78 cas, l'adversaire gagne par **trois bornes
+  adjacentes**, revendiquées dès qu'elles sont prouvées, alors qu'à `final` elles ne se règlent qu'à la fin, dans
+  l'ordre où elles se sont remplies. 65 de ces positions sont à une carte de pioche.
+- **40 % sont des positions mal lues** : elles sont perdues sous les deux règles. C'est le biais du § 7 (jokers
+  cachés, simulations).
+- **Ni malchance ni erreur plus tard** : sur la vraie donne, le solveur à `claim-end` les dit perdues dans 100 % des
+  cas dès ce coup. Les 31 perdues gagnées sont surtout du hasard : 29 % la donne, 29 % un coup suivant.
+- **Les témoins** : les deux règles s'y accordent à 98-99 %. L'écart se concentre sur ces positions.
+- **Le poids** : 86 positions sur 9 620 parties, soit environ 0,9 % des parties. C'est une borne haute : le gain
+  n'existe que si un autre coup gagnait à `claim-end`. À une carte de pioche, EndPimc3 (§ 13) résout déjà à
+  `claim-end` : il en rattrape une partie, si le bon coup est parmi les 3 premiers de l'arbre.
+
+**La suite, dans la file** (Sami, 28/10) : `scripts/archive/sure-lost-moves.js` résout chaque coup légal de ces 86
+positions à `claim-end`, avec son rang dans l'arbre. Un autre coup gagnait-il plus de donnes, et à quel rang ? Cela
+départage les variantes : `claim-end` dans l'arbre seulement, ou partout quand la pioche est basse. Il y a deux
+tranches de 43 positions (`sure-lost-moves-2026-10-28-a`, `-b`), puis la réunion. Un essai sur 4 positions : 3 sur 4
+avaient un meilleur coup, classé 3e à 8e dans l'arbre.
