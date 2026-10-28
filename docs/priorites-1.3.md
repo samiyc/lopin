@@ -761,8 +761,27 @@ simulations sur 100 donnes.
   n'existe que si un autre coup gagnait à `claim-end`. À une carte de pioche, EndPimc3 (§ 13) résout déjà à
   `claim-end` : il en rattrape une partie, si le bon coup est parmi les 3 premiers de l'arbre.
 
-**La suite, dans la file** (Sami, 28/10) : `scripts/archive/sure-lost-moves.js` résout chaque coup légal de ces 86
-positions à `claim-end`, avec son rang dans l'arbre. Un autre coup gagnait-il plus de donnes, et à quel rang ? Cela
-départage les variantes : `claim-end` dans l'arbre seulement, ou partout quand la pioche est basse. Il y a deux
-tranches de 43 positions (`sure-lost-moves-2026-10-28-a`, `-b`), puis la réunion. Un essai sur 4 positions : 3 sur 4
-avaient un meilleur coup, classé 3e à 8e dans l'arbre.
+**Un autre coup les sauvait-il ?** (file du 28/10, `sure-lost-moves-2026-10-28-a`, `-b` et la réunion) :
+`scripts/archive/sure-lost-moves.js` résout à `claim-end` chaque coup légal de ces 86 positions, sur les donnes que
+le joueur ne distingue pas (toutes les places de la carte de pioche à une carte, 12 donnes tirées au-delà, 400 000
+nœuds par donne), avec son rang en visites dans l'arbre. 76 sont résolues ; les 10 autres, à une carte de pioche,
+dépassent le plafond.
+
+| | Positions | Coup joué | Meilleur coup | Un meilleur coup existe | Meilleur coup parmi les 3 premiers |
+|---|---|---|---|---|---|
+| Pioche à 1 carte | 55 | 18,8 % | 56,4 % | 29 | 20 |
+| Pioche à 2 cartes ou plus | 21 | 8,3 % | 23,0 % | 5 | 4 |
+| **Total** | **76** | **15,9 %** | **47,1 %** | **34 (45 %)** | **24** |
+
+- **Dans 45 % des cas, un autre coup gagnait plus de donnes à `claim-end`**. Ce n'est pas un écart de peu : il
+  gagne 70 points de donnes de plus en moyenne (83 en médiane), et **27 fois il gagne toutes les donnes**. Dans 16
+  positions, aucun coup ne gagne : elles étaient perdues avant ce coup.
+- **L'arbre l'avait vu** : le coup joué est toujours le 1er en visites, et le meilleur est **2e dans 19 cas sur 34**,
+  3e dans 5, 4e à 8e dans 9, hors des candidats dans 1. Ce n'est donc pas la largeur de la racine : l'arbre, qui
+  joue ses donnes à `final`, classe mal des coups qu'il a sous les yeux.
+- **EndPimc3 (§ 13) en aurait rattrapé une partie** : à une carte de pioche, le meilleur des 3 premiers gagne 42,1 %
+  des donnes au lieu de 18,8 %, et améliore 21 positions sur 55.
+- **Le poids** : sur les 9 620 parties, le gain attendu est la somme des écarts (34 × 0,70), soit environ
+  **24 parties, 0,25 point**. EndPimc3 en prendrait environ la moitié (0,13 point). Hors de portée d'un 1k@2k
+  (±3 points). C'est une borne basse de l'écart des règles : seules les positions sûres à 95 % ont été lues.
+- L'essai sur 4 positions (3 sur 4 classés 3e à 8e) était donc pessimiste : sur 34, plus de la moitié sont 2e.

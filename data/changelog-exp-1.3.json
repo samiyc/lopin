@@ -1258,7 +1258,7 @@
   {
    "when": "Fait (28/10)",
    "title": "Les « sûres » perdues : la moitié viennent de l’écart des règles",
-   "text": "Sur 166 positions estimées à 95 % ou plus et perdues, 52 % sont gagnées à la règle final, celle des donnes de la recherche, et perdues à claim-end, celle de la partie. L’adversaire y gagne surtout par trois bornes adjacentes, revendiquées dès qu’elles sont prouvées. 40 % sont perdues sous les deux règles (le biais des jokers cachés). Sur les témoins, les deux règles s’accordent à 98-99 %. Le poids : environ 0,9 % des parties, une borne haute. Dans la file : chaque coup légal de ces positions résolu à claim-end, pour voir si un autre coup les sauvait et où l’arbre le rangeait (docs/priorites-1.3.md § 15)."
+   "text": "Sur 166 positions estimées à 95 % ou plus et perdues, 52 % sont gagnées à la règle final, celle des donnes de la recherche, et perdues à claim-end, celle de la partie. L’adversaire y gagne surtout par trois bornes adjacentes, revendiquées dès qu’elles sont prouvées. 40 % sont perdues sous les deux règles (le biais des jokers cachés). Sur les témoins, les deux règles s’accordent à 98-99 %. Le poids : environ 0,9 % des parties, une borne haute. Chaque coup légal de ces positions, résolu à claim-end : dans 45 % des cas (34 sur 76) un autre coup gagnait plus de donnes, 70 points de plus en moyenne, et l’arbre le classait déjà 2e dans plus de la moitié des cas. Le gain attendu reste petit : environ 0,25 point sur toutes les parties, dont la moitié à la portée d’EndPimc3 (docs/priorites-1.3.md § 15)."
   },
   {
    "when": "Décidé (27/10)",

@@ -1,5 +1,5 @@
 /**
- * The « sure » endgames lost to the rules' gap (Sami, 28/10, docs/priorites-1.3.md § 14): the positions of
+ * The « sure » endgames lost to the rules' gap (Sami, 28/10, docs/priorites-1.3.md § 15): the positions of
  * tmp/sure-lost.jsonl (scripts/archive/sure-lost.js) won at `final` and lost at `claim-end` over the mover's deals,
  * every legal move solved at the game's rule (sure-lost-moves-worker.js). Did a move win more deals than the one
  * played, and where did the tree rank it? That tells whether a search at the game's rule could have saved them.
