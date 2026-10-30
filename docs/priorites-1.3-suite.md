@@ -35,4 +35,25 @@ sous ce qu'un 1k@2k peut voir.
 
 Le surcoût ne porte que sur les derniers coups d'une partie. Sur une partie entière, il se mesure avec le banc.
 
-**Dans la file** (30/10) : quatre tranches de 51 positions (`claim-pile-2026-10-30-a` à `-d`), puis la réunion.
+**Le résultat** (file du 30/10, `claim-pile-2026-10-30-a` à `-d` et la réunion, 203 positions) : le coup choisi est
+jugé par la part des donnes qu'il gagne à `claim-end`, en moyenne sur les 3 graines.
+
+| Moteur | Écart des règles (85 jugées) | mieux / moins bien que la 1.2 | Témoins (113 jugés) | Temps d'un coup, pioche 1 / 2 |
+|---|---|---|---|---|
+| 1.2 | 22,4 % | — | 98,4 % | 766 / 914 ms médian |
+| **`ClaimPile2`** | **43,4 %** | 29 / 5 (1 de 25 points ou plus) | 99,1 % (2 mieux, 0 moins bien) | ×1,27 / ×1,41 en moyenne |
+| `EndPimc3` | 37,3 % | 26 / 0 | 98,4 % | ×16 / ×0,97 (3 s médian à pioche 1) |
+| les deux | 45,2 % | 33 / 1 | 99,1 % | ×15 / ×1,43 |
+
+- **`ClaimPile2` double la part des donnes gagnées** sur les positions perdues à cause de l'écart des règles (22 →
+  43 %), et **ne casse aucun témoin**. Elle en améliore même deux.
+- **`EndPimc3` en fait moins**, et seulement à une carte de pioche, pour un coût seize fois plus grand. Les deux ensemble
+  ne gagnent que 2 points de plus que `ClaimPile2` seule.
+- **Le coût sur une partie** : la pioche n'a 2 puis 1 carte que pour deux coups d'une partie (à 0 carte, le solveur
+  `exact=12` joue déjà à `claim-end`). Cela fait environ +0,6 s sur une partie de 1.2@2000, quelques dixièmes de pour
+  cent, sous le seuil de 3 % de la règle « itérations égales ou temps égal ».
+- **Ce que ça vaut en parties** : environ 0,25 point au plus (§ 15). Un 1k@2k ne le verrait pas. Le banc est la seule
+  mesure possible, et il est net.
+
+**La décision** est à Sami : adopter `ClaimPile2` sur ce banc (une nouvelle version de la 1.2, puisque des coups
+changent), ou la garder éteinte.
