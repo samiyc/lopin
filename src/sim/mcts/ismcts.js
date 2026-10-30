@@ -213,7 +213,7 @@ function resolveCtx(state, scored, { seed, treePolicy, policy, theirPolicy, firs
     state, player: state.current, unseen: unseenList(state, state.current), deals, rootMoves, judge,
     rollout, rolloutRng, crn: cfg.crn > 0, crnSeed: seed,
     widen: cfg.widen, depth: cfg.depth, exploration: cfg.exploration,
-    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0, fpu: cfg.fpu, jkHand: cfg.jkHand ?? 0,
+    pw: wideningOf(cfg), rave: cfg.rave, trunc: cfg.trunc, oddsOf: cfg.oddsOf, puct: cfg.puct, simExact: cfg.simExact, margin: cfg.margin, forkCut: cfg.forkCut, implicit: cfg.implicit, final: cfg.final, omniscient: cfg.omniscient > 0, fpu: cfg.fpu, jkHand: cfg.jkHand ?? 0, claimPile: cfg.claimPile ?? 0,
     amaf: cfg.rave > 0 ? new Map() : null,
     hands: guessedHands(state, judge, seed, settings),
     firstExploration, halving: phases ? createHalving(phases, rootMoves) : null,
@@ -319,7 +319,7 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * The settings an `ismcts` engine id names — `ismcts`, then `+depth=2`,
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1`, `+pimc=3` (`ismctsBot`, pimc.js), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
- * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` (deal.js), `+theirs=core` (their-core.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
+ * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` and `+claimPile=k` (deal.js), `+theirs=core` (their-core.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
  * (named cores, experimental.js) — or null.
  */
 export function ismctsSettings(name) {
@@ -330,7 +330,7 @@ export function ismctsSettings(name) {
       const [key, value] = change.split("=");
       if (["core", "shortlist", "rollout", "theirs", "halving"].includes(key)) return [key, value];
       if (key === "diverse" || key === "rootDiverse") return [key, parseDiverse(value)];
-      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror", "jkHand", "pimc"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
+      if (!["depth", "widen", "exploration", "candidates", "sample", "exact", "pivot", "hope", "pw", "pwl", "rave", "late", "early", "smart", "trunc", "infer", "memory", "lite", "firstExploration", "puct", "trees", "simCertain", "simExact", "margin", "reuse", "forkCut", "implicit", "final", "omniscient", "crn", "fpu", "mirror", "jkHand", "claimPile", "pimc"].includes(key)) throw new Error(`Variante inconnue : « ${key} »`);
       return [key, Number(value)];
     }),
   );

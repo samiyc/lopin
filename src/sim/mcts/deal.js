@@ -23,9 +23,17 @@ export function jokersToTheirHand(game, player, rng) {
   return game;
 }
 
+/**
+ * `+claimPile=k` (Sami, 30/10, ClaimPile2; docs/priorites-1.3.md § 15): once the pile holds `k` cards or fewer, the
+ * iteration plays the game's own rule (`claim-end`) instead of `final`, which `determinize` switches to for speed. Of
+ * the « sure » endgames lost to that gap, 83 of 86 had 1-2 cards in the pile, and in 34 of 76 another move won more
+ * deals at `claim-end`, mostly the tree's 2nd. 0, the default: never.
+ */
+const withGameRule = (ctx, game) => (ctx.claimPile > 0 && ctx.state.pile.length <= ctx.claimPile ? Object.assign(game, { endMode: ctx.state.endMode }) : game);
+
 /** An ISMCTS iteration's game (ismcts.js): a deal of the unseen cards, or (`omniscient`, Omniscient 1.0) the true one. */
 export function dealFor(ctx, rng = ctx.deals) {
-  if (ctx.omniscient) return seeAll(ctx.state, rng);
-  const game = determinize(ctx.state, ctx.player, rng, { hand: ctx.hands && pickHand(ctx.hands, rng), known: ctx.unseen });
+  if (ctx.omniscient) return withGameRule(ctx, seeAll(ctx.state, rng));
+  const game = withGameRule(ctx, determinize(ctx.state, ctx.player, rng, { hand: ctx.hands && pickHand(ctx.hands, rng), known: ctx.unseen }));
   return ctx.jkHand > 0 && ctx.state.pile.length <= ctx.jkHand ? jokersToTheirHand(game, ctx.player, rng) : game;
 }

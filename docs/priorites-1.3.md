@@ -785,3 +785,5 @@ dépassent le plafond.
   **24 parties, 0,25 point**. EndPimc3 en prendrait environ la moitié (0,13 point). Hors de portée d'un 1k@2k
   (±3 points). C'est une borne basse de l'écart des règles : seules les positions sûres à 95 % ont été lues.
 - L'essai sur 4 positions (3 sur 4 classés 3e à 8e) était donc pessimiste : sur 34, plus de la moitié sont 2e.
+
+La suite (`ClaimPile2`, § 16) est dans `docs/priorites-1.3-suite.md`.

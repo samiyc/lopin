@@ -1,36 +1,15 @@
 import { parentPort } from "node:worker_threads";
-import { createRng } from "../../../src/core/random.js";
 import { formatCard } from "../../../src/core/notation.js";
 import { stateAt } from "../../../src/replay/core/log.js";
 import { legalMoves } from "../../../src/sim/engine/game.js";
-import { solveEndgame } from "../../../src/sim/eval/endgame.js";
-import { pileDeals } from "../../../src/sim/mcts/pimc.js";
-import { determinize } from "../../../src/sim/search/lookahead.js";
 import { moveKey } from "../../../src/sim/search/search.js";
+import { dealsOf, wonByMove } from "../domain/claim-end-deals.js";
 
 /**
  * A « sure » endgame lost to the rules' gap (scripts/archive/sure-lost-moves.js): every legal move solved at the
- * game's rule (`claim-end`) over the deals its mover cannot tell apart — with one card in the pile every place of
- * it, with more `SAMPLED` random deals —, each with its rank in the tree's visits as the duel logged them. Did
- * another move win more deals, and was it among the tree's first?
+ * game's rule (`claim-end`) over the deals its mover cannot tell apart (claim-end-deals.js), each with its rank in
+ * the tree's visits as the duel logged them. Did another move win more deals, and was it among the tree's first?
  */
-const SAMPLED = 12;
-
-const dealsOf = (state, player) => (state.pile.length === 1 ? pileDeals(state, player) : Array.from({ length: SAMPLED }, (_, k) => determinize(state, player, createRng(k + 1))));
-
-/** Each move's deals won at `claim-end`, and how many deals the solver finished within `nodes`. */
-function wonByMove(deals, moves, nodes) {
-  const wins = new Map(moves.map((move) => [moveKey(move), 0]));
-  let solved = 0;
-  for (const deal of deals) {
-    const solution = solveEndgame(Object.assign(deal, { endMode: "claim-end" }), { moves, maxNodes: nodes });
-    if (!solution.complete) continue;
-    solved += 1;
-    for (const entry of solution.moves) if (entry.value > 0) wins.set(moveKey(entry.move), wins.get(moveKey(entry.move)) + 1);
-  }
-  return { wins, solved };
-}
-
 function measured({ log, turn, nodes }) {
   const state = stateAt(log, turn);
   const entry = log.turns[turn - 1];
