@@ -66,11 +66,11 @@ de stratégie de Sami que les duels ont refusés, chacun avec sa raison
 |---|---|---|
 | 36,7 % | `src/report/rules-stats.js` | P3 : le bloc des règles, vérifié par `assertNarrative` au build |
 | 48,0 % | `scripts/lib/cli/pool.js` | P3 : le pool de workers, exercé par chaque script |
-| 58,0 % | `src/sim/puzzles/traps.js` | P2 : la logique des pièges |
+| 58,0 % | `src/sim/puzzles/traps.js` | P2, corrigé le 30/10 : `trapOf` testé sur un puzzle résolu (95,0 %) |
 | 60,0 % | `src/report/format.js` | P3 |
 | 61,0 % | `scripts/lib/domain/example-positions.js` | P3 |
 | 61,5 % | `src/report/html/markup.js` | P3 |
-| 63,6 % | `src/irl/analysis.js` | P2 : les vraies parties, intervalles de Wilson |
+| 63,6 % | `src/irl/analysis.js` | P2, corrigé le 30/10 : `tallyEssais` testé, avec les notes du domaine de CLAUDE.md (100 %) |
 | 66,3 % | `web/app/lab/lab-text.js` | P3 |
 | 66,7 % / 76,2 % | `src/sim/heuristics/end-joker.js`, `end-urgency.js` | P3 : des cœurs écartés |
 | 78,6 % | `web/app/replays/runner.js` | P2 : les parties comme la page les joue |
@@ -82,11 +82,17 @@ de stratégie de Sami que les duels ont refusés, chacun avec sa raison
   - les 24 workers des pools (`scripts/lib/workers/`) ;
   - le rendu du rapport (`src/report/ascii/`, `html/`), gardé par `assertNarrative` au build ;
 - **P2, de la logique sans test** :
-  - `src/sim/eval/immediate.js` : les puzzles « gain immédiat » ;
+  - `src/sim/eval/immediate.js` : les puzzles « gain immédiat ». Corrigé le 30/10 : `winsAtOnce` est testé sur chaque
+    puzzle, et ne trouve que ses solutions parmi tous les coups (100 %) ;
   - `src/replay/oracle/joker-features.js` ;
   - `src/report/analysis.js` et `data.js` : seulement gardés au build ;
 - **P3** : `scripts/lib/domain/` (`elo-data.js`, `game-filters.js`, `game-index.js`, `oracle-cores.js`, …), exercés
   par leurs commandes.
+
+**Après les tests du 30/10 au soir** (Sami : « ajoute les tests aujourd'hui ») : 537 tests, 530 passent, 0 échec,
+7 « todo » ; 96,8 % des lignes et 92,5 % des branches. Les nouveaux tests sont dans `tests/sim-engine/immediate.test.js`
+(`winsAtOnce`), `tests/sim-engine/traps.test.js` (`trapOf`) et `tests/core/irl.test.js` (`tallyEssais` : 140 colonnes,
+28,6 % de suites couleur, 89,8 % de l'optimum exact, tous les jokers dans des brelans).
 
 ## 3. Le lint
 

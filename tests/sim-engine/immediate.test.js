@@ -6,6 +6,7 @@ import { createRng } from "../../src/core/random.js";
 import { stateAt } from "../../src/replay/core/log.js";
 import { engineFor } from "../../src/sim/bots.js";
 import { exactApplies } from "../../src/sim/eval/exact.js";
+import { winsAtOnce } from "../../src/sim/eval/immediate.js";
 import { applyMove, legalMoves } from "../../src/sim/engine/game.js";
 import { determinize } from "../../src/sim/search/lookahead.js";
 
@@ -56,5 +57,27 @@ describe("the experimental bot's exact endgame", () => {
     }
     // 22 since 06/10: the new puzzles are deeper (7 to 12 cards), the shallow ones were not favourites.
     assert.ok(checked >= 20, `only ${checked} puzzles`);
+  });
+});
+
+describe("winsAtOnce (src/sim/eval/immediate.js)", () => {
+  const immediate = puzzles.filter((puzzle) => puzzle.kind === "immediate");
+
+  it("says yes to each puzzle's solution, no to the core's losing move, and leaves the position as it was", () => {
+    for (const puzzle of immediate) {
+      const state = stateAt(puzzle.log, puzzle.turn);
+      const before = JSON.stringify(state.borders);
+      for (const solution of puzzle.solutions) assert.ok(winsAtOnce(state, find(state, solution)), `puzzle ${puzzle.id}, ${solution}`);
+      if (puzzle.coreFails) assert.equal(winsAtOnce(state, find(state, puzzle.coreMove)), false, `puzzle ${puzzle.id}, ${puzzle.coreMove}`);
+      assert.equal(JSON.stringify(state.borders), before, `puzzle ${puzzle.id}: the move is played on a copy`);
+    }
+  });
+
+  it("finds only the solutions among every legal move", () => {
+    for (const puzzle of immediate) {
+      const state = stateAt(puzzle.log, puzzle.turn);
+      const winning = legalMoves(state).filter((move) => winsAtOnce(state, move)).map((move) => text(state, move));
+      assert.deepEqual(winning.sort(), [...puzzle.solutions].sort(), `puzzle ${puzzle.id}`);
+    }
   });
 });

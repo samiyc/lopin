@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { DECKS } from "../../src/config/decks.js";
 import { JOKER, buildDeck, cardOf } from "../../src/core/cards.js";
+import { tallyEssais } from "../../src/irl/analysis.js";
 import { loadEssais, parseCard } from "../../src/irl/cards.js";
 
 const classique = DECKS.classique;
@@ -47,5 +48,28 @@ describe("the transcribed photos", () => {
         assert.ok(column.filter((card) => card === JOKER).length <= 1, photo);
       }
     }
+  });
+});
+
+describe("the real games tallied like the bots' solo games (tallyEssais, src/irl/analysis.js)", () => {
+  const tally = tallyEssais();
+  const formations = (line) => Object.values(line).reduce((sum, count) => sum + count, 0);
+
+  it("count every column of the ten games, and solve every line exactly", () => {
+    assert.equal(tally.games, 10);
+    assert.equal(formations(tally.lines.haut), 70);
+    assert.equal(formations(tally.lines.bas), 70);
+    assert.equal(tally.optimum.lines, 20);
+    assert.ok(tally.optimum.value <= tally.optimum.optimum, "no line beats its exact optimum");
+  });
+
+  it("hold the domain notes: ~29 % straight flushes, ~90 % of the optimum, every joker in trips (CLAUDE.md)", () => {
+    const straightFlushes = (tally.lines.haut.straightFlush + tally.lines.bas.straightFlush) / 140;
+    assert.ok(straightFlushes > 0.25 && straightFlushes < 0.33, `straight flushes ${straightFlushes}`);
+    const reached = tally.optimum.value / tally.optimum.optimum;
+    assert.ok(reached > 0.85 && reached < 0.95, `optimum ${reached}`);
+    const { threeOfAKind, ...others } = tally.jokers;
+    assert.ok(threeOfAKind > 0);
+    assert.deepEqual(Object.values(others), [0, 0, 0, 0]);
   });
 });
