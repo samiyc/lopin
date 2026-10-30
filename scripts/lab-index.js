@@ -1,5 +1,5 @@
 import { readFile, readdir, writeFile } from "node:fs/promises";
-import { BOT_LINEUP, V1_ENGINE } from "../src/config/bots.js";
+import { BOT_LINEUP, V1_ENGINE, V12_ENGINE } from "../src/config/bots.js";
 import { duelNumbers, quantiles } from "../src/replay/stats/tree-norms.js";
 import { normalizeEngine } from "../src/sim/mcts/engine-id.js";
 import { backlogFiles, outputUrl } from "./lib/domain/backlog-files.js";
@@ -22,7 +22,7 @@ const OUT = new URL("../data/lab-configs.json", import.meta.url);
 const DUEL = /npm run duel -- "([^"]+)" "([^"]+)"/;
 // The Expérimental 1.1 left the line-up on 08/10 (src/config/bots.js names its engine in a comment).
 const RETIRED = { [V1_ENGINE]: "Expérimental 1.0", "ismcts+widen=7+depth=5+core=stfig6@2000": "Expérimental 1.1" };
-const V12 = normalizeEngine(BOT_LINEUP.experimental.engine);
+const V12 = normalizeEngine(V12_ENGINE);
 const MIN_MOVES = 40;
 const round = (x) => Math.round(x * 10000) / 10000;
 const Z = 1.96;

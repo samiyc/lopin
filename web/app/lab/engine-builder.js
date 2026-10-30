@@ -1,3 +1,4 @@
+import { V12_ENGINE } from "../../../src/config/bots.js";
 import { CORES } from "../../../src/sim/heuristics/experimental.js";
 import { engineDiff, engineParts, normalizeEngine } from "../../../src/sim/mcts/engine-id.js";
 import { ISMCTS, ismctsSettings } from "../../../src/sim/mcts/ismcts.js";
@@ -10,7 +11,7 @@ import { ISMCTS, ismctsSettings } from "../../../src/sim/mcts/ismcts.js";
  * exact, then the others), so the untouched form is the 1.2's own id: the same bot, the same moves. A setting left
  * at « off » is not written.
  */
-export const BASE_ENGINE = "ismcts+widen=7+depth=5+core=stfig6+exact=12@2000";
+export const BASE_ENGINE = V12_ENGINE;
 
 /** A Labo bot searches its engine's iterations; the clock only bounds a runaway (3 min a move). */
 export const LAB_LIMIT_MS = 180_000;

@@ -4,7 +4,7 @@ import { $, el } from "../board/dom.js";
 import { SPEC, playerName } from "../replays/runner.js";
 import { render as renderViewer, setLabHooks } from "../replays/viewer.js";
 import { decisionAt, expandLab, labMarks } from "./lab-text.js";
-import { BOT_LINEUP } from "../../../src/config/bots.js";
+import { BOT_LINEUP, V12_ENGINE } from "../../../src/config/bots.js";
 import { normalizeEngine } from "../../../src/sim/mcts/engine-id.js";
 import { labConfigs } from "./lab-builder.js";
 import { bandDetail, candidateBars, findings, header, levelRows, nodeDetail, probeRows, seenRows } from "./lab-parts.js";
@@ -128,12 +128,16 @@ function drawTree(log, decision, tree, key) {
   renderDetail(log, tree);
 }
 
-/** Is a log's player the Expérimental 1.2 (the line-up's, or its engine built or in a duel)? */
+/**
+ * Is a log's player the Expérimental 1.2 (its engine built or in a duel), or the line-up's 1.3, which plays its moves
+ * until the pile holds 2 cards? « Déjà rencontré » compares its tree with the 1.2's in the kept duels.
+ */
 const engineOfPlayer = (player) => (player ? (player.engine ?? BOT_LINEUP[player.bot]?.engine ?? player.bot) : "");
 
 function isV12(player) {
   try {
-    return normalizeEngine(engineOfPlayer(player) ?? "") === normalizeEngine(BOT_LINEUP.experimental.engine);
+    const engine = normalizeEngine(engineOfPlayer(player) ?? "");
+    return engine === normalizeEngine(V12_ENGINE) || engine === normalizeEngine(BOT_LINEUP.experimental.engine);
   } catch {
     return false; // an old replay's engine with a setting since removed
   }

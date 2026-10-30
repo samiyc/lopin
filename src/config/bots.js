@@ -29,14 +29,16 @@ export const BOT_LINEUP = Object.freeze({
     vsLower: "85 % vs Basique",
   }),
   experimental: Object.freeze({
-    // 1.2 (ExactEnd12, 08/10): 1.1 + exact solver at the root when <= 12 cards remain in (hand + pile).
-    // 52.7 % (50.5-54.8) over 1 500 games against 1.1 across 4 datasets, strictly above 50% lower-bound.
-    // The 1.1 was `ismcts+widen=7+depth=5+core=stfig6@2000`, the 1.0 `V1_ENGINE` below.
-    engine: "ismcts+widen=7+depth=5+core=stfig6+exact=12@2000",
-    version: "1.2",
+    // 1.3 (ClaimPile2, Sami 30/10): the 1.2 whose iterations play the game's claim rule once the pile holds 2 cards or
+    // fewer (`claimPile=2`, deal.js). Adopted on its bench, no duel (about 0.25 point, below a 1k@2k): on the « sure »
+    // endgames lost to the rules' gap the move picked wins 43.4 % of the deals instead of 22.4 %, +21.0 points
+    // (13.2-28.8), no control broken, about 0.6 s a game (docs/priorites-1.3-suite.md § 16). `vsLower` is the 1.2's.
+    // The 1.2 (ExactEnd12, 08/10) is `V12_ENGINE` below, the 1.1 `ismcts+widen=7+depth=5+core=stfig6@2000`, the 1.0 `V1_ENGINE`.
+    engine: "ismcts+widen=7+depth=5+core=stfig6+exact=12+claimPile=2@2000",
+    version: "1.3",
     label: "Expérimental",
     description: "Il cherche en arbre",
-    examines: "5 coups d'avance, la fin de partie calculée exactement",
+    examines: "5 coups d'avance, la fin de partie calculée exactement, à la règle de la partie",
     pace: "2 000 itérations (2 à 4 s)",
     vsLower: "76 % vs Stratège",
     // In the page: a worker, the engine's 2 000 iterations a move (10 s at most); no pondering, an ISMCTS ignores it (web/app/play/thinker.js).
@@ -70,6 +72,13 @@ export const BOT_IDS = Object.freeze(Object.keys(BOT_LINEUP));
 export const V1_ENGINE = "ismcts+widen=3+depth=5+core=stfig6@800";
 
 /**
+ * The Expérimental 1.2 (ExactEnd12, 08/10; 52.7 %, 50.5-54.8, over 1 500 games against the 1.1), the line-up's until
+ * 30/10: the research's reference — the Labo's builder and « Déjà rencontré », `npm run lab-index`, the changelog —
+ * since every duel and oracle reading of the 1.3 roadmap was played against it.
+ */
+export const V12_ENGINE = "ismcts+widen=7+depth=5+core=stfig6+exact=12@2000";
+
+/**
  * The versions still shown — in the Elo table and the Stats tab — three at
  * most per bot (Sami, merlin-is-dead): with the human players, ten rows at
  * most. Older versions' games still count in the Elo fit; their engines are
@@ -78,7 +87,7 @@ export const V1_ENGINE = "ismcts+widen=3+depth=5+core=stfig6@800";
 export const KEPT_VERSIONS = Object.freeze({
   basique: Object.freeze(["1.0"]),
   stratege: Object.freeze(["2.1", "2.0", "1.1"]),
-  experimental: Object.freeze(["1.2", "1.1", "1.0"]),
+  experimental: Object.freeze(["1.3", "1.2", "1.1"]),
   "oracle-light": Object.freeze(["1.0"]),
 });
 

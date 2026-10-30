@@ -255,7 +255,12 @@ la main peut faire sont une grande part du jugement du cœur.
 - **V1.1** : l'Expérimental 1.1 (`ismcts+widen=7+depth=5+core=stfig6@2000`, Tree-7w), sorti le 06/10 :
   la version à battre jusqu'au 08/10. Les mesures du 04/10 au 06/10 disent « contre le V1 » : c'est le 1.0.
 - **V1.2** : l'Expérimental 1.2 (`ismcts+widen=7+depth=5+core=stfig6+exact=12@2000`, `ExactEnd12`),
-  sorti le 08/10 : la version à battre depuis, celle de la page.
+  sorti le 08/10 : la version à battre depuis, celle de la page jusqu'au 30/10. Elle reste la référence de la recherche
+  (`V12_ENGINE`) : le formulaire du Labo, « Déjà rencontré », `npm run lab-index`, le changelog.
+- **V1.3** : l'Expérimental 1.3 (`ismcts+widen=7+depth=5+core=stfig6+exact=12+claimPile=2@2000`, `ClaimPile2`), la
+  version de la page depuis le 30/10 : la 1.2 qui simule à la règle de la partie quand la pioche a 2 cartes ou moins.
+  Adoptée par Sami sur un banc, sans duel (`docs/priorites-1.3-suite.md` § 16). Son empreinte contre greedy à 150
+  itérations (20 parties) est celle de la 1.2, `1d041613cd7bcd8d` : `claimPile` n'y change aucun coup.
 - **V1** : l'Expérimental 1.0 (`ismcts+widen=3+depth=5+core=stfig6`), dans
   le labo à 2 000 itérations par coup depuis le 04/10. On travaille toujours sur la dernière
   version : les nouvelles se nomment par ce qu'elles changent, sans numéro.

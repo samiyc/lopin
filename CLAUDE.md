@@ -220,7 +220,7 @@ src/report/changelog/  one page per version; style.css and v1-sections.html
   04/10 the lab plays at 2 000 iterations** (Sami: the core got faster), both
   sides: `…stfig6@2000` was the V1 to beat; the 1.0's own figures stay at 800. **Since 08/10
   the Expérimental 1.2 (`ismcts+widen=7+depth=5+core=stfig6+exact=12@2000`, ExactEnd12: the 1.1 plus
-  the exact solver at the root up to 12 cards) is the version to beat** (the 1.1, Tree-7w, was until then); the 1.0 stays the reference of the oracle base and the banc (`V1_ENGINE`). Before spending those, ask the
+  the exact solver at the root up to 12 cards) is the version to beat** (the 1.1, Tree-7w, was until then); **the line-up's is the 1.3 since 30/10** (the 1.2 + `claimPile=2`, ClaimPile2, adopted on a bench: `docs/priorites-1.3-suite.md`), the 1.2 staying the research's reference (`V12_ENGINE`: the Labo's builder, lab-index, the changelog); the 1.0 stays the reference of the oracle base and the banc (`V1_ENGINE`). Before spending those, ask the
   oracle: `npm run oracle -- --disagree <core>` says which of the two cores'
   favourites it plays where they differ, `--summary --core <core>` whether the
   oracle's move entered the core's top 8 (stfig6: 54 % → 66 %).

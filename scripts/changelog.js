@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
-import { BOT_LINEUP } from "../src/config/bots.js";
+import { BOT_LINEUP, V12_ENGINE } from "../src/config/bots.js";
 import { engineParts, normalizeEngine } from "../src/sim/mcts/engine-id.js";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
 
@@ -113,7 +113,7 @@ function pendingDuels(jobs) {
 async function loadPwlData(jobs) {
   const configs = await read("data/lab-configs.json").catch(() => null);
   if (!configs) return { pwl: null };
-  const v12 = normalizeEngine(BOT_LINEUP.experimental.engine);
+  const v12 = normalizeEngine(V12_ENGINE);
   const light = normalizeEngine(BOT_LINEUP["oracle-light"].engine);
   const rows = configs.pairs
     .filter((pair) => (pair.a === v12 || pair.b === v12) && /depth=10/.test(pair.a + pair.b))

@@ -40,7 +40,8 @@ describe("the bot line-up", () => {
     assert.equal(shortTag("ismcts+widen=3+depth=5@800"), "ismcts+widen=3+depth=5@800", "an engine id is left alone");
     assert.equal(shortTag("Sami"), "Sami");
     assert.equal(playerTag({ bot: "experimental", version: "1.0.0" }), "experimental@1.0");
-    assert.ok(isShownPlayer("experimental@1.0.0") && isShownPlayer("experimental@1.0"));
+    assert.ok(isShownPlayer("experimental@1.1.0") && isShownPlayer("experimental@1.1"));
+    assert.ok(!isShownPlayer("experimental@1.0"), "three versions kept at most: the 1.0 left with the 1.3 (30/10)");
   });
 
   it("refuses an unknown bot", () => {

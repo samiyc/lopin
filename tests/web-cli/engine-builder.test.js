@@ -1,10 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { BOT_LINEUP } from "../../src/config/bots.js";
+import { BOT_LINEUP, V12_ENGINE } from "../../src/config/bots.js";
 import { engineDiff, normalizeEngine } from "../../src/sim/mcts/engine-id.js";
 import { BASE_ENGINE, costOf, engineFromForm, formFromEngine, guardsOf, measuredOf, neighboursOf, verdictOf } from "../../web/app/lab/engine-builder.js";
 
-const V12 = BOT_LINEUP.experimental.engine;
+const V12 = V12_ENGINE;
 const LIGHT = BOT_LINEUP["oracle-light"].engine;
 
 describe("engine ids as configs (engine-id.js)", () => {
