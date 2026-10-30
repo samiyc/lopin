@@ -46,7 +46,10 @@ jugé par la part des donnes qu'il gagne à `claim-end`, en moyenne sur les 3 gr
 | les deux | 45,2 % | 33 / 1 | 99,1 % | ×15 / ×1,43 |
 
 - **`ClaimPile2` double la part des donnes gagnées** sur les positions perdues à cause de l'écart des règles (22 →
-  43 %), et **ne casse aucun témoin**. Elle en améliore même deux.
+  43 %), et **ne casse aucun témoin**. Elle en améliore même deux. Position par position, l'écart à la 1.2 est de
+  **+21,0 points (+13,2 à +28,8, à 95 %)**. Sur les témoins, il est de +0,7 (−0,3 à +1,7). Pour `EndPimc3`, il est de
+  +14,9 (+9,0 à +20,8), et pour les deux ensemble de +22,9 (+15,1 à +30,6). L'intervalle est imprimé par
+  `--summary` depuis le 30/10 au soir. Il porte sur les 85 positions, pas sur les 3 graines.
 - **`EndPimc3` en fait moins**, et seulement à une carte de pioche, pour un coût seize fois plus grand. Les deux ensemble
   ne gagnent que 2 points de plus que `ClaimPile2` seule.
 - **Le coût sur une partie** : la pioche n'a 2 puis 1 carte que pour deux coups d'une partie (à 0 carte, le solveur

@@ -71,6 +71,7 @@ automatiquement. Mode d'emploi : `docs/jouer.md`.
 | `docs/analyse-arbre-ismcts.md` | la forme de l'arbre ISMCTS, mesurée sur 1 000 positions |
 | `docs/cloud.md` | faire tourner les calculs longs ailleurs (cloud, portable) |
 | `docs/ecarts-spec-dev-test.md` | l'audit du 17/10 : écarts entre docs, code et tests, et leur suivi |
+| `docs/qualite.md` | la revue qualité du 30/10 (la grille de mcts-commun) : la doc, les tests et la couverture, le lint, le code mort, la lib, les mesures |
 
 ## Commandes
 

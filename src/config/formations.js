@@ -21,15 +21,6 @@ export const FORMATION_LABELS = Object.freeze({
   sum: "Somme",
 });
 
-/** Short labels for tight ASCII tables. */
-export const FORMATION_SHORT = Object.freeze({
-  straightFlush: "SC",
-  threeOfAKind: "Br",
-  flush: "Co",
-  straight: "Su",
-  sum: "So",
-});
-
 /**
  * `swapped` exchanges the two strongest, `straightUp` the two middle ones
  * (in four colours a flush is easier to hold than a run), `bothSwapped`

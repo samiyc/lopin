@@ -2,9 +2,9 @@ import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { localTimestamp } from "../src/replay/core/log.js";
 import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
-import { heatSettings, watchHeat } from "./lib/cli/machine.js";
+import { heatSettings, watchHeat, watchMemory } from "mcts-commun/machine.js";
 import { runCommand } from "./lib/cli/run-command.js";
-import { appendJobLog, jobKind, jobLine, watchMemory } from "./lib/domain/job-log.js";
+import { appendJobLog, jobKind, jobLine } from "./lib/domain/job-log.js";
 import { readFileSync } from "node:fs";
 
 /**

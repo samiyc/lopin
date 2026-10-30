@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { isFinished } from "../../../src/schedule/order.js";
 
-export { FINISHED, isFinished } from "../../../src/schedule/order.js";
+export { isFinished } from "../../../src/schedule/order.js";
 
 /**
  * The backlog's two places (Sami, 17/10): data/backlog.json holds only the jobs

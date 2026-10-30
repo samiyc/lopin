@@ -6,10 +6,9 @@ import os from "node:os";
  * from the backlog (`source: "backlog"`), `npm run job` (`"job"`, a job started by hand) or a bench.
  * What the history lacked to learn a thread count per kind of job: the kind, the engines, the threads
  * asked, the minutes, the games played, the free memory at its lowest, and the CPU's temperature at the
- * start and at its highest when LibreHardwareMonitor serves it (scripts/lib/cli/machine.js). One file per month,
+ * start and at its highest when LibreHardwareMonitor serves it (mcts-commun/machine.js, like the memory guard). One file per month,
  * data/job-log/YYYY-MM.jsonl, so none nears data/'s 500 KB.
  */
-const GB = 1024 ** 3;
 const round = (value, digits = 1) => Math.round(value * 10 ** digits) / 10 ** digits;
 
 const KINDS = [
@@ -40,45 +39,6 @@ export function enginesOf(command) {
 export function gamesOf(output) {
   const found = /— (\d+) parties/.exec(output ?? "");
   return found ? Number(found[1]) : null;
-}
-
-/**
- * The memory guard's floor (Sami, 23/10): a job is stopped when the free memory stays under `LOPIN_RAM_FLOOR`
- * GB (5 by default, the margin the solver pools keep; 0 turns the guard off) for `holds` samples in a row.
- */
-export function memoryFloorGb(env = process.env) {
-  const value = Number(env.LOPIN_RAM_FLOOR ?? 5);
-  return Number.isFinite(value) && value >= 0 ? value : 5;
-}
-
-/**
- * Samples the free memory every `everyMs` until `stop()`, which returns the free memory at the start and at its
- * lowest, in GB. With a `floorGb` above 0, `onLow(gb)` is called once when the free memory stays under it for
- * `holds` samples in a row. `read` gives the free bytes (os.freemem; a test passes its own).
- */
-export function watchMemory({ everyMs = 5_000, floorGb = 0, holds = 2, onLow = () => {}, read = () => os.freemem() } = {}) {
-  const start = read();
-  let low = start;
-  let under = 0;
-  let fired = false;
-  const sample = () => {
-    const free = read();
-    low = Math.min(low, free);
-    under = floorGb > 0 && free < floorGb * GB ? under + 1 : 0;
-    if (!fired && under >= holds) {
-      fired = true;
-      onLow(round(free / GB));
-    }
-  };
-  const timer = setInterval(sample, everyMs);
-  return {
-    sample,
-    stop() {
-      clearInterval(timer);
-      low = Math.min(low, read());
-      return { freeGbStart: round(start / GB), freeGbLow: round(low / GB) };
-    },
-  };
 }
 
 /** One line of the log. `started` and `ended` are Dates; `memory` comes from `watchMemory().stop()`, `temperature` from `watchHeat().stop()`. */

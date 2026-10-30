@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { runCommand } from "../lib/cli/run-command.js";
-import { appendJobLog, jobLine, watchMemory } from "../lib/domain/job-log.js";
+import { watchMemory } from "mcts-commun/machine.js";
+import { appendJobLog, jobLine } from "../lib/domain/job-log.js";
 import { tmpFile } from "../lib/domain/tmp.js";
 
 /**

@@ -83,7 +83,16 @@ function groupLine(rows, label) {
   const better = gaps.filter((gap) => gap > 0.01).length;
   const worse = gaps.filter((gap) => gap < -0.01).length;
   const broken = gaps.filter((gap) => gap <= -0.25).length;
-  return `${pc(mean(read.map((row) => shareOf(row, label))))} des donnes (${read.length} positions), mieux ${better} · moins bien ${worse} (dont ${broken} de 25 points ou plus)`;
+  return `${pc(mean(read.map((row) => shareOf(row, label))))} des donnes (${read.length} positions), ${pairedGap(gaps)}, mieux ${better} · moins bien ${worse} (dont ${broken} de 25 points ou plus)`;
+}
+
+/** The mean gap to the 1.2, position by position, with its 95 % interval (normal, over the positions). */
+function pairedGap(gaps) {
+  if (gaps.length < 2) return "écart —";
+  const centre = mean(gaps);
+  const half = 1.96 * Math.sqrt(gaps.reduce((sum, gap) => sum + (gap - centre) ** 2, 0) / (gaps.length - 1) / gaps.length);
+  const points = (share) => (100 * share).toFixed(1);
+  return `écart ${points(centre)} points (${points(centre - half)} à ${points(centre + half)})`;
 }
 
 function costLine(rows, label) {
