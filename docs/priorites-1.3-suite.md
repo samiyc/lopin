@@ -55,5 +55,6 @@ jugé par la part des donnes qu'il gagne à `claim-end`, en moyenne sur les 3 gr
 - **Ce que ça vaut en parties** : environ 0,25 point au plus (§ 15). Un 1k@2k ne le verrait pas. Le banc est la seule
   mesure possible, et il est net.
 
-**La décision** est à Sami : adopter `ClaimPile2` sur ce banc (une nouvelle version de la 1.2, puisque des coups
-changent), ou la garder éteinte.
+**La décision** (Sami, 30/10) : **`ClaimPile2` est adoptée sur ce banc**, sans duel. `EndPimc3` reste dans le code,
+éteinte. Des coups changent, donc l'Expérimental change de version : la règle de `src/config/bots.js` (deux numéros,
+le second à chaque changement de comportement) en fait la 1.3, à confirmer par Sami avant de toucher la line-up.

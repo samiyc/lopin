@@ -1256,9 +1256,9 @@
  },
  "next": [
   {
-   "when": "Fait (30/10)",
+   "when": "Adoptée (30/10)",
    "title": "ClaimPile2 : l’arbre joue la règle de la partie à 2 cartes de pioche ou moins",
-   "text": "Avec 2 cartes de pioche ou moins, l’arbre joue ses itérations à claim-end, la règle de la partie, au lieu de final. Sur les 86 fins « sûres » perdues à cause de l’écart des règles, le coup choisi gagne 43,4 % des donnes au lieu de 22,4 % pour la 1.2. Sur 117 témoins, aucun n’est cassé, et le surcoût est d’environ 0,6 s par partie. EndPimc3 fait moins (37,3 %) pour un coût seize fois plus grand à une carte de pioche. Le gain, environ 0,25 point, est trop petit pour un 1k@2k : l’adoption se décide sur ce banc (docs/priorites-1.3-suite.md § 16)."
+   "text": "Avec 2 cartes de pioche ou moins, l’arbre joue ses itérations à claim-end, la règle de la partie, au lieu de final. Sur les 86 fins « sûres » perdues à cause de l’écart des règles, le coup choisi gagne 43,4 % des donnes au lieu de 22,4 % pour la 1.2. Sur 117 témoins, aucun n’est cassé, et le surcoût est d’environ 0,6 s par partie. EndPimc3 fait moins (37,3 %) pour un coût seize fois plus grand à une carte de pioche. Le gain, environ 0,25 point, est trop petit pour un 1k@2k : Sami l’a adoptée sur ce banc le 30/10, sans duel (docs/priorites-1.3-suite.md § 16)."
   },
   {
    "when": "Fait (28/10)",
