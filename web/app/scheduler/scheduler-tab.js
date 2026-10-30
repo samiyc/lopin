@@ -114,7 +114,7 @@ function nightsBlock() {
   const smith = simulateNight(state.jobs, scenario, options);
   const scale = scaleOf(START, options.nightMinutes, [fifo, smith]);
   const block = (title, night) => [el("h3", {}, title), el("p", { class: "hint" }, summaryOf(night.metrics, scale)), chart(ganttRows(state.jobs, night, scale), scale, downBands(night, scale))];
-  return [...block("L'ordre du fichier (--fifo)", fifo), ...block("La règle de Smith, avec prérequis et échéances", smith), legend()];
+  return [...block("L'ordre du fichier (premier entré, premier servi)", fifo), ...block("La règle de Smith, avec prérequis et échéances", smith), legend()];
 }
 
 function comparisonBlock() {
@@ -197,7 +197,7 @@ export function renderScheduler() {
   const open = view.querySelector(".scheduler-editor")?.open ?? false;
   view.replaceChildren(
     el("h2", {}, "Ordonnanceur"),
-    el("p", { class: "hint" }, "La file de nuit (npm run backlog) jouée en simulation : chaque nuit tire la durée réelle des jobs, leurs échecs et les scores des duels, donc les stopIf. Les deux ordres jouent la même nuit."),
+    el("p", { class: "hint" }, "Une nuit de la file (mcts-backlog, que nourrit npm run backlog) jouée en simulation : chaque nuit tire la durée réelle des jobs, leurs échecs et les scores des duels, donc les stopIf. Les deux ordres jouent la même nuit."),
     controls(),
     machineControls(),
     el("p", { class: "scheduler-note" }, presetOf(state.preset)?.note ?? ""),

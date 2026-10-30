@@ -320,7 +320,9 @@ export function ismctsBot(rng, { base, policy, name = "ismcts", budget = ISMCTS.
  * `+widen=6`, `+exploration=1`, `+sample=0.05` (sampled rollouts), `+exact=12`,
  * `+pivot=4`, `+hope=1`, `+pimc=3` (`ismctsBot`, pimc.js), `+late=2+early=0.5`, `+smart=1` (`budget.js`),
  * `+firstExploration=0.6` (the first player's nodes, root included), `+puct=2` (the core's rank as a prior), `+trees=2` (Ensemble), `+forkCut=1|2` (fork-cut.js), `+implicit=0.3` (implicit-minimax.js), `+final=1` (final-choice.js), `+crn=1` (common-deals.js), `+fpu=1` (first-play.js), `+mirror=1|2` (mirror.js: MirrorMoves, MirrorPrune), `+jkHand=k` and `+claimPile=k` (deal.js), `+theirs=core` (their-core.js), `+pwl=0..5` (widening.js; `+pw=k` obsolete), `+rave=300`, `+infer=48` (`createIsmcts`, infer.js), `+memory=3` (`ismctsBot`), `+lite=1|2` (B1, bots.js), `+halving=1000-500-500` (halving.js), `+core=nb1`, `+shortlist=plain`, `+rollout=plain`
- * (named cores, experimental.js) — or null.
+ * (named cores, experimental.js), `+candidates=8` (the root's), `+diverse=2|lead2` and `+rootDiverse` (pick.js),
+ * `+trunc=n`, `+simExact=n` (rollouts.js), `+margin=0.5` (choice.js), `+reuse=1` (reuse.js), `+simCertain=1`
+ * (bots.js), `+omniscient=1` (deal.js, Omniscient 1.0) — or null.
  */
 export function ismctsSettings(name) {
   const [base, ...changes] = name.split("+");

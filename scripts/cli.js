@@ -254,5 +254,12 @@ async function stepMode() {
   show(session, read.error ? { error: read.error } : {});
 }
 
-if (args.includes("--new") || args.includes("--step")) await stepMode();
-else await interactive();
+// A wrong option (an unknown robot) is said in one line, without node's stack (30/10, as mcts-commun's refusals).
+try {
+  if (args.includes("--new") || args.includes("--step")) await stepMode();
+  else await interactive();
+} catch (error) {
+  if (!error.message.startsWith("Robot inconnu")) throw error;
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

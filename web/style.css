@@ -80,16 +80,17 @@ button, select, input { font: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 /* ── Top bar ─────────────────────────────── */
-.topbar { display: flex; align-items: center; gap: 24px; padding: 10px 20px; background: var(--felt); color: var(--felt-ink); }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 10px 20px; background: var(--felt); color: var(--felt-ink); }
 .topbar h1 { margin: 0; font: 700 1.5rem/1 var(--display); }
 .topbar h1 small { font: 400 0.85rem var(--body); opacity: 0.75; margin-left: 6px; }
 .tabs { display: flex; gap: 4px; }
 .tabs button { background: transparent; color: inherit; border: 1px solid transparent; border-radius: 999px; padding: 5px 14px; cursor: pointer; }
 .tabs button[aria-selected="true"] { background: var(--felt-ink); color: var(--felt); }
 .rules-link { color: inherit; }
+/* Between 900 and ~1 030 px (zoom 1.1) the bar wrapped its labels and pushed « 4 couleurs » past the edge (30/10): it wraps instead. */
 /* The Versions menu (Sami, 03/10): the changelogs and documents of out/, each in a new tab. */
 .versions { margin-left: auto; position: relative; }
-.versions summary { cursor: pointer; list-style: none; text-decoration: underline; text-underline-offset: 3px; }
+.versions summary { cursor: pointer; list-style: none; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
 .versions summary::-webkit-details-marker { display: none; }
 .versions summary::after { content: " ▾"; font-size: 0.8em; }
 .versions[open] summary::after { content: " ▴"; }
@@ -192,7 +193,7 @@ html[data-colors="4"] .suit-bar button[data-suit="♦"] { color: var(--ui-diamon
 html[data-colors="4"] .suit-bar button[data-suit="♣"] { color: var(--ui-club); }
 /* The « 4 couleurs » toggle, in the top bar after « Règles » (Sami, 14/10: every tab reaches it). Its four symbols sit
    on a card-white pill, in the colours the cards will take: red and black, or four. */
-.colors-toggle { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--felt-ink); border: 1px solid color-mix(in oklab, var(--felt-ink) 45%, transparent); border-radius: 999px; padding: 3px 4px 3px 12px; }
+.colors-toggle { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; background: transparent; color: var(--felt-ink); border: 1px solid color-mix(in oklab, var(--felt-ink) 45%, transparent); border-radius: 999px; padding: 3px 4px 3px 12px; }
 .colors-toggle[aria-pressed="true"] { background: color-mix(in oklab, var(--felt-ink) 18%, transparent); border-color: var(--felt-ink); font-weight: 700; }
 .colors-toggle .suits { display: inline-flex; gap: 3px; padding: 1px 8px; border-radius: 999px; background: var(--card); }
 .suits i { font-style: normal; font-family: var(--suit); color: #16181a; }
