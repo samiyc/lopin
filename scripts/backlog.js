@@ -1,10 +1,10 @@
 import { execFile, spawn } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { backlogFiles } from "./lib/domain/backlog-files.js";
-import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js";
+import { applyThreadsOption, workerCount } from "./lib/cli/pool.js";
+import { machineJob } from "./lib/domain/machine-job.js";
 
 /**
  * `npm run backlog [-- …]`: lopin's night jobs, played by the machine's queue (Sami, 26/10/2026: the scheduler in
@@ -18,27 +18,18 @@ import { applyThreadsOption, threadsFrom, workerCount } from "./lib/cli/pool.js"
  *   npm run backlog -- --threads N   the threads of the jobs that do not say theirs (every core but 3, 18 at most)
  *
  * A job keeps its id, `after`, `due`, `priority`, `limit` (120 min by default), `notBefore`; its `threads` are counted
- * in the machine's slots (a duel takes all it is lent). Its `stopIf` stays: mcts-backlog orders by it as lopin did,
- * and asks `node scripts/stop-check.js ID` before the job starts (its `skipIf`). The outputs go to
+ * in the machine's slots (a duel takes all it is lent), and it may start on two thirds of them when fewer are free
+ * (`minThreads`, scripts/lib/domain/machine-job.js). Its `stopIf` stays: mcts-backlog orders by it as lopin did, and asks `node scripts/stop-check.js ID` before the job starts (its `skipIf`). The outputs go to
  * ~/.mcts-backlog/runs/, the finished jobs to ~/.mcts-backlog/done/, which `backlogFiles().readArchive()` reads with
  * lopin's own archive (data/backlog-done/). Once handed over, data/backlog.json is left empty.
  */
-const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const BACKLOG = fileURLToPath(new URL("../node_modules/mcts-commun/bin/backlog.js", import.meta.url));
 const FORWARDED = ["--list", "--json", "--tui", "--status", "--wait", "--cancel", "--retry"];
-const LIMIT = 120;
 const TMP = new URL("../tmp/", import.meta.url);
 const args = process.argv.slice(2);
 
 /** mcts-backlog with `flags`, on this terminal; resolves with its exit code. */
 const backlog = (flags) => new Promise((resolve) => spawn(process.execPath, [BACKLOG, ...flags], { stdio: "inherit" }).on("exit", resolve));
-
-/** A job of data/backlog.json as the machine's queue takes it. */
-function machineJob(job, threads) {
-  const own = job.threads ? threadsFrom(String(job.threads), os.cpus().length) : threads;
-  const skipIf = job.stopIf?.length ? { skipIf: `node scripts/stop-check.js ${job.id}` } : {};
-  return { ...job, cwd: ROOT, threads: own, limit: job.limit ?? LIMIT, ...skipIf };
-}
 
 /** The runners alive on the machine, from mcts-backlog's view. */
 async function runners() {

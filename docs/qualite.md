@@ -139,3 +139,35 @@ Les scripts de la revue sont restés hors du dépôt (« on n'ajoute pas d'outil
 - `npm run fingerprint` et les empreintes ci-dessus, chacune avec sa commande (`CLAUDE.md`, `docs/labo.md`) ;
 - une recherche des fichiers et des `npm run` cités dans les `.md`, puis des exports que personne n'importe, avec
   `grep -rn` ou un court script Node.
+
+## Les suites du 31/10 (Sami : « ok pour 1 à 5 »)
+
+Cinq idées venues des messages de commun du 30-31/10, chacune essayée sur Lopin.
+
+1. **Des planchers de couverture** : `npm run test:coverage` échoue sous 95 % des lignes, 90 % des branches ou
+   90 % des fonctions (`COVERAGE_FLOORS`, `scripts/test.js`). Les tests sont exclus du calcul. Lopin est à
+   96,7 / 92,5 / 93,8 % (537 tests, 0 échec, sous `--slot 4`, 3 min 15). Commun a les siens à 95 / 85 / 88.
+2. **`--min-threads`** : `npm run backlog` donne à chaque job un `minThreads` de deux tiers de ses fils (12 sur 18,
+   `scripts/lib/domain/machine-job.js`, testé). Quand il manque des fils, le job part sur ceux qui sont libres au
+   lieu d'attendre, et son pool lit `MCTS_THREADS`. Un duel dure alors au plus une fois et demie plus longtemps, sous
+   sa limite de 2 h. Un job peut garder ses fils fixes avec `minThreads` égal à `threads`.
+3. **Le SPRT** (`sprt`, `mcts-commun/measure.js`), rejoué sur les 22 duels de `data/versus.json`, paire après paire
+   dans l'ordre où elles ont été jouées. h0 vaut 50 %, et h1 vaut 52 % ou 53 % (`scripts/archive/sprt-replay.js`) :
+
+   | h1 | Duels tranchés | D'accord avec la règle des 1 000 parties | Paires épargnées |
+   |---|---|---|---|
+   | 52 % | 6 sur 22 : stfig6, tree7w, rhtree5w, ExactEnd12 (gain) ; nobonus, lean (non) | 6 sur 6 | 1 886 sur 11 289 (17 %) |
+   | 53 % | 11 sur 22 | 10 sur 11 : **tree6w déclaré gagnant à 174 paires (55,5 %)**, fourchette basse finale 49,9 % | plus, mais pas sûr |
+
+   Les autres duels restent indécis jusqu'au bout. C'est le cas de presque toutes les tentatives de la 1.3, qui
+   tournent entre 50 et 52 % : la zone où le SPRT ne tranche pas. **Pas adopté** pour les duels de Lopin : à 52 %,
+   il épargne 17 % des parties ; à 53 %, il s'est déjà trompé une fois. Le `stopIf` coupe déjà les séries mauvaises,
+   sous 47 % après un duel. Le terme est dans le glossaire.
+4. **La jeune génération du ramasse-miettes fixée à 64 Mo** (`--min-semi-space-size=64 --max-semi-space-size=64`,
+   −10 % chez urgences). Sur Lopin : 1.3@400 contre elle-même, 4 parties, 3 manches de 2 processus normaux et 2 réglés
+   côte à côte sous `--slot 4`. Résultat : 17,39 s contre 17,29 s par partie, **−0,6 %** (−1,2, +0,8 et −1,3 % par
+   manche, donc du bruit), avec la même empreinte `4f4654f30afd08dc`. **Pas adopté** : Lopin passe son temps à
+   calculer, pas à ramasser la mémoire.
+5. **Des budgets de travail plutôt que des temps** : un seul test de Lopin chronométrait, le solveur sur une fin à
+   8 cartes en moins de 3 s (`tests/sim-engine/endgame.test.js`). Il compte maintenant ses nœuds, 4 096 au plus
+   (2 048 le 31/10). Un temps échoue sous la charge de la file ; le nombre de nœuds est le même sur toute machine.

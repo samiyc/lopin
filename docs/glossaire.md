@@ -280,6 +280,9 @@ la main peut faire sont une grande part du jugement du cœur.
   `scripts/lib/domain/duel-plan.js`), pas partie par partie (Wilson, plus large). Environ ±5,5 points sur
   250 parties, ±4,5 sur 400, ±2,7 sur 1 000. **Une version est meilleure quand
   la fourchette basse dépasse 50 %**, sur 1 000 parties.
+- **Le SPRT** (`sprt` de `mcts-commun/measure.js`, 30/10) : un test qui s'arrête dès que les parties déjà jouées
+  tranchent entre « pas de gain » (50 %) et « le gain voulu » (`h1`), au lieu de jouer toute la série. Rejoué le 31/10
+  sur les 22 duels de `data/versus.json` (`docs/qualite.md`), il n'est pas adopté pour les duels de Lopin.
 - **À temps égal** : quand une version est plus rapide ou plus lente par itération (plus de 3 %
   d'écart), les deux camps jouent au **même temps par coup** (`@t3200` : 3,2 s). Un nombre
   d'itérations ajusté (`@2200` contre `@2000`) n'est sûr que vérifié dans les replays d'un duel :

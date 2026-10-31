@@ -59,9 +59,11 @@ describe("the endgame solver", () => {
     }
   });
 
-  it("solves an eight-card endgame in well under a second", () => {
-    const started = performance.now();
-    solveEndgame(endgame(3, 35));
-    assert.ok(performance.now() - started < 3000);
+  it("solves an eight-card endgame within a work budget", () => {
+    // A budget of nodes, not of milliseconds (Sami, 31/10, after mcts-commun): a time fails under the queue's load,
+    // the nodes are the same on any machine. 2 048 on 31/10; twice that means the memory or the cuts got worse.
+    const { complete, nodes } = solveEndgame(endgame(3, 35));
+    assert.ok(complete);
+    assert.ok(nodes <= 4096, `${nodes} nodes`);
   });
 });
