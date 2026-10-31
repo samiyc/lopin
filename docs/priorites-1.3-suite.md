@@ -61,3 +61,8 @@ jugé par la part des donnes qu'il gagne à `claim-end`, en moyenne sur les 3 gr
 **La décision** (Sami, 30/10) : **`ClaimPile2` est adoptée sur ce banc**, sans duel. `EndPimc3` reste dans le code,
 éteinte. Des coups changent, donc l'Expérimental change de version : la règle de `src/config/bots.js` (deux numéros,
 le second à chaque changement de comportement) en fait la 1.3, à confirmer par Sami avant de toucher la line-up.
+
+**La version à battre** (Sami, 31/10) : c'est maintenant la 1.3. Les prochaines idées se jouent en duel contre elle,
+`ismcts+widen=7+depth=5+core=stfig6+exact=12+claimPile=2@2000`. La 1.2 reste un point de comparaison, ainsi que la
+référence du Labo, de `npm run lab-index` et du changelog (`V12_ENGINE`). Les duels passés contre la 1.2 restent
+lisibles avec `npm run versus`.
